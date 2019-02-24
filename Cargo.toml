@@ -1,0 +1,11 @@
+[package]
+name = "tf-demo-demo"
+version = "0.1.0"
+authors = ["Robin Appelman <robin@icewind.nl>"]
+edition = "2018"
+
+[dependencies]
+bitstream_reader = { path = "../../bitbuffer" }
+rental = "0.5"
+enum-primitive-derive = "0.1.2"
+num-traits = "0.2"
