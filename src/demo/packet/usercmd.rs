@@ -3,7 +3,7 @@ use crate::{Parse, ParseError, ParserState, Result, Stream};
 pub struct UserCmdPacket {
     tick: u32,
     command: String,
-    sequence_out: u32
+    sequence_out: u32,
 }
 
 impl<'a> Parse<'a> for UserCmdPacket {

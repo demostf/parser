@@ -1,7 +1,7 @@
 use crate::demo::gamevent::GameEventDefinition;
 use crate::demo::sendprop::SendProp;
-use std::collections::HashMap;
 use crate::Stream;
+use std::collections::HashMap;
 
 pub struct ParserState<'a> {
     pub version: u32,

@@ -56,10 +56,7 @@ impl<'a> StringTableEntry<'a> {
         } else {
             None
         };
-        Ok(StringTableEntry {
-            text,
-            extra_data,
-        })
+        Ok(StringTableEntry { text, extra_data })
     }
 }
 
@@ -77,10 +74,7 @@ impl<'a> Parse<'a> for StringTablePacket<'a> {
         for _ in 0..count {
             tables.push(StringTable::parse(stream)?);
         }
-        Ok(StringTablePacket {
-            tick,
-            tables,
-        })
+        Ok(StringTablePacket { tick, tables })
     }
 
     fn skip(stream: &mut Stream) -> Result<()> {

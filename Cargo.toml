@@ -9,3 +9,5 @@ bitstream_reader = { path = "../../bitbuffer" }
 rental = "0.5"
 enum-primitive-derive = "0.1.2"
 num-traits = "0.2"
+enumflags2 = "0.5"
+enumflags2_derive = "0.5"

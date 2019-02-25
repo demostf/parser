@@ -1,6 +1,6 @@
-use bitstream_reader::ReadError;
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
+use bitstream_reader::ReadError;
 
 mod state;
 
@@ -11,6 +11,10 @@ pub enum ParseError {
     ReadError(ReadError),
     /// Packet identifier is invalid
     InvalidPacketType(u8),
+    /// SendProp type is invalid
+    InvalidSendPropType(u8),
+    /// Invalid structure found while creating array SendProp
+    InvalidSendPropArray,
 }
 
 impl From<ReadError> for ParseError {
@@ -25,7 +29,6 @@ pub trait Parse<'a>: Sized {
     fn parse(stream: &mut Stream<'a>, state: &ParserState<'a>) -> Result<Self>;
     fn skip(stream: &mut Stream) -> Result<()>;
 }
-
 
 pub struct DemoParser<'a> {
     stream: Stream<'a>,

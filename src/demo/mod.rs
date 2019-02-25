@@ -3,10 +3,10 @@ use rentals::OwnedBuffer;
 
 pub mod gamevent;
 pub mod header;
+pub mod packet;
+pub mod parser;
 pub mod sendprop;
 pub mod vector;
-pub mod parser;
-pub mod packet;
 
 pub type Buffer<'a> = BitBuffer<'a, LittleEndian, NonPadded>;
 pub type Stream<'a> = BitStream<'a, LittleEndian, NonPadded>;

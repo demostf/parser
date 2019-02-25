@@ -1,4 +1,4 @@
-use crate::{ParseError, Parse, Result, Stream, ParserState};
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 //use crate::test::test_parse;
 
 #[derive(Debug, PartialEq)]
