@@ -1,5 +1,6 @@
 use crate::{Parse, ParseError, ParserState, Result, Stream};
 
+#[derive(Debug)]
 pub struct Vector {
     pub x: f32,
     pub y: f32,
@@ -20,6 +21,7 @@ impl Parse<'_> for Vector {
     }
 }
 
+#[derive(Debug)]
 pub struct VectorXY {
     pub x: f32,
     pub y: f32,

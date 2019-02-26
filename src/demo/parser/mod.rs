@@ -1,6 +1,11 @@
+use std::error::Error;
+
+use bitstream_reader::ReadError;
+
+use crate::demo::header::Header;
+use crate::demo::packet::Packet;
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
-use bitstream_reader::ReadError;
 
 mod state;
 
@@ -14,7 +19,9 @@ pub enum ParseError {
     /// SendProp type is invalid
     InvalidSendPropType(u8),
     /// Invalid structure found while creating array SendProp
-    InvalidSendPropArray,
+    InvalidSendPropArray(String),
+    /// Expected amount of data left after parsing an object
+    DataRemaining(usize),
 }
 
 impl From<ReadError> for ParseError {
@@ -58,5 +65,31 @@ impl<'a> DemoParser<'a> {
     pub fn set_stream_pos(&mut self, pos: usize) -> Result<()> {
         self.stream.set_pos(pos)?;
         Ok(())
+    }
+
+    pub fn split_packets(mut self) -> Result<Vec<Stream<'a>>> {
+        let _ = self.skip::<Header>()?;
+        let mut streams = vec![];
+        while self.stream.bits_left() > 7 {
+            let start = self.stream.pos();
+            let _ = self.skip::<Packet>()?;
+            let end = self.stream.pos();
+            let _ = self.stream.set_pos(start);
+            streams.push(self.stream.read_bits(end - start)?);
+        }
+        Ok(streams)
+    }
+
+    pub fn parse_demo(mut self) -> Result<(Header, Vec<Packet<'a>>)> {
+        let header = self.read::<Header>()?;
+        let mut packets = vec![];
+        loop {
+            let packet = self.read::<Packet>()?;
+            match packet {
+                Packet::Stop(_) => break,
+                packet => packets.push(packet)
+            }
+        }
+        Ok((header, packets))
     }
 }

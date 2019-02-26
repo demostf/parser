@@ -1,8 +1,10 @@
 use crate::{Parse, ParseError, ParserState, Result, Stream};
 use crate::demo::vector::Vector;
 
+#[derive(Debug)]
 pub struct Message;
 
+#[derive(Debug)]
 pub struct MessagePacket {
     tick: u32,
     messages: Vec<Message>,
@@ -29,11 +31,11 @@ impl<'a> Parse<'a> for MessagePacket {
         let sequence_in = stream.read(32)?;
         let sequence_out = stream.read(32)?;
         let length: usize = stream.read(32)?;
-        let _ = stream.skip(length).map_err(ParseError::from);
+        let mut packet_data = stream.read_bits(length * 8)?;
 
-        let mut messages = vec![];
+        let messages = vec![];
 
-        Ok(MessagePacket {
+        let packet = MessagePacket {
             tick,
             messages,
             view_origin,
@@ -42,7 +44,8 @@ impl<'a> Parse<'a> for MessagePacket {
             sequence_in,
             sequence_out,
             flags,
-        })
+        };
+        Ok(packet)
     }
 
     fn skip(stream: &mut Stream) -> Result<()> {
@@ -53,7 +56,7 @@ impl<'a> Parse<'a> for MessagePacket {
         }
 
         let _ = stream.skip(32 * 2)?;
-        let length: usize = stream.read(32)?;
-        stream.skip(length).map_err(ParseError::from)
+        let length: usize = stream.read::<usize>(32)?;
+        stream.skip(length * 8).map_err(ParseError::from)
     }
 }

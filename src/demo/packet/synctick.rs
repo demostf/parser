@@ -1,5 +1,6 @@
 use crate::{Parse, ParseError, ParserState, Result, Stream};
 
+#[derive(Debug)]
 pub struct SyncTickPacket {
     tick: u32,
 }

@@ -1,5 +1,6 @@
 use crate::{Parse, ParserState, Result, Stream};
 
+#[derive(Debug)]
 pub struct StopPacket;
 
 impl<'a> Parse<'a> for StopPacket {

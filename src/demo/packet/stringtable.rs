@@ -1,5 +1,7 @@
 use crate::{Parse, ParseError, ParserState, Result, Stream};
+use std::fmt;
 
+#[derive(Debug)]
 pub struct StringTable<'a> {
     name: String,
     entries: Vec<StringTableEntry<'a>>,
@@ -60,6 +62,16 @@ impl<'a> StringTableEntry<'a> {
     }
 }
 
+impl<'a> fmt::Debug for StringTableEntry<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match &self.extra_data {
+            None => write!(f, "Table Entry: '{}'", self.text),
+            Some(extra_data) => write!(f, "Table Entry: '{}' with {} bits of extra data", self.text, extra_data.bit_len())
+        }
+    }
+}
+
+#[derive(Debug)]
 pub struct StringTablePacket<'a> {
     tick: u32,
     tables: Vec<StringTable<'a>>,
@@ -68,18 +80,24 @@ pub struct StringTablePacket<'a> {
 impl<'a> Parse<'a> for StringTablePacket<'a> {
     fn parse(stream: &mut Stream<'a>, _state: &ParserState<'a>) -> Result<Self> {
         let tick = stream.read(32)?;
+        let start = stream.pos();
         let length: usize = stream.read(32)?;
-        let count: u32 = stream.read(8)?;
+        let mut packet_data = stream.read_bits(length * 8)?;
+        let count: u32 = packet_data.read(8)?;
         let mut tables = Vec::with_capacity(count as usize);
         for _ in 0..count {
-            tables.push(StringTable::parse(stream)?);
+            tables.push(StringTable::parse(&mut packet_data)?);
         }
-        Ok(StringTablePacket { tick, tables })
+        if packet_data.bits_left() > 7 {
+            Err(ParseError::DataRemaining(packet_data.bits_left()))
+        } else {
+            Ok(StringTablePacket { tick, tables })
+        }
     }
 
     fn skip(stream: &mut Stream) -> Result<()> {
         let _ = stream.skip(32)?;
-        let length = stream.read(32)?;
+        let length = stream.read::<usize>(32)?;
         stream.skip(length).map_err(ParseError::from)
     }
 }

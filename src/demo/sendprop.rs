@@ -8,6 +8,7 @@ use crate::{Parse, ParseError, ParserState, Result, Stream};
 use super::packet::datatable::SendTable;
 use super::vector::{Vector, VectorXY};
 
+#[derive(Debug)]
 pub struct SendPropDefinition {
     pub prop_type: SendPropType,
     pub name: String,

@@ -19,6 +19,7 @@ pub mod usercmd;
 pub mod datatable;
 pub mod message;
 
+#[derive(Debug)]
 pub enum Packet<'a> {
     Sigon(MessagePacket),
     Message(MessagePacket),
@@ -30,7 +31,7 @@ pub enum Packet<'a> {
     StringTables(StringTablePacket<'a>),
 }
 
-#[derive(Primitive)]
+#[derive(Primitive, Debug)]
 pub enum PacketType {
     Sigon = 1,
     Message = 2,
@@ -71,6 +72,7 @@ impl<'a> Parse<'a> for Packet<'a> {
 
     fn skip(stream: &mut Stream) -> Result<()> {
         let packet_type = PacketType::parse(stream, &ParserState::new(&stream))?;
+        dbg!(&packet_type);
         match packet_type {
             PacketType::Sigon => MessagePacket::skip(stream),
             PacketType::Message => MessagePacket::skip(stream),
