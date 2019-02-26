@@ -1,0 +1,18 @@
+[package]
+name = "tf-demo-parser-derive"
+version = "0.1.0"
+authors = ["Robin Appelman <robin@icewind.nl>"]
+edition = "2018"
+
+[lib]
+name = "tf_demo_parse_derive"
+proc-macro = true
+
+[dependencies]
+syn = "0.15"
+quote = "0.6"
+proc-macro2 = "0.4"
+
+[dev-dependencies]
+tf-demo-parser = { path = ".." }
+bitstream_reader = { path = "../../../bitbuffer" }
