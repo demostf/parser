@@ -1,3 +1,4 @@
+use bitstream_reader::{BitRead, LittleEndian};
 use enum_primitive_derive::Primitive;
 use num_traits::FromPrimitive;
 
@@ -12,15 +13,15 @@ use self::synctick::SyncTickPacket;
 use self::usercmd::UserCmdPacket;
 
 pub mod consolecmd;
+pub mod datatable;
+pub mod message;
 pub mod stop;
 pub mod stringtable;
 pub mod synctick;
 pub mod usercmd;
-pub mod datatable;
-pub mod message;
 
 #[derive(Debug)]
-pub enum Packet<'a> {
+pub enum Packet {
     Sigon(MessagePacket),
     Message(MessagePacket),
     SyncTick(SyncTickPacket),
@@ -28,10 +29,11 @@ pub enum Packet<'a> {
     UserCmd(UserCmdPacket),
     DataTables(DataTablePacket),
     Stop(StopPacket),
-    StringTables(StringTablePacket<'a>),
+    StringTables(StringTablePacket),
 }
 
-#[derive(Primitive, Debug)]
+#[derive(BitRead, Primitive, Debug)]
+#[discriminant_bits = 8]
 pub enum PacketType {
     Sigon = 1,
     Message = 2,
@@ -43,21 +45,9 @@ pub enum PacketType {
     StringTables = 8,
 }
 
-impl Parse<'_> for PacketType {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
-        let raw = stream.read(8)?;
-        let prop_type: Option<PacketType> = PacketType::from_u8(raw);
-        prop_type.ok_or(ParseError::InvalidPacketType(raw))
-    }
-
-    fn skip(stream: &mut Stream) -> Result<()> {
-        stream.skip(8).map_err(ParseError::from)
-    }
-}
-
-impl<'a> Parse<'a> for Packet<'a> {
-    fn parse(stream: &mut Stream<'a>, state: &ParserState<'a>) -> Result<Self> {
-        let packet_type = PacketType::parse(stream, state)?;
+impl Parse for Packet {
+    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+        let packet_type = PacketType::read(stream)?;
         Ok(match packet_type {
             PacketType::Sigon => Packet::Sigon(MessagePacket::parse(stream, state)?),
             PacketType::Message => Packet::Message(MessagePacket::parse(stream, state)?),
@@ -66,22 +56,9 @@ impl<'a> Parse<'a> for Packet<'a> {
             PacketType::UserCmd => Packet::UserCmd(UserCmdPacket::parse(stream, state)?),
             PacketType::DataTables => Packet::DataTables(DataTablePacket::parse(stream, state)?),
             PacketType::Stop => Packet::Stop(StopPacket::parse(stream, state)?),
-            PacketType::StringTables => Packet::StringTables(StringTablePacket::parse(stream, state)?),
+            PacketType::StringTables => {
+                Packet::StringTables(StringTablePacket::parse(stream, state)?)
+            }
         })
-    }
-
-    fn skip(stream: &mut Stream) -> Result<()> {
-        let packet_type = PacketType::parse(stream, &ParserState::new(&stream))?;
-        dbg!(&packet_type);
-        match packet_type {
-            PacketType::Sigon => MessagePacket::skip(stream),
-            PacketType::Message => MessagePacket::skip(stream),
-            PacketType::SyncTick => SyncTickPacket::skip(stream),
-            PacketType::ConsoleCmd => ConsoleCmdPacket::skip(stream),
-            PacketType::UserCmd => UserCmdPacket::skip(stream),
-            PacketType::DataTables => DataTablePacket::skip(stream),
-            PacketType::Stop => StopPacket::skip(stream),
-            PacketType::StringTables => StringTablePacket::skip(stream),
-        }
     }
 }

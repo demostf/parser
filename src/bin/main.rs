@@ -1,17 +1,7 @@
-#[macro_use]
-extern crate rental;
-
 use std::error::Error;
 use std::fs;
 
-pub use demo::{
-    Demo,
-    parser::{DemoParser, Parse, ParseError, ParserState, Result}, Stream,
-};
-
-mod demo;
-mod state;
-mod test;
+pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Result, Stream};
 
 fn main() -> std::result::Result<(), Box<ParseError>> {
     let file = fs::read("data/small.dem").expect("Unable to read file");

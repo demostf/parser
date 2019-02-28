@@ -1,9 +1,10 @@
+use bitstream_reader::{BitRead, LittleEndian};
 use enum_primitive_derive::Primitive;
 use enumflags2::BitFlags;
 use enumflags2_derive::EnumFlags;
 use num_traits::cast::FromPrimitive;
 
-use crate::{Parse, ParseError, ParserState, Result, Stream};
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 use super::packet::datatable::SendTable;
 use super::vector::{Vector, VectorXY};
@@ -12,7 +13,7 @@ use super::vector::{Vector, VectorXY};
 pub struct SendPropDefinition {
     pub prop_type: SendPropType,
     pub name: String,
-    pub flags: BitFlags<SendPropFlag>,
+    pub flags: SendPropFlags,
     pub exclude_dt_name: Option<String>,
     pub low_value: Option<f32>,
     pub high_value: Option<f32>,
@@ -25,10 +26,13 @@ pub struct SendPropDefinition {
 }
 
 impl SendPropDefinition {
-    pub fn parse<'a>(stream: &mut Stream<'a>, state: &ParserState<'a>, owner_table_name: String) -> Result<Self> {
-        let prop_type = SendPropType::parse(stream, state)?;
+    pub fn read(
+        stream: &mut Stream,
+        owner_table_name: String,
+    ) -> Result<Self> {
+        let prop_type = SendPropType::read(stream)?;
         let name = stream.read_string(None)?;
-        let flags = BitFlags::<SendPropFlag>::parse(stream, state)?;
+        let flags = SendPropFlags::read(stream)?;
         let mut exclude_dt_name = None;
         let mut element_count = None;
         let mut low_value = None;
@@ -40,11 +44,11 @@ impl SendPropDefinition {
             if flags.contains(SendPropFlag::Exclude) {
                 exclude_dt_name = Some(stream.read_string(None)?);
             } else if prop_type == SendPropType::Array {
-                element_count = Some(stream.read(10)?);
+                element_count = Some(stream.read_int(10)?);
             } else {
                 low_value = Some(stream.read_float()?);
                 high_value = Some(stream.read_float()?);
-                bit_count = Some(stream.read(7)?);
+                bit_count = Some(stream.read_int(7)?);
             }
         }
         let original_bit_count = bit_count;
@@ -52,7 +56,9 @@ impl SendPropDefinition {
         if flags.contains(SendPropFlag::NoScale) {
             if prop_type == SendPropType::Float {
                 bit_count = Some(32);
-            } else if prop_type == SendPropType::Vector && !flags.contains(SendPropFlag::NormalVarInt) {
+            } else if prop_type == SendPropType::Vector
+                && !flags.contains(SendPropFlag::NormalVarInt)
+            {
                 bit_count = Some(32 * 3);
             }
         }
@@ -91,7 +97,8 @@ impl SendPropDefinition {
     }
 }
 
-#[derive(Primitive, Copy, Clone, PartialEq, Debug)]
+#[derive(BitRead, Copy, Clone, PartialEq, Debug)]
+#[discriminant_bits = 5]
 pub enum SendPropType {
     Int = 0,
     Float = 1,
@@ -101,18 +108,6 @@ pub enum SendPropType {
     Array = 5,
     DataTable = 6,
     NumSendPropTypes = 7,
-}
-
-impl Parse<'_> for SendPropType {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
-        let raw = stream.read(5)?;
-        let prop_type: Option<SendPropType> = SendPropType::from_u8(raw);
-        prop_type.ok_or(ParseError::InvalidSendPropType(raw))
-    }
-
-    fn skip(stream: &mut Stream) -> Result<()> {
-        stream.skip(5).map_err(ParseError::from)
-    }
 }
 
 #[derive(EnumFlags, Copy, Clone, PartialEq, Debug)]
@@ -177,15 +172,20 @@ pub enum SendPropFlag {
     NormalVarInt = 32, //(1 << 5)
 }
 
-impl Parse<'_> for BitFlags<SendPropFlag> {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
-        let raw = stream.read(16)?;
-        // since all 16 bits worth of flags are used there are no invalid flags
-        Ok(BitFlags::from_bits_truncate(raw))
-    }
+#[derive(Debug, Copy, Clone)]
+pub struct SendPropFlags(BitFlags<SendPropFlag>);
 
-    fn skip(stream: &mut Stream) -> Result<()> {
-        stream.skip(16).map_err(ParseError::from)
+impl SendPropFlags {
+    pub fn contains(self, other: SendPropFlag) -> bool {
+        self.0.contains(other)
+    }
+}
+
+impl BitRead<LittleEndian> for SendPropFlags {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
+        let raw = stream.read_int(16)?;
+        // since all 16 bits worth of flags are used there are no invalid flags
+        Ok(SendPropFlags(BitFlags::from_bits_truncate(raw)))
     }
 }
 

@@ -1,5 +1,5 @@
-use crate::{Parse, ParseError, ParserState, Result, Stream};
 use crate::demo::vector::Vector;
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 #[derive(Debug)]
 pub struct Message;
@@ -16,10 +16,10 @@ pub struct MessagePacket {
     flags: u32, // TODO
 }
 
-impl<'a> Parse<'a> for MessagePacket {
-    fn parse(stream: &mut Stream<'a>, state: &ParserState<'a>) -> Result<Self> {
-        let tick = stream.read(32)?;
-        let flags = stream.read(32)?;
+impl Parse for MessagePacket {
+    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+        let tick = stream.read_int(32)?;
+        let flags = stream.read_int(32)?;
 
         let view_origin_1 = Vector::parse(stream, state)?;
         let view_angle_1 = Vector::parse(stream, state)?;
@@ -28,9 +28,9 @@ impl<'a> Parse<'a> for MessagePacket {
         let view_angles = (Vector::parse(stream, state)?, view_angle_1);
         let local_view_angles = (Vector::parse(stream, state)?, local_view_angle_1);
 
-        let sequence_in = stream.read(32)?;
-        let sequence_out = stream.read(32)?;
-        let length: usize = stream.read(32)?;
+        let sequence_in = stream.read_int(32)?;
+        let sequence_out = stream.read_int(32)?;
+        let length: usize = stream.read_int(32)?;
         let mut packet_data = stream.read_bits(length * 8)?;
 
         let messages = vec![];
@@ -56,7 +56,7 @@ impl<'a> Parse<'a> for MessagePacket {
         }
 
         let _ = stream.skip(32 * 2)?;
-        let length: usize = stream.read::<usize>(32)?;
+        let length: usize = stream.read_int::<usize>(32)?;
         stream.skip(length * 8).map_err(ParseError::from)
     }
 }

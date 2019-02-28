@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use bitstream_reader::ReadError;
+use bitstream_reader::{ReadError, BitRead, LittleEndian};
 
 use crate::demo::header::Header;
 use crate::demo::packet::Packet;
@@ -16,6 +16,8 @@ pub enum ParseError {
     ReadError(ReadError),
     /// Packet identifier is invalid
     InvalidPacketType(u8),
+    /// Message identifier is invalid
+    InvalidMessageType(u8),
     /// SendProp type is invalid
     InvalidSendPropType(u8),
     /// Invalid structure found while creating array SendProp
@@ -32,29 +34,43 @@ impl From<ReadError> for ParseError {
 
 pub type Result<T> = std::result::Result<T, ParseError>;
 
-pub trait Parse<'a>: Sized {
-    fn parse(stream: &mut Stream<'a>, state: &ParserState<'a>) -> Result<Self>;
-    fn skip(stream: &mut Stream) -> Result<()>;
+pub trait Parse: Sized {
+    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self>;
+    fn skip(stream: &mut Stream) -> Result<()> {
+        let _ = Self::parse(stream, &ParserState::new())?;
+        Ok(())
+    }
 }
 
-pub struct DemoParser<'a> {
-    stream: Stream<'a>,
-    state: ParserState<'a>,
+impl<T: BitRead<LittleEndian>> Parse for T {
+    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+        Self::read(stream).map_err(ParseError::from)
+    }
+
+    fn skip(stream: &mut Stream) -> Result<()> {
+        let _ = Self::parse(stream, &ParserState::new())?;
+        Ok(())
+    }
 }
 
-impl<'a> DemoParser<'a> {
-    pub fn new(stream: Stream<'a>) -> Self {
+pub struct DemoParser {
+    stream: Stream,
+    state: ParserState,
+}
+
+impl DemoParser {
+    pub fn new(stream: Stream) -> Self {
         DemoParser {
-            state: ParserState::new(&stream),
+            state: ParserState::new(),
             stream,
         }
     }
 
-    pub fn read<T: Parse<'a>>(&mut self) -> Result<T> {
+    pub fn read<T: Parse>(&mut self) -> Result<T> {
         T::parse(&mut self.stream, &self.state)
     }
 
-    pub fn skip<T: Parse<'a>>(&mut self) -> Result<()> {
+    pub fn skip<T: Parse>(&mut self) -> Result<()> {
         T::skip(&mut self.stream)
     }
 
@@ -67,7 +83,7 @@ impl<'a> DemoParser<'a> {
         Ok(())
     }
 
-    pub fn split_packets(mut self) -> Result<Vec<Stream<'a>>> {
+    pub fn split_packets(mut self) -> Result<Vec<Stream>> {
         let _ = self.skip::<Header>()?;
         let mut streams = vec![];
         while self.stream.bits_left() > 7 {
@@ -80,14 +96,14 @@ impl<'a> DemoParser<'a> {
         Ok(streams)
     }
 
-    pub fn parse_demo(mut self) -> Result<(Header, Vec<Packet<'a>>)> {
+    pub fn parse_demo(mut self) -> Result<(Header, Vec<Packet>)> {
         let header = self.read::<Header>()?;
         let mut packets = vec![];
         loop {
             let packet = self.read::<Packet>()?;
             match packet {
                 Packet::Stop(_) => break,
-                packet => packets.push(packet)
+                packet => packets.push(packet),
             }
         }
         Ok((header, packets))

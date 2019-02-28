@@ -1,31 +1,33 @@
-use crate::{Parse, ParseError, ParserState, Result, Stream};
+use bitstream_reader::{BitRead, LittleEndian};
+
+use crate::{Parse, ParseError, ParserState, Result, Stream, ReadResult};
 use std::fmt;
 
 #[derive(Debug)]
-pub struct StringTable<'a> {
+pub struct StringTable {
     name: String,
-    entries: Vec<StringTableEntry<'a>>,
+    entries: Vec<StringTableEntry>,
     max_entries: u32,
     fixed_userdata_size: Option<u32>,
     fixed_userdata_size_bits: Option<u32>,
-    client_entries: Option<Vec<StringTableEntry<'a>>>,
+    client_entries: Option<Vec<StringTableEntry>>,
     compressed: bool,
 }
 
-impl<'a> StringTable<'a> {
-    fn parse(stream: &mut Stream<'a>) -> Result<Self> {
+impl BitRead<LittleEndian> for StringTable {
+    fn read(stream: &mut Stream) -> ReadResult <Self> {
         let name = stream.read_string(None)?;
-        let entry_count: u32 = stream.read(16)?;
+        let entry_count: u32 = stream.read_int(16)?;
         let mut entries = Vec::with_capacity(entry_count as usize);
         for _ in 0..entry_count {
-            entries.push(StringTableEntry::parse(stream)?);
+            entries.push(StringTableEntry::read(stream)?);
         }
 
         let client_entries = if stream.read_bool()? {
-            let count = stream.read(16)?;
+            let count = stream.read_int(16)?;
             let mut vec = Vec::with_capacity(count);
             for _ in 0..count {
-                vec.push(StringTableEntry::parse(stream)?);
+                vec.push(StringTableEntry::read(stream)?);
             }
             Some(vec)
         } else {
@@ -44,16 +46,16 @@ impl<'a> StringTable<'a> {
     }
 }
 
-pub struct StringTableEntry<'a> {
+pub struct StringTableEntry {
     text: String,
-    extra_data: Option<Stream<'a>>,
+    extra_data: Option<Stream>,
 }
 
-impl<'a> StringTableEntry<'a> {
-    fn parse(stream: &mut Stream<'a>) -> Result<Self> {
+impl BitRead<LittleEndian> for StringTableEntry {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
         let text = stream.read_string(None)?;
         let extra_data = if stream.read_bool()? {
-            let byte_len: usize = stream.read(16)?;
+            let byte_len: usize = stream.read_int(16)?;
             Some(stream.read_bits(byte_len * 8)?)
         } else {
             None
@@ -62,42 +64,41 @@ impl<'a> StringTableEntry<'a> {
     }
 }
 
-impl<'a> fmt::Debug for StringTableEntry<'a> {
+impl fmt::Debug for StringTableEntry {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.extra_data {
             None => write!(f, "Table Entry: '{}'", self.text),
-            Some(extra_data) => write!(f, "Table Entry: '{}' with {} bits of extra data", self.text, extra_data.bit_len())
+            Some(extra_data) => write!(
+                f,
+                "Table Entry: '{}' with {} bits of extra data",
+                self.text,
+                extra_data.bit_len()
+            ),
         }
     }
 }
 
 #[derive(Debug)]
-pub struct StringTablePacket<'a> {
+pub struct StringTablePacket {
     tick: u32,
-    tables: Vec<StringTable<'a>>,
+    tables: Vec<StringTable>,
 }
 
-impl<'a> Parse<'a> for StringTablePacket<'a> {
-    fn parse(stream: &mut Stream<'a>, _state: &ParserState<'a>) -> Result<Self> {
-        let tick = stream.read(32)?;
+impl Parse for StringTablePacket {
+    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+        let tick = stream.read_int(32)?;
         let start = stream.pos();
-        let length: usize = stream.read(32)?;
+        let length: usize = stream.read_int(32)?;
         let mut packet_data = stream.read_bits(length * 8)?;
-        let count: u32 = packet_data.read(8)?;
+        let count: u32 = packet_data.read_int(8)?;
         let mut tables = Vec::with_capacity(count as usize);
         for _ in 0..count {
-            tables.push(StringTable::parse(&mut packet_data)?);
+            tables.push(StringTable::read(&mut packet_data)?);
         }
         if packet_data.bits_left() > 7 {
             Err(ParseError::DataRemaining(packet_data.bits_left()))
         } else {
             Ok(StringTablePacket { tick, tables })
         }
-    }
-
-    fn skip(stream: &mut Stream) -> Result<()> {
-        let _ = stream.skip(32)?;
-        let length = stream.read::<usize>(32)?;
-        stream.skip(length).map_err(ParseError::from)
     }
 }

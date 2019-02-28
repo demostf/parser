@@ -1,14 +1,12 @@
-use crate::{Parse, ParserState, Result, Stream};
+use bitstream_reader::{BitRead, LittleEndian};
+
+use crate::{Parse, ParserState, Result, Stream, ReadResult};
 
 #[derive(Debug)]
 pub struct StopPacket;
 
-impl<'a> Parse<'a> for StopPacket {
-    fn parse(_stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+impl BitRead<LittleEndian> for StopPacket {
+    fn read(_stream: &mut Stream) -> ReadResult<Self> {
         Ok(StopPacket)
-    }
-
-    fn skip(_stream: &mut Stream) -> Result<()> {
-        Ok(())
     }
 }

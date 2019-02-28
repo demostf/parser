@@ -3,20 +3,20 @@ use crate::demo::sendprop::SendProp;
 use crate::Stream;
 use std::collections::HashMap;
 
-pub struct ParserState<'a> {
+pub struct ParserState {
     pub version: u32,
-    pub static_baselines: HashMap<u32, StaticBaseline<'a>>,
+    pub static_baselines: HashMap<u32, StaticBaseline>,
     pub event_definitions: HashMap<u32, GameEventDefinition>,
 }
 
-pub struct StaticBaseline<'a> {
+pub struct StaticBaseline {
     class_id: u32,
-    raw: Stream<'a>,
+    raw: Stream,
     parsed: Option<Vec<SendProp>>,
 }
 
-impl<'a> ParserState<'a> {
-    pub fn new(_stream: &Stream<'a>) -> Self {
+impl ParserState {
+    pub fn new() -> Self {
         ParserState {
             version: 0,
             static_baselines: HashMap::new(),
