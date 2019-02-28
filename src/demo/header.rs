@@ -1,6 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian};
-
-use crate::{Parse, ParseError, ParserState, Result, Stream};
+use bitstream_reader::{BitRead};
 
 #[derive(BitRead, Debug, PartialEq)]
 pub struct Header {

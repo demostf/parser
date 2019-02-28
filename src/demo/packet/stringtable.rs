@@ -1,7 +1,9 @@
+use std::fmt;
+
 use bitstream_reader::{BitRead, LittleEndian};
 
-use crate::{Parse, ParseError, ParserState, Result, Stream, ReadResult};
-use std::fmt;
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::demo::sendprop::SendPropFlag::Exclude;
 
 #[derive(Debug)]
 pub struct StringTable {
@@ -15,21 +17,14 @@ pub struct StringTable {
 }
 
 impl BitRead<LittleEndian> for StringTable {
-    fn read(stream: &mut Stream) -> ReadResult <Self> {
-        let name = stream.read_string(None)?;
-        let entry_count: u32 = stream.read_int(16)?;
-        let mut entries = Vec::with_capacity(entry_count as usize);
-        for _ in 0..entry_count {
-            entries.push(StringTableEntry::read(stream)?);
-        }
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
+        let name = stream.read()?;
+        let entry_count = stream.read_int(16)?;
+        let entries = stream.read_sized(entry_count as usize)?;
 
         let client_entries = if stream.read_bool()? {
             let count = stream.read_int(16)?;
-            let mut vec = Vec::with_capacity(count);
-            for _ in 0..count {
-                vec.push(StringTableEntry::read(stream)?);
-            }
-            Some(vec)
+            Some(stream.read_sized(count)?)
         } else {
             None
         };
@@ -46,22 +41,19 @@ impl BitRead<LittleEndian> for StringTable {
     }
 }
 
-pub struct StringTableEntry {
-    text: String,
-    extra_data: Option<Stream>,
+#[derive(BitRead)]
+#[endianness = "LittleEndian"]
+pub struct ExtraData {
+    len: u16,
+    #[size = "len * 8"]
+    data: Stream,
 }
 
-impl BitRead<LittleEndian> for StringTableEntry {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let text = stream.read_string(None)?;
-        let extra_data = if stream.read_bool()? {
-            let byte_len: usize = stream.read_int(16)?;
-            Some(stream.read_bits(byte_len * 8)?)
-        } else {
-            None
-        };
-        Ok(StringTableEntry { text, extra_data })
-    }
+#[derive(BitRead)]
+#[endianness = "LittleEndian"]
+pub struct StringTableEntry {
+    text: String,
+    extra_data: Option<ExtraData>,
 }
 
 impl fmt::Debug for StringTableEntry {
@@ -70,9 +62,9 @@ impl fmt::Debug for StringTableEntry {
             None => write!(f, "Table Entry: '{}'", self.text),
             Some(extra_data) => write!(
                 f,
-                "Table Entry: '{}' with {} bits of extra data",
+                "StringTableEntry{{ '{}' with {} bits of extra data }}",
                 self.text,
-                extra_data.bit_len()
+                extra_data.len
             ),
         }
     }
@@ -90,11 +82,9 @@ impl Parse for StringTablePacket {
         let start = stream.pos();
         let length: usize = stream.read_int(32)?;
         let mut packet_data = stream.read_bits(length * 8)?;
-        let count: u32 = packet_data.read_int(8)?;
-        let mut tables = Vec::with_capacity(count as usize);
-        for _ in 0..count {
-            tables.push(StringTable::read(&mut packet_data)?);
-        }
+        let count: usize = packet_data.read_int(8)?;
+        let tables = packet_data.read_sized(count)?;
+
         if packet_data.bits_left() > 7 {
             Err(ParseError::DataRemaining(packet_data.bits_left()))
         } else {

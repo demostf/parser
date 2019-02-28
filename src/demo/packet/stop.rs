@@ -1,6 +1,6 @@
 use bitstream_reader::{BitRead, LittleEndian};
 
-use crate::{Parse, ParserState, Result, Stream, ReadResult};
+use crate::{Stream, ReadResult};
 
 #[derive(Debug)]
 pub struct StopPacket;

@@ -1,11 +1,11 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::BitRead;
 
-use crate::{Parse, ParseError, ParserState, Result, Stream, ReadResult};
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropType};
 
-#[derive(Debug)]
+#[derive(BitRead, Debug)]
 pub struct ServerClass {
-    id: u32,
+    id: u16,
     name: String,
     data_table: String,
 }
@@ -35,7 +35,7 @@ impl Parse for DataTablePacket {
         let mut tables = vec![];
         while packet_data.read_bool()? {
             let needs_decoder = packet_data.read_bool()?;
-            let name = packet_data.read_string(None)?;
+            let name: String = packet_data.read()?;
             let prop_count = packet_data.read_int(10)?;
 
             let mut array_element_prop = None;
@@ -78,17 +78,7 @@ impl Parse for DataTablePacket {
         // TODO linked tables?
 
         let server_class_count = packet_data.read_int(16)?;
-        let mut server_classes = Vec::with_capacity(server_class_count);
-        for i in 0..server_class_count {
-            let id = packet_data.read_int(16)?;
-            let name = packet_data.read_string(None)?;
-            let data_table = packet_data.read_string(None)?;
-            server_classes.push(ServerClass {
-                id,
-                name,
-                data_table,
-            });
-        }
+        let server_classes = packet_data.read_sized(server_class_count)?;
 
         if packet_data.bits_left() > 7 {
             Err(ParseError::DataRemaining(packet_data.bits_left()))

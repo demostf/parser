@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use bitstream_reader::{ReadError, BitRead, LittleEndian};
 
 use crate::demo::header::Header;
@@ -43,7 +41,7 @@ pub trait Parse: Sized {
 }
 
 impl<T: BitRead<LittleEndian>> Parse for T {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         Self::read(stream).map_err(ParseError::from)
     }
 

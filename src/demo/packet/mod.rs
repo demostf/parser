@@ -1,8 +1,7 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::{BitRead};
 use enum_primitive_derive::Primitive;
-use num_traits::FromPrimitive;
 
-use crate::{Parse, ParseError, ParserState, Result, Stream};
+use crate::{Parse, ParserState, Result, Stream};
 
 use self::consolecmd::ConsoleCmdPacket;
 use self::datatable::DataTablePacket;

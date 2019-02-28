@@ -1,10 +1,8 @@
 use bitstream_reader::{BitRead, LittleEndian};
-use enum_primitive_derive::Primitive;
 use enumflags2::BitFlags;
 use enumflags2_derive::EnumFlags;
-use num_traits::cast::FromPrimitive;
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{ReadResult, Result, Stream};
 
 use super::packet::datatable::SendTable;
 use super::vector::{Vector, VectorXY};
