@@ -47,16 +47,4 @@ impl Parse for MessagePacket {
         };
         Ok(packet)
     }
-
-    fn skip(stream: &mut Stream) -> Result<()> {
-        let _ = stream.skip(32 * 2)?;
-
-        for i in 0..6 {
-            Vector::skip(stream)?;
-        }
-
-        let _ = stream.skip(32 * 2)?;
-        let length: usize = stream.read_int::<usize>(32)?;
-        stream.skip(length * 8).map_err(ParseError::from)
-    }
 }

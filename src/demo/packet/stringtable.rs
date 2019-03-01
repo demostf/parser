@@ -2,8 +2,9 @@ use std::fmt;
 
 use bitstream_reader::{BitRead, LittleEndian};
 
-use crate::demo::sendprop::SendPropFlag::Exclude;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::demo::message::stringtable::StringTableMeta;
+use crate::demo::sendprop::SendPropFlag::Exclude;
 
 #[derive(BitRead, Clone, Copy, Debug)]
 pub struct FixedUserdataSize {
@@ -21,6 +22,15 @@ pub struct StringTable {
     pub fixed_userdata_size: Option<FixedUserdataSize>,
     pub client_entries: Option<Vec<StringTableEntry>>,
     pub compressed: bool,
+}
+
+impl StringTable {
+    pub fn get_table_meta(&self) -> StringTableMeta {
+        StringTableMeta {
+            fixed_userdata_size: self.fixed_userdata_size,
+            max_entries: self.max_entries,
+        }
+    }
 }
 
 impl BitRead<LittleEndian> for StringTable {

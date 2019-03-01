@@ -6,4 +6,3 @@ pub use crate::demo::{
 pub use bitstream_reader::Result as ReadResult;
 
 mod demo;
-mod state;

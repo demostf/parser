@@ -1,16 +1,16 @@
 use std::collections::HashMap;
 
 use arraydeque::{ArrayDeque, Wrapping};
-use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
+use bitstream_reader::{BitRead, BitReadSized, BitStream, LittleEndian};
 
-use crate::{ReadResult, Stream};
+use crate::{Parse, ParseError, ParserState, ReadResult, Stream, Result};
 use crate::demo::packet::stringtable::{ExtraData, FixedUserdataSize, StringTable, StringTableEntry};
 
 pub struct CreateStringTableMessage {
     pub table: StringTable,
 }
 
-struct StringTableMeta {
+pub struct StringTableMeta {
     pub max_entries: u16,
     pub fixed_userdata_size: Option<FixedUserdataSize>,
 }
@@ -47,7 +47,7 @@ impl BitRead<LittleEndian> for CreateStringTableMessage {
             fixed_userdata_size,
         };
 
-        let entries = parse_string_table_entries(stream, &table_meta, entity_count, Vec::new())?;
+        let entries = parse_string_table_entries(stream, &table_meta, entity_count, &Vec::new())?;
         let mut entries: Vec<(u16, StringTableEntry)> = entries.into_iter().collect();
 
         // verify that there are no holes in our indexes
@@ -71,14 +71,40 @@ impl BitRead<LittleEndian> for CreateStringTableMessage {
     }
 }
 
+pub struct UpdateStringTableMessage {
+    pub entries: HashMap<u16, StringTableEntry>,
+    pub table_id: u8,
+}
+
+impl Parse for UpdateStringTableMessage {
+    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+        let table_id = stream.read_sized(5)?;
+
+        let changed: u16 = if stream.read()? { stream.read()? } else { 1 };
+        let len = stream.read_int(20)?;
+
+        let mut data = stream.read_bits(len)?;
+
+        let entries = match state.string_tables.get(table_id as usize) {
+            Some(table) => parse_string_table_entries(&mut data, &table.get_table_meta(), changed, &table.entries),
+            None => return Err(ParseError::StringTableNotFound(table_id))
+        }?;
+
+        Ok(UpdateStringTableMessage {
+            table_id,
+            entries,
+        })
+    }
+}
+
 fn parse_string_table_entries(
     stream: &mut Stream,
     table_meta: &StringTableMeta,
     entry_count: u16,
-    existing_entries: Vec<StringTableEntry>,
+    existing_entries: &Vec<StringTableEntry>,
 ) -> ReadResult<HashMap<u16, StringTableEntry>> {
     let entry_bits = 16 - table_meta.max_entries.leading_zeros();
-    let mut entries = HashMap::new();
+    let mut entries = HashMap::with_capacity(entry_count as usize);
 
     let mut last_entry: i16 = -1;
     let mut history: ArrayDeque<[String; 32], Wrapping> = ArrayDeque::new();
@@ -138,10 +164,13 @@ fn parse_string_table_entries(
                 extra_data: user_data,
             }
         };
+        // optimize: any way to get rid of the clone here?
+        // `entries` always outlives `history` without reallocation
         let text = entry.text.clone();
         entries.insert(index, entry);
         unsafe {
-            history.push_back(text);
+            // not 100% sure we should be pushing front here, and not appending
+            history.push_front(text);
         }
     }
 

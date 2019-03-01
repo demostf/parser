@@ -5,9 +5,12 @@ pub use generated::*;
 
 use crate::{Parse, ParseError, ParserState, Result, Stream};
 
-mod classinfo;
-mod generated;
-mod stringtable;
+pub mod classinfo;
+pub mod generated;
+pub mod stringtable;
+pub mod voice;
+pub mod bspdecal;
+pub mod usermessage;
 
 #[derive(Primitive, Debug)]
 pub enum MessageType {
@@ -45,9 +48,5 @@ impl Parse for MessageType {
         let raw = stream.read_int(6)?;
         let prop_type: Option<MessageType> = MessageType::from_u8(raw);
         prop_type.ok_or(ParseError::InvalidMessageType(raw))
-    }
-
-    fn skip(stream: &mut Stream) -> Result<()> {
-        stream.skip(6).map_err(ParseError::from)
     }
 }

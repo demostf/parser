@@ -184,6 +184,7 @@ impl BitRead<LittleEndian> for SendPropFlags {
     }
 }
 
+#[derive(Debug, Clone)]
 pub enum SendPropValue {
     Vector(Vector),
     VectorXY(VectorXY),
@@ -193,7 +194,23 @@ pub enum SendPropValue {
     Array(Vec<SendPropValue>),
 }
 
+#[derive(Debug)]
 pub struct SendProp {
     definition: SendPropDefinition,
     value: SendPropValue,
+}
+
+pub fn read_bit_coord(stream: &mut Stream) -> ReadResult<f32> {
+    let has_int = stream.read()?;
+    let has_frac = stream.read()?;
+
+    Ok(if has_int || has_frac {
+        let sign = if stream.read()? { -1f32 } else { 1f32 };
+        let int_val: u16 = if has_int { stream.read_sized::<u16>(14)? + 1 } else { 0 };
+        let frac_val: u8 = if has_frac { stream.read_sized(5)? } else { 0 };
+        let value = int_val as f32 + (frac_val as f32 * (1f32 / 32f32));
+        value * sign
+    } else {
+        0f32
+    })
 }

@@ -1,5 +1,8 @@
+use std::collections::HashMap;
+
 use bitstream_reader::{BitRead, LittleEndian, ReadError};
 
+use crate::demo::gamevent::GameEventValue;
 use crate::demo::header::Header;
 use crate::demo::packet::Packet;
 pub use crate::demo::parser::state::ParserState;
@@ -22,6 +25,15 @@ pub enum ParseError {
     InvalidSendPropArray(String),
     /// Expected amount of data left after parsing an object
     DataRemaining(usize),
+    /// String table that was send for update doesn't exist
+    StringTableNotFound(u8),
+    /// A unknown game event type was read
+    UnknownGameEvent(String),
+    /// A read game event doesn't contain the expected values
+    InvalidGameEvent {
+        name: String,
+        value: GameEventValue,
+    },
 }
 
 impl From<ReadError> for ParseError {
@@ -34,20 +46,11 @@ pub type Result<T> = std::result::Result<T, ParseError>;
 
 pub trait Parse: Sized {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self>;
-    fn skip(stream: &mut Stream) -> Result<()> {
-        let _ = Self::parse(stream, &ParserState::new())?;
-        Ok(())
-    }
 }
 
 impl<T: BitRead<LittleEndian>> Parse for T {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         Self::read(stream).map_err(ParseError::from)
-    }
-
-    fn skip(stream: &mut Stream) -> Result<()> {
-        let _ = Self::parse(stream, &ParserState::new())?;
-        Ok(())
     }
 }
 
@@ -68,10 +71,6 @@ impl DemoParser {
         T::parse(&mut self.stream, &self.state)
     }
 
-    pub fn skip<T: Parse>(&mut self) -> Result<()> {
-        T::skip(&mut self.stream)
-    }
-
     pub fn stream_pos(&self) -> usize {
         self.stream.pos()
     }
@@ -79,19 +78,6 @@ impl DemoParser {
     pub fn set_stream_pos(&mut self, pos: usize) -> Result<()> {
         self.stream.set_pos(pos)?;
         Ok(())
-    }
-
-    pub fn split_packets(mut self) -> Result<Vec<Stream>> {
-        let _ = self.skip::<Header>()?;
-        let mut streams = vec![];
-        while self.stream.bits_left() > 7 {
-            let start = self.stream.pos();
-            let _ = self.skip::<Packet>()?;
-            let end = self.stream.pos();
-            let _ = self.stream.set_pos(start);
-            streams.push(self.stream.read_bits(end - start)?);
-        }
-        Ok(streams)
     }
 
     pub fn parse_demo(mut self) -> Result<(Header, Vec<Packet>)> {

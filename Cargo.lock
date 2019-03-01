@@ -9,13 +9,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "bitstream_reader"
 version = "0.3.1"
 dependencies = [
- "bitstream_reader_derive 0.3.0",
+ "bitstream_reader_derive 0.3.1",
  "num-traits 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "bitstream_reader_derive"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "proc-macro2 0.4.27 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 0.6.11 (registry+https://github.com/rust-lang/crates.io-index)",

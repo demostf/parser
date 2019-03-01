@@ -1,16 +1,21 @@
 use std::collections::HashMap;
 
+use crate::{ParseError, Result};
+
+#[derive(Debug)]
 pub struct GameEventDefinition {
     id: u32,
     name: String,
     entries: Vec<GameEventEntry>,
 }
 
+#[derive(Debug)]
 pub struct GameEventEntry {
     name: String,
     kind: GameEventValueType,
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum GameEventValueType {
     String,
     Float,
@@ -21,11 +26,13 @@ pub enum GameEventValueType {
     Local,
 }
 
+#[derive(Debug)]
 pub struct GameEvent {
     kind: GameEventType,
     values: HashMap<String, GameEventValue>,
 }
 
+#[derive(Debug, Clone)]
 pub enum GameEventValue {
     String(String),
     Float(f32),
@@ -36,6 +43,95 @@ pub enum GameEventValue {
     Local,
 }
 
+pub trait FromGameEventValue: Sized {
+    fn from_value(value: GameEventValue, name: &str) -> Result<Self>;
+}
+
+impl FromGameEventValue for String {
+    fn from_value(value: GameEventValue, name: &str) -> Result<Self> {
+        match value {
+            GameEventValue::String(val) => Ok(val),
+            _ => Err(ParseError::InvalidGameEvent {
+                name: name.to_string(),
+                value,
+            })
+        }
+    }
+}
+
+impl FromGameEventValue for f32 {
+    fn from_value(value: GameEventValue, name: &str) -> Result<Self> {
+        match value {
+            GameEventValue::Float(val) => Ok(val),
+            _ => Err(ParseError::InvalidGameEvent {
+                name: name.to_string(),
+                value,
+            })
+        }
+    }
+}
+
+impl FromGameEventValue for u32 {
+    fn from_value(value: GameEventValue, name: &str) -> Result<Self> {
+        match value {
+            GameEventValue::Long(val) => Ok(val),
+            _ => Err(ParseError::InvalidGameEvent {
+                name: name.to_string(),
+                value,
+            })
+        }
+    }
+}
+
+impl FromGameEventValue for u16 {
+    fn from_value(value: GameEventValue, name: &str) -> Result<Self> {
+        match value {
+            GameEventValue::Short(val) => Ok(val),
+            _ => Err(ParseError::InvalidGameEvent {
+                name: name.to_string(),
+                value,
+            })
+        }
+    }
+}
+
+impl FromGameEventValue for u8 {
+    fn from_value(value: GameEventValue, name: &str) -> Result<Self> {
+        match value {
+            GameEventValue::Byte(val) => Ok(val),
+            _ => Err(ParseError::InvalidGameEvent {
+                name: name.to_string(),
+                value,
+            })
+        }
+    }
+}
+
+impl FromGameEventValue for bool {
+    fn from_value(value: GameEventValue, name: &str) -> Result<Self> {
+        match value {
+            GameEventValue::Boolean(val) => Ok(val),
+            _ => Err(ParseError::InvalidGameEvent {
+                name: name.to_string(),
+                value,
+            })
+        }
+    }
+}
+
+impl FromGameEventValue for () {
+    fn from_value(value: GameEventValue, name: &str) -> Result<Self> {
+        match value {
+            GameEventValue::Local => Ok(()),
+            _ => Err(ParseError::InvalidGameEvent {
+                name: name.to_string(),
+                value,
+            })
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
 pub enum GameEventType {
     ServerSpawnEvent,
     ServerChangelevelFailedEvent,
@@ -413,4 +509,13 @@ pub enum GameEventType {
     ReplayEndRecordEvent,
     ReplayReplaysAvailableEvent,
     ReplayServerErrorEvent,
+}
+
+pub struct RawGameEvent {
+    pub name: String,
+    pub values: HashMap<String, GameEventValue>,
+}
+
+pub trait FromRawGameEvent: Sized {
+    fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self>;
 }
