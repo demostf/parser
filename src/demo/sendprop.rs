@@ -24,10 +24,7 @@ pub struct SendPropDefinition {
 }
 
 impl SendPropDefinition {
-    pub fn read(
-        stream: &mut Stream,
-        owner_table_name: String,
-    ) -> Result<Self> {
+    pub fn read(stream: &mut Stream, owner_table_name: String) -> Result<Self> {
         let prop_type = SendPropType::read(stream)?;
         let name = stream.read_string(None)?;
         let flags = SendPropFlags::read(stream)?;

@@ -1,6 +1,6 @@
 use bitstream_reader::{BitRead, LittleEndian};
 
-use crate::{Stream, ReadResult};
+use crate::{ReadResult, Stream};
 
 #[derive(Debug)]
 pub struct ConsoleCmdPacket {

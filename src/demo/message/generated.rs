@@ -1,5 +1,4 @@
 /// Messages that consists only of primitives and string and can be derived
-
 use bitstream_reader::BitRead;
 use std::collections::HashMap;
 
@@ -19,7 +18,7 @@ pub struct NetTickMessage {
 
 #[derive(BitRead, Debug)]
 pub struct StringCmdMessage {
-    pub command: String
+    pub command: String,
 }
 
 #[derive(BitRead, Debug)]
@@ -30,7 +29,7 @@ pub struct SigOnStateMessage {
 
 #[derive(BitRead, Debug)]
 pub struct PrintMessage {
-    pub value: String
+    pub value: String,
 }
 
 #[derive(BitRead, Debug)]
@@ -56,13 +55,13 @@ pub struct ServerInfoMessage {
 
 #[derive(BitRead, Debug)]
 pub struct SetPauseMessage {
-    pub pause: bool
+    pub pause: bool,
 }
 
 #[derive(BitRead, Debug)]
 pub struct SetViewMessage {
     #[size = 11]
-    pub index: u16
+    pub index: u16,
 }
 
 #[derive(BitRead, Debug)]
@@ -76,9 +75,8 @@ pub struct FixAngleMessage {
 #[derive(BitRead, Debug)]
 pub struct PreFetchMessage {
     #[size = 14]
-    pub index: u16
+    pub index: u16,
 }
-
 
 #[derive(BitRead, Debug)]
 pub struct GetCvarMessage {
@@ -89,5 +87,5 @@ pub struct GetCvarMessage {
 #[derive(BitRead, Debug)]
 pub struct SetConVarMessage {
     #[size_bits = 8]
-    vars: HashMap<String, String>
+    vars: HashMap<String, String>,
 }

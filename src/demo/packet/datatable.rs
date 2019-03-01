@@ -1,7 +1,7 @@
 use bitstream_reader::BitRead;
 
-use crate::{Parse, ParseError, ParserState, Result, Stream};
 use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropType};
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 #[derive(BitRead, Debug)]
 pub struct ServerClass {
@@ -34,7 +34,7 @@ impl Parse for DataTablePacket {
 
         let mut tables = vec![];
         while packet_data.read_bool()? {
-            let needs_decoder = packet_data.read_bool()?;
+            let needs_decoder = packet_data.read()?;
             let name: String = packet_data.read()?;
             let prop_count = packet_data.read_int(10)?;
 

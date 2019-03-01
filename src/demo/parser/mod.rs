@@ -1,4 +1,4 @@
-use bitstream_reader::{ReadError, BitRead, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian, ReadError};
 
 use crate::demo::header::Header;
 use crate::demo::packet::Packet;

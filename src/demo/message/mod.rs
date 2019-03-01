@@ -5,7 +5,9 @@ pub use generated::*;
 
 use crate::{Parse, ParseError, ParserState, Result, Stream};
 
+mod classinfo;
 mod generated;
+mod stringtable;
 
 #[derive(Primitive, Debug)]
 pub enum MessageType {

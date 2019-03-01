@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead};
+use bitstream_reader::BitRead;
 use enum_primitive_derive::Primitive;
 
 use crate::{Parse, ParserState, Result, Stream};

@@ -2,18 +2,25 @@ use std::fmt;
 
 use bitstream_reader::{BitRead, LittleEndian};
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::sendprop::SendPropFlag::Exclude;
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+
+#[derive(BitRead, Clone, Copy, Debug)]
+pub struct FixedUserdataSize {
+    #[size = 12]
+    pub size: u16,
+    #[size = 4]
+    pub bits: u8,
+}
 
 #[derive(Debug)]
 pub struct StringTable {
-    name: String,
-    entries: Vec<StringTableEntry>,
-    max_entries: u32,
-    fixed_userdata_size: Option<u32>,
-    fixed_userdata_size_bits: Option<u32>,
-    client_entries: Option<Vec<StringTableEntry>>,
-    compressed: bool,
+    pub name: String,
+    pub entries: Vec<StringTableEntry>,
+    pub max_entries: u16,
+    pub fixed_userdata_size: Option<FixedUserdataSize>,
+    pub client_entries: Option<Vec<StringTableEntry>>,
+    pub compressed: bool,
 }
 
 impl BitRead<LittleEndian> for StringTable {
@@ -34,26 +41,25 @@ impl BitRead<LittleEndian> for StringTable {
             entries,
             max_entries: entry_count,
             fixed_userdata_size: None,
-            fixed_userdata_size_bits: None,
             client_entries,
             compressed: false,
         })
     }
 }
 
-#[derive(BitRead)]
+#[derive(BitRead, Clone)]
 #[endianness = "LittleEndian"]
 pub struct ExtraData {
-    len: u16,
+    pub len: u16,
     #[size = "len * 8"]
-    data: Stream,
+    pub data: Stream,
 }
 
-#[derive(BitRead)]
+#[derive(BitRead, Clone)]
 #[endianness = "LittleEndian"]
 pub struct StringTableEntry {
-    text: String,
-    extra_data: Option<ExtraData>,
+    pub text: String,
+    pub extra_data: Option<ExtraData>,
 }
 
 impl fmt::Debug for StringTableEntry {
@@ -63,8 +69,7 @@ impl fmt::Debug for StringTableEntry {
             Some(extra_data) => write!(
                 f,
                 "StringTableEntry{{ '{}' with {} bits of extra data }}",
-                self.text,
-                extra_data.len
+                self.text, extra_data.len
             ),
         }
     }

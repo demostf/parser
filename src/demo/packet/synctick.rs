@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead};
+use bitstream_reader::BitRead;
 
 #[derive(BitRead, Debug)]
 pub struct SyncTickPacket {
