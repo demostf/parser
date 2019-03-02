@@ -11,6 +11,7 @@ pub mod stringtable;
 pub mod voice;
 pub mod bspdecal;
 pub mod usermessage;
+pub mod gameevent;
 
 #[derive(Primitive, Debug)]
 pub enum MessageType {

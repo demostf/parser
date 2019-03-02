@@ -3,12 +3,13 @@ use crate::demo::sendprop::SendProp;
 use crate::Stream;
 use std::collections::HashMap;
 use crate::demo::packet::stringtable::StringTable;
+use crate::demo::gameevent_gen::GameEventType;
 
 #[derive(Default, Debug)]
 pub struct ParserState {
     pub version: u32,
     pub static_baselines: HashMap<u32, StaticBaseline>,
-    pub event_definitions: HashMap<u32, GameEventDefinition>,
+    pub event_definitions: HashMap<GameEventType, GameEventDefinition>,
     pub string_tables: Vec<StringTable>
 }
 
