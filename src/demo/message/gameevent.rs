@@ -29,9 +29,9 @@ impl Parse for GameEventMessage {
         let event_type = data.read()?;
         let raw_event = match state.event_definitions.get(&event_type) {
             Some(definition) => {
-                let mut values: HashMap<String, GameEventValue> = HashMap::with_capacity(definition.entries.len());
+                let mut values: Vec<GameEventValue> = Vec::with_capacity(definition.entries.len());
                 for entry in &definition.entries {
-                    values.insert(entry.name.clone(), read_event_value(stream, &entry)?);
+                    values.push(read_event_value(stream, &entry)?);
                 }
 
                 RawGameEvent {

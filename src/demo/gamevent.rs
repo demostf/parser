@@ -129,9 +129,9 @@ impl FromGameEventValue for () {
 
 pub struct RawGameEvent {
     pub event_type: GameEventType,
-    pub values: HashMap<String, GameEventValue>,
+    pub values: Vec<GameEventValue>,
 }
 
 pub trait FromRawGameEvent: Sized {
-    fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self>;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self>;
 }
