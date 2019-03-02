@@ -27,6 +27,7 @@ pub mod tempentities;
 
 #[derive(Primitive, Debug)]
 pub enum MessageType {
+    Empty = 0,
     File = 2,
     NetTick = 3,
     StringCmd = 4,
@@ -66,6 +67,7 @@ impl Parse for MessageType {
 
 #[derive(Debug)]
 pub enum Message {
+    Empty,
     File(FileMessage),
     NetTick(NetTickMessage),
     StringCmd(StringCmdMessage),
@@ -98,7 +100,9 @@ pub enum Message {
 impl Parse for Message {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let message_type = MessageType::parse(stream, state)?;
+        dbg!(&message_type);
         Ok(match message_type {
+            MessageType::Empty => Message::Empty,
             MessageType::File => Message::File(FileMessage::parse(stream, state)?),
             MessageType::NetTick => Message::NetTick(NetTickMessage::parse(stream, state)?),
             MessageType::StringCmd => Message::StringCmd(StringCmdMessage::parse(stream, state)?),

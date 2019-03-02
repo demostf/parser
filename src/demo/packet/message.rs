@@ -34,7 +34,10 @@ impl Parse for MessagePacket {
         let mut messages: Vec<Message> = Vec::new();
         while packet_data.bits_left() > 6 {
             let message = Message::parse(&mut packet_data, state)?;
-            messages.push(message);
+            match message {
+                Message::Empty => {}
+                _ => messages.push(message)
+            }
         }
 
         let packet = MessagePacket {

@@ -75,10 +75,10 @@ pub struct StringTableEntry {
 impl fmt::Debug for StringTableEntry {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.extra_data {
-            None => write!(f, "StringTableEntry {{ text: {} }}", self.text),
+            None => write!(f, "StringTableEntry {{ text: \"{}\" }}", self.text),
             Some(extra_data) => write!(
                 f,
-                "StringTableEntry{{ text: {} extra_data: {} bits }}",
+                "StringTableEntry{{ text: \"{}\" extra_data: {} bits }}",
                 self.text, extra_data.len
             ),
         }
