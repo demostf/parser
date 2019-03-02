@@ -34,11 +34,28 @@ pub enum ParseError {
         name: String,
         value: GameEventValue,
     },
+    /// Unexpected type of compressed data
+    UnexpectedCompressionType(String),
+    /// Error while decompressing SNAP compressed string table
+    SnapError(snap::Error),
+    /// Unexpected size after decompressing SNAP data
+    UnexpectedDecompressedSize {
+        /// Expected decompressed size
+        expected: u32,
+        /// Actual decompressed size
+        size: u32
+    }
 }
 
 impl From<ReadError> for ParseError {
     fn from(err: ReadError) -> ParseError {
         ParseError::ReadError(err)
+    }
+}
+
+impl From<snap::Error> for ParseError {
+    fn from(err: snap::Error) -> ParseError {
+        ParseError::SnapError(err)
     }
 }
 

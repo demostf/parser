@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
 use arraydeque::{ArrayDeque, Wrapping};
-use bitstream_reader::{BitRead, BitReadSized, BitStream, LittleEndian};
+use bitstream_reader::{BitRead, BitReadSized, BitStream, LittleEndian, BitBuffer};
+use snap::Decoder;
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Stream, Result};
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::packet::stringtable::{ExtraData, FixedUserdataSize, StringTable, StringTableEntry};
+use num_traits::{PrimInt, Unsigned};
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -26,11 +28,11 @@ impl From<&StringTable> for StringTableMeta {
     }
 }
 
-impl BitRead<LittleEndian> for CreateStringTableMessage {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
+impl Parse for CreateStringTableMessage {
+    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let name = stream.read()?;
         let max_entries: u16 = stream.read()?;
-        let encode_bits = 16 - max_entries.leading_zeros();
+        let encode_bits = log_base2(max_entries);
         let entity_count: u16 = stream.read_sized(encode_bits as usize + 1)?;
         let bit_count = read_var_int(stream)?;
 
@@ -38,10 +40,32 @@ impl BitRead<LittleEndian> for CreateStringTableMessage {
 
         let compressed = stream.read()?;
 
-        let table_data = stream.read_bits(bit_count as usize)?;
+        let mut table_data = stream.read_bits(bit_count as usize)?;
 
         if compressed {
-            unimplemented!("TODO: SNAP decoding");
+            let decompressed_size: u32 = table_data.read()?;
+            let compressed_size: u32 = table_data.read()?;
+
+            let magic = table_data.read_string(Some(4))?;
+
+            if magic != "SNAP" {
+                return Err(ParseError::UnexpectedCompressionType(magic));
+            }
+
+            let compressed_data = table_data.read_bytes(compressed_size as usize - 4)?;
+
+            let mut decoder = Decoder::new();
+            let decompressed_data = decoder.decompress_vec(&compressed_data).map_err(ParseError::from)?;
+
+            if decompressed_data.len() != decompressed_size as usize {
+                return Err(ParseError::UnexpectedDecompressedSize {
+                    expected: decompressed_size,
+                    size: decompressed_data.len() as u32
+                });
+            }
+
+            let buffer = BitBuffer::new(decompressed_data, LittleEndian);
+            table_data = BitStream::new(buffer);
         }
 
         let table_meta = StringTableMeta {
@@ -49,14 +73,16 @@ impl BitRead<LittleEndian> for CreateStringTableMessage {
             fixed_userdata_size,
         };
 
-        let entries = parse_string_table_entries(stream, &table_meta, entity_count, &Vec::new())?;
+        let entries = parse_string_table_entries(&mut table_data, &table_meta, entity_count, &Vec::new())?;
         let mut entries: Vec<(u16, StringTableEntry)> = entries.into_iter().collect();
 
         // verify that there are no holes in our indexes
         entries.sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
-        let last_index = entries.last().map(|(index, _)| *index).unwrap_or(0u16) as usize;
-        if last_index != entries.len() {
-            panic!("there should be no holes when reading CreateStringTable message");
+        if entries.len() > 0 {
+            let last_index = entries.last().map(|(index, _)| *index).unwrap_or(0u16) as usize;
+            if last_index != entries.len() - 1 {
+                panic!("there should be no holes when reading CreateStringTable message");
+            }
         }
         let table_entries = entries.into_iter().map(|(_, entry)| entry).collect();
         let table = StringTable {
@@ -106,11 +132,11 @@ fn parse_string_table_entries(
     entry_count: u16,
     existing_entries: &Vec<StringTableEntry>,
 ) -> ReadResult<HashMap<u16, StringTableEntry>> {
-    let entry_bits = 16 - table_meta.max_entries.leading_zeros();
+    let entry_bits = log_base2(table_meta.max_entries);
     let mut entries = HashMap::with_capacity(entry_count as usize);
 
     let mut last_entry: i16 = -1;
-    let mut history: ArrayDeque<[String; 32], Wrapping> = ArrayDeque::new();
+    let mut history: Vec<String> = Vec::new();
 
     for i in 0..entry_count {
         let index = if stream.read()? {
@@ -118,6 +144,8 @@ fn parse_string_table_entries(
         } else {
             stream.read_sized(entry_bits as usize)?
         };
+
+        last_entry = index as i16;
 
         let value = if stream.read()? { // set value
             if stream.read()? { // reuse from history
@@ -143,7 +171,7 @@ fn parse_string_table_entries(
                 Some(size) => stream.read_bits(size.bits as usize)?,
                 None => {
                     let bytes: u16 = stream.read_sized(14)?;
-                    stream.read_bits(bytes as usize)?
+                    stream.read_bits(bytes as usize * 8)?
                 }
             })
         } else {
@@ -171,9 +199,11 @@ fn parse_string_table_entries(
         // `entries` always outlives `history` without reallocation
         let text = entry.text.clone();
         entries.insert(index, entry);
-        unsafe {
-            // not 100% sure we should be pushing front here, and not appending
-            history.push_front(text);
+        // not 100% sure we should be pushing front here, and not appending
+        history.push(text);
+
+        if history.len() > 32 {
+            history.remove(0);
         }
     }
 
@@ -191,4 +221,8 @@ pub fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {
         }
     }
     Ok(result)
+}
+
+pub fn log_base2<T: PrimInt + Unsigned>(num: T) -> u32 {
+    (std::mem::size_of::<T>() as u32 * 8 - 1) - num.leading_zeros()
 }

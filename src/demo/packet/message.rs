@@ -16,8 +16,8 @@ pub struct MessagePacket {
 
 impl Parse for MessagePacket {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
-        let tick = stream.read_int(32)?;
-        let flags = stream.read_int(32)?;
+        let tick = stream.read()?;
+        let flags = stream.read()?;
 
         let view_origin_1 = Vector::parse(stream, state)?;
         let view_angle_1 = Vector::parse(stream, state)?;
@@ -26,16 +26,14 @@ impl Parse for MessagePacket {
         let view_angles = (Vector::parse(stream, state)?, view_angle_1);
         let local_view_angles = (Vector::parse(stream, state)?, local_view_angle_1);
 
-        let sequence_in = stream.read_int(32)?;
-        let sequence_out = stream.read_int(32)?;
-        let length: usize = stream.read_int(32)?;
-        let mut packet_data = stream.read_bits(length * 8)?;
+        let sequence_in = stream.read()?;
+        let sequence_out = stream.read()?;
+        let length: u32 = stream.read()?;
+        let mut packet_data = stream.read_bits(length as usize * 8)?;
 
-        let mut messages = Vec::new();
-        dbg!(&packet_data);
+        let mut messages: Vec<Message> = Vec::new();
         while packet_data.bits_left() > 6 {
-            let message = Message::parse(stream, state)?;
-            dbg!(&message);
+            let message = Message::parse(&mut packet_data, state)?;
             messages.push(message);
         }
 
