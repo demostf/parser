@@ -81,19 +81,20 @@ pub enum UserMessage {
 
 impl BitRead<LittleEndian> for UserMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let message_type_opt: Option<UserMessageType> = UserMessageType::from_u8(stream.read()?);
-        let message_type = message_type_opt.unwrap_or(UserMessageType::Unknown);
+        let message_type = UserMessageType::from_u8(stream.read()?)
+            .unwrap_or(UserMessageType::Unknown);
         let length = stream.read_int(11)?;
-        let data = stream.read_bits(length)?;
-        Ok(match message_type {
-            UserMessageType::SayText2 => UserMessage::SayText2(stream.read()?),
-            UserMessageType::TextMsg => UserMessage::Text(stream.read()?),
-            UserMessageType::ResetHUD => UserMessage::ResetHUD(stream.read()?),
-            UserMessageType::Train => UserMessage::Train(stream.read()?),
-            UserMessageType::VoiceSubtitle => UserMessage::VoiceSubtitle(stream.read()?),
-            UserMessageType::Shake => UserMessage::Shake(stream.read()?),
-            _ => UserMessage::Unknown(stream.read()?),
-        })
+        let mut data = stream.read_bits(length)?;
+        let message = match message_type {
+            UserMessageType::SayText2 => UserMessage::SayText2(data.read()?),
+            UserMessageType::TextMsg => UserMessage::Text(data.read()?),
+            UserMessageType::ResetHUD => UserMessage::ResetHUD(data.read()?),
+            UserMessageType::Train => UserMessage::Train(data.read()?),
+            UserMessageType::VoiceSubtitle => UserMessage::VoiceSubtitle(data.read()?),
+            UserMessageType::Shake => UserMessage::Shake(data.read()?),
+            _ => UserMessage::Unknown(data.read()?),
+        };
+        Ok(message)
     }
 }
 
