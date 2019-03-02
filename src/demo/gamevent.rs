@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use bitstream_reader::{BitRead};
 
 use crate::{ParseError, Result};
 
@@ -17,15 +18,17 @@ pub struct GameEventEntry {
     pub kind: GameEventValueType,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(BitRead, Debug, Clone, Copy, PartialEq)]
+#[discriminant_bits = 3]
 pub enum GameEventValueType {
-    String,
-    Float,
-    Long,
-    Short,
-    Byte,
-    Boolean,
-    Local,
+    None = 0,
+    String = 1,
+    Float = 2,
+    Long = 3,
+    Short = 4,
+    Byte = 5,
+    Boolean = 6,
+    Local = 7,
 }
 
 #[derive(Debug, Clone)]

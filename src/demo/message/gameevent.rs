@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::iter::FromIterator;
 
 use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 
@@ -15,6 +16,7 @@ fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<
         GameEventValueType::Byte => GameEventValue::Byte(stream.read()?),
         GameEventValueType::Boolean => GameEventValue::Boolean(stream.read()?),
         GameEventValueType::Local => GameEventValue::Local,
+        GameEventValueType::None => unreachable!()
     })
 }
 
@@ -44,6 +46,49 @@ impl Parse for GameEventMessage {
         let event = GameEvent::from_raw_event(raw_event)?;
         Ok(GameEventMessage {
             event
+        })
+    }
+}
+
+pub struct GameEventListMessage {
+    event_list: HashMap<GameEventType, GameEventDefinition>,
+}
+
+impl BitRead<LittleEndian> for GameEventDefinition {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
+        let event_type = stream.read()?;
+        let name = stream.read()?;
+        let mut entries = Vec::new();
+
+        let mut entry_type = stream.read()?;
+        while entry_type != GameEventValueType::None {
+            let entry_name = stream.read()?;
+            entries.push(GameEventEntry {
+                name: entry_name,
+                kind: entry_type,
+            });
+        }
+
+        Ok(GameEventDefinition {
+            id: event_type,
+            name,
+            entries,
+        })
+    }
+}
+
+impl BitRead<LittleEndian> for GameEventListMessage {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
+        let count: u16 = stream.read_sized(9)?;
+        let length: u16 = stream.read_sized(20)?;
+        let data = stream.read_bits(length as usize)?;
+        let event_list_vec: Vec<GameEventDefinition> = stream.read_sized(count as usize)?;
+        let event_list = HashMap::from_iter(
+            event_list_vec.into_iter().map(|def| (def.id, def))
+        );
+
+        Ok(GameEventListMessage {
+            event_list
         })
     }
 }
