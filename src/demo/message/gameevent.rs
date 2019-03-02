@@ -69,6 +69,7 @@ impl BitRead<LittleEndian> for GameEventDefinition {
                 name: entry_name,
                 kind: entry_type,
             });
+            entry_type = stream.read()?;
         }
 
         Ok(GameEventDefinition {
@@ -82,9 +83,9 @@ impl BitRead<LittleEndian> for GameEventDefinition {
 impl BitRead<LittleEndian> for GameEventListMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let count: u16 = stream.read_sized(9)?;
-        let length: u16 = stream.read_sized(20)?;
-        let data = stream.read_bits(length as usize)?;
-        let event_list_vec: Vec<GameEventDefinition> = stream.read_sized(count as usize)?;
+        let length: u32 = stream.read_sized(20)?;
+        let mut data = stream.read_bits(length as usize)?;
+        let event_list_vec: Vec<GameEventDefinition> = data.read_sized(count as usize)?;
         let event_list = HashMap::from_iter(
             event_list_vec.into_iter().map(|def| (def.id, def))
         );
