@@ -20,6 +20,7 @@ fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<
     })
 }
 
+#[derive(Debug)]
 pub struct GameEventMessage {
     pub event: GameEvent
 }
@@ -50,6 +51,7 @@ impl Parse for GameEventMessage {
     }
 }
 
+#[derive(Debug)]
 pub struct GameEventListMessage {
     event_list: HashMap<GameEventType, GameEventDefinition>,
 }

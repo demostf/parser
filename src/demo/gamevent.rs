@@ -130,6 +130,7 @@ impl FromGameEventValue for () {
     }
 }
 
+#[derive(Debug)]
 pub struct RawGameEvent {
     pub event_type: GameEventType,
     pub values: Vec<GameEventValue>,

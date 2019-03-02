@@ -1,6 +1,7 @@
 /// Messages that consists only of primitives and string and can be derived
-use bitstream_reader::BitRead;
+use bitstream_reader::{BitRead, BitStream, LittleEndian};
 use std::collections::HashMap;
+use crate::Stream;
 
 #[derive(BitRead, Debug)]
 pub struct FileMessage {
@@ -73,15 +74,45 @@ pub struct FixAngleMessage {
 }
 
 #[derive(BitRead, Debug)]
+#[endianness = "LittleEndian"]
+pub struct EntityMessage {
+    #[size = 11]
+    pub index:  u16,
+    #[size = 9]
+    pub class_id:  u16,
+    #[size = 11]
+    pub length:  u16,
+    #[size = "length * 8"]
+    pub data: Stream,
+}
+
+#[derive(BitRead, Debug)]
 pub struct PreFetchMessage {
     #[size = 14]
     pub index: u16,
 }
 
 #[derive(BitRead, Debug)]
-pub struct GetCvarMessage {
+#[endianness = "LittleEndian"]
+pub struct MenuMessage {
+    pub kind: u16,
+    pub length: u16,
+    #[size = "length * 8"]
+    pub index: Stream,
+}
+
+#[derive(BitRead, Debug)]
+pub struct GetCvarValueMessage {
     pub cookie: u32,
     pub value: String,
+}
+
+#[derive(BitRead, Debug)]
+#[endianness = "LittleEndian"]
+pub struct CmdKeyValuesMessage {
+    pub length: u32,
+    #[size = "length * 8"]
+    pub data: Stream,
 }
 
 #[derive(BitRead, Debug)]

@@ -2,7 +2,7 @@ use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 
 use crate::{ReadResult, Stream};
 
-#[derive(BitReadSized)]
+#[derive(BitReadSized, Debug)]
 pub struct ClassInfoEntry {
     #[size = "input_size"]
     class_id: u16,
@@ -10,6 +10,7 @@ pub struct ClassInfoEntry {
     table_name: String,
 }
 
+#[derive(Debug)]
 pub struct ClassInfoMessage {
     count: u16,
     create: bool,

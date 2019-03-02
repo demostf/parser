@@ -68,6 +68,7 @@ pub enum UserMessageType {
     Unknown = 255,
 }
 
+#[derive(Debug)]
 pub enum UserMessage {
     SayText2(SayText2Message),
     Text(TextMessage),

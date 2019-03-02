@@ -1,3 +1,5 @@
+#[allow(unused_variables)]
+
 use std::error::Error;
 use std::fs;
 

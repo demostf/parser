@@ -1,8 +1,6 @@
-use crate::demo::vector::Vector;
 use crate::{Parse, ParseError, ParserState, Result, Stream};
-
-#[derive(Debug)]
-pub struct Message;
+use crate::demo::message::Message;
+use crate::demo::vector::Vector;
 
 #[derive(Debug)]
 pub struct MessagePacket {
@@ -33,7 +31,13 @@ impl Parse for MessagePacket {
         let length: usize = stream.read_int(32)?;
         let mut packet_data = stream.read_bits(length * 8)?;
 
-        let messages = vec![];
+        let mut messages = Vec::new();
+        dbg!(&packet_data);
+        while packet_data.bits_left() > 6 {
+            let message = Message::parse(stream, state)?;
+            dbg!(&message);
+            messages.push(message);
+        }
 
         let packet = MessagePacket {
             tick,

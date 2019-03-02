@@ -6,10 +6,12 @@ use bitstream_reader::{BitRead, BitReadSized, BitStream, LittleEndian};
 use crate::{Parse, ParseError, ParserState, ReadResult, Stream, Result};
 use crate::demo::packet::stringtable::{ExtraData, FixedUserdataSize, StringTable, StringTableEntry};
 
+#[derive(Debug)]
 pub struct CreateStringTableMessage {
     pub table: StringTable,
 }
 
+#[derive(Debug)]
 pub struct StringTableMeta {
     pub max_entries: u16,
     pub fixed_userdata_size: Option<FixedUserdataSize>,
@@ -71,6 +73,7 @@ impl BitRead<LittleEndian> for CreateStringTableMessage {
     }
 }
 
+#[derive(Debug)]
 pub struct UpdateStringTableMessage {
     pub entries: HashMap<u16, StringTableEntry>,
     pub table_id: u8,
@@ -177,7 +180,7 @@ fn parse_string_table_entries(
     Ok(entries)
 }
 
-fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {
+pub fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {
     let mut result: u32 = 0;
     for i in (0..35u32).step_by(7) {
         let byte: u8 = stream.read()?;
