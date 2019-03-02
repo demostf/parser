@@ -4,7 +4,7 @@ use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::packet::datatable::ServerClass;
 use crate::demo::sendprop::SendProp;
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct EntityId(u32);
 
 #[derive(BitRead, Clone, Copy, Debug)]

@@ -34,7 +34,7 @@ impl Parse for GameEventMessage {
             Some(definition) => {
                 let mut values: Vec<GameEventValue> = Vec::with_capacity(definition.entries.len());
                 for entry in &definition.entries {
-                    values.push(read_event_value(stream, &entry)?);
+                    values.push(read_event_value(&mut data, &entry)?);
                 }
 
                 RawGameEvent {
@@ -53,7 +53,7 @@ impl Parse for GameEventMessage {
 
 #[derive(Debug)]
 pub struct GameEventListMessage {
-    event_list: HashMap<GameEventType, GameEventDefinition>,
+    pub event_list: HashMap<GameEventType, GameEventDefinition>,
 }
 
 impl BitRead<LittleEndian> for GameEventDefinition {

@@ -97,16 +97,15 @@ impl DemoParser {
         Ok(())
     }
 
-    pub fn parse_demo(mut self) -> Result<(Header, Vec<Packet>)> {
+    pub fn parse_demo(mut self) -> Result<(Header, ParserState)> {
         let header = self.read::<Header>()?;
-        let mut packets = vec![];
         loop {
             let packet = self.read::<Packet>()?;
             match packet {
                 Packet::Stop(_) => break,
-                packet => packets.push(packet),
+                packet => self.state.handle_packet(packet),
             }
         }
-        Ok((header, packets))
+        Ok((header, self.state))
     }
 }

@@ -25,7 +25,7 @@ pub mod gameevent;
 pub mod packetentities;
 pub mod tempentities;
 
-#[derive(Primitive, Debug)]
+#[derive(Primitive, Debug, Clone, Copy)]
 pub enum MessageType {
     Empty = 0,
     File = 2,
@@ -100,7 +100,6 @@ pub enum Message {
 impl Parse for Message {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let message_type = MessageType::parse(stream, state)?;
-        dbg!(&message_type);
         Ok(match message_type {
             MessageType::Empty => Message::Empty,
             MessageType::File => Message::File(FileMessage::parse(stream, state)?),

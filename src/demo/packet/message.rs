@@ -4,14 +4,14 @@ use crate::demo::vector::Vector;
 
 #[derive(Debug)]
 pub struct MessagePacket {
-    tick: u32,
-    messages: Vec<Message>,
-    view_origin: (Vector, Vector),
-    view_angles: (Vector, Vector),
-    local_view_angles: (Vector, Vector),
-    sequence_in: u32,
-    sequence_out: u32,
-    flags: u32, // TODO
+    pub tick: u32,
+    pub messages: Vec<Message>,
+    pub view_origin: (Vector, Vector),
+    pub view_angles: (Vector, Vector),
+    pub local_view_angles: (Vector, Vector),
+    pub sequence_in: u32,
+    pub sequence_out: u32,
+    pub flags: u32, // TODO
 }
 
 impl Parse for MessagePacket {
