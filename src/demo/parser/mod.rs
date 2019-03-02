@@ -30,10 +30,7 @@ pub enum ParseError {
     /// A unknown game event type was read
     UnknownGameEvent(String),
     /// A read game event doesn't contain the expected values
-    InvalidGameEvent {
-        name: String,
-        value: GameEventValue,
-    },
+    InvalidGameEvent { name: String, value: GameEventValue },
     /// Unexpected type of compressed data
     UnexpectedCompressionType(String),
     /// Error while decompressing SNAP compressed string table
@@ -43,8 +40,8 @@ pub enum ParseError {
         /// Expected decompressed size
         expected: u32,
         /// Actual decompressed size
-        size: u32
-    }
+        size: u32,
+    },
 }
 
 impl From<ReadError> for ParseError {

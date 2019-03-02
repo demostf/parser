@@ -1,7 +1,7 @@
 use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 
-use crate::{ReadResult, Stream};
 use crate::demo::message::stringtable::log_base2;
+use crate::{ReadResult, Stream};
 
 #[derive(BitReadSized, Debug)]
 pub struct ClassInfoEntry {

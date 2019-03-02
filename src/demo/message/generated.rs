@@ -1,7 +1,7 @@
+use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
 use bitstream_reader::{BitRead, BitStream, LittleEndian};
 use std::collections::HashMap;
-use crate::Stream;
 
 #[derive(BitRead, Debug)]
 pub struct FileMessage {
@@ -77,11 +77,11 @@ pub struct FixAngleMessage {
 #[endianness = "LittleEndian"]
 pub struct EntityMessage {
     #[size = 11]
-    pub index:  u16,
+    pub index: u16,
     #[size = 9]
-    pub class_id:  u16,
+    pub class_id: u16,
     #[size = 11]
-    pub length:  u16,
+    pub length: u16,
     #[size = "length * 8"]
     pub data: Stream,
 }

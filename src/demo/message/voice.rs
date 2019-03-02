@@ -52,7 +52,11 @@ impl BitRead<LittleEndian> for ParseSoundsMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let reliable = stream.read()?;
         let num = if reliable { 1u8 } else { stream.read()? };
-        let length = if reliable { stream.read_sized::<u16>(8)? } else { stream.read()? };
+        let length = if reliable {
+            stream.read_sized::<u16>(8)?
+        } else {
+            stream.read()?
+        };
         let data = stream.read_sized(length as usize)?;
 
         Ok(ParseSoundsMessage {

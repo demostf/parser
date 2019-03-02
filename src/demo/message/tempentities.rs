@@ -7,7 +7,7 @@ use super::stringtable::read_var_int;
 
 #[derive(Debug)]
 pub struct TempEntitiesMessage {
-    pub entities: Vec<PacketEntity>
+    pub entities: Vec<PacketEntity>,
 }
 
 impl Parse for TempEntitiesMessage {
@@ -17,7 +17,7 @@ impl Parse for TempEntitiesMessage {
         let data = stream.read_bits(length as usize)?;
 
         Ok(TempEntitiesMessage {
-            entities: Vec::new()
+            entities: Vec::new(),
         })
     }
 }

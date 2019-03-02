@@ -1,8 +1,8 @@
 use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 
-use crate::{ReadResult, Stream};
 use crate::demo::sendprop::read_bit_coord;
 use crate::demo::vector::Vector;
+use crate::{ReadResult, Stream};
 
 #[derive(Debug, Clone)]
 pub struct BSPDecalMessage {
@@ -44,4 +44,3 @@ impl BitRead<LittleEndian> for BSPDecalMessage {
         })
     }
 }
-

@@ -1,8 +1,8 @@
 use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::packet::datatable::ServerClass;
 use crate::demo::sendprop::SendProp;
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct EntityId(u32);

@@ -2,11 +2,11 @@ use std::collections::HashMap;
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::GameEventDefinition;
-use crate::demo::message::Message;
 use crate::demo::message::packetentities::EntityId;
+use crate::demo::message::Message;
 use crate::demo::packet::datatable::{SendTable, ServerClass};
-use crate::demo::packet::Packet;
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
+use crate::demo::packet::Packet;
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
 

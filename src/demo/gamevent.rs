@@ -1,5 +1,5 @@
+use bitstream_reader::BitRead;
 use std::collections::HashMap;
-use bitstream_reader::{BitRead};
 
 use crate::{ParseError, Result};
 
@@ -53,7 +53,7 @@ impl FromGameEventValue for String {
             _ => Err(ParseError::InvalidGameEvent {
                 name: name.to_string(),
                 value,
-            })
+            }),
         }
     }
 }
@@ -65,7 +65,7 @@ impl FromGameEventValue for f32 {
             _ => Err(ParseError::InvalidGameEvent {
                 name: name.to_string(),
                 value,
-            })
+            }),
         }
     }
 }
@@ -77,7 +77,7 @@ impl FromGameEventValue for u32 {
             _ => Err(ParseError::InvalidGameEvent {
                 name: name.to_string(),
                 value,
-            })
+            }),
         }
     }
 }
@@ -89,7 +89,7 @@ impl FromGameEventValue for u16 {
             _ => Err(ParseError::InvalidGameEvent {
                 name: name.to_string(),
                 value,
-            })
+            }),
         }
     }
 }
@@ -101,7 +101,7 @@ impl FromGameEventValue for u8 {
             _ => Err(ParseError::InvalidGameEvent {
                 name: name.to_string(),
                 value,
-            })
+            }),
         }
     }
 }
@@ -113,7 +113,7 @@ impl FromGameEventValue for bool {
             _ => Err(ParseError::InvalidGameEvent {
                 name: name.to_string(),
                 value,
-            })
+            }),
         }
     }
 }
@@ -125,7 +125,7 @@ impl FromGameEventValue for () {
             _ => Err(ParseError::InvalidGameEvent {
                 name: name.to_string(),
                 value,
-            })
+            }),
         }
     }
 }

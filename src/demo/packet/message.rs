@@ -1,6 +1,6 @@
-use crate::{Parse, ParseError, ParserState, Result, Stream};
 use crate::demo::message::Message;
 use crate::demo::vector::Vector;
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 #[derive(Debug)]
 pub struct MessagePacket {
@@ -36,7 +36,7 @@ impl Parse for MessagePacket {
             let message = Message::parse(&mut packet_data, state)?;
             match message {
                 Message::Empty => {}
-                _ => messages.push(message)
+                _ => messages.push(message),
             }
         }
 

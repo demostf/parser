@@ -1,7 +1,7 @@
 use bitstream_reader::{BitBuffer, BitStream, LittleEndian};
 
-pub mod gamevent;
 pub mod gameevent_gen;
+pub mod gamevent;
 pub mod header;
 pub mod message;
 pub mod packet;

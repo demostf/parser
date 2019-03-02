@@ -2,8 +2,8 @@ use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 use enum_primitive_derive::Primitive;
 use num_traits::{FromPrimitive, ToPrimitive};
 
-use crate::{ReadResult, Stream};
 use crate::demo::message::usermessage::UserMessage::SayText2;
+use crate::{ReadResult, Stream};
 
 #[derive(Primitive, Clone, Copy, Debug)]
 pub enum UserMessageType {
@@ -81,8 +81,8 @@ pub enum UserMessage {
 
 impl BitRead<LittleEndian> for UserMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let message_type = UserMessageType::from_u8(stream.read()?)
-            .unwrap_or(UserMessageType::Unknown);
+        let message_type =
+            UserMessageType::from_u8(stream.read()?).unwrap_or(UserMessageType::Unknown);
         let length = stream.read_int(11)?;
         let mut data = stream.read_bits(length)?;
         let message = match message_type {
@@ -113,7 +113,7 @@ impl BitRead<LittleEndian> for SayText2Kind {
             "TF_Chat_Team" => SayText2Kind::ChatTeam,
             "TF_Chat_AllDead" => SayText2Kind::ChatAllDead,
             "#TF_Name_Change" => SayText2Kind::NameChange,
-            _ => SayText2Kind::ChatAll
+            _ => SayText2Kind::ChatAll,
         })
     }
 }
@@ -144,7 +144,9 @@ impl BitRead<LittleEndian> for SayText2Message {
                 // grave talk is in the format '*DEAD* \u0003$from\u0001:    $text'b
                 let start = text.find(char::from(3)).unwrap_or(0);
                 let end = text.find(char::from(1)).unwrap_or(0);
-                let from: String = String::from_utf8(text.bytes().skip(start + 1).take(end - start - 1).collect())?;
+                let from: String = String::from_utf8(
+                    text.bytes().skip(start + 1).take(end - start - 1).collect(),
+                )?;
                 let text: String = String::from_utf8(text.bytes().skip(end + 5).collect())?;
                 let kind = SayText2Kind::ChatAllDead;
                 (kind, from, text)
@@ -162,11 +164,14 @@ impl BitRead<LittleEndian> for SayText2Message {
         };
 
         // cleanup color codes
-        let mut text = text
-            .replace(char::from(1), "")
-            .replace(char::from(3), "");
+        let mut text = text.replace(char::from(1), "").replace(char::from(3), "");
         while let Some(pos) = text.find(char::from(7)) {
-            text = String::from_utf8(text.bytes().take(pos).chain(text.bytes().skip(pos + 7)).collect())?;
+            text = String::from_utf8(
+                text.bytes()
+                    .take(pos)
+                    .chain(text.bytes().skip(pos + 7))
+                    .collect(),
+            )?;
         }
 
         Ok(SayText2Message {
@@ -198,12 +203,12 @@ pub struct TextMessage {
 
 #[derive(BitRead, Debug, Clone)]
 pub struct ResetHudMessage {
-    pub data: u8
+    pub data: u8,
 }
 
 #[derive(BitRead, Debug, Clone)]
 pub struct TrainMessage {
-    pub data: u8
+    pub data: u8,
 }
 
 #[derive(BitRead, Debug, Clone)]
@@ -223,13 +228,13 @@ pub struct ShakeMessage {
 
 #[derive(Debug, Clone)]
 pub struct UnknownUserMessage {
-    data: Stream
+    data: Stream,
 }
 
 impl BitRead<LittleEndian> for UnknownUserMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         Ok(UnknownUserMessage {
-            data: stream.read_bits(stream.bits_left())?
+            data: stream.read_bits(stream.bits_left())?,
         })
     }
 }
