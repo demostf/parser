@@ -5,24 +5,24 @@ use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 #[derive(BitRead, Debug)]
 pub struct ServerClass {
-    id: u16,
-    name: String,
-    data_table: String,
+    pub id: u16,
+    pub name: String,
+    pub data_table: String,
 }
 
 #[derive(Debug)]
 pub struct SendTable {
-    name: String,
-    props: Vec<SendPropDefinition>,
-    needs_decoder: bool,
-    flattened_props: Option<Vec<SendPropDefinition>>,
+    pub name: String,
+    pub props: Vec<SendPropDefinition>,
+    pub needs_decoder: bool,
+    pub flattened_props: Option<Vec<SendPropDefinition>>,
 }
 
 #[derive(Debug)]
 pub struct DataTablePacket {
-    tick: u32,
-    tables: Vec<SendTable>,
-    server_classes: Vec<ServerClass>,
+    pub tick: u32,
+    pub tables: Vec<SendTable>,
+    pub server_classes: Vec<ServerClass>,
 }
 
 impl Parse for DataTablePacket {

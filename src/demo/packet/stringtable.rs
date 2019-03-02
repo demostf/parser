@@ -87,8 +87,8 @@ impl fmt::Debug for StringTableEntry {
 
 #[derive(Debug)]
 pub struct StringTablePacket {
-    tick: u32,
-    tables: Vec<StringTable>,
+    pub tick: u32,
+    pub tables: Vec<StringTable>,
 }
 
 impl Parse for StringTablePacket {
