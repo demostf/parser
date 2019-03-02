@@ -1,9 +1,11 @@
+use serde::Serialize;
+
 use crate::demo::gameevent_gen::{GameEvent, PlayerDeathEvent};
 use crate::demo::message::Message;
 use crate::demo::message::usermessage::{SayText2Kind, UserMessage};
 use crate::demo::vector::Vector;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ChatMassage {
     pub kind: SayText2Kind,
     pub from: String,
@@ -11,7 +13,7 @@ pub struct ChatMassage {
     pub tick: u32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct UserEntityInfo {
     pub name: String,
     pub user_id: u8,
@@ -19,13 +21,13 @@ pub struct UserEntityInfo {
     pub entity_id: u32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct UserInfo {
     pub team: String,
     pub entity_info: UserEntityInfo,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Death {
     pub weapon: String,
     pub victim: u8,
@@ -34,26 +36,26 @@ pub struct Death {
     pub tick: u32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Round {
     winner: String,
     length: f32,
     end_tick: u32,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 pub struct World {
     boundary_min: Vector,
     boundary_max: Vector,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize)]
 pub struct Analyser {
-    chat: Vec<ChatMassage>,
-    users: Vec<UserInfo>,
-    deaths: Vec<Death>,
-    rounds: Vec<Round>,
-    world: World,
+    pub chat: Vec<ChatMassage>,
+    pub users: Vec<UserInfo>,
+    pub deaths: Vec<Death>,
+    pub rounds: Vec<Round>,
+    pub world: World,
 }
 
 impl Analyser {

@@ -85,6 +85,7 @@ impl DemoParser {
         }
     }
 
+    #[inline(always)]
     pub fn read<T: Parse>(&mut self) -> Result<T> {
         T::parse(&mut self.stream, &self.state)
     }

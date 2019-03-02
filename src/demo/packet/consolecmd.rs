@@ -13,7 +13,7 @@ impl BitRead<LittleEndian> for ConsoleCmdPacket {
         let tick = stream.read_int(32)?;
         let len = stream.read_int::<usize>(32)?;
         let mut packet_data = stream.read_bits(len * 8)?;
-        let command = packet_data.read_string(None)?;
+        let command = packet_data.read_string(Some(len))?;
         Ok(ConsoleCmdPacket { tick, command })
     }
 }

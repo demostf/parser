@@ -1,6 +1,7 @@
 use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 use enum_primitive_derive::Primitive;
 use num_traits::{FromPrimitive, ToPrimitive};
+use serde::Serialize;
 
 use crate::demo::message::usermessage::UserMessage::SayText2;
 use crate::{ReadResult, Stream};
@@ -87,7 +88,7 @@ impl BitRead<LittleEndian> for UserMessage {
         let mut data = stream.read_bits(length)?;
         let message = match message_type {
             UserMessageType::SayText2 => UserMessage::SayText2(data.read()?),
-            UserMessageType::TextMsg => UserMessage::Text(data.read()?),
+            //UserMessageType::TextMsg => UserMessage::Text(data.read()?),
             UserMessageType::ResetHUD => UserMessage::ResetHUD(data.read()?),
             UserMessageType::Train => UserMessage::Train(data.read()?),
             UserMessageType::VoiceSubtitle => UserMessage::VoiceSubtitle(data.read()?),
@@ -98,7 +99,7 @@ impl BitRead<LittleEndian> for UserMessage {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub enum SayText2Kind {
     ChatAll,
     ChatTeam,

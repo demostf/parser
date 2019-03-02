@@ -82,7 +82,7 @@ pub struct EntityMessage {
     pub class_id: u16,
     #[size = 11]
     pub length: u16,
-    #[size = "length * 8"]
+    #[size = "length"]
     pub data: Stream,
 }
 

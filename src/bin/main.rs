@@ -10,7 +10,10 @@ fn main() -> std::result::Result<(), Box<ParseError>> {
     let stream: Stream = demo.get_stream();
     let mut parser = DemoParser::new(stream);
     let (header, state) = parser.parse_demo()?;
-    dbg!(header);
-    dbg!(state);
+    //dbg!(header);
+    //dbg!(state.deaths);
+    //let json = serde_json::to_string(&state.deaths).unwrap_or("err".to_string());
+    //std::thread::sleep(std::time::Duration::from_secs(5));
+    //println!("{}", json);
     Ok(())
 }

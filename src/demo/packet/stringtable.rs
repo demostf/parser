@@ -65,7 +65,7 @@ pub struct ExtraData {
     pub data: Stream,
 }
 
-#[derive(BitRead, Clone)]
+#[derive(BitRead, Clone, Default)]
 #[endianness = "LittleEndian"]
 pub struct StringTableEntry {
     pub text: String,

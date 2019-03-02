@@ -39,14 +39,9 @@ impl ParserState {
     pub fn handle_packet(&mut self, packet: Packet) -> Vec<Message> {
         match packet {
             Packet::Message(packet) | Packet::Sigon(packet) => {
-                let mut unhandled_messages = Vec::with_capacity(packet.messages.len());
-                for message in packet.messages {
-                    match self.handle_message(message) {
-                        Some(message) => unhandled_messages.push(message),
-                        _ => {}
-                    }
-                }
-                return unhandled_messages;
+                return packet.messages.into_iter()
+                    .filter_map(|message| self.handle_message(message))
+                    .collect();
             }
             Packet::DataTables(packet) => {
                 if self.send_tables.len() > 0 {
@@ -97,6 +92,9 @@ impl ParserState {
         match table {
             Some(table) => {
                 for (index, entry) in entries {
+                    if index as usize > table.entries.len() {
+                        table.entries.resize(index as usize, StringTableEntry::default());
+                    }
                     table.entries.insert(index as usize, entry);
                 }
             }
