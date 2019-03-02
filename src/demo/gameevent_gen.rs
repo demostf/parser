@@ -1807,13 +1807,13 @@ impl FromRawGameEvent for CartUpdatedEvent {
     }
 }
 
-pub struct StorePricesheetUpdatedEvent {
+pub struct StorePiceSheetUpdatedEvent {
 
 }
-impl FromRawGameEvent for StorePricesheetUpdatedEvent {
+impl FromRawGameEvent for StorePiceSheetUpdatedEvent {
     fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self> {
 
-        Ok(StorePricesheetUpdatedEvent {
+        Ok(StorePiceSheetUpdatedEvent {
 
         })
     }
@@ -2851,11 +2851,11 @@ impl FromRawGameEvent for TeamPlayWinPanelEvent {
     }
 }
 
-pub struct TeamPlayTeambalancedPlayerEvent {
+pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
     pub team: u8,
 }
-impl FromRawGameEvent for TeamPlayTeambalancedPlayerEvent {
+impl FromRawGameEvent for TeamPlayTeamBalancedPlayerEvent {
     fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self> {
         let player: u16 = {
             let value = values.get("player").ok_or(ParseError::UnknownGameEvent("player".to_string()))?;
@@ -2865,7 +2865,7 @@ impl FromRawGameEvent for TeamPlayTeambalancedPlayerEvent {
             let value = values.get("team").ok_or(ParseError::UnknownGameEvent("team".to_string()))?;
             u8::from_value(value.clone(), "team")?
         };
-        Ok(TeamPlayTeambalancedPlayerEvent {
+        Ok(TeamPlayTeamBalancedPlayerEvent {
             player,
             team
         })
@@ -3139,11 +3139,11 @@ impl FromRawGameEvent for PlayingCommentaryEvent {
     }
 }
 
-pub struct PlayerChargedeployedEvent {
+pub struct PlayerChargeDeployedEvent {
     pub userid: u16,
     pub targetid: u16,
 }
-impl FromRawGameEvent for PlayerChargedeployedEvent {
+impl FromRawGameEvent for PlayerChargeDeployedEvent {
     fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self> {
         let userid: u16 = {
             let value = values.get("userid").ok_or(ParseError::UnknownGameEvent("userid".to_string()))?;
@@ -3153,7 +3153,7 @@ impl FromRawGameEvent for PlayerChargedeployedEvent {
             let value = values.get("targetid").ok_or(ParseError::UnknownGameEvent("targetid".to_string()))?;
             u16::from_value(value.clone(), "targetid")?
         };
-        Ok(PlayerChargedeployedEvent {
+        Ok(PlayerChargeDeployedEvent {
             userid,
             targetid
         })
@@ -3619,13 +3619,13 @@ impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
     }
 }
 
-pub struct LocalPlayerWinddownEvent {
+pub struct LocalPlayerWindDownEvent {
 
 }
-impl FromRawGameEvent for LocalPlayerWinddownEvent {
+impl FromRawGameEvent for LocalPlayerWindDownEvent {
     fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self> {
 
-        Ok(LocalPlayerWinddownEvent {
+        Ok(LocalPlayerWindDownEvent {
 
         })
     }
@@ -3793,11 +3793,11 @@ impl FromRawGameEvent for PlayerHealOnHitEvent {
     }
 }
 
-pub struct PlayerStealsandvichEvent {
+pub struct PlayerStealSandvichEvent {
     pub owner: u16,
     pub target: u16,
 }
-impl FromRawGameEvent for PlayerStealsandvichEvent {
+impl FromRawGameEvent for PlayerStealSandvichEvent {
     fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self> {
         let owner: u16 = {
             let value = values.get("owner").ok_or(ParseError::UnknownGameEvent("owner".to_string()))?;
@@ -3807,7 +3807,7 @@ impl FromRawGameEvent for PlayerStealsandvichEvent {
             let value = values.get("target").ok_or(ParseError::UnknownGameEvent("target".to_string()))?;
             u16::from_value(value.clone(), "target")?
         };
-        Ok(PlayerStealsandvichEvent {
+        Ok(PlayerStealSandvichEvent {
             owner,
             target
         })
@@ -6586,11 +6586,11 @@ impl FromRawGameEvent for MvmAdvWaveKilledStunRadioEvent {
     }
 }
 
-pub struct PlayerDirecthitStunEvent {
+pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
     pub victim: u16,
 }
-impl FromRawGameEvent for PlayerDirecthitStunEvent {
+impl FromRawGameEvent for PlayerDirectHitStunEvent {
     fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self> {
         let attacker: u16 = {
             let value = values.get("attacker").ok_or(ParseError::UnknownGameEvent("attacker".to_string()))?;
@@ -6600,7 +6600,7 @@ impl FromRawGameEvent for PlayerDirecthitStunEvent {
             let value = values.get("victim").ok_or(ParseError::UnknownGameEvent("victim".to_string()))?;
             u16::from_value(value.clone(), "victim")?
         };
-        Ok(PlayerDirecthitStunEvent {
+        Ok(PlayerDirectHitStunEvent {
             attacker,
             victim
         })
@@ -6907,12 +6907,12 @@ impl FromRawGameEvent for CompetitiveVictoryEvent {
     }
 }
 
-pub struct CompetitiveSkillratingUpdateEvent {
+pub struct CompetitiveSkillRatingUpdateEvent {
     pub index: u16,
     pub rating: u16,
     pub delta: u16,
 }
-impl FromRawGameEvent for CompetitiveSkillratingUpdateEvent {
+impl FromRawGameEvent for CompetitiveSkillRatingUpdateEvent {
     fn from_raw_event(values: HashMap<String, GameEventValue>) -> Result<Self> {
         let index: u16 = {
             let value = values.get("index").ok_or(ParseError::UnknownGameEvent("index".to_string()))?;
@@ -6926,7 +6926,7 @@ impl FromRawGameEvent for CompetitiveSkillratingUpdateEvent {
             let value = values.get("delta").ok_or(ParseError::UnknownGameEvent("delta".to_string()))?;
             u16::from_value(value.clone(), "delta")?
         };
-        Ok(CompetitiveSkillratingUpdateEvent {
+        Ok(CompetitiveSkillRatingUpdateEvent {
             index,
             rating,
             delta
@@ -7391,7 +7391,7 @@ pub enum GameEvent {
     ReplayYoutubeStats(ReplayYoutubeStatsEvent),
     InventoryUpdated(InventoryUpdatedEvent),
     CartUpdated(CartUpdatedEvent),
-    StorePricesheetUpdated(StorePricesheetUpdatedEvent),
+    StorePiceSheetUpdated(StorePiceSheetUpdatedEvent),
     GcConnected(GcConnectedEvent),
     ItemSchemaInitialized(ItemSchemaInitializedEvent),
     IntroFinish(IntroFinishEvent),
@@ -7442,7 +7442,7 @@ pub enum GameEvent {
     TeamPlayCaptureBlocked(TeamPlayCaptureBlockedEvent),
     TeamPlayFlagEvent(TeamPlayFlagEventEvent),
     TeamPlayWinPanel(TeamPlayWinPanelEvent),
-    TeamPlayTeambalancedPlayer(TeamPlayTeambalancedPlayerEvent),
+    TeamPlayTeamBalancedPlayer(TeamPlayTeamBalancedPlayerEvent),
     TeamPlaySetupFinished(TeamPlaySetupFinishedEvent),
     TeamPlayAlert(TeamPlayAlertEvent),
     TrainingComplete(TrainingCompleteEvent),
@@ -7460,7 +7460,7 @@ pub enum GameEvent {
     FlagStatusUpdate(FlagStatusUpdateEvent),
     PlayerStatsUpdated(PlayerStatsUpdatedEvent),
     PlayingCommentary(PlayingCommentaryEvent),
-    PlayerChargedeployed(PlayerChargedeployedEvent),
+    PlayerChargeDeployed(PlayerChargeDeployedEvent),
     PlayerBuiltObject(PlayerBuiltObjectEvent),
     PlayerUpgradedObject(PlayerUpgradedObjectEvent),
     PlayerCarryObject(PlayerCarryObjectEvent),
@@ -7480,7 +7480,7 @@ pub enum GameEvent {
     PlayerTeleported(PlayerTeleportedEvent),
     PlayerHealedMedicCall(PlayerHealedMedicCallEvent),
     LocalPlayerChargeReady(LocalPlayerChargeReadyEvent),
-    LocalPlayerWinddown(LocalPlayerWinddownEvent),
+    LocalPlayerWindDown(LocalPlayerWindDownEvent),
     PlayerInvulned(PlayerInvulnedEvent),
     EscortSpeed(EscortSpeedEvent),
     EscortProgress(EscortProgressEvent),
@@ -7489,7 +7489,7 @@ pub enum GameEvent {
     GameUIHidden(GameUIHiddenEvent),
     PlayerEscortScore(PlayerEscortScoreEvent),
     PlayerHealOnHit(PlayerHealOnHitEvent),
-    PlayerStealsandvich(PlayerStealsandvichEvent),
+    PlayerStealSandvich(PlayerStealSandvichEvent),
     ShowClassLayout(ShowClassLayoutEvent),
     ShowVsPanel(ShowVsPanelEvent),
     PlayerDamaged(PlayerDamagedEvent),
@@ -7609,7 +7609,7 @@ pub enum GameEvent {
     MvmMannhattanPit(MvmMannhattanPitEvent),
     FlagCarriedInDetectionZone(FlagCarriedInDetectionZoneEvent),
     MvmAdvWaveKilledStunRadio(MvmAdvWaveKilledStunRadioEvent),
-    PlayerDirecthitStun(PlayerDirecthitStunEvent),
+    PlayerDirectHitStun(PlayerDirectHitStunEvent),
     MvmSentryBusterKilled(MvmSentryBusterKilledEvent),
     UpgradesFileChanged(UpgradesFileChangedEvent),
     RdTeamPointsChanged(RdTeamPointsChangedEvent),
@@ -7624,7 +7624,7 @@ pub enum GameEvent {
     CongaKill(CongaKillEvent),
     PlayerInitialSpawn(PlayerInitialSpawnEvent),
     CompetitiveVictory(CompetitiveVictoryEvent),
-    CompetitiveSkillratingUpdate(CompetitiveSkillratingUpdateEvent),
+    CompetitiveSkillRatingUpdate(CompetitiveSkillRatingUpdateEvent),
     MiniGameWin(MiniGameWinEvent),
     SentryOnGoActive(SentryOnGoActiveEvent),
     DuckXpLevelUp(DuckXpLevelUpEvent),
@@ -7641,7 +7641,8 @@ pub enum GameEvent {
     ReplaySessionInfo(ReplaySessionInfoEvent),
     ReplayEndRecord(ReplayEndRecordEvent),
     ReplayReplaysAvailable(ReplayReplaysAvailableEvent),
-    ReplayServerError(ReplayServerErrorEvent)
+    ReplayServerError(ReplayServerErrorEvent),
+    Unknown(RawGameEvent),
 }
 
 #[derive(BitRead, Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -7712,7 +7713,7 @@ pub enum GameEventType {
     ReplayYoutubeStats = 62,
     InventoryUpdated = 63,
     CartUpdated = 64,
-    StorePricesheetUpdated = 65,
+    StorePiceSheetUpdated = 65,
     GcConnected = 66,
     ItemSchemaInitialized = 67,
     IntroFinish = 68,
@@ -7763,7 +7764,7 @@ pub enum GameEventType {
     TeamPlayCaptureBlocked = 113,
     TeamPlayFlagEvent = 114,
     TeamPlayWinPanel = 115,
-    TeamPlayTeambalancedPlayer = 116,
+    TeamPlayTeamBalancedPlayer = 116,
     TeamPlaySetupFinished = 117,
     TeamPlayAlert = 118,
     TrainingComplete = 119,
@@ -7781,7 +7782,7 @@ pub enum GameEventType {
     FlagStatusUpdate = 131,
     PlayerStatsUpdated = 132,
     PlayingCommentary = 133,
-    PlayerChargedeployed = 134,
+    PlayerChargeDeployed = 134,
     PlayerBuiltObject = 135,
     PlayerUpgradedObject = 136,
     PlayerCarryObject = 137,
@@ -7801,7 +7802,7 @@ pub enum GameEventType {
     PlayerTeleported = 151,
     PlayerHealedMedicCall = 152,
     LocalPlayerChargeReady = 153,
-    LocalPlayerWinddown = 154,
+    LocalPlayerWindDown = 154,
     PlayerInvulned = 155,
     EscortSpeed = 156,
     EscortProgress = 157,
@@ -7810,7 +7811,7 @@ pub enum GameEventType {
     GameUIHidden = 160,
     PlayerEscortScore = 161,
     PlayerHealOnHit = 162,
-    PlayerStealsandvich = 163,
+    PlayerStealSandvich = 163,
     ShowClassLayout = 164,
     ShowVsPanel = 165,
     PlayerDamaged = 166,
@@ -7930,7 +7931,7 @@ pub enum GameEventType {
     MvmMannhattanPit = 280,
     FlagCarriedInDetectionZone = 281,
     MvmAdvWaveKilledStunRadio = 282,
-    PlayerDirecthitStun = 283,
+    PlayerDirectHitStun = 283,
     MvmSentryBusterKilled = 284,
     UpgradesFileChanged = 285,
     RdTeamPointsChanged = 286,
@@ -7945,7 +7946,7 @@ pub enum GameEventType {
     CongaKill = 295,
     PlayerInitialSpawn = 296,
     CompetitiveVictory = 297,
-    CompetitiveSkillratingUpdate = 298,
+    CompetitiveSkillRatingUpdate = 298,
     MiniGameWin = 299,
     SentryOnGoActive = 300,
     DuckXpLevelUp = 301,
@@ -7962,7 +7963,9 @@ pub enum GameEventType {
     ReplaySessionInfo = 312,
     ReplayEndRecord = 313,
     ReplayReplaysAvailable = 314,
-    ReplayServerError = 315
+    ReplayServerError = 315,
+    #[discriminant = "_"]
+    Unknown,
 }
 
 impl GameEvent {
@@ -8033,7 +8036,7 @@ impl GameEvent {
             GameEventType::ReplayYoutubeStats => GameEvent::ReplayYoutubeStats(ReplayYoutubeStatsEvent::from_raw_event(event.values)?),
             GameEventType::InventoryUpdated => GameEvent::InventoryUpdated(InventoryUpdatedEvent::from_raw_event(event.values)?),
             GameEventType::CartUpdated => GameEvent::CartUpdated(CartUpdatedEvent::from_raw_event(event.values)?),
-            GameEventType::StorePricesheetUpdated => GameEvent::StorePricesheetUpdated(StorePricesheetUpdatedEvent::from_raw_event(event.values)?),
+            GameEventType::StorePiceSheetUpdated => GameEvent::StorePiceSheetUpdated(StorePiceSheetUpdatedEvent::from_raw_event(event.values)?),
             GameEventType::GcConnected => GameEvent::GcConnected(GcConnectedEvent::from_raw_event(event.values)?),
             GameEventType::ItemSchemaInitialized => GameEvent::ItemSchemaInitialized(ItemSchemaInitializedEvent::from_raw_event(event.values)?),
             GameEventType::IntroFinish => GameEvent::IntroFinish(IntroFinishEvent::from_raw_event(event.values)?),
@@ -8084,7 +8087,7 @@ impl GameEvent {
             GameEventType::TeamPlayCaptureBlocked => GameEvent::TeamPlayCaptureBlocked(TeamPlayCaptureBlockedEvent::from_raw_event(event.values)?),
             GameEventType::TeamPlayFlagEvent => GameEvent::TeamPlayFlagEvent(TeamPlayFlagEventEvent::from_raw_event(event.values)?),
             GameEventType::TeamPlayWinPanel => GameEvent::TeamPlayWinPanel(TeamPlayWinPanelEvent::from_raw_event(event.values)?),
-            GameEventType::TeamPlayTeambalancedPlayer => GameEvent::TeamPlayTeambalancedPlayer(TeamPlayTeambalancedPlayerEvent::from_raw_event(event.values)?),
+            GameEventType::TeamPlayTeamBalancedPlayer => GameEvent::TeamPlayTeamBalancedPlayer(TeamPlayTeamBalancedPlayerEvent::from_raw_event(event.values)?),
             GameEventType::TeamPlaySetupFinished => GameEvent::TeamPlaySetupFinished(TeamPlaySetupFinishedEvent::from_raw_event(event.values)?),
             GameEventType::TeamPlayAlert => GameEvent::TeamPlayAlert(TeamPlayAlertEvent::from_raw_event(event.values)?),
             GameEventType::TrainingComplete => GameEvent::TrainingComplete(TrainingCompleteEvent::from_raw_event(event.values)?),
@@ -8102,7 +8105,7 @@ impl GameEvent {
             GameEventType::FlagStatusUpdate => GameEvent::FlagStatusUpdate(FlagStatusUpdateEvent::from_raw_event(event.values)?),
             GameEventType::PlayerStatsUpdated => GameEvent::PlayerStatsUpdated(PlayerStatsUpdatedEvent::from_raw_event(event.values)?),
             GameEventType::PlayingCommentary => GameEvent::PlayingCommentary(PlayingCommentaryEvent::from_raw_event(event.values)?),
-            GameEventType::PlayerChargedeployed => GameEvent::PlayerChargedeployed(PlayerChargedeployedEvent::from_raw_event(event.values)?),
+            GameEventType::PlayerChargeDeployed => GameEvent::PlayerChargeDeployed(PlayerChargeDeployedEvent::from_raw_event(event.values)?),
             GameEventType::PlayerBuiltObject => GameEvent::PlayerBuiltObject(PlayerBuiltObjectEvent::from_raw_event(event.values)?),
             GameEventType::PlayerUpgradedObject => GameEvent::PlayerUpgradedObject(PlayerUpgradedObjectEvent::from_raw_event(event.values)?),
             GameEventType::PlayerCarryObject => GameEvent::PlayerCarryObject(PlayerCarryObjectEvent::from_raw_event(event.values)?),
@@ -8122,7 +8125,7 @@ impl GameEvent {
             GameEventType::PlayerTeleported => GameEvent::PlayerTeleported(PlayerTeleportedEvent::from_raw_event(event.values)?),
             GameEventType::PlayerHealedMedicCall => GameEvent::PlayerHealedMedicCall(PlayerHealedMedicCallEvent::from_raw_event(event.values)?),
             GameEventType::LocalPlayerChargeReady => GameEvent::LocalPlayerChargeReady(LocalPlayerChargeReadyEvent::from_raw_event(event.values)?),
-            GameEventType::LocalPlayerWinddown => GameEvent::LocalPlayerWinddown(LocalPlayerWinddownEvent::from_raw_event(event.values)?),
+            GameEventType::LocalPlayerWindDown => GameEvent::LocalPlayerWindDown(LocalPlayerWindDownEvent::from_raw_event(event.values)?),
             GameEventType::PlayerInvulned => GameEvent::PlayerInvulned(PlayerInvulnedEvent::from_raw_event(event.values)?),
             GameEventType::EscortSpeed => GameEvent::EscortSpeed(EscortSpeedEvent::from_raw_event(event.values)?),
             GameEventType::EscortProgress => GameEvent::EscortProgress(EscortProgressEvent::from_raw_event(event.values)?),
@@ -8131,7 +8134,7 @@ impl GameEvent {
             GameEventType::GameUIHidden => GameEvent::GameUIHidden(GameUIHiddenEvent::from_raw_event(event.values)?),
             GameEventType::PlayerEscortScore => GameEvent::PlayerEscortScore(PlayerEscortScoreEvent::from_raw_event(event.values)?),
             GameEventType::PlayerHealOnHit => GameEvent::PlayerHealOnHit(PlayerHealOnHitEvent::from_raw_event(event.values)?),
-            GameEventType::PlayerStealsandvich => GameEvent::PlayerStealsandvich(PlayerStealsandvichEvent::from_raw_event(event.values)?),
+            GameEventType::PlayerStealSandvich => GameEvent::PlayerStealSandvich(PlayerStealSandvichEvent::from_raw_event(event.values)?),
             GameEventType::ShowClassLayout => GameEvent::ShowClassLayout(ShowClassLayoutEvent::from_raw_event(event.values)?),
             GameEventType::ShowVsPanel => GameEvent::ShowVsPanel(ShowVsPanelEvent::from_raw_event(event.values)?),
             GameEventType::PlayerDamaged => GameEvent::PlayerDamaged(PlayerDamagedEvent::from_raw_event(event.values)?),
@@ -8251,7 +8254,7 @@ impl GameEvent {
             GameEventType::MvmMannhattanPit => GameEvent::MvmMannhattanPit(MvmMannhattanPitEvent::from_raw_event(event.values)?),
             GameEventType::FlagCarriedInDetectionZone => GameEvent::FlagCarriedInDetectionZone(FlagCarriedInDetectionZoneEvent::from_raw_event(event.values)?),
             GameEventType::MvmAdvWaveKilledStunRadio => GameEvent::MvmAdvWaveKilledStunRadio(MvmAdvWaveKilledStunRadioEvent::from_raw_event(event.values)?),
-            GameEventType::PlayerDirecthitStun => GameEvent::PlayerDirecthitStun(PlayerDirecthitStunEvent::from_raw_event(event.values)?),
+            GameEventType::PlayerDirectHitStun => GameEvent::PlayerDirectHitStun(PlayerDirectHitStunEvent::from_raw_event(event.values)?),
             GameEventType::MvmSentryBusterKilled => GameEvent::MvmSentryBusterKilled(MvmSentryBusterKilledEvent::from_raw_event(event.values)?),
             GameEventType::UpgradesFileChanged => GameEvent::UpgradesFileChanged(UpgradesFileChangedEvent::from_raw_event(event.values)?),
             GameEventType::RdTeamPointsChanged => GameEvent::RdTeamPointsChanged(RdTeamPointsChangedEvent::from_raw_event(event.values)?),
@@ -8266,7 +8269,7 @@ impl GameEvent {
             GameEventType::CongaKill => GameEvent::CongaKill(CongaKillEvent::from_raw_event(event.values)?),
             GameEventType::PlayerInitialSpawn => GameEvent::PlayerInitialSpawn(PlayerInitialSpawnEvent::from_raw_event(event.values)?),
             GameEventType::CompetitiveVictory => GameEvent::CompetitiveVictory(CompetitiveVictoryEvent::from_raw_event(event.values)?),
-            GameEventType::CompetitiveSkillratingUpdate => GameEvent::CompetitiveSkillratingUpdate(CompetitiveSkillratingUpdateEvent::from_raw_event(event.values)?),
+            GameEventType::CompetitiveSkillRatingUpdate => GameEvent::CompetitiveSkillRatingUpdate(CompetitiveSkillRatingUpdateEvent::from_raw_event(event.values)?),
             GameEventType::MiniGameWin => GameEvent::MiniGameWin(MiniGameWinEvent::from_raw_event(event.values)?),
             GameEventType::SentryOnGoActive => GameEvent::SentryOnGoActive(SentryOnGoActiveEvent::from_raw_event(event.values)?),
             GameEventType::DuckXpLevelUp => GameEvent::DuckXpLevelUp(DuckXpLevelUpEvent::from_raw_event(event.values)?),
@@ -8284,6 +8287,7 @@ impl GameEvent {
             GameEventType::ReplayEndRecord => GameEvent::ReplayEndRecord(ReplayEndRecordEvent::from_raw_event(event.values)?),
             GameEventType::ReplayReplaysAvailable => GameEvent::ReplayReplaysAvailable(ReplayReplaysAvailableEvent::from_raw_event(event.values)?),
             GameEventType::ReplayServerError => GameEvent::ReplayServerError(ReplayServerErrorEvent::from_raw_event(event.values)?),
+            GameEventType::Unknown => GameEvent::Unknown(event),
         })
     }
 }
