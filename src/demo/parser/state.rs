@@ -2,11 +2,11 @@ use std::collections::HashMap;
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::GameEventDefinition;
-use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::Message;
+use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{SendTable, ServerClass};
-use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
+use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
 
@@ -36,12 +36,17 @@ impl ParserState {
         ParserState::default()
     }
 
-    pub fn handle_packet(&mut self, packet: Packet) {
+    pub fn handle_packet(&mut self, packet: Packet) -> Vec<Message> {
         match packet {
             Packet::Message(packet) | Packet::Sigon(packet) => {
+                let mut unhandled_messages = Vec::with_capacity(packet.messages.len());
                 for message in packet.messages {
-                    self.handle_message(message);
+                    match self.handle_message(message) {
+                        Some(message) => unhandled_messages.push(message),
+                        _ => {}
+                    }
                 }
+                return unhandled_messages;
             }
             Packet::DataTables(packet) => {
                 if self.send_tables.len() > 0 {
@@ -59,9 +64,10 @@ impl ParserState {
             }
             _ => {}
         }
+        Vec::new()
     }
 
-    fn handle_message(&mut self, message: Message) {
+    fn handle_message(&mut self, message: Message) -> Option<Message> {
         match message {
             Message::NetTick(message) => self.tick = message.tick,
             Message::ServerInfo(message) => {
@@ -77,8 +83,9 @@ impl ParserState {
             Message::UpdateStringTable(message) => {
                 self.handle_table_update(message.table_id, message.entries);
             }
-            _ => {}
+            _ => return Some(message)
         }
+        None
     }
 
     fn handle_table(&mut self, table: StringTable) {

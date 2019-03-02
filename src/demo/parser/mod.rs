@@ -5,10 +5,12 @@ use bitstream_reader::{BitRead, LittleEndian, ReadError};
 use crate::demo::gamevent::GameEventValue;
 use crate::demo::header::Header;
 use crate::demo::packet::Packet;
+use crate::demo::parser::analyser::Analyser;
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
 
 mod state;
+mod analyser;
 
 /// Errors that can occur during parsing
 #[derive(Debug)]
@@ -71,6 +73,7 @@ impl<T: BitRead<LittleEndian>> Parse for T {
 pub struct DemoParser {
     stream: Stream,
     state: ParserState,
+    analyser: Analyser,
 }
 
 impl DemoParser {
@@ -78,6 +81,7 @@ impl DemoParser {
         DemoParser {
             state: ParserState::new(),
             stream,
+            analyser: Analyser::new(),
         }
     }
 
@@ -94,15 +98,18 @@ impl DemoParser {
         Ok(())
     }
 
-    pub fn parse_demo(mut self) -> Result<(Header, ParserState)> {
+    pub fn parse_demo(mut self) -> Result<(Header, Analyser)> {
         let header = self.read::<Header>()?;
         loop {
             let packet = self.read::<Packet>()?;
-            match packet {
+            let messages = match packet {
                 Packet::Stop(_) => break,
                 packet => self.state.handle_packet(packet),
+            };
+            for message in messages {
+                self.analyser.handle_message(message, self.state.tick);
             }
         }
-        Ok((header, self.state))
+        Ok((header, self.analyser))
     }
 }

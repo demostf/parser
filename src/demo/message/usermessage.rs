@@ -120,11 +120,11 @@ impl BitRead<LittleEndian> for SayText2Kind {
 
 #[derive(Debug, Clone)]
 pub struct SayText2Message {
-    client: u8,
-    raw: u8,
-    kind: SayText2Kind,
-    from: String,
-    text: String,
+    pub client: u8,
+    pub raw: u8,
+    pub kind: SayText2Kind,
+    pub from: String,
+    pub text: String,
 }
 
 impl BitRead<LittleEndian> for SayText2Message {
