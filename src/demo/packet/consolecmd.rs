@@ -1,11 +1,11 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian, LazyBitReadSized};
 
 use crate::{ReadResult, Stream};
 
 #[derive(Debug)]
 pub struct ConsoleCmdPacket {
     tick: u32,
-    command: String,
+    command: LazyBitReadSized<String, LittleEndian>,
 }
 
 impl BitRead<LittleEndian> for ConsoleCmdPacket {
@@ -13,7 +13,7 @@ impl BitRead<LittleEndian> for ConsoleCmdPacket {
         let tick = stream.read_int(32)?;
         let len = stream.read_int::<usize>(32)?;
         let mut packet_data = stream.read_bits(len * 8)?;
-        let command = packet_data.read_string(Some(len))?;
+        let command = packet_data.read_sized(len)?;
         Ok(ConsoleCmdPacket { tick, command })
     }
 }

@@ -1,17 +1,46 @@
+use bitstream_reader::{BitRead, BitSize, LittleEndian, LazyBitRead};
+
+use crate::{Parse, ParseError, ParserState, Result, Stream, ReadResult};
 use crate::demo::message::Message;
 use crate::demo::vector::Vector;
-use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 #[derive(Debug)]
 pub struct MessagePacket {
     pub tick: u32,
     pub messages: Vec<Message>,
-    pub view_origin: (Vector, Vector),
-    pub view_angles: (Vector, Vector),
-    pub local_view_angles: (Vector, Vector),
     pub sequence_in: u32,
     pub sequence_out: u32,
+    pub view_angles: LazyBitRead<ViewAngles, LittleEndian>,
     pub flags: u32, // TODO
+}
+
+#[derive(Clone, Debug)]
+pub struct ViewAngles {
+    pub origin: (Vector, Vector),
+    pub angles: (Vector, Vector),
+    pub local_angles: (Vector, Vector),
+}
+
+impl BitSize for ViewAngles {
+    fn bit_size() -> usize {
+        Vector::bit_size() * 6
+    }
+}
+
+impl BitRead<LittleEndian> for ViewAngles {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
+        let view_origin_1 = Vector::read(stream)?;
+        let view_angle_1 = Vector::read(stream)?;
+        let local_view_angle_1 = Vector::read(stream)?;
+        let origin = (Vector::read(stream)?, view_origin_1);
+        let angles = (Vector::read(stream)?, view_angle_1);
+        let local_angles = (Vector::read(stream)?, local_view_angle_1);
+        Ok(ViewAngles {
+            origin,
+            angles,
+            local_angles,
+        })
+    }
 }
 
 impl Parse for MessagePacket {
@@ -19,12 +48,7 @@ impl Parse for MessagePacket {
         let tick = stream.read()?;
         let flags = stream.read()?;
 
-        let view_origin_1 = Vector::parse(stream, state)?;
-        let view_angle_1 = Vector::parse(stream, state)?;
-        let local_view_angle_1 = Vector::parse(stream, state)?;
-        let view_origin = (Vector::parse(stream, state)?, view_origin_1);
-        let view_angles = (Vector::parse(stream, state)?, view_angle_1);
-        let local_view_angles = (Vector::parse(stream, state)?, local_view_angle_1);
+        let view_angles = stream.read()?;
 
         let sequence_in = stream.read()?;
         let sequence_out = stream.read()?;
@@ -43,9 +67,7 @@ impl Parse for MessagePacket {
         let packet = MessagePacket {
             tick,
             messages,
-            view_origin,
             view_angles,
-            local_view_angles,
             sequence_in,
             sequence_out,
             flags,

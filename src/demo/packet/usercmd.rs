@@ -10,10 +10,10 @@ pub struct UserCmdPacket {
 
 impl BitRead<LittleEndian> for UserCmdPacket {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let tick = stream.read_int(32)?;
-        let sequence_out = stream.read_int(32)?;
-        let len = stream.read_int::<usize>(32)?;
-        let mut _packet_data = stream.read_bits(len * 8)?;
+        let tick = stream.read()?;
+        let sequence_out = stream.read()?;
+        let len:u32 = stream.read()?;
+        let mut _packet_data = stream.read_bits(len as usize * 8)?;
         // TODO parse the packet data
         Ok(UserCmdPacket { tick, sequence_out })
     }
