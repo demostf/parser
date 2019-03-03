@@ -4,6 +4,7 @@ use bitstream_reader::{BitRead, LittleEndian, ReadError};
 
 use crate::demo::gamevent::GameEventValue;
 use crate::demo::header::Header;
+use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 pub use crate::demo::parser::state::ParserState;
@@ -70,6 +71,12 @@ impl<T: BitRead<LittleEndian>> Parse for T {
     }
 }
 
+pub trait MessageHandler {
+    fn does_handle(&self, message_type: MessageType) -> bool;
+
+    fn handle_message(&mut self, message: Message, tick: u32);
+}
+
 pub struct DemoParser {
     stream: Stream,
     state: ParserState,
@@ -99,17 +106,29 @@ impl DemoParser {
         Ok(())
     }
 
+    fn dispatch_messages(&mut self, messages: Vec<Message>) {
+        let tick = self.state.tick;
+        for message in messages {
+            let message_type = message.get_message_type();
+            if self.state.does_handle(message_type) {
+                self.state.handle_message(message, tick);
+            } else if self.analyser.does_handle(message_type) {
+                self.analyser.handle_message(message, tick);
+            }
+        }
+    }
+
     pub fn parse_demo(mut self) -> Result<(Header, Analyser)> {
         let header = self.read::<Header>()?;
         loop {
             let packet = self.read::<Packet>()?;
-            let messages = match packet {
+            match packet {
                 Packet::Stop(_) => break,
+                Packet::Message(packet) | Packet::Sigon(packet) => {
+                    self.dispatch_messages(packet.messages);
+                }
                 packet => self.state.handle_packet(packet),
             };
-            for message in messages {
-                self.analyser.handle_message(message, self.state.tick);
-            }
         }
         Ok((header, self.analyser))
     }

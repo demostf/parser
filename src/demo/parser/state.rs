@@ -2,11 +2,12 @@ use std::collections::HashMap;
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::GameEventDefinition;
-use crate::demo::message::Message;
+use crate::demo::message::{Message, MessageType};
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{SendTable, ServerClass};
 use crate::demo::packet::Packet;
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
+use crate::demo::parser::MessageHandler;
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
 
@@ -36,13 +37,8 @@ impl ParserState {
         ParserState::default()
     }
 
-    pub fn handle_packet(&mut self, packet: Packet) -> Vec<Message> {
+    pub fn handle_packet(&mut self, packet: Packet) {
         match packet {
-            Packet::Message(packet) | Packet::Sigon(packet) => {
-                return packet.messages.into_iter()
-                    .filter_map(|message| self.handle_message(message))
-                    .collect();
-            }
             Packet::DataTables(packet) => {
                 if self.send_tables.len() > 0 {
                     unreachable!("overwriting tables");
@@ -59,28 +55,6 @@ impl ParserState {
             }
             _ => {}
         }
-        Vec::new()
-    }
-
-    fn handle_message(&mut self, message: Message) -> Option<Message> {
-        match message {
-            Message::NetTick(message) => self.tick = message.tick,
-            Message::ServerInfo(message) => {
-                self.version = message.version;
-                self.game = message.game;
-            }
-            Message::GameEventList(message) => {
-                self.event_definitions = message.event_list;
-            }
-            Message::CreateStringTable(message) => {
-                self.handle_table(message.table);
-            }
-            Message::UpdateStringTable(message) => {
-                self.handle_table_update(message.table_id, message.entries);
-            }
-            _ => return Some(message)
-        }
-        None
     }
 
     fn handle_table(&mut self, table: StringTable) {
@@ -99,6 +73,39 @@ impl ParserState {
                 }
             }
             _ => unreachable!("trying to update non existing table"),
+        }
+    }
+}
+
+impl MessageHandler for ParserState {
+    fn does_handle(&self, message_type: MessageType) -> bool {
+        match message_type {
+            MessageType::NetTick |
+            MessageType::ServerInfo |
+            MessageType::GameEventList |
+            MessageType::CreateStringTable |
+            MessageType::UpdateStringTable => true,
+            _ => false
+        }
+    }
+
+    fn handle_message(&mut self, message: Message, _tick: u32) {
+        match message {
+            Message::NetTick(message) => self.tick = message.tick,
+            Message::ServerInfo(message) => {
+                self.version = message.version;
+                self.game = message.game;
+            }
+            Message::GameEventList(message) => {
+                self.event_definitions = message.event_list;
+            }
+            Message::CreateStringTable(message) => {
+                self.handle_table(message.table);
+            }
+            Message::UpdateStringTable(message) => {
+                self.handle_table_update(message.table_id, message.entries);
+            }
+            _ => {}
         }
     }
 }

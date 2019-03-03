@@ -1,8 +1,9 @@
 use serde::Serialize;
 
 use crate::demo::gameevent_gen::{GameEvent, PlayerDeathEvent};
-use crate::demo::message::Message;
+use crate::demo::message::{Message, MessageType};
 use crate::demo::message::usermessage::{SayText2Kind, UserMessage};
+use crate::demo::parser::MessageHandler;
 use crate::demo::vector::Vector;
 
 #[derive(Debug, Clone, Serialize)]
@@ -58,17 +59,27 @@ pub struct Analyser {
     pub world: World,
 }
 
-impl Analyser {
-    pub fn new() -> Self {
-        Self::default()
+impl MessageHandler for Analyser {
+    fn does_handle(&self, message_type: MessageType) -> bool {
+        match message_type {
+            MessageType::GameEvent |
+            MessageType::UserMessage => true,
+            _ => false
+        }
     }
 
-    pub fn handle_message(&mut self, message: Message, tick: u32) {
+    fn handle_message(&mut self, message: Message, tick: u32) {
         match message {
             Message::GameEvent(message) => self.handle_event(message.event, tick),
             Message::UserMessage(message) => self.handle_user_message(message, tick),
             _ => {}
         }
+    }
+}
+
+impl Analyser {
+    pub fn new() -> Self {
+        Self::default()
     }
 
     fn handle_user_message(&mut self, message: UserMessage, tick: u32) {

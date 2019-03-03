@@ -1,8 +1,12 @@
+use std::mem::discriminant;
+
+use bitstream_reader::{BitRead, LittleEndian};
 use enum_primitive_derive::Primitive;
 use num_traits::FromPrimitive;
 
 pub use generated::*;
 
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::message::bspdecal::*;
 use crate::demo::message::classinfo::*;
 use crate::demo::message::gameevent::*;
@@ -12,8 +16,6 @@ use crate::demo::message::stringtable::*;
 use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
-use bitstream_reader::{BitRead, LittleEndian};
 
 pub mod bspdecal;
 pub mod classinfo;
@@ -152,5 +154,40 @@ impl Parse for Message {
                 Message::CmdKeyValues(CmdKeyValuesMessage::parse(stream, state)?)
             }
         })
+    }
+}
+
+impl Message {
+    pub fn get_message_type(&self) -> MessageType {
+        match self {
+            Message::Empty => MessageType::Empty,
+            Message::File(_) => MessageType::File,
+            Message::NetTick(_) => MessageType::NetTick,
+            Message::StringCmd(_) => MessageType::StringCmd,
+            Message::SetConVar(_) => MessageType::SetConVar,
+            Message::SigOnState(_) => MessageType::SigOnState,
+            Message::Print(_) => MessageType::Print,
+            Message::ServerInfo(_) => MessageType::ServerInfo,
+            Message::ClassInfo(_) => MessageType::ClassInfo,
+            Message::SetPause(_) => MessageType::SetPause,
+            Message::CreateStringTable(_) => MessageType::CreateStringTable,
+            Message::UpdateStringTable(_) => MessageType::UpdateStringTable,
+            Message::VoiceInit(_) => MessageType::VoiceInit,
+            Message::VoiceData(_) => MessageType::VoiceData,
+            Message::ParseSounds(_) => MessageType::ParseSounds,
+            Message::SetView(_) => MessageType::SetView,
+            Message::FixAngle(_) => MessageType::FixAngle,
+            Message::BspDecal(_) => MessageType::BspDecal,
+            Message::UserMessage(_) => MessageType::UserMessage,
+            Message::EntityMessage(_) => MessageType::EntityMessage,
+            Message::GameEvent(_) => MessageType::GameEvent,
+            Message::PacketEntities(_) => MessageType::PacketEntities,
+            Message::TempEntities(_) => MessageType::TempEntities,
+            Message::PreFetch(_) => MessageType::PreFetch,
+            Message::Menu(_) => MessageType::Menu,
+            Message::GameEventList(_) => MessageType::GameEventList,
+            Message::GetCvarValue(_) => MessageType::GetCvarValue,
+            Message::CmdKeyValues(_) => MessageType::CmdKeyValues,
+        }
     }
 }
