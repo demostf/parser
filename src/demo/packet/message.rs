@@ -31,7 +31,7 @@ impl Parse for MessagePacket {
         let length: u32 = stream.read()?;
         let mut packet_data = stream.read_bits(length as usize * 8)?;
 
-        let mut messages: Vec<Message> = Vec::new();
+        let mut messages: Vec<Message> = Vec::with_capacity(25);
         while packet_data.bits_left() > 6 {
             let message = Message::parse(&mut packet_data, state)?;
             match message {
