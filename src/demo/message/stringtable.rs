@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 use arraydeque::{ArrayDeque, Wrapping};
 use bitstream_reader::{BitBuffer, BitRead, BitReadSized, BitStream, LittleEndian};
+use num_traits::{PrimInt, Unsigned};
 use snap::Decoder;
 
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserdataSize, StringTable, StringTableEntry,
 };
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
-use num_traits::{PrimInt, Unsigned};
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -78,20 +78,10 @@ impl Parse for CreateStringTableMessage {
         };
 
         let entries =
-            parse_string_table_entries(&mut table_data, &table_meta, entity_count, &Vec::new())?;
-        let mut entries: Vec<(u16, StringTableEntry)> = entries.into_iter().collect();
+            parse_string_table_list(&mut table_data, &table_meta, entity_count)?;
 
-        // verify that there are no holes in our indexes
-        entries.sort_unstable_by(|(a, _), (b, _)| a.cmp(b));
-        if entries.len() > 0 {
-            let last_index = entries.last().map(|(index, _)| *index).unwrap_or(0u16) as usize;
-            if last_index != entries.len() - 1 {
-                panic!("there should be no holes when reading CreateStringTable message");
-            }
-        }
-        let table_entries = entries.into_iter().map(|(_, entry)| entry).collect();
         let table = StringTable {
-            entries: table_entries,
+            entries,
             max_entries,
             fixed_userdata_size,
             client_entries: None,
@@ -118,7 +108,7 @@ impl Parse for UpdateStringTableMessage {
         let mut data = stream.read_bits(len)?;
 
         let entries = match state.string_tables.get(table_id as usize) {
-            Some(table) => parse_string_table_entries(
+            Some(table) => parse_string_table_sparse_entries(
                 &mut data,
                 &table.get_table_meta(),
                 changed,
@@ -131,7 +121,7 @@ impl Parse for UpdateStringTableMessage {
     }
 }
 
-fn parse_string_table_entries(
+fn parse_string_table_sparse_entries(
     stream: &mut Stream,
     table_meta: &StringTableMeta,
     entry_count: u16,
@@ -152,60 +142,12 @@ fn parse_string_table_entries(
 
         last_entry = index as i16;
 
-        let value = if stream.read()? {
-            // set value
-            if stream.read()? {
-                // reuse from history
-                let index: u16 = stream.read_sized(5)?;
-                let bytes_to_copy: u32 = stream.read_sized(5)?;
-                let rest_of_string: String = stream.read()?;
-
-                Some(match history.get(index as usize) {
-                    Some(text) => String::from_utf8({
-                        text.bytes()
-                            .take(bytes_to_copy as usize)
-                            .chain(rest_of_string.bytes())
-                            .collect()
-                    })?,
-                    None => rest_of_string, // best guess, happens in some pov demos but only for unimportant tables it seems
-                })
-            } else {
-                Some(stream.read()?)
-            }
-        } else {
-            None
-        };
-
-        let user_data = if stream.read()? {
-            Some(match table_meta.fixed_userdata_size {
-                Some(size) => stream.read_bits(size.bits as usize)?,
-                None => {
-                    let bytes: u16 = stream.read_sized(14)?;
-                    stream.read_bits(bytes as usize * 8)?
-                }
-            })
-        } else {
-            None
-        }
-        .map(|stream| ExtraData {
-            len: stream.bit_len() as u16 / 8,
-            data: stream,
-        });
-
-        let entry = match existing_entries.get(index as usize) {
-            Some(existing_entry) => {
-                let new_user_data = user_data.or_else(|| existing_entry.extra_data.clone());
-                let new_value = value.unwrap_or_else(|| existing_entry.text.clone());
-                StringTableEntry {
-                    text: new_value,
-                    extra_data: new_user_data,
-                }
-            }
-            None => StringTableEntry {
-                text: value.unwrap_or_default(),
-                extra_data: user_data,
-            },
-        };
+        let entry = read_table_entry(
+            stream,
+            table_meta,
+            &history,
+            existing_entries.get(index as usize),
+        )?;
         // optimize: any way to get rid of the clone here?
         // `entries` always outlives `history` without reallocation
         let text = entry.text.clone();
@@ -219,6 +161,104 @@ fn parse_string_table_entries(
     }
 
     Ok(entries)
+}
+
+fn parse_string_table_list(
+    stream: &mut Stream,
+    table_meta: &StringTableMeta,
+    entry_count: u16,
+) -> ReadResult<Vec<StringTableEntry>> {
+    let entry_bits = log_base2(table_meta.max_entries);
+    let mut entries = Vec::with_capacity(entry_count as usize);
+
+    let mut history: Vec<String> = Vec::new();
+
+    for i in 0..entry_count {
+        if !stream.read::<bool>()? {
+            panic!("there should be no holes when reading CreateStringTable message");
+        };
+
+        let entry = read_table_entry(
+            stream,
+            table_meta,
+            &history,
+            None,
+        )?;
+        // optimize: any way to get rid of the clone here?
+        // `entries` always outlives `history` without reallocation
+        let text = entry.text.clone();
+        entries.push(entry);
+        // not 100% sure we should be pushing front here, and not appending
+        history.push(text);
+
+        if history.len() > 32 {
+            history.remove(0);
+        }
+    }
+
+    Ok(entries)
+}
+
+fn read_table_entry(
+    stream: &mut Stream,
+    table_meta: &StringTableMeta,
+    history: &Vec<String>,
+    existing_entry: Option<&StringTableEntry>,
+) -> ReadResult<StringTableEntry> {
+    let value = if stream.read()? {
+        // set value
+        if stream.read()? {
+            // reuse from history
+            let index: u16 = stream.read_sized(5)?;
+            let bytes_to_copy: u32 = stream.read_sized(5)?;
+            let rest_of_string: String = stream.read()?;
+
+            Some(match history.get(index as usize) {
+                Some(text) => String::from_utf8({
+                    text.bytes()
+                        .take(bytes_to_copy as usize)
+                        .chain(rest_of_string.bytes())
+                        .collect()
+                })?,
+                None => rest_of_string, // best guess, happens in some pov demos but only for unimportant tables it seems
+            })
+        } else {
+            Some(stream.read()?)
+        }
+    } else {
+        None
+    };
+
+    let user_data = if stream.read()? {
+        Some(match table_meta.fixed_userdata_size {
+            Some(size) => stream.read_bits(size.bits as usize)?,
+            None => {
+                let bytes: u16 = stream.read_sized(14)?;
+                stream.read_bits(bytes as usize * 8)?
+            }
+        })
+    } else {
+        None
+    }
+        .map(|stream| ExtraData {
+            len: stream.bit_len() as u16 / 8,
+            data: stream,
+        });
+
+    Ok(match existing_entry {
+        Some(existing_entry) => {
+            let new_user_data = user_data.or_else(|| existing_entry.extra_data.clone());
+            let new_value = value.unwrap_or_else(|| existing_entry.text.clone());
+            StringTableEntry {
+                text: new_value,
+                extra_data: new_user_data,
+            }
+        }
+        None => StringTableEntry {
+            text: value.unwrap_or_default(),
+            extra_data: user_data,
+        },
+    })
 }
 
 pub fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {
