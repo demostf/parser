@@ -13,7 +13,7 @@ fn main() -> std::result::Result<(), Box<ParseError>> {
     //dbg!(header);
     //dbg!(state.deaths);
     //std::thread::sleep(std::time::Duration::from_secs(5));
-    let json = serde_json::to_string(&state.borrow().rounds).unwrap_or("err".to_string());
+    let json = serde_json::to_string(&state).unwrap_or("err".to_string());
     println!("{}", json);
     Ok(())
 }

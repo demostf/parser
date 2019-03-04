@@ -8,7 +8,7 @@ use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
-use crate::demo::parser::dispatcher::{MessageHandler, StringTableEntryHandler};
+use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
 use std::mem::replace;
@@ -26,6 +26,7 @@ pub struct ParserState {
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub game: String,
+    pub interval_per_tick: f32,
 }
 
 pub struct StaticBaseline {
@@ -102,6 +103,7 @@ impl MessageHandler for ParserState {
             Message::ServerInfo(message) => {
                 self.version = message.version;
                 self.game = message.game;
+                self.interval_per_tick = message.interval_per_tick
             }
             Message::GameEventList(message) => {
                 self.event_definitions = message.event_list;
@@ -124,7 +126,7 @@ impl StringTableEntryHandler for ParserState {
                 },
                 _ => unreachable!("missing baseline"),
             },
-            _ => unreachable!(),
+            _ => {},
         }
     }
 }

@@ -8,15 +8,15 @@ use crate::demo::header::Header;
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::packet::Packet;
-use crate::demo::parser::analyser::Analyser;
-use crate::demo::parser::dispatcher::{Dispatcher, MessageHandler, StringTableEntryHandler};
+use crate::demo::parser::analyser::{Analyser, MatchState};
+use crate::demo::parser::handler::{DemoHandler, MessageHandler, StringTableEntryHandler};
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
 use std::cell::RefCell;
 use std::ops::Deref;
 
 mod analyser;
-mod dispatcher;
+mod handler;
 mod state;
 
 /// Errors that can occur during parsing
@@ -79,46 +79,32 @@ impl<T: BitRead<LittleEndian>> Parse for T {
 
 pub struct DemoParser {
     stream: Stream,
-    state: Rc<RefCell<ParserState>>,
-    analyser: Rc<RefCell<Analyser>>,
-    dispatcher: Dispatcher,
+    handler: DemoHandler,
 }
 
 impl DemoParser {
     pub fn new(stream: Stream) -> Self {
-        let state = Rc::new(RefCell::new(ParserState::new()));
-        let analyser = Rc::new(RefCell::new(Analyser::new()));
-        let mut dispatcher = Dispatcher::default();
-
-        dispatcher.register_message_handler(Rc::clone(&state) as Rc<RefCell<MessageHandler>>);
-        dispatcher.register_message_handler(Rc::clone(&analyser) as Rc<RefCell<MessageHandler>>);
-        dispatcher.register_string_table_entry_handler(
-            Rc::clone(&analyser) as Rc<RefCell<StringTableEntryHandler>>
-        );
-        dispatcher.set_state_handler(Rc::clone(&state));
 
         DemoParser {
-            state,
             stream,
-            analyser,
-            dispatcher,
+            handler: DemoHandler::new()
         }
     }
 
     #[inline(always)]
     pub fn read<T: Parse>(&mut self) -> Result<T> {
-        T::parse(&mut self.stream, self.state.borrow().deref())
+        T::parse(&mut self.stream, self.handler.get_parser_state())
     }
 
-    pub fn parse_demo(mut self) -> Result<(Header, Rc<RefCell<Analyser>>)> {
+    pub fn parse_demo(mut self) -> Result<(Header, MatchState)> {
         let header = self.read::<Header>()?;
         loop {
             let packet = self.read::<Packet>()?;
             match packet {
                 Packet::Stop(_) => break,
-                packet => self.dispatcher.handle_packet(packet),
+                packet => self.handler.handle_packet(packet),
             };
         }
-        Ok((header, self.analyser.clone()))
+        Ok((header, self.handler.get_match_state()))
     }
 }

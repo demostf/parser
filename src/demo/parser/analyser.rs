@@ -1,17 +1,19 @@
 use std::collections::HashMap;
 
 use serde::Serialize;
+use serde_repr::Serialize_repr;
 
+use crate::{ReadResult, Stream, ParserState};
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
-use crate::demo::message::packetentities::EntityId;
-use crate::demo::message::usermessage::{ChatMessageKind, UserMessage};
 use crate::demo::message::{Message, MessageType};
+use crate::demo::message::packetentities::EntityId;
+use crate::demo::message::usermessage::{ChatMessageKind, SayText2Message, UserMessage};
 use crate::demo::packet::stringtable::StringTableEntry;
-use crate::demo::parser::dispatcher::{MessageHandler, StringTableEntryHandler};
+use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::vector::Vector;
-use crate::{ReadResult, Stream};
+use std::thread::spawn;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ChatMassage {
@@ -21,11 +23,24 @@ pub struct ChatMassage {
     pub tick: u32,
 }
 
+impl ChatMassage {
+    pub fn from_message(message: SayText2Message, tick: u32) -> Self {
+        ChatMassage {
+            kind: message.kind,
+            from: message.from,
+            text: message.text,
+            tick,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Copy, PartialEq, Eq, Hash)]
 pub enum Team {
     Other = 0,
     Spectator = 1,
+    #[serde(rename = "red")]
     Red = 2,
+    #[serde(rename = "blue")]
     Blue = 3,
 }
 
@@ -40,7 +55,8 @@ impl Team {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize_repr, Copy, PartialEq, Eq, Hash)]
+#[repr(u8)]
 pub enum Class {
     Other = 0,
     Scout = 1,
@@ -154,10 +170,9 @@ pub struct World {
 pub struct Analyser {
     pub chat: Vec<ChatMassage>,
     pub users: HashMap<UserId, UserInfo>,
-    pub user_spans: Vec<Spawn>,
+    pub user_spawns: Vec<Spawn>,
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
-    pub world: World,
 }
 
 impl MessageHandler for Analyser {
@@ -204,12 +219,7 @@ impl Analyser {
         match message {
             UserMessage::SayText2(message) => match message.kind {
                 ChatMessageKind::NameChange => self.change_name(message.from, message.text),
-                _ => self.chat.push(ChatMassage {
-                    tick,
-                    text: message.text,
-                    from: message.from,
-                    kind: message.kind,
-                }),
+                _ => self.chat.push(ChatMassage::from_message(message, tick)),
             },
             _ => {}
         }
@@ -227,7 +237,7 @@ impl Analyser {
     fn handle_event(&mut self, event: GameEvent, tick: u32) {
         match event {
             GameEvent::PlayerDeath(event) => self.deaths.push(Death::from_event(event, tick)),
-            GameEvent::PlayerSpawn(event) => self.user_spans.push(Spawn::from_event(event, tick)),
+            GameEvent::PlayerSpawn(event) => self.user_spawns.push(Spawn::from_event(event, tick)),
             GameEvent::TeamPlayRoundWin(event) => {
                 // 6 = time limit
                 if event.win_reason != 6 {
@@ -256,4 +266,62 @@ impl Analyser {
         }
         Ok(())
     }
+
+    pub fn get_match_state(self, state: ParserState) -> MatchState {
+        let start_tick = self.user_spawns.first().map(|spawn| spawn.tick).unwrap_or(0);
+        MatchState {
+            start_tick,
+            interval_per_tick: state.interval_per_tick,
+            chat: self.chat,
+            deaths: self.deaths,
+            rounds: self.rounds,
+            users: UserState::from_users_and_spawn(self.users, self.user_spawns),
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct UserState {
+    pub classes: HashMap<Class, u8>,
+    pub name: String,
+    #[serde(rename = "userId")]
+    pub user_id: UserId,
+    #[serde(rename = "steamId")]
+    pub steam_id: String,
+    pub team: Team,
+}
+
+impl UserState {
+    pub fn from_users_and_spawn(users: HashMap<UserId, UserInfo>, spawns: Vec<Spawn>) -> HashMap<UserId, Self> {
+        let mut teams: HashMap<UserId, Team> = HashMap::with_capacity(users.len());
+        let mut classes: HashMap<UserId, HashMap<Class, u8>> = HashMap::with_capacity(9);
+        for spawn in spawns {
+            teams.insert(spawn.user, spawn.team);
+            let user_classes = classes.entry(spawn.user).or_default();
+            let mut class_spawns = user_classes.entry(spawn.class).or_default();
+            *class_spawns += 1;
+        }
+
+        users.into_iter().map(|(user_id, user)| {
+            (user_id, UserState {
+                classes: classes.remove(&user.user_id).unwrap_or(HashMap::new()),
+                team: teams.remove(&user.user_id).unwrap_or(Team::Other),
+                name: user.name,
+                user_id: user.user_id,
+                steam_id: user.steam_id,
+            })
+        }).collect()
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct MatchState {
+    pub chat: Vec<ChatMassage>,
+    pub users: HashMap<UserId, UserState>,
+    pub deaths: Vec<Death>,
+    pub rounds: Vec<Round>,
+    #[serde(rename = "startTick")]
+    pub start_tick: u32,
+    #[serde(rename = "intervalPerTick")]
+    pub interval_per_tick: f32,
 }

@@ -101,9 +101,14 @@ impl BitRead<LittleEndian> for UserMessage {
 
 #[derive(Debug, Clone, Serialize)]
 pub enum ChatMessageKind {
+    #[serde(rename = "TF_Chat_All")]
     ChatAll,
+    #[serde(rename = "TF_Chat_Team")]
     ChatTeam,
+    #[serde(rename = "TF_Chat_AllDead")]
     ChatAllDead,
+    #[serde(rename = "TF_Chat_Team_Dead")]
+    ChatTeamDead,
     NameChange,
 }
 
@@ -113,8 +118,12 @@ impl BitRead<LittleEndian> for ChatMessageKind {
         Ok(match raw.as_str() {
             "TF_Chat_Team" => ChatMessageKind::ChatTeam,
             "TF_Chat_AllDead" => ChatMessageKind::ChatAllDead,
+            "TF_Chat_Team_Dead" => ChatMessageKind::ChatTeamDead,
             "#TF_Name_Change" => ChatMessageKind::NameChange,
-            _ => ChatMessageKind::ChatAll,
+            "TF_Chat_All" => ChatMessageKind::ChatAll,
+            _ => {
+                unreachable!("unknown chat kind")
+            },
         })
     }
 }
