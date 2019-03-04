@@ -256,14 +256,14 @@ impl Analyser {
         let name: String = data.read_sized(32)?;
         let user_id = UserId((data.read::<u32>()? & 255) as u8);
         let steam_id: String = data.read()?;
-        let entity_id: u32 = text.parse().unwrap_or_default();
+        let entity_id: Option<u32> = text.parse().ok();
 
-        if entity_id > 0 && steam_id.len() > 0 {
+        if entity_id.is_some() && steam_id.len() > 0 {
             let user = UserInfo {
                 steam_id,
                 user_id,
                 name,
-                entity_id: EntityId::new(entity_id),
+                entity_id: EntityId::new(entity_id.unwrap()),
             };
 
             self.users.insert(user_id, user);
