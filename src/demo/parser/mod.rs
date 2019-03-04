@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use bitstream_reader::{BitRead, LittleEndian, ReadError};
 
-use crate::demo::gamevent::GameEventValue;
+use crate::demo::gamevent::{GameEventValue, GameEventValueType};
 use crate::demo::header::Header;
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
@@ -14,6 +14,7 @@ pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
 use std::cell::RefCell;
 use std::ops::Deref;
+use crate::demo::gameevent_gen::GameEventType;
 
 mod analyser;
 mod handler;
@@ -39,7 +40,7 @@ pub enum ParseError {
     /// A unknown game event type was read
     UnknownGameEvent(String),
     /// A read game event doesn't contain the expected values
-    InvalidGameEvent { name: String, value: GameEventValue },
+    InvalidGameEvent { expected_type: GameEventValueType, name: String, value: GameEventValue },
     /// Unexpected type of compressed data
     UnexpectedCompressionType(String),
     /// Error while decompressing SNAP compressed string table

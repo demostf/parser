@@ -51,6 +51,7 @@ impl FromGameEventValue for String {
         match value {
             GameEventValue::String(val) => Ok(val),
             _ => Err(ParseError::InvalidGameEvent {
+                expected_type: GameEventValueType::String,
                 name: name.to_string(),
                 value,
             }),
@@ -63,6 +64,7 @@ impl FromGameEventValue for f32 {
         match value {
             GameEventValue::Float(val) => Ok(val),
             _ => Err(ParseError::InvalidGameEvent {
+                expected_type: GameEventValueType::Float,
                 name: name.to_string(),
                 value,
             }),
@@ -75,6 +77,7 @@ impl FromGameEventValue for u32 {
         match value {
             GameEventValue::Long(val) => Ok(val),
             _ => Err(ParseError::InvalidGameEvent {
+                expected_type: GameEventValueType::Long,
                 name: name.to_string(),
                 value,
             }),
@@ -87,6 +90,7 @@ impl FromGameEventValue for u16 {
         match value {
             GameEventValue::Short(val) => Ok(val),
             _ => Err(ParseError::InvalidGameEvent {
+                expected_type: GameEventValueType::Short,
                 name: name.to_string(),
                 value,
             }),
@@ -99,6 +103,7 @@ impl FromGameEventValue for u8 {
         match value {
             GameEventValue::Byte(val) => Ok(val),
             _ => Err(ParseError::InvalidGameEvent {
+                expected_type: GameEventValueType::Byte,
                 name: name.to_string(),
                 value,
             }),
@@ -111,6 +116,7 @@ impl FromGameEventValue for bool {
         match value {
             GameEventValue::Boolean(val) => Ok(val),
             _ => Err(ParseError::InvalidGameEvent {
+                expected_type: GameEventValueType::Boolean,
                 name: name.to_string(),
                 value,
             }),
@@ -123,6 +129,7 @@ impl FromGameEventValue for () {
         match value {
             GameEventValue::Local => Ok(()),
             _ => Err(ParseError::InvalidGameEvent {
+                expected_type: GameEventValueType::Local,
                 name: name.to_string(),
                 value,
             }),
