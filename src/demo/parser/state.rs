@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::GameEventDefinition;
+use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::message::{Message, MessageType};
@@ -12,7 +13,6 @@ use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
 use std::mem::replace;
-use crate::demo::message::gameevent::GameEventTypeId;
 
 pub type StringEntryHandler = Box<FnMut(&String, &StringTableEntry) -> ()>;
 
@@ -127,7 +127,7 @@ impl StringTableEntryHandler for ParserState {
                 },
                 _ => unreachable!("missing baseline"),
             },
-            _ => {},
+            _ => {}
         }
     }
 }

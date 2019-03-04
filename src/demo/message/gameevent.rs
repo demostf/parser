@@ -3,12 +3,12 @@ use std::iter::FromIterator;
 
 use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{
     GameEvent, GameEventDefinition, GameEventEntry, GameEventValue, GameEventValueType,
     RawGameEvent,
 };
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {
     Ok(match definition.kind {
@@ -40,7 +40,10 @@ impl Parse for GameEventMessage {
                     values.push(read_event_value(&mut data, &entry)?);
                 }
 
-                RawGameEvent { event_type: definition.event_type, values }
+                RawGameEvent {
+                    event_type: definition.event_type,
+                    values,
+                }
             }
             None => unreachable!(),
         };
@@ -65,7 +68,7 @@ pub struct GameEventListMessage {
 
 impl BitRead<LittleEndian> for GameEventDefinition {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let event_type:GameEventTypeId = stream.read()?;
+        let event_type: GameEventTypeId = stream.read()?;
         let name: String = stream.read()?;
         let mut entries = Vec::new();
 

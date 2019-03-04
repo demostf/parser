@@ -4,16 +4,16 @@ use std::thread::spawn;
 use serde::Serialize;
 use serde_repr::Serialize_repr;
 
-use crate::{ParserState, ReadResult, Stream};
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
-use crate::demo::message::{Message, MessageType};
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::usermessage::{ChatMessageKind, SayText2Message, UserMessage};
+use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::vector::Vector;
+use crate::{ParserState, ReadResult, Stream};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ChatMassage {
@@ -295,7 +295,10 @@ pub struct UserState {
 }
 
 impl UserState {
-    pub fn from_users_and_spawn(users: HashMap<UserId, UserInfo>, spawns: Vec<Spawn>) -> HashMap<UserId, Self> {
+    pub fn from_users_and_spawn(
+        users: HashMap<UserId, UserInfo>,
+        spawns: Vec<Spawn>,
+    ) -> HashMap<UserId, Self> {
         let mut teams: HashMap<UserId, Team> = HashMap::with_capacity(users.len());
         let mut classes: HashMap<UserId, HashMap<Class, u8>> = HashMap::with_capacity(9);
         for spawn in spawns {
@@ -305,15 +308,21 @@ impl UserState {
             *class_spawns += 1;
         }
 
-        users.into_iter().map(|(user_id, user)| {
-            (user_id, UserState {
-                classes: classes.remove(&user.user_id).unwrap_or(HashMap::new()),
-                team: teams.remove(&user.user_id).unwrap_or(Team::Other),
-                name: user.name,
-                user_id: user.user_id,
-                steam_id: user.steam_id,
+        users
+            .into_iter()
+            .map(|(user_id, user)| {
+                (
+                    user_id,
+                    UserState {
+                        classes: classes.remove(&user.user_id).unwrap_or(HashMap::new()),
+                        team: teams.remove(&user.user_id).unwrap_or(Team::Other),
+                        name: user.name,
+                        user_id: user.user_id,
+                        steam_id: user.steam_id,
+                    },
+                )
             })
-        }).collect()
+            .collect()
     }
 }
 

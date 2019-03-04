@@ -121,9 +121,7 @@ impl BitRead<LittleEndian> for ChatMessageKind {
             "TF_Chat_Team_Dead" => ChatMessageKind::ChatTeamDead,
             "#TF_Name_Change" => ChatMessageKind::NameChange,
             "TF_Chat_All" => ChatMessageKind::ChatAll,
-            _ => {
-                unreachable!("unknown chat kind")
-            },
+            _ => unreachable!("unknown chat kind"),
         })
     }
 }

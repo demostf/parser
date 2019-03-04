@@ -4,8 +4,8 @@ use std::rc::Rc;
 
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
-use crate::demo::packet::Packet;
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
+use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::{Analyser, MatchState};
 use crate::ParserState;
 
@@ -89,11 +89,13 @@ impl DemoHandler {
     }
 
     fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
-        self.state_handler.handle_data_table(send_tables, server_classes);
+        self.state_handler
+            .handle_data_table(send_tables, server_classes);
     }
 
     fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {
-        self.state_handler.handle_string_entry(table, index, entries);
+        self.state_handler
+            .handle_string_entry(table, index, entries);
         self.analyser.handle_string_entry(table, index, entries);
     }
 
