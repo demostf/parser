@@ -4,14 +4,18 @@ use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::GameEventDefinition;
 use crate::demo::message::{Message, MessageType};
 use crate::demo::message::packetentities::EntityId;
+use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::packet::datatable::{SendTable, ServerClass};
 use crate::demo::packet::Packet;
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
-use crate::demo::parser::MessageHandler;
+use crate::demo::parser::dispatcher::{MessageHandler, StringTableEntryHandler};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
+use std::mem::replace;
 
-#[derive(Default, Debug)]
+pub type StringEntryHandler = Box<FnMut(&String, &StringTableEntry) -> ()>;
+
+#[derive(Default)]
 pub struct ParserState {
     pub version: u16,
     pub static_baselines: HashMap<u32, StaticBaseline>,
@@ -21,15 +25,23 @@ pub struct ParserState {
     pub send_tables: HashMap<String, SendTable>,
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
-    pub tick: u32,
     pub game: String,
 }
 
-#[derive(Debug)]
 pub struct StaticBaseline {
     class_id: u32,
     raw: Stream,
     parsed: Option<Vec<SendProp>>,
+}
+
+impl StaticBaseline {
+    fn new(class_id: u32, raw: Stream) -> Self {
+        StaticBaseline {
+            class_id,
+            raw,
+            parsed: None,
+        }
+    }
 }
 
 impl ParserState {
@@ -37,42 +49,31 @@ impl ParserState {
         ParserState::default()
     }
 
-    pub fn handle_packet(&mut self, packet: Packet) {
-        match packet {
-            Packet::DataTables(packet) => {
-                if self.send_tables.len() > 0 {
-                    unreachable!("overwriting tables");
-                }
-                for table in packet.tables {
-                    self.send_tables.insert(table.name.clone(), table);
-                }
-                self.server_classes = packet.server_classes;
-            }
-            Packet::StringTables(packet) => {
-                for table in packet.tables {
-                    self.handle_table(table);
-                }
-            }
-            _ => {}
+    pub fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
+        for table in send_tables {
+            self.send_tables.insert(table.name.clone(), table);
         }
+        self.server_classes = server_classes
     }
 
-    fn handle_table(&mut self, table: StringTable) {
+    pub fn handle_string_table(&mut self, table: StringTable) {
         self.string_tables.push(table);
     }
 
-    fn handle_table_update(&mut self, table_id: u8, entries: HashMap<u16, StringTableEntry>) {
-        let mut table = self.string_tables.get_mut(table_id as usize);
-        match table {
+    pub fn handle_string_table_update(&mut self, table_id: u8, entries: HashMap<u16, StringTableEntry>) {
+        match self.string_tables.get_mut(table_id as usize) {
             Some(table) => {
                 for (index, entry) in entries {
-                    if index as usize > table.entries.len() {
-                        table.entries.resize(index as usize, StringTableEntry::default());
+                    let index = index as usize;
+                    if index > table.entries.len() {
+                        table.entries.resize(index, StringTableEntry::default())
                     }
-                    table.entries.insert(index as usize, entry);
+                    unsafe {
+                        replace(table.entries.get_unchecked_mut(index), entry);
+                    }
                 }
-            }
-            _ => unreachable!("trying to update non existing table"),
+            },
+            _ => unreachable!()
         }
     }
 }
@@ -80,7 +81,6 @@ impl ParserState {
 impl MessageHandler for ParserState {
     fn does_handle(&self, message_type: MessageType) -> bool {
         match message_type {
-            MessageType::NetTick |
             MessageType::ServerInfo |
             MessageType::GameEventList |
             MessageType::CreateStringTable |
@@ -91,7 +91,6 @@ impl MessageHandler for ParserState {
 
     fn handle_message(&mut self, message: Message, _tick: u32) {
         match message {
-            Message::NetTick(message) => self.tick = message.tick,
             Message::ServerInfo(message) => {
                 self.version = message.version;
                 self.game = message.game;
@@ -99,13 +98,29 @@ impl MessageHandler for ParserState {
             Message::GameEventList(message) => {
                 self.event_definitions = message.event_list;
             }
-            Message::CreateStringTable(message) => {
-                self.handle_table(message.table);
-            }
-            Message::UpdateStringTable(message) => {
-                self.handle_table_update(message.table_id, message.entries);
-            }
             _ => {}
+        }
+    }
+}
+
+impl StringTableEntryHandler for ParserState {
+    fn handle_string_entry(&mut self, table: &String, index: usize, entry: &StringTableEntry) {
+        match table.as_str() {
+            "instancebaseline" => {
+                match &entry.extra_data {
+                    Some(extra) => {
+                        match entry.text.parse::<u32>() {
+                            Ok(class_id) => {
+                                let baseline = StaticBaseline::new(class_id, extra.data.clone());
+                                self.static_baselines.insert(class_id, baseline);
+                            }
+                            Err(_) => {}
+                        }
+                    }
+                    _ => unreachable!("missing baseline")
+                }
+            }
+            _ => unreachable!()
         }
     }
 }

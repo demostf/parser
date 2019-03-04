@@ -12,8 +12,8 @@ fn main() -> std::result::Result<(), Box<ParseError>> {
     let (header, state) = parser.parse_demo()?;
     //dbg!(header);
     //dbg!(state.deaths);
-    //let json = serde_json::to_string(&state.deaths).unwrap_or("err".to_string());
     //std::thread::sleep(std::time::Duration::from_secs(5));
+    //let json = serde_json::to_string(&state.borrow().deaths).unwrap_or("err".to_string());
     //println!("{}", json);
     Ok(())
 }

@@ -3,8 +3,9 @@ use serde::Serialize;
 use crate::demo::gameevent_gen::{GameEvent, PlayerDeathEvent};
 use crate::demo::message::{Message, MessageType};
 use crate::demo::message::usermessage::{SayText2Kind, UserMessage};
-use crate::demo::parser::MessageHandler;
+use crate::demo::parser::dispatcher::{MessageHandler, StringTableEntryHandler};
 use crate::demo::vector::Vector;
+use crate::demo::packet::stringtable::StringTableEntry;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ChatMassage {
@@ -74,6 +75,12 @@ impl MessageHandler for Analyser {
             Message::UserMessage(message) => self.handle_user_message(message, tick),
             _ => {}
         }
+    }
+}
+
+impl StringTableEntryHandler for Analyser {
+    fn handle_string_entry(&mut self, table: &String, index: usize, entry: &StringTableEntry) {
+
     }
 }
 
