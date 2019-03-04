@@ -1,9 +1,10 @@
 use std::collections::HashMap;
+use std::thread::spawn;
 
 use serde::Serialize;
 use serde_repr::Serialize_repr;
 
-use crate::{ReadResult, Stream, ParserState};
+use crate::{ParserState, ReadResult, Stream};
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
@@ -13,7 +14,6 @@ use crate::demo::message::usermessage::{ChatMessageKind, SayText2Message, UserMe
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::vector::Vector;
-use std::thread::spawn;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ChatMassage {
@@ -173,6 +173,7 @@ pub struct Analyser {
     pub user_spawns: Vec<Spawn>,
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
+    pub start_tick: u32,
 }
 
 impl MessageHandler for Analyser {
@@ -184,6 +185,9 @@ impl MessageHandler for Analyser {
     }
 
     fn handle_message(&mut self, message: Message, tick: u32) {
+        if self.start_tick == 0 {
+            self.start_tick = tick;
+        }
         match message {
             Message::GameEvent(message) => self.handle_event(message.event, tick),
             Message::UserMessage(message) => self.handle_user_message(message, tick),
@@ -268,9 +272,8 @@ impl Analyser {
     }
 
     pub fn get_match_state(self, state: ParserState) -> MatchState {
-        let start_tick = self.user_spawns.first().map(|spawn| spawn.tick).unwrap_or(0);
         MatchState {
-            start_tick,
+            start_tick: self.start_tick,
             interval_per_tick: state.interval_per_tick,
             chat: self.chat,
             deaths: self.deaths,
