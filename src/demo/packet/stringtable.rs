@@ -2,9 +2,9 @@ use std::fmt;
 
 use bitstream_reader::{BitRead, LittleEndian};
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::sendprop::SendPropFlag::Exclude;
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(BitRead, Clone, Copy, Debug)]
 pub struct FixedUserdataSize {
@@ -68,10 +68,7 @@ pub struct ExtraData {
 impl ExtraData {
     pub fn new(data: Stream) -> Self {
         let byte_len = (data.bit_len() / 8) as u16;
-        ExtraData {
-            byte_len,
-            data,
-        }
+        ExtraData { byte_len, data }
     }
 }
 

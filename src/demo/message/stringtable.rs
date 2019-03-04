@@ -5,10 +5,10 @@ use bitstream_reader::{BitBuffer, BitRead, BitReadSized, BitStream, LittleEndian
 use num_traits::{PrimInt, Unsigned};
 use snap::Decoder;
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserdataSize, StringTable, StringTableEntry,
 };
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -77,8 +77,7 @@ impl Parse for CreateStringTableMessage {
             fixed_userdata_size,
         };
 
-        let entries =
-            parse_string_table_list(&mut table_data, &table_meta, entity_count)?;
+        let entries = parse_string_table_list(&mut table_data, &table_meta, entity_count)?;
 
         let table = StringTable {
             entries,
@@ -178,12 +177,7 @@ fn parse_string_table_list(
             panic!("there should be no holes when reading CreateStringTable message");
         };
 
-        let entry = read_table_entry(
-            stream,
-            table_meta,
-            &history,
-            None,
-        )?;
+        let entry = read_table_entry(stream, table_meta, &history, None)?;
         // optimize: any way to get rid of the clone here?
         // `entries` always outlives `history` without reallocation
         let text = entry.text.clone();
@@ -240,7 +234,7 @@ fn read_table_entry(
     } else {
         None
     }
-        .map(ExtraData::new);
+    .map(ExtraData::new);
 
     Ok(match existing_entry {
         Some(existing_entry) => {

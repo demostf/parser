@@ -2,14 +2,16 @@ use std::collections::HashMap;
 
 use serde::Serialize;
 
-use crate::{ReadResult, Stream};
-use crate::demo::gameevent_gen::{GameEvent, PlayerDeathEvent, PlayerSpawnEvent};
-use crate::demo::message::{Message, MessageType};
+use crate::demo::gameevent_gen::{
+    GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
+};
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::usermessage::{ChatMessageKind, UserMessage};
+use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::dispatcher::{MessageHandler, StringTableEntryHandler};
 use crate::demo::vector::Vector;
+use crate::{ReadResult, Stream};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ChatMassage {
@@ -33,7 +35,7 @@ impl Team {
             1 => Team::Spectator,
             2 => Team::Red,
             3 => Team::Blue,
-            _ => Team::Other
+            _ => Team::Other,
         }
     }
 }
@@ -64,7 +66,7 @@ impl Class {
             7 => Class::Pyro,
             8 => Class::Spy,
             9 => Class::Engineer,
-            _ => Class::Other
+            _ => Class::Other,
         }
     }
 }
@@ -127,9 +129,19 @@ impl Death {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Round {
-    winner: String,
+    winner: Team,
     length: f32,
     end_tick: u32,
+}
+
+impl Round {
+    pub fn from_event(event: TeamPlayRoundWinEvent, tick: u32) -> Self {
+        Round {
+            winner: Team::new(event.team as u16),
+            length: event.round_time,
+            end_tick: tick,
+        }
+    }
 }
 
 #[derive(Default, Debug, Serialize)]
@@ -151,9 +163,8 @@ pub struct Analyser {
 impl MessageHandler for Analyser {
     fn does_handle(&self, message_type: MessageType) -> bool {
         match message_type {
-            MessageType::GameEvent |
-            MessageType::UserMessage => true,
-            _ => false
+            MessageType::GameEvent | MessageType::UserMessage => true,
+            _ => false,
         }
     }
 
@@ -191,17 +202,15 @@ impl Analyser {
 
     fn handle_user_message(&mut self, message: UserMessage, tick: u32) {
         match message {
-            UserMessage::SayText2(message) => {
-                match message.kind {
-                    ChatMessageKind::NameChange => self.change_name(message.from, message.text),
-                    _ => self.chat.push(ChatMassage {
-                        tick,
-                        text: message.text,
-                        from: message.from,
-                        kind: message.kind,
-                    })
-                }
-            }
+            UserMessage::SayText2(message) => match message.kind {
+                ChatMessageKind::NameChange => self.change_name(message.from, message.text),
+                _ => self.chat.push(ChatMassage {
+                    tick,
+                    text: message.text,
+                    from: message.from,
+                    kind: message.kind,
+                }),
+            },
             _ => {}
         }
     }
@@ -219,6 +228,12 @@ impl Analyser {
         match event {
             GameEvent::PlayerDeath(event) => self.deaths.push(Death::from_event(event, tick)),
             GameEvent::PlayerSpawn(event) => self.user_spans.push(Spawn::from_event(event, tick)),
+            GameEvent::TeamPlayRoundWin(event) => {
+                // 6 = time limit
+                if event.win_reason != 6 {
+                    self.rounds.push(Round::from_event(event, tick))
+                }
+            }
             _ => {}
         }
     }

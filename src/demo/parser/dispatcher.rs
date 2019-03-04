@@ -4,8 +4,8 @@ use std::rc::Rc;
 
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
-use crate::demo::packet::Packet;
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
+use crate::demo::packet::Packet;
 use crate::ParserState;
 
 pub trait MessageHandler {
@@ -24,7 +24,7 @@ pub struct Dispatcher {
     string_table_names: Vec<String>,
     on_message: Vec<Rc<RefCell<MessageHandler>>>,
     on_string_table_entry: Vec<Rc<RefCell<StringTableEntryHandler>>>,
-    state_handler: Option<Rc<RefCell<ParserState>>>
+    state_handler: Option<Rc<RefCell<ParserState>>>,
 }
 
 impl Dispatcher {
@@ -36,7 +36,10 @@ impl Dispatcher {
         self.state_handler = Some(handler);
     }
 
-    pub fn register_string_table_entry_handler(&mut self, handler: Rc<RefCell<StringTableEntryHandler>>) {
+    pub fn register_string_table_entry_handler(
+        &mut self,
+        handler: Rc<RefCell<StringTableEntryHandler>>,
+    ) {
         self.on_string_table_entry.push(handler);
     }
 
@@ -53,12 +56,14 @@ impl Dispatcher {
             Packet::Message(packet) | Packet::Sigon(packet) => {
                 for message in packet.messages {
                     match message {
-                        Message::NetTick(message) => {
-                            self.tick = message.tick
+                        Message::NetTick(message) => self.tick = message.tick,
+                        Message::CreateStringTable(message) => {
+                            self.handle_string_table(message.table)
                         }
-                        Message::CreateStringTable(message) => self.handle_string_table(message.table),
-                        Message::UpdateStringTable(message) => self.handle_table_update(message.table_id, message.entries),
-                        _ => self.handle_message(message)
+                        Message::UpdateStringTable(message) => {
+                            self.handle_table_update(message.table_id, message.entries)
+                        }
+                        _ => self.handle_message(message),
                     }
                 }
             }
@@ -93,13 +98,17 @@ impl Dispatcher {
 
     fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
         if let Some(handler) = &self.state_handler {
-            handler.borrow_mut().handle_data_table(send_tables, server_classes);
+            handler
+                .borrow_mut()
+                .handle_data_table(send_tables, server_classes);
         }
     }
 
     fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {
         for handler in self.on_string_table_entry.iter() {
-            handler.borrow_mut().handle_string_entry(table, index, entries);
+            handler
+                .borrow_mut()
+                .handle_string_entry(table, index, entries);
         }
     }
 

@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian, LazyBitReadSized};
+use bitstream_reader::{BitRead, LazyBitReadSized, LittleEndian};
 
 use crate::{ReadResult, Stream};
 

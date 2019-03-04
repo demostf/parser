@@ -6,7 +6,6 @@ use num_traits::FromPrimitive;
 
 pub use generated::*;
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::message::bspdecal::*;
 use crate::demo::message::classinfo::*;
 use crate::demo::message::gameevent::*;
@@ -16,6 +15,7 @@ use crate::demo::message::stringtable::*;
 use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 pub mod bspdecal;
 pub mod classinfo;

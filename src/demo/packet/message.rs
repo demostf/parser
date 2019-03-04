@@ -1,8 +1,8 @@
-use bitstream_reader::{BitRead, BitSize, LittleEndian, LazyBitRead};
+use bitstream_reader::{BitRead, BitSize, LazyBitRead, LittleEndian};
 
-use crate::{Parse, ParseError, ParserState, Result, Stream, ReadResult};
 use crate::demo::message::Message;
 use crate::demo::vector::Vector;
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(Debug)]
 pub struct MessagePacket {

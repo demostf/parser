@@ -6,8 +6,8 @@ use bitstream_reader::{BitRead, LittleEndian, ReadError};
 use crate::demo::gamevent::GameEventValue;
 use crate::demo::header::Header;
 use crate::demo::message::{Message, MessageType};
-use crate::demo::packet::Packet;
 use crate::demo::packet::stringtable::StringTableEntry;
+use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 use crate::demo::parser::dispatcher::{Dispatcher, MessageHandler, StringTableEntryHandler};
 pub use crate::demo::parser::state::ParserState;
@@ -15,9 +15,9 @@ use crate::Stream;
 use std::cell::RefCell;
 use std::ops::Deref;
 
-mod state;
 mod analyser;
 mod dispatcher;
+mod state;
 
 /// Errors that can occur during parsing
 #[derive(Debug)]
@@ -92,7 +92,9 @@ impl DemoParser {
 
         dispatcher.register_message_handler(Rc::clone(&state) as Rc<RefCell<MessageHandler>>);
         dispatcher.register_message_handler(Rc::clone(&analyser) as Rc<RefCell<MessageHandler>>);
-        dispatcher.register_string_table_entry_handler(Rc::clone(&analyser) as Rc<RefCell<StringTableEntryHandler>>);
+        dispatcher.register_string_table_entry_handler(
+            Rc::clone(&analyser) as Rc<RefCell<StringTableEntryHandler>>
+        );
         dispatcher.set_state_handler(Rc::clone(&state));
 
         DemoParser {

@@ -2,12 +2,12 @@ use std::collections::HashMap;
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::GameEventDefinition;
-use crate::demo::message::{Message, MessageType};
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::stringtable::StringTableMeta;
+use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
-use crate::demo::packet::Packet;
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
+use crate::demo::packet::Packet;
 use crate::demo::parser::dispatcher::{MessageHandler, StringTableEntryHandler};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
@@ -49,7 +49,11 @@ impl ParserState {
         ParserState::default()
     }
 
-    pub fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
+    pub fn handle_data_table(
+        &mut self,
+        send_tables: Vec<SendTable>,
+        server_classes: Vec<ServerClass>,
+    ) {
         for table in send_tables {
             self.send_tables.insert(table.name.clone(), table);
         }
@@ -60,7 +64,11 @@ impl ParserState {
         self.string_tables.push(table);
     }
 
-    pub fn handle_string_table_update(&mut self, table_id: u8, entries: HashMap<u16, StringTableEntry>) {
+    pub fn handle_string_table_update(
+        &mut self,
+        table_id: u8,
+        entries: HashMap<u16, StringTableEntry>,
+    ) {
         match self.string_tables.get_mut(table_id as usize) {
             Some(table) => {
                 for (index, entry) in entries {
@@ -72,8 +80,8 @@ impl ParserState {
                         replace(table.entries.get_unchecked_mut(index), entry);
                     }
                 }
-            },
-            _ => unreachable!()
+            }
+            _ => unreachable!(),
         }
     }
 }
@@ -81,11 +89,11 @@ impl ParserState {
 impl MessageHandler for ParserState {
     fn does_handle(&self, message_type: MessageType) -> bool {
         match message_type {
-            MessageType::ServerInfo |
-            MessageType::GameEventList |
-            MessageType::CreateStringTable |
-            MessageType::UpdateStringTable => true,
-            _ => false
+            MessageType::ServerInfo
+            | MessageType::GameEventList
+            | MessageType::CreateStringTable
+            | MessageType::UpdateStringTable => true,
+            _ => false,
         }
     }
 
@@ -106,21 +114,17 @@ impl MessageHandler for ParserState {
 impl StringTableEntryHandler for ParserState {
     fn handle_string_entry(&mut self, table: &String, index: usize, entry: &StringTableEntry) {
         match table.as_str() {
-            "instancebaseline" => {
-                match &entry.extra_data {
-                    Some(extra) => {
-                        match entry.text.parse::<u32>() {
-                            Ok(class_id) => {
-                                let baseline = StaticBaseline::new(class_id, extra.data.clone());
-                                self.static_baselines.insert(class_id, baseline);
-                            }
-                            Err(_) => {}
-                        }
+            "instancebaseline" => match &entry.extra_data {
+                Some(extra) => match entry.text.parse::<u32>() {
+                    Ok(class_id) => {
+                        let baseline = StaticBaseline::new(class_id, extra.data.clone());
+                        self.static_baselines.insert(class_id, baseline);
                     }
-                    _ => unreachable!("missing baseline")
-                }
-            }
-            _ => unreachable!()
+                    Err(_) => {}
+                },
+                _ => unreachable!("missing baseline"),
+            },
+            _ => unreachable!(),
         }
     }
 }

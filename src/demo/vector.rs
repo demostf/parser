@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian, BitSize};
+use bitstream_reader::{BitRead, BitSize, LittleEndian};
 use serde::Serialize;
 
 use crate::{ReadResult, Stream};
