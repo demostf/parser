@@ -4,10 +4,12 @@ use std::collections::HashMap;
 use crate::{ParseError, Result};
 
 pub use super::gameevent_gen::{GameEvent, GameEventType};
+use crate::demo::message::gameevent::GameEventTypeId;
 
 #[derive(Debug)]
 pub struct GameEventDefinition {
-    pub id: GameEventType,
+    pub id: GameEventTypeId,
+    pub event_type: GameEventType,
     pub name: String,
     pub entries: Vec<GameEventEntry>,
 }

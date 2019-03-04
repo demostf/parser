@@ -12,6 +12,7 @@ use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
 use std::mem::replace;
+use crate::demo::message::gameevent::GameEventTypeId;
 
 pub type StringEntryHandler = Box<FnMut(&String, &StringTableEntry) -> ()>;
 
@@ -19,7 +20,7 @@ pub type StringEntryHandler = Box<FnMut(&String, &StringTableEntry) -> ()>;
 pub struct ParserState {
     pub version: u16,
     pub static_baselines: HashMap<u32, StaticBaseline>,
-    pub event_definitions: HashMap<GameEventType, GameEventDefinition>,
+    pub event_definitions: HashMap<GameEventTypeId, GameEventDefinition>,
     pub string_tables: Vec<StringTable>,
     pub entity_classes: HashMap<EntityId, ServerClass>,
     pub send_tables: HashMap<String, SendTable>,
