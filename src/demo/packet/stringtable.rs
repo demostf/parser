@@ -2,9 +2,9 @@ use std::fmt;
 
 use bitstream_reader::{BitRead, LittleEndian};
 
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::sendprop::SendPropFlag::Exclude;
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(BitRead, Clone, Copy, Debug)]
 pub struct FixedUserdataSize {
@@ -57,12 +57,22 @@ impl BitRead<LittleEndian> for StringTable {
     }
 }
 
-#[derive(BitRead, Clone)]
+#[derive(BitRead, Clone, Debug)]
 #[endianness = "LittleEndian"]
 pub struct ExtraData {
-    pub len: u16,
-    #[size = "len * 8"]
+    pub byte_len: u16,
+    #[size = "byte_len * 8"]
     pub data: Stream,
+}
+
+impl ExtraData {
+    pub fn new(data: Stream) -> Self {
+        let byte_len = (data.bit_len() / 8) as u16;
+        ExtraData {
+            byte_len,
+            data,
+        }
+    }
 }
 
 #[derive(BitRead, Clone, Default)]
@@ -78,8 +88,8 @@ impl fmt::Debug for StringTableEntry {
             None => write!(f, "StringTableEntry {{ text: \"{}\" }}", self.text),
             Some(extra_data) => write!(
                 f,
-                "StringTableEntry{{ text: \"{}\" extra_data: {} bits }}",
-                self.text, extra_data.len
+                "StringTableEntry{{ text: \"{}\" extra_data: {} bytes }}",
+                self.text, extra_data.byte_len
             ),
         }
     }

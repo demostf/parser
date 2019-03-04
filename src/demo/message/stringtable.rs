@@ -240,10 +240,7 @@ fn read_table_entry(
     } else {
         None
     }
-        .map(|stream| ExtraData {
-            len: stream.bit_len() as u16 / 8,
-            data: stream,
-        });
+        .map(ExtraData::new);
 
     Ok(match existing_entry {
         Some(existing_entry) => {

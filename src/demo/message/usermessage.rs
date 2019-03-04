@@ -100,21 +100,21 @@ impl BitRead<LittleEndian> for UserMessage {
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub enum SayText2Kind {
+pub enum ChatMessageKind {
     ChatAll,
     ChatTeam,
     ChatAllDead,
     NameChange,
 }
 
-impl BitRead<LittleEndian> for SayText2Kind {
+impl BitRead<LittleEndian> for ChatMessageKind {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let raw: String = stream.read()?;
         Ok(match raw.as_str() {
-            "TF_Chat_Team" => SayText2Kind::ChatTeam,
-            "TF_Chat_AllDead" => SayText2Kind::ChatAllDead,
-            "#TF_Name_Change" => SayText2Kind::NameChange,
-            _ => SayText2Kind::ChatAll,
+            "TF_Chat_Team" => ChatMessageKind::ChatTeam,
+            "TF_Chat_AllDead" => ChatMessageKind::ChatAllDead,
+            "#TF_Name_Change" => ChatMessageKind::NameChange,
+            _ => ChatMessageKind::ChatAll,
         })
     }
 }
@@ -123,7 +123,7 @@ impl BitRead<LittleEndian> for SayText2Kind {
 pub struct SayText2Message {
     pub client: u8,
     pub raw: u8,
-    pub kind: SayText2Kind,
+    pub kind: ChatMessageKind,
     pub from: String,
     pub text: String,
 }
@@ -132,7 +132,7 @@ impl BitRead<LittleEndian> for SayText2Message {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let client = stream.read()?;
         let raw = stream.read()?;
-        let (kind, from, text): (SayText2Kind, String, String) = if stream.read::<u8>()? == 1 {
+        let (kind, from, text): (ChatMessageKind, String, String) = if stream.read::<u8>()? == 1 {
             let first = stream.read::<u8>()?;
             if first == 7 {
                 let _color = stream.read_string(Some(6))?;
@@ -149,10 +149,10 @@ impl BitRead<LittleEndian> for SayText2Message {
                     text.bytes().skip(start + 1).take(end - start - 1).collect(),
                 )?;
                 let text: String = String::from_utf8(text.bytes().skip(end + 5).collect())?;
-                let kind = SayText2Kind::ChatAllDead;
+                let kind = ChatMessageKind::ChatAllDead;
                 (kind, from, text)
             } else {
-                (SayText2Kind::ChatAll, "".to_owned(), text)
+                (ChatMessageKind::ChatAll, "".to_owned(), text)
             }
         } else {
             let _ = stream.set_pos(stream.pos() - 8)?;

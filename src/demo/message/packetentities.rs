@@ -1,11 +1,18 @@
 use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
+use serde::Serialize;
 
 use crate::demo::packet::datatable::ServerClass;
 use crate::demo::sendprop::SendProp;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize)]
 pub struct EntityId(u32);
+
+impl EntityId {
+    pub fn new(num: u32) -> Self {
+        EntityId(num)
+    }
+}
 
 #[derive(BitRead, Clone, Copy, Debug)]
 #[discriminant_bits = 3]
