@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use arraydeque::{ArrayDeque, Wrapping};
 use bitstream_reader::{BitBuffer, BitRead, BitReadSized, BitStream, LittleEndian};
 use num_traits::{PrimInt, Unsigned};
 use snap::Decoder;
