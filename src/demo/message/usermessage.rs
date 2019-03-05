@@ -109,6 +109,8 @@ pub enum ChatMessageKind {
     ChatAllDead,
     #[serde(rename = "TF_Chat_Team_Dead")]
     ChatTeamDead,
+    #[serde(rename = "TF_Chat_AllSpec")]
+    ChatAllSpec,
     NameChange,
 }
 
@@ -121,7 +123,8 @@ impl BitRead<LittleEndian> for ChatMessageKind {
             "TF_Chat_Team_Dead" => ChatMessageKind::ChatTeamDead,
             "#TF_Name_Change" => ChatMessageKind::NameChange,
             "TF_Chat_All" => ChatMessageKind::ChatAll,
-            _ => unreachable!("unknown chat kind"),
+            "TF_Chat_AllSpec" => ChatMessageKind::ChatAllSpec,
+            _ => ChatMessageKind::ChatAll,
         })
     }
 }
