@@ -8,7 +8,7 @@ edition = "2018"
 name = "tf_demo_parser"
 
 [[bin]]
-name = "test_demo"
+name = "parse_demo"
 path = "src/bin/main.rs"
 
 [dependencies]
