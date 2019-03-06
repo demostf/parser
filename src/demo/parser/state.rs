@@ -21,7 +21,7 @@ pub struct ParserState {
     pub version: u16,
     pub static_baselines: HashMap<u32, StaticBaseline>,
     pub event_definitions: HashMap<GameEventTypeId, GameEventDefinition>,
-    pub string_tables: Vec<StringTable>,
+    pub string_tables: Vec<StringTableMeta>,
     pub entity_classes: HashMap<EntityId, ServerClass>,
     pub send_tables: HashMap<String, SendTable>,
     pub server_classes: Vec<ServerClass>,
@@ -62,29 +62,8 @@ impl ParserState {
         self.server_classes = server_classes
     }
 
-    pub fn handle_string_table(&mut self, table: StringTable) {
+    pub fn handle_string_table_meta(&mut self, table: StringTableMeta) {
         self.string_tables.push(table);
-    }
-
-    pub fn handle_string_table_update(
-        &mut self,
-        table_id: u8,
-        entries: HashMap<u16, StringTableEntry>,
-    ) {
-        match self.string_tables.get_mut(table_id as usize) {
-            Some(table) => {
-                for (index, entry) in entries {
-                    let index = index as usize;
-                    if index > table.entries.len() {
-                        table.entries.resize(index, StringTableEntry::default())
-                    }
-                    unsafe {
-                        replace(table.entries.get_unchecked_mut(index), entry);
-                    }
-                }
-            }
-            _ => unreachable!(),
-        }
     }
 }
 
@@ -118,7 +97,7 @@ impl StringTableEntryHandler for ParserState {
     fn handle_string_entry(&mut self, table: &String, index: usize, entry: &StringTableEntry) {
         match table.as_str() {
             "instancebaseline" => match &entry.extra_data {
-                Some(extra) => match entry.text.parse::<u32>() {
+                Some(extra) => match entry.text().parse::<u32>() {
                     Ok(class_id) => {
                         let baseline = StaticBaseline::new(class_id, extra.data.clone());
                         self.static_baselines.insert(class_id, baseline);

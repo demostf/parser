@@ -72,21 +72,35 @@ impl ExtraData {
     }
 }
 
-#[derive(BitRead, Clone, Default)]
-#[endianness = "LittleEndian"]
+#[derive(Clone, Default)]
 pub struct StringTableEntry {
-    pub text: String,
+    pub text: Option<String>,
     pub extra_data: Option<ExtraData>,
+}
+
+impl StringTableEntry {
+    pub fn text(&self) -> &str {
+        self.text.as_ref().map(|s| s.as_str()).unwrap_or("")
+    }
+}
+
+impl BitRead<LittleEndian> for StringTableEntry {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
+        Ok(StringTableEntry {
+            text: Some(stream.read()?),
+            extra_data: stream.read()?
+        })
+    }
 }
 
 impl fmt::Debug for StringTableEntry {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.extra_data {
-            None => write!(f, "StringTableEntry {{ text: \"{}\" }}", self.text),
+            None => write!(f, "StringTableEntry {{ text: \"{}\" }}", self.text()),
             Some(extra_data) => write!(
                 f,
                 "StringTableEntry{{ text: \"{}\" extra_data: {} bytes }}",
-                self.text, extra_data.byte_len
+                self.text(), extra_data.byte_len
             ),
         }
     }

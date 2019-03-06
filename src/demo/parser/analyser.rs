@@ -200,10 +200,10 @@ impl StringTableEntryHandler for Analyser {
     fn handle_string_entry(&mut self, table: &String, index: usize, entry: &StringTableEntry) {
         match table.as_str() {
             "userinfo" => {
-                match &entry.extra_data {
-                    Some(data) => {
+                match (&entry.text, &entry.extra_data) {
+                    (Some(text), Some(data)) => {
                         if data.byte_len > 32 {
-                            let _ = self.parse_user_info(&entry.text, data.data.clone());
+                            let _ = self.parse_user_info(text, data.data.clone());
                         }
                     }
                     _ => {} //unreachable!("no userdata {}, {}", table, &entry.text)

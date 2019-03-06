@@ -68,20 +68,19 @@ impl DemoHandler {
     fn handle_string_table(&mut self, table: StringTable) {
         self.string_table_names.push(table.name.clone());
 
-        for (entry_index, entry) in table.entries.iter().enumerate() {
+        self.state_handler.handle_string_table_meta(table.get_table_meta());
+        for (entry_index, entry) in table.entries.into_iter().enumerate() {
             self.handle_string_entry(&table.name, entry_index, entry);
         }
-
-        self.state_handler.handle_string_table(table);
     }
 
-    fn handle_table_update(&mut self, table_id: u8, entries: HashMap<u16, StringTableEntry>) {
+    fn handle_table_update(&mut self, table_id: u8, entries: Vec<(u16, StringTableEntry)>) {
         let table_name = self.string_table_names.get(table_id as usize);
         match table_name {
             Some(table_name) => {
                 let table_name = table_name.clone();
-                for (index, entry) in &entries {
-                    self.handle_string_entry(&table_name, *index as usize, entry);
+                for (index, entry) in entries {
+                    self.handle_string_entry(&table_name, index as usize, entry);
                 }
             }
             _ => unreachable!("trying to update non existing table"),
@@ -93,10 +92,10 @@ impl DemoHandler {
             .handle_data_table(send_tables, server_classes);
     }
 
-    fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {
+    fn handle_string_entry(&mut self, table: &String, index: usize, entries: StringTableEntry) {
         self.state_handler
-            .handle_string_entry(table, index, entries);
-        self.analyser.handle_string_entry(table, index, entries);
+            .handle_string_entry(table, index, &entries);
+        self.analyser.handle_string_entry(table, index, &entries);
     }
 
     fn handle_message(&mut self, message: Message) {
