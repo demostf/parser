@@ -28,7 +28,6 @@ pub struct DataTablePacket {
 impl Parse for DataTablePacket {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let tick = stream.read()?;
-        let start = stream.pos();
         let len = stream.read_int::<usize>(32)?;
         let mut packet_data = stream.read_bits(len * 8)?;
 
@@ -41,7 +40,7 @@ impl Parse for DataTablePacket {
             let mut array_element_prop = None;
             let mut props = Vec::with_capacity(prop_count);
 
-            for i in 0..prop_count {
+            for _ in 0..prop_count {
                 let prop: SendPropDefinition =
                     SendPropDefinition::read(&mut packet_data, name.clone())?;
                 if prop.flags.contains(SendPropFlag::InsideArray) {

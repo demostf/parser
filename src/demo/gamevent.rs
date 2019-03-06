@@ -1,5 +1,4 @@
 use bitstream_reader::BitRead;
-use std::collections::HashMap;
 
 use crate::{ParseError, Result};
 

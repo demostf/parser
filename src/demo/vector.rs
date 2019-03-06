@@ -1,7 +1,5 @@
-use bitstream_reader::{BitRead, BitSize, LittleEndian};
+use bitstream_reader::{BitRead, BitSize};
 use serde::Serialize;
-
-use crate::{ReadResult, Stream};
 
 #[derive(BitRead, BitSize, Debug, Clone, Copy, Default, Serialize)]
 pub struct Vector {

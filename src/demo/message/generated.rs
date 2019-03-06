@@ -1,6 +1,6 @@
 use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
-use bitstream_reader::{BitRead, BitStream, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian};
 use std::collections::HashMap;
 
 #[derive(BitRead, Debug)]

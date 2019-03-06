@@ -1,6 +1,4 @@
-use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
-
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParserState, Result, Stream};
 
 use super::packetentities::PacketEntity;
 use super::stringtable::read_var_int;
@@ -11,10 +9,10 @@ pub struct TempEntitiesMessage {
 }
 
 impl Parse for TempEntitiesMessage {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
-        let count: u8 = stream.read()?;
+    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+        let _count: u8 = stream.read()?;
         let length = read_var_int(stream)?;
-        let data = stream.read_bits(length as usize)?;
+        let _data = stream.read_bits(length as usize)?;
 
         Ok(TempEntitiesMessage {
             entities: Vec::new(),

@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 use std::iter::FromIterator;
 
-use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{
     GameEvent, GameEventDefinition, GameEventEntry, GameEventValue, GameEventValueType,
     RawGameEvent,
 };
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParserState, ReadResult, Result, Stream};
 
 fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {
     Ok(match definition.kind {

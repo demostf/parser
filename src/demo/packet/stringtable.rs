@@ -3,7 +3,6 @@ use std::fmt;
 use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::message::stringtable::StringTableMeta;
-use crate::demo::sendprop::SendPropFlag::Exclude;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(BitRead, Clone, Copy, Debug)]
@@ -88,7 +87,7 @@ impl BitRead<LittleEndian> for StringTableEntry {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         Ok(StringTableEntry {
             text: Some(stream.read()?),
-            extra_data: stream.read()?
+            extra_data: stream.read()?,
         })
     }
 }
@@ -100,7 +99,8 @@ impl fmt::Debug for StringTableEntry {
             Some(extra_data) => write!(
                 f,
                 "StringTableEntry{{ text: \"{}\" extra_data: {} bytes }}",
-                self.text(), extra_data.byte_len
+                self.text(),
+                extra_data.byte_len
             ),
         }
     }
@@ -115,7 +115,6 @@ pub struct StringTablePacket {
 impl Parse for StringTablePacket {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let tick = stream.read_int(32)?;
-        let start = stream.pos();
         let length: usize = stream.read_int(32)?;
         let mut packet_data = stream.read_bits(length * 8)?;
         let count: usize = packet_data.read_int(8)?;

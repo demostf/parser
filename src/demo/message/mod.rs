@@ -1,6 +1,3 @@
-use std::mem::discriminant;
-
-use bitstream_reader::{BitRead, LittleEndian};
 use enum_primitive_derive::Primitive;
 use num_traits::FromPrimitive;
 
@@ -9,13 +6,12 @@ pub use generated::*;
 use crate::demo::message::bspdecal::*;
 use crate::demo::message::classinfo::*;
 use crate::demo::message::gameevent::*;
-use crate::demo::message::generated::*;
 use crate::demo::message::packetentities::*;
 use crate::demo::message::stringtable::*;
 use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 pub mod bspdecal;
 pub mod classinfo;

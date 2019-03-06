@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::thread::spawn;
 
 use serde::Serialize;
 use serde_repr::Serialize_repr;
@@ -197,7 +196,7 @@ impl MessageHandler for Analyser {
 }
 
 impl StringTableEntryHandler for Analyser {
-    fn handle_string_entry(&mut self, table: &String, index: usize, entry: &StringTableEntry) {
+    fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
         match table.as_str() {
             "userinfo" => {
                 match (&entry.text, &entry.extra_data) {
@@ -230,7 +229,7 @@ impl Analyser {
     }
 
     fn change_name(&mut self, from: String, to: String) {
-        for (id, user) in self.users.iter_mut() {
+        for (_, user) in self.users.iter_mut() {
             if user.name == from {
                 user.name = to;
                 return;
@@ -239,12 +238,13 @@ impl Analyser {
     }
 
     fn handle_event(&mut self, event: GameEvent, tick: u32) {
+        const WIN_REASON_TIME_LIMIT: u8 = 6;
+
         match event {
             GameEvent::PlayerDeath(event) => self.deaths.push(Death::from_event(event, tick)),
             GameEvent::PlayerSpawn(event) => self.user_spawns.push(Spawn::from_event(event, tick)),
             GameEvent::TeamPlayRoundWin(event) => {
-                // 6 = time limit
-                if event.win_reason != 6 {
+                if event.win_reason != WIN_REASON_TIME_LIMIT {
                     self.rounds.push(Round::from_event(event, tick))
                 }
             }
@@ -274,7 +274,7 @@ impl Analyser {
     pub fn get_match_state(self, state: ParserState) -> MatchState {
         MatchState {
             start_tick: self.start_tick,
-            interval_per_tick: state.interval_per_tick,
+            interval_per_tick: state.demo_meta.interval_per_tick,
             chat: self.chat,
             deaths: self.deaths,
             rounds: self.rounds,
@@ -304,7 +304,7 @@ impl UserState {
         for spawn in spawns {
             teams.insert(spawn.user, spawn.team);
             let user_classes = classes.entry(spawn.user).or_default();
-            let mut class_spawns = user_classes.entry(spawn.class).or_default();
+            let class_spawns = user_classes.entry(spawn.class).or_default();
             *class_spawns += 1;
         }
 

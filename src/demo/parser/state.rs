@@ -1,24 +1,25 @@
 use std::collections::HashMap;
 
-use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::GameEventDefinition;
 use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
-use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
-use crate::demo::packet::Packet;
+use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
-use std::mem::replace;
 
-pub type StringEntryHandler = Box<FnMut(&String, &StringTableEntry) -> ()>;
+#[derive(Default)]
+pub struct DemoMeta {
+    pub version: u16,
+    pub game: String,
+    pub interval_per_tick: f32,
+}
 
 #[derive(Default)]
 pub struct ParserState {
-    pub version: u16,
     pub static_baselines: HashMap<u32, StaticBaseline>,
     pub event_definitions: HashMap<GameEventTypeId, GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
@@ -26,8 +27,7 @@ pub struct ParserState {
     pub send_tables: HashMap<String, SendTable>,
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
-    pub game: String,
-    pub interval_per_tick: f32,
+    pub demo_meta: DemoMeta,
 }
 
 pub struct StaticBaseline {
@@ -81,9 +81,9 @@ impl MessageHandler for ParserState {
     fn handle_message(&mut self, message: Message, _tick: u32) {
         match message {
             Message::ServerInfo(message) => {
-                self.version = message.version;
-                self.game = message.game;
-                self.interval_per_tick = message.interval_per_tick
+                self.demo_meta.version = message.version;
+                self.demo_meta.game = message.game;
+                self.demo_meta.interval_per_tick = message.interval_per_tick
             }
             Message::GameEventList(message) => {
                 self.event_definitions = message.event_list;
@@ -94,7 +94,7 @@ impl MessageHandler for ParserState {
 }
 
 impl StringTableEntryHandler for ParserState {
-    fn handle_string_entry(&mut self, table: &String, index: usize, entry: &StringTableEntry) {
+    fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
         match table.as_str() {
             "instancebaseline" => match &entry.extra_data {
                 Some(extra) => match entry.text().parse::<u32>() {

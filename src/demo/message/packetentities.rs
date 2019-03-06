@@ -1,9 +1,9 @@
-use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
+use bitstream_reader::BitRead;
 use serde::Serialize;
 
 use crate::demo::packet::datatable::ServerClass;
 use crate::demo::sendprop::SendProp;
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParserState, Result, Stream};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize)]
 pub struct EntityId(u32);
@@ -45,14 +45,14 @@ pub struct PacketEntitiesMessage {
 }
 
 impl Parse for PacketEntitiesMessage {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let max_entries = stream.read_sized(11)?;
         let delta = stream.read()?;
         let base_line = stream.read_sized(1)?;
-        let updated_entries: u16 = stream.read_sized(11)?;
+        let _updated_entries: u16 = stream.read_sized(11)?;
         let length: u32 = stream.read_sized(20)?;
         let updated_base_line = stream.read()?;
-        let data = stream.read_bits(length as usize)?;
+        let _data = stream.read_bits(length as usize)?;
 
         // TODO
 

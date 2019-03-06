@@ -1,7 +1,5 @@
 use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
 use crate::{ParseError, Result};
-use bitstream_reader::BitRead;
-use std::collections::HashMap;
 
 // auto generated, nobody in their right mind would write this manually
 
@@ -617,7 +615,7 @@ impl FromRawGameEvent for ClientFullConnectEvent {
 #[derive(Debug)]
 pub struct HostQuitEvent {}
 impl FromRawGameEvent for HostQuitEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HostQuitEvent {})
     }
 }
@@ -1327,7 +1325,7 @@ impl FromRawGameEvent for BasePlayerTeleportedEvent {
 #[derive(Debug)]
 pub struct GameInitEvent {}
 impl FromRawGameEvent for GameInitEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameInitEvent {})
     }
 }
@@ -1741,7 +1739,7 @@ impl FromRawGameEvent for FlareIgniteNpcEvent {
 #[derive(Debug)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl FromRawGameEvent for HelicopterGrenadePuntMissEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
@@ -1749,7 +1747,7 @@ impl FromRawGameEvent for HelicopterGrenadePuntMissEvent {
 #[derive(Debug)]
 pub struct UserDataDownloadedEvent {}
 impl FromRawGameEvent for UserDataDownloadedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(UserDataDownloadedEvent {})
     }
 }
@@ -1841,7 +1839,7 @@ impl FromRawGameEvent for HLTVChangedTargetEvent {
 #[derive(Debug)]
 pub struct VoteEndedEvent {}
 impl FromRawGameEvent for VoteEndedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(VoteEndedEvent {})
     }
 }
@@ -2091,7 +2089,7 @@ impl FromRawGameEvent for VoteOptionsEvent {
 #[derive(Debug)]
 pub struct ReplaySavedEvent {}
 impl FromRawGameEvent for ReplaySavedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplaySavedEvent {})
     }
 }
@@ -2099,7 +2097,7 @@ impl FromRawGameEvent for ReplaySavedEvent {
 #[derive(Debug)]
 pub struct EnteredPerformanceModeEvent {}
 impl FromRawGameEvent for EnteredPerformanceModeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
@@ -2107,7 +2105,7 @@ impl FromRawGameEvent for EnteredPerformanceModeEvent {
 #[derive(Debug)]
 pub struct BrowseReplaysEvent {}
 impl FromRawGameEvent for BrowseReplaysEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(BrowseReplaysEvent {})
     }
 }
@@ -2149,7 +2147,7 @@ impl FromRawGameEvent for ReplayYoutubeStatsEvent {
 #[derive(Debug)]
 pub struct InventoryUpdatedEvent {}
 impl FromRawGameEvent for InventoryUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(InventoryUpdatedEvent {})
     }
 }
@@ -2157,7 +2155,7 @@ impl FromRawGameEvent for InventoryUpdatedEvent {
 #[derive(Debug)]
 pub struct CartUpdatedEvent {}
 impl FromRawGameEvent for CartUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(CartUpdatedEvent {})
     }
 }
@@ -2165,7 +2163,7 @@ impl FromRawGameEvent for CartUpdatedEvent {
 #[derive(Debug)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
@@ -2173,7 +2171,7 @@ impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
 #[derive(Debug)]
 pub struct GcConnectedEvent {}
 impl FromRawGameEvent for GcConnectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GcConnectedEvent {})
     }
 }
@@ -2181,7 +2179,7 @@ impl FromRawGameEvent for GcConnectedEvent {
 #[derive(Debug)]
 pub struct ItemSchemaInitializedEvent {}
 impl FromRawGameEvent for ItemSchemaInitializedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
@@ -2375,7 +2373,7 @@ impl FromRawGameEvent for CtfFlagCapturedEvent {
 #[derive(Debug)]
 pub struct ControlPointInitializedEvent {}
 impl FromRawGameEvent for ControlPointInitializedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ControlPointInitializedEvent {})
     }
 }
@@ -2587,7 +2585,7 @@ impl FromRawGameEvent for TeamPlayRoundStartEvent {
 #[derive(Debug)]
 pub struct TeamPlayRoundActiveEvent {}
 impl FromRawGameEvent for TeamPlayRoundActiveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
@@ -2595,7 +2593,7 @@ impl FromRawGameEvent for TeamPlayRoundActiveEvent {
 #[derive(Debug)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl FromRawGameEvent for TeamPlayWaitingBeginsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
@@ -2603,7 +2601,7 @@ impl FromRawGameEvent for TeamPlayWaitingBeginsEvent {
 #[derive(Debug)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl FromRawGameEvent for TeamPlayWaitingEndsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
@@ -2611,7 +2609,7 @@ impl FromRawGameEvent for TeamPlayWaitingEndsEvent {
 #[derive(Debug)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl FromRawGameEvent for TeamPlayWaitingAboutToEndEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
@@ -2619,7 +2617,7 @@ impl FromRawGameEvent for TeamPlayWaitingAboutToEndEvent {
 #[derive(Debug)]
 pub struct TeamPlayRestartRoundEvent {}
 impl FromRawGameEvent for TeamPlayRestartRoundEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
@@ -2627,7 +2625,7 @@ impl FromRawGameEvent for TeamPlayRestartRoundEvent {
 #[derive(Debug)]
 pub struct TeamPlayReadyRestartEvent {}
 impl FromRawGameEvent for TeamPlayReadyRestartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
@@ -2733,7 +2731,7 @@ impl FromRawGameEvent for TeamPlayRoundWinEvent {
 #[derive(Debug)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl FromRawGameEvent for TeamPlayUpdateTimerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
@@ -2757,7 +2755,7 @@ impl FromRawGameEvent for TeamPlayRoundStalemateEvent {
 #[derive(Debug)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl FromRawGameEvent for TeamPlayOvertimeBeginEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
@@ -2765,7 +2763,7 @@ impl FromRawGameEvent for TeamPlayOvertimeBeginEvent {
 #[derive(Debug)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl FromRawGameEvent for TeamPlayOvertimeEndEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
@@ -2773,7 +2771,7 @@ impl FromRawGameEvent for TeamPlayOvertimeEndEvent {
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl FromRawGameEvent for TeamPlaySuddenDeathBeginEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
@@ -2781,7 +2779,7 @@ impl FromRawGameEvent for TeamPlaySuddenDeathBeginEvent {
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl FromRawGameEvent for TeamPlaySuddenDeathEndEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
@@ -3326,7 +3324,7 @@ impl FromRawGameEvent for TeamPlayTeamBalancedPlayerEvent {
 #[derive(Debug)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl FromRawGameEvent for TeamPlaySetupFinishedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
@@ -3400,7 +3398,7 @@ impl FromRawGameEvent for ShowFreezePanelEvent {
 #[derive(Debug)]
 pub struct HideFreezePanelEvent {}
 impl FromRawGameEvent for HideFreezePanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HideFreezePanelEvent {})
     }
 }
@@ -3408,7 +3406,7 @@ impl FromRawGameEvent for HideFreezePanelEvent {
 #[derive(Debug)]
 pub struct FreezeCamStartedEvent {}
 impl FromRawGameEvent for FreezeCamStartedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(FreezeCamStartedEvent {})
     }
 }
@@ -3416,7 +3414,7 @@ impl FromRawGameEvent for FreezeCamStartedEvent {
 #[derive(Debug)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl FromRawGameEvent for LocalPlayerChangeTeamEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
@@ -3440,7 +3438,7 @@ impl FromRawGameEvent for LocalPlayerScoreChangedEvent {
 #[derive(Debug)]
 pub struct LocalPlayerChangeClassEvent {}
 impl FromRawGameEvent for LocalPlayerChangeClassEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
@@ -3448,7 +3446,7 @@ impl FromRawGameEvent for LocalPlayerChangeClassEvent {
 #[derive(Debug)]
 pub struct LocalPlayerRespawnEvent {}
 impl FromRawGameEvent for LocalPlayerRespawnEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
@@ -3532,7 +3530,7 @@ impl FromRawGameEvent for PlayerAccountChangedEvent {
 #[derive(Debug)]
 pub struct SpyPdaResetEvent {}
 impl FromRawGameEvent for SpyPdaResetEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(SpyPdaResetEvent {})
     }
 }
@@ -3579,7 +3577,7 @@ impl FromRawGameEvent for PlayerStatsUpdatedEvent {
 #[derive(Debug)]
 pub struct PlayingCommentaryEvent {}
 impl FromRawGameEvent for PlayingCommentaryEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayingCommentaryEvent {})
     }
 }
@@ -3922,7 +3920,7 @@ impl FromRawGameEvent for AchievementEarnedEvent {
 #[derive(Debug)]
 pub struct SpecTargetUpdatedEvent {}
 impl FromRawGameEvent for SpecTargetUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
@@ -3972,7 +3970,7 @@ impl FromRawGameEvent for TournamentStateUpdateEvent {
 #[derive(Debug)]
 pub struct TournamentEnableCountdownEvent {}
 impl FromRawGameEvent for TournamentEnableCountdownEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
@@ -3996,7 +3994,7 @@ impl FromRawGameEvent for PlayerCalledForMedicEvent {
 #[derive(Debug)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl FromRawGameEvent for LocalPlayerBecameObserverEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
@@ -4145,7 +4143,7 @@ impl FromRawGameEvent for PlayerHealedMedicCallEvent {
 #[derive(Debug)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
@@ -4153,7 +4151,7 @@ impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
 #[derive(Debug)]
 pub struct LocalPlayerWindDownEvent {}
 impl FromRawGameEvent for LocalPlayerWindDownEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
@@ -4278,7 +4276,7 @@ impl FromRawGameEvent for EscortRecedeEvent {
 #[derive(Debug)]
 pub struct GameUIActivatedEvent {}
 impl FromRawGameEvent for GameUIActivatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameUIActivatedEvent {})
     }
 }
@@ -4286,7 +4284,7 @@ impl FromRawGameEvent for GameUIActivatedEvent {
 #[derive(Debug)]
 pub struct GameUIHiddenEvent {}
 impl FromRawGameEvent for GameUIHiddenEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameUIHiddenEvent {})
     }
 }
@@ -4464,7 +4462,7 @@ impl FromRawGameEvent for ArenaMatchMaxStreakEvent {
 #[derive(Debug)]
 pub struct ArenaRoundStartEvent {}
 impl FromRawGameEvent for ArenaRoundStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ArenaRoundStartEvent {})
     }
 }
@@ -5565,7 +5563,7 @@ impl FromRawGameEvent for MedicDeathEvent {
 #[derive(Debug)]
 pub struct OvertimeNagEvent {}
 impl FromRawGameEvent for OvertimeNagEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(OvertimeNagEvent {})
     }
 }
@@ -5573,7 +5571,7 @@ impl FromRawGameEvent for OvertimeNagEvent {
 #[derive(Debug)]
 pub struct TeamsChangedEvent {}
 impl FromRawGameEvent for TeamsChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamsChangedEvent {})
     }
 }
@@ -5794,7 +5792,7 @@ impl FromRawGameEvent for PlayerMvpEvent {
 #[derive(Debug)]
 pub struct RaidSpawnMobEvent {}
 impl FromRawGameEvent for RaidSpawnMobEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RaidSpawnMobEvent {})
     }
 }
@@ -5802,7 +5800,7 @@ impl FromRawGameEvent for RaidSpawnMobEvent {
 #[derive(Debug)]
 pub struct RaidSpawnSquadEvent {}
 impl FromRawGameEvent for RaidSpawnSquadEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RaidSpawnSquadEvent {})
     }
 }
@@ -5872,7 +5870,7 @@ impl FromRawGameEvent for NumCappersChangedEvent {
 #[derive(Debug)]
 pub struct PlayerRegenerateEvent {}
 impl FromRawGameEvent for PlayerRegenerateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayerRegenerateEvent {})
     }
 }
@@ -5903,7 +5901,7 @@ impl FromRawGameEvent for UpdateStatusItemEvent {
 #[derive(Debug)]
 pub struct StatsResetRoundEvent {}
 impl FromRawGameEvent for StatsResetRoundEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(StatsResetRoundEvent {})
     }
 }
@@ -5911,7 +5909,7 @@ impl FromRawGameEvent for StatsResetRoundEvent {
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl FromRawGameEvent for ScoreStatsAccumulatedUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
@@ -5919,7 +5917,7 @@ impl FromRawGameEvent for ScoreStatsAccumulatedUpdateEvent {
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl FromRawGameEvent for ScoreStatsAccumulatedResetEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
@@ -6466,7 +6464,7 @@ impl FromRawGameEvent for ThrowableHitEvent {
 #[derive(Debug)]
 pub struct PumpkinLordSummonedEvent {}
 impl FromRawGameEvent for PumpkinLordSummonedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
@@ -6474,7 +6472,7 @@ impl FromRawGameEvent for PumpkinLordSummonedEvent {
 #[derive(Debug)]
 pub struct PumpkinLordKilledEvent {}
 impl FromRawGameEvent for PumpkinLordKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PumpkinLordKilledEvent {})
     }
 }
@@ -6855,7 +6853,7 @@ impl FromRawGameEvent for PlayerBonusPointsEvent {
 #[derive(Debug)]
 pub struct PlayerUpgradedEvent {}
 impl FromRawGameEvent for PlayerUpgradedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayerUpgradedEvent {})
     }
 }
@@ -6966,7 +6964,7 @@ impl FromRawGameEvent for PlayerKilledAchievementZoneEvent {
 #[derive(Debug)]
 pub struct PartyUpdatedEvent {}
 impl FromRawGameEvent for PartyUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PartyUpdatedEvent {})
     }
 }
@@ -6974,7 +6972,7 @@ impl FromRawGameEvent for PartyUpdatedEvent {
 #[derive(Debug)]
 pub struct LobbyUpdatedEvent {}
 impl FromRawGameEvent for LobbyUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LobbyUpdatedEvent {})
     }
 }
@@ -7005,7 +7003,7 @@ impl FromRawGameEvent for MvmMissionUpdateEvent {
 #[derive(Debug)]
 pub struct RecalculateHolidaysEvent {}
 impl FromRawGameEvent for RecalculateHolidaysEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RecalculateHolidaysEvent {})
     }
 }
@@ -7061,7 +7059,7 @@ impl FromRawGameEvent for RemoveNemesisRelationshipsEvent {
 #[derive(Debug)]
 pub struct MvmCreditBonusWaveEvent {}
 impl FromRawGameEvent for MvmCreditBonusWaveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
@@ -7069,7 +7067,7 @@ impl FromRawGameEvent for MvmCreditBonusWaveEvent {
 #[derive(Debug)]
 pub struct MvmCreditBonusAllEvent {}
 impl FromRawGameEvent for MvmCreditBonusAllEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
@@ -7077,7 +7075,7 @@ impl FromRawGameEvent for MvmCreditBonusAllEvent {
 #[derive(Debug)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl FromRawGameEvent for MvmCreditBonusAllAdvancedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
@@ -7101,7 +7099,7 @@ impl FromRawGameEvent for MvmQuickSentryUpgradeEvent {
 #[derive(Debug)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl FromRawGameEvent for MvmTankDestroyedByPlayersEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
@@ -7320,7 +7318,7 @@ impl FromRawGameEvent for MvmBombResetByPlayerEvent {
 #[derive(Debug)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl FromRawGameEvent for MvmBombAlarmTriggeredEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
@@ -7344,7 +7342,7 @@ impl FromRawGameEvent for MvmBombDeployResetByPlayerEvent {
 #[derive(Debug)]
 pub struct MvmWaveFailedEvent {}
 impl FromRawGameEvent for MvmWaveFailedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmWaveFailedEvent {})
     }
 }
@@ -7352,7 +7350,7 @@ impl FromRawGameEvent for MvmWaveFailedEvent {
 #[derive(Debug)]
 pub struct MvmResetStatsEvent {}
 impl FromRawGameEvent for MvmResetStatsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmResetStatsEvent {})
     }
 }
@@ -7512,7 +7510,7 @@ impl FromRawGameEvent for MvmSniperHeadshotCurrencyEvent {
 #[derive(Debug)]
 pub struct MvmMannhattanPitEvent {}
 impl FromRawGameEvent for MvmMannhattanPitEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmMannhattanPitEvent {})
     }
 }
@@ -7520,7 +7518,7 @@ impl FromRawGameEvent for MvmMannhattanPitEvent {
 #[derive(Debug)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FromRawGameEvent for FlagCarriedInDetectionZoneEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
@@ -7528,7 +7526,7 @@ impl FromRawGameEvent for FlagCarriedInDetectionZoneEvent {
 #[derive(Debug)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl FromRawGameEvent for MvmAdvWaveKilledStunRadioEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
@@ -7625,7 +7623,7 @@ impl FromRawGameEvent for RdTeamPointsChangedEvent {
 #[derive(Debug)]
 pub struct RdRulesStateChangedEvent {}
 impl FromRawGameEvent for RdRulesStateChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RdRulesStateChangedEvent {})
     }
 }
@@ -7895,7 +7893,7 @@ impl FromRawGameEvent for PlayerInitialSpawnEvent {
 #[derive(Debug)]
 pub struct CompetitiveVictoryEvent {}
 impl FromRawGameEvent for CompetitiveVictoryEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(CompetitiveVictoryEvent {})
     }
 }
@@ -8306,7 +8304,7 @@ impl FromRawGameEvent for HLTVChatEvent {
 #[derive(Debug)]
 pub struct ReplayStartRecordEvent {}
 impl FromRawGameEvent for ReplayStartRecordEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayStartRecordEvent {})
     }
 }
@@ -8351,7 +8349,7 @@ impl FromRawGameEvent for ReplaySessionInfoEvent {
 #[derive(Debug)]
 pub struct ReplayEndRecordEvent {}
 impl FromRawGameEvent for ReplayEndRecordEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayEndRecordEvent {})
     }
 }
@@ -8359,7 +8357,7 @@ impl FromRawGameEvent for ReplayEndRecordEvent {
 #[derive(Debug)]
 pub struct ReplayReplaysAvailableEvent {}
 impl FromRawGameEvent for ReplayReplaysAvailableEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }

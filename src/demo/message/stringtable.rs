@@ -1,13 +1,11 @@
-use std::collections::HashMap;
-
-use bitstream_reader::{BitBuffer, BitRead, BitReadSized, BitStream, LittleEndian};
+use bitstream_reader::{BitBuffer, BitStream, LittleEndian};
 use num_traits::{PrimInt, Unsigned};
 use snap::Decoder;
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserdataSize, StringTable, StringTableEntry,
 };
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -30,7 +28,7 @@ impl From<&StringTable> for StringTableMeta {
 }
 
 impl Parse for CreateStringTableMessage {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let name = stream.read()?;
         let max_entries: u16 = stream.read()?;
         let encode_bits = log_base2(max_entries);
@@ -106,11 +104,7 @@ impl Parse for UpdateStringTableMessage {
         let mut data = stream.read_bits(len)?;
 
         let entries = match state.string_tables.get(table_id as usize) {
-            Some(table) => parse_string_table_update(
-                &mut data,
-                table,
-                changed,
-            ),
+            Some(table) => parse_string_table_update(&mut data, table, changed),
             None => return Err(ParseError::StringTableNotFound(table_id)),
         }?;
 
@@ -129,7 +123,7 @@ fn parse_string_table_update(
     let mut last_entry: i16 = -1;
     let mut history: Vec<Option<String>> = Vec::new();
 
-    for i in 0..entry_count {
+    for _ in 0..entry_count {
         let index = if stream.read()? {
             (last_entry + 1) as u16
         } else {
@@ -138,11 +132,7 @@ fn parse_string_table_update(
 
         last_entry = index as i16;
 
-        let entry = read_table_entry(
-            stream,
-            table_meta,
-            &history
-        )?;
+        let entry = read_table_entry(stream, table_meta, &history)?;
         // optimize: any way to get rid of the clone here?
         // `entries` always outlives `history` without reallocation
         let text = entry.text.clone();
@@ -163,12 +153,11 @@ fn parse_string_table_list(
     table_meta: &StringTableMeta,
     entry_count: u16,
 ) -> ReadResult<Vec<StringTableEntry>> {
-    let entry_bits = log_base2(table_meta.max_entries);
     let mut entries = Vec::with_capacity(entry_count as usize);
 
     let mut history: Vec<Option<String>> = Vec::new();
 
-    for i in 0..entry_count {
+    for _ in 0..entry_count {
         if !stream.read::<bool>()? {
             panic!("there should be no holes when reading CreateStringTable message");
         };
@@ -229,12 +218,9 @@ fn read_table_entry(
     } else {
         None
     }
-        .map(ExtraData::new);
+    .map(ExtraData::new);
 
-    Ok(StringTableEntry {
-        text,
-        extra_data,
-    })
+    Ok(StringTableEntry { text, extra_data })
 }
 
 pub fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {

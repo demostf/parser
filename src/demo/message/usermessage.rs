@@ -1,9 +1,8 @@
-use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian};
 use enum_primitive_derive::Primitive;
-use num_traits::{FromPrimitive, ToPrimitive};
+use num_traits::FromPrimitive;
 use serde::Serialize;
 
-use crate::demo::message::usermessage::UserMessage::SayText2;
 use crate::{ReadResult, Stream};
 
 #[derive(Primitive, Clone, Copy, Debug)]

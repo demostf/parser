@@ -1,7 +1,3 @@
-use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Rc;
-
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
@@ -68,7 +64,8 @@ impl DemoHandler {
     fn handle_string_table(&mut self, table: StringTable) {
         self.string_table_names.push(table.name.clone());
 
-        self.state_handler.handle_string_table_meta(table.get_table_meta());
+        self.state_handler
+            .handle_string_table_meta(table.get_table_meta());
         for (entry_index, entry) in table.entries.into_iter().enumerate() {
             self.handle_string_entry(&table.name, entry_index, entry);
         }
@@ -110,7 +107,7 @@ impl DemoHandler {
         }
     }
 
-    pub fn get_match_state(mut self) -> MatchState {
+    pub fn get_match_state(self) -> MatchState {
         self.analyser.get_match_state(self.state_handler)
     }
 

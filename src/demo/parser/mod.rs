@@ -1,20 +1,12 @@
-use std::collections::HashMap;
-use std::rc::Rc;
-
 use bitstream_reader::{BitRead, LittleEndian, ReadError};
 
-use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};
 use crate::demo::header::Header;
-use crate::demo::message::{Message, MessageType};
-use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::packet::Packet;
-use crate::demo::parser::analyser::{Analyser, MatchState};
-use crate::demo::parser::handler::{DemoHandler, MessageHandler, StringTableEntryHandler};
+use crate::demo::parser::analyser::MatchState;
+use crate::demo::parser::handler::DemoHandler;
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
-use std::cell::RefCell;
-use std::ops::Deref;
 
 mod analyser;
 mod handler;
@@ -77,7 +69,7 @@ pub trait Parse: Sized {
 }
 
 impl<T: BitRead<LittleEndian>> Parse for T {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         Self::read(stream).map_err(ParseError::from)
     }
 }
