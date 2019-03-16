@@ -87,15 +87,10 @@ impl DemoParser {
         }
     }
 
-    #[inline(always)]
-    pub fn read<T: Parse>(&mut self) -> Result<T> {
-        T::parse(&mut self.stream, self.handler.get_parser_state())
-    }
-
     pub fn parse_demo(mut self) -> Result<(Header, MatchState)> {
-        let header = self.read::<Header>()?;
+        let header = Header::read(&mut self.stream)?;
         loop {
-            let packet = self.read::<Packet>()?;
+            let packet = Packet::parse(&mut self.stream, self.handler.get_parser_state())?;
             match packet {
                 Packet::Stop(_) => break,
                 packet => self.handler.handle_packet(packet),
