@@ -13,7 +13,7 @@ impl BitRead<LittleEndian> for UserCmdPacket {
         let tick = stream.read()?;
         let sequence_out = stream.read()?;
         let len: u32 = stream.read()?;
-        let mut _packet_data = stream.read_bits(len as usize * 8)?;
+        let _ = stream.skip(len as usize * 8)?;
         // TODO parse the packet data
         Ok(UserCmdPacket { tick, sequence_out })
     }

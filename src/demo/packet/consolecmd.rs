@@ -5,7 +5,7 @@ use crate::{ReadResult, Stream};
 #[derive(Debug)]
 pub struct ConsoleCmdPacket {
     tick: u32,
-    command: LazyBitReadSized<String, LittleEndian>,
+    command: String,
 }
 
 impl BitRead<LittleEndian> for ConsoleCmdPacket {
