@@ -1,12 +1,12 @@
 use bitstream_reader::BitRead;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 use crate::{Parse, ParserState, Result, Stream, ParseError};
 use crate::demo::packet::datatable::ServerClass;
 use crate::demo::sendprop::SendProp;
 use crate::demo::parser::ParseBitSkip;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct EntityId(u32);
 
 impl EntityId {

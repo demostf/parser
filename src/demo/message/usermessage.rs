@@ -1,7 +1,7 @@
-use bitstream_reader::{BitRead, BitSkip, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian};
 use enum_primitive_derive::Primitive;
 use num_traits::FromPrimitive;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 use crate::{ReadResult, Stream, Result, ParseError};
 use crate::demo::parser::ParseBitSkip;
@@ -108,7 +108,7 @@ impl ParseBitSkip for UserMessage {
 }
 
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum ChatMessageKind {
     #[serde(rename = "TF_Chat_All")]
     ChatAll,

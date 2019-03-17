@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use serde::Serialize;
-use serde_repr::Serialize_repr;
+use serde::{Serialize, Deserialize};
+use serde_repr::{Serialize_repr, Deserialize_repr};
 
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
@@ -14,7 +14,7 @@ use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::vector::Vector;
 use crate::{ParserState, ReadResult, Stream};
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChatMassage {
     pub kind: ChatMessageKind,
     pub from: String,
@@ -33,7 +33,7 @@ impl ChatMassage {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash)]
 pub enum Team {
     Other = 0,
     Spectator = 1,
@@ -54,7 +54,7 @@ impl Team {
     }
 }
 
-#[derive(Debug, Clone, Serialize_repr, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize_repr, Deserialize_repr, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]
 pub enum Class {
     Other = 0,
@@ -86,10 +86,10 @@ impl Class {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash)]
 pub struct UserId(u8);
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Spawn {
     pub user: UserId,
     pub class: Class,
@@ -108,7 +108,7 @@ impl Spawn {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct UserInfo {
     pub name: String,
     pub user_id: UserId,
@@ -116,7 +116,7 @@ pub struct UserInfo {
     pub entity_id: EntityId,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Death {
     pub weapon: String,
     pub victim: UserId,
@@ -142,7 +142,7 @@ impl Death {
     }
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Round {
     winner: Team,
     length: f32,
@@ -159,13 +159,13 @@ impl Round {
     }
 }
 
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct World {
     boundary_min: Vector,
     boundary_max: Vector,
 }
 
-#[derive(Default, Debug, Serialize)]
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Analyser {
     pub chat: Vec<ChatMassage>,
     pub users: HashMap<UserId, UserInfo>,
@@ -287,7 +287,7 @@ impl Analyser {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct UserState {
     pub classes: HashMap<Class, u8>,
     pub name: String,
@@ -330,7 +330,7 @@ impl UserState {
     }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct MatchState {
     pub chat: Vec<ChatMassage>,
     pub users: HashMap<UserId, UserState>,

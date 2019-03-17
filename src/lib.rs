@@ -1,5 +1,7 @@
 pub use crate::demo::{
-    parser::{DemoParser, Parse, ParseError, ParserState, Result},
+    parser::{
+        DemoParser, Parse, ParseError, ParserState, Result, MatchState
+    },
     Demo, Stream,
 };
 
