@@ -218,6 +218,10 @@ impl Analyser {
         Self::default()
     }
 
+    pub fn get_message_types(&self) -> Vec<MessageType> {
+        vec![MessageType::GameEvent, MessageType::UserMessage]
+    }
+
     fn handle_user_message(&mut self, message: UserMessage, tick: u32) {
         match message {
             UserMessage::SayText2(message) => match message.kind {

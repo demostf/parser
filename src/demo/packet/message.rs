@@ -1,8 +1,8 @@
 use bitstream_reader::{BitRead, BitSize, LazyBitRead, LittleEndian};
 
-use crate::demo::message::Message;
-use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
+use crate::demo::message::{Message, MessageType};
+use crate::demo::vector::Vector;
 
 #[derive(Debug)]
 pub struct MessagePacket {
@@ -57,10 +57,13 @@ impl Parse for MessagePacket {
 
         let mut messages: Vec<Message> = Vec::with_capacity(25);
         while packet_data.bits_left() > 6 {
-            let message = Message::parse(&mut packet_data, state)?;
-            match message {
-                Message::Empty => {}
-                _ => messages.push(message),
+            let message_type = MessageType::parse(&mut packet_data, state)?;
+
+            if state.parse_message_types.contains(&message_type) {
+                let message = Message::from_type(message_type, &mut packet_data, state)?;
+                messages.push(message);
+            } else {
+                let _ = Message::skip_type(message_type, &mut packet_data)?;
             }
         }
 

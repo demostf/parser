@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian, BitSkip};
 
 use crate::demo::sendprop::read_bit_coord;
 use crate::demo::vector::Vector;
@@ -44,3 +44,5 @@ impl BitRead<LittleEndian> for BSPDecalMessage {
         })
     }
 }
+
+impl BitSkip<LittleEndian> for BSPDecalMessage{}

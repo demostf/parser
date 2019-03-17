@@ -2,10 +2,11 @@ use bitstream_reader::{BitBuffer, BitStream, LittleEndian};
 use num_traits::{PrimInt, Unsigned};
 use snap::Decoder;
 
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserdataSize, StringTable, StringTableEntry,
 };
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::demo::parser::ParseBitSkip;
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -33,13 +34,13 @@ impl Parse for CreateStringTableMessage {
         let max_entries: u16 = stream.read()?;
         let encode_bits = log_base2(max_entries);
         let entity_count: u16 = stream.read_sized(encode_bits as usize + 1)?;
-        let bit_count = read_var_int(stream)?;
+        let length = read_var_int(stream)?;
 
         let fixed_userdata_size = stream.read()?;
 
         let compressed = stream.read()?;
 
-        let mut table_data = stream.read_bits(bit_count as usize)?;
+        let mut table_data = stream.read_bits(length as usize)?;
 
         if compressed {
             let decompressed_size: u32 = table_data.read()?;
@@ -88,6 +89,23 @@ impl Parse for CreateStringTableMessage {
     }
 }
 
+impl ParseBitSkip for CreateStringTableMessage {
+    fn parse_skip(stream: &mut Stream) -> Result<()> {
+        let _: String = stream.read()?;
+        let max_entries: u16 = stream.read()?;
+        let encode_bits = log_base2(max_entries);
+        let _: u16 = stream.read_sized(encode_bits as usize + 1)?;
+        let length = read_var_int(stream)?;
+
+        let _: Option<FixedUserdataSize> = stream.read()?;
+
+        let _: bool = stream.read()?;
+
+        stream.skip_bits(length as usize).map_err(ParseError::from)
+    }
+}
+
+
 #[derive(Debug)]
 pub struct UpdateStringTableMessage {
     pub entries: Vec<(u16, StringTableEntry)>,
@@ -99,9 +117,9 @@ impl Parse for UpdateStringTableMessage {
         let table_id = stream.read_sized(5)?;
 
         let changed: u16 = if stream.read()? { stream.read()? } else { 1 };
-        let len = stream.read_int(20)?;
+        let length: u32 = stream.read_int(20)?;
 
-        let mut data = stream.read_bits(len)?;
+        let mut data = stream.read_bits(length as usize)?;
 
         let entries = match state.string_tables.get(table_id as usize) {
             Some(table) => parse_string_table_update(&mut data, table, changed),
@@ -109,6 +127,16 @@ impl Parse for UpdateStringTableMessage {
         }?;
 
         Ok(UpdateStringTableMessage { table_id, entries })
+    }
+}
+
+impl ParseBitSkip for UpdateStringTableMessage {
+    fn parse_skip(stream: &mut Stream) -> Result<()> {
+        let _: u8 = stream.read_sized(5)?;
+
+        let _: u16 = if stream.read()? { stream.read()? } else { 1 };
+        let length: u32 = stream.read_int(20)?;
+        stream.skip_bits(length as usize).map_err(ParseError::from)
     }
 }
 
@@ -218,7 +246,7 @@ fn read_table_entry(
     } else {
         None
     }
-    .map(ExtraData::new);
+        .map(ExtraData::new);
 
     Ok(StringTableEntry { text, extra_data })
 }

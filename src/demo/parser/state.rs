@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use crate::demo::gamevent::GameEventDefinition;
+use crate::demo::message::{Message, MessageType};
 use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::stringtable::StringTableMeta;
-use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
@@ -28,6 +28,7 @@ pub struct ParserState {
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub demo_meta: DemoMeta,
+    pub parse_message_types: Vec<MessageType>,
 }
 
 pub struct StaticBaseline {
@@ -48,7 +49,14 @@ impl StaticBaseline {
 
 impl ParserState {
     pub fn new() -> Self {
-        ParserState::default()
+        let mut state = ParserState::default();
+        state.parse_message_types.extend_from_slice(&[
+            MessageType::ServerInfo,
+            MessageType::GameEventList,
+            MessageType::CreateStringTable,
+            MessageType::UpdateStringTable
+        ]);
+        state
     }
 
     pub fn handle_data_table(

@@ -1,6 +1,6 @@
 use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian, BitSize, BitSkip};
 use std::collections::HashMap;
 
 #[derive(BitRead, Debug)]
@@ -10,7 +10,9 @@ pub struct FileMessage {
     pub requested: bool,
 }
 
-#[derive(BitRead, Debug)]
+impl BitSkip<LittleEndian> for FileMessage{}
+
+#[derive(BitRead, BitSize, Debug)]
 pub struct NetTickMessage {
     pub tick: u32,
     pub frame_time: u16,
@@ -22,7 +24,9 @@ pub struct StringCmdMessage {
     pub command: String,
 }
 
-#[derive(BitRead, Debug)]
+impl BitSkip<LittleEndian> for StringCmdMessage{}
+
+#[derive(BitRead, BitSize, Debug)]
 pub struct SigOnStateMessage {
     pub state: u8,
     pub count: u32,
@@ -32,6 +36,8 @@ pub struct SigOnStateMessage {
 pub struct PrintMessage {
     pub value: String,
 }
+
+impl BitSkip<LittleEndian> for PrintMessage{}
 
 #[derive(BitRead, Debug)]
 pub struct ServerInfoMessage {
@@ -54,18 +60,20 @@ pub struct ServerInfoMessage {
     pub replay: bool,
 }
 
-#[derive(BitRead, Debug)]
+impl BitSkip<LittleEndian> for ServerInfoMessage{}
+
+#[derive(BitRead, BitSize, Debug)]
 pub struct SetPauseMessage {
     pub pause: bool,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitSize, Debug)]
 pub struct SetViewMessage {
     #[size = 11]
     pub index: u16,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitSize, Debug)]
 pub struct FixAngleMessage {
     pub relative: bool,
     pub x: u16,
@@ -86,7 +94,9 @@ pub struct EntityMessage {
     pub data: Stream,
 }
 
-#[derive(BitRead, Debug)]
+impl BitSkip<LittleEndian> for EntityMessage{}
+
+#[derive(BitRead, BitSize, Debug)]
 pub struct PreFetchMessage {
     #[size = 14]
     pub index: u16,
@@ -101,11 +111,15 @@ pub struct MenuMessage {
     pub index: Stream,
 }
 
+impl BitSkip<LittleEndian> for MenuMessage{}
+
 #[derive(BitRead, Debug)]
 pub struct GetCvarValueMessage {
     pub cookie: u32,
     pub value: String,
 }
+
+impl BitSkip<LittleEndian> for GetCvarValueMessage{}
 
 #[derive(BitRead, Debug)]
 #[endianness = "LittleEndian"]
@@ -115,8 +129,12 @@ pub struct CmdKeyValuesMessage {
     pub data: Stream,
 }
 
+impl BitSkip<LittleEndian> for CmdKeyValuesMessage{}
+
 #[derive(BitRead, Debug)]
 pub struct SetConVarMessage {
     #[size_bits = 8]
     vars: HashMap<String, String>,
 }
+
+impl BitSkip<LittleEndian> for SetConVarMessage{}

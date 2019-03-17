@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian, BitSkip};
 
 use crate::{ReadResult, Stream};
 
@@ -30,6 +30,8 @@ impl BitRead<LittleEndian> for VoiceInitMessage {
     }
 }
 
+impl BitSkip<LittleEndian> for VoiceInitMessage{}
+
 #[derive(BitRead, Debug, Clone)]
 #[endianness = "LittleEndian"]
 pub struct VoiceDataMessage {
@@ -39,6 +41,8 @@ pub struct VoiceDataMessage {
     #[size = "length"]
     data: Stream,
 }
+
+impl BitSkip<LittleEndian> for VoiceDataMessage{}
 
 #[derive(Debug, Clone)]
 pub struct ParseSoundsMessage {
@@ -67,3 +71,5 @@ impl BitRead<LittleEndian> for ParseSoundsMessage {
         })
     }
 }
+
+impl BitSkip<LittleEndian> for ParseSoundsMessage{}

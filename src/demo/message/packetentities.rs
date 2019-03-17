@@ -1,9 +1,10 @@
 use bitstream_reader::BitRead;
 use serde::Serialize;
 
+use crate::{Parse, ParserState, Result, Stream, ParseError};
 use crate::demo::packet::datatable::ServerClass;
 use crate::demo::sendprop::SendProp;
-use crate::{Parse, ParserState, Result, Stream};
+use crate::demo::parser::ParseBitSkip;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize)]
 pub struct EntityId(u32);
@@ -64,5 +65,17 @@ impl Parse for PacketEntitiesMessage {
             base_line,
             updated_base_line,
         })
+    }
+}
+
+impl ParseBitSkip for PacketEntitiesMessage {
+    fn parse_skip(stream: &mut Stream) -> Result<()> {
+        let _: u16 = stream.read_sized(11)?;
+        let _: Option<u32> = stream.read()?;
+        let _: u8 = stream.read_sized(1)?;
+        let _: u16 = stream.read_sized(11)?;
+        let length: u32 = stream.read_sized(20)?;
+        let _: bool = stream.read()?;
+        stream.skip_bits(length as usize).map_err(ParseError::from)
     }
 }

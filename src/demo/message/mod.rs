@@ -3,6 +3,7 @@ use num_traits::FromPrimitive;
 
 pub use generated::*;
 
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 use crate::demo::message::bspdecal::*;
 use crate::demo::message::classinfo::*;
 use crate::demo::message::gameevent::*;
@@ -11,7 +12,7 @@ use crate::demo::message::stringtable::*;
 use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
-use crate::{Parse, ParseError, ParserState, Result, Stream};
+use crate::demo::parser::ParseBitSkip;
 
 pub mod bspdecal;
 pub mod classinfo;
@@ -23,7 +24,7 @@ pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
 
-#[derive(Primitive, Debug, Clone, Copy)]
+#[derive(Primitive, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MessageType {
     Empty = 0,
     File = 2,
@@ -98,6 +99,45 @@ pub enum Message {
 impl Parse for Message {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let message_type = MessageType::parse(stream, state)?;
+        Self::from_type(message_type, stream, state)
+    }
+}
+
+impl Message {
+    pub fn get_message_type(&self) -> MessageType {
+        match self {
+            Message::Empty => MessageType::Empty,
+            Message::File(_) => MessageType::File,
+            Message::NetTick(_) => MessageType::NetTick,
+            Message::StringCmd(_) => MessageType::StringCmd,
+            Message::SetConVar(_) => MessageType::SetConVar,
+            Message::SigOnState(_) => MessageType::SigOnState,
+            Message::Print(_) => MessageType::Print,
+            Message::ServerInfo(_) => MessageType::ServerInfo,
+            Message::ClassInfo(_) => MessageType::ClassInfo,
+            Message::SetPause(_) => MessageType::SetPause,
+            Message::CreateStringTable(_) => MessageType::CreateStringTable,
+            Message::UpdateStringTable(_) => MessageType::UpdateStringTable,
+            Message::VoiceInit(_) => MessageType::VoiceInit,
+            Message::VoiceData(_) => MessageType::VoiceData,
+            Message::ParseSounds(_) => MessageType::ParseSounds,
+            Message::SetView(_) => MessageType::SetView,
+            Message::FixAngle(_) => MessageType::FixAngle,
+            Message::BspDecal(_) => MessageType::BspDecal,
+            Message::UserMessage(_) => MessageType::UserMessage,
+            Message::EntityMessage(_) => MessageType::EntityMessage,
+            Message::GameEvent(_) => MessageType::GameEvent,
+            Message::PacketEntities(_) => MessageType::PacketEntities,
+            Message::TempEntities(_) => MessageType::TempEntities,
+            Message::PreFetch(_) => MessageType::PreFetch,
+            Message::Menu(_) => MessageType::Menu,
+            Message::GameEventList(_) => MessageType::GameEventList,
+            Message::GetCvarValue(_) => MessageType::GetCvarValue,
+            Message::CmdKeyValues(_) => MessageType::CmdKeyValues,
+        }
+    }
+
+    pub fn from_type(message_type: MessageType, stream: &mut Stream, state: &ParserState) -> Result<Self> {
         Ok(match message_type {
             MessageType::Empty => Message::Empty,
             MessageType::File => Message::File(FileMessage::parse(stream, state)?),
@@ -151,39 +191,37 @@ impl Parse for Message {
             }
         })
     }
-}
 
-impl Message {
-    pub fn get_message_type(&self) -> MessageType {
-        match self {
-            Message::Empty => MessageType::Empty,
-            Message::File(_) => MessageType::File,
-            Message::NetTick(_) => MessageType::NetTick,
-            Message::StringCmd(_) => MessageType::StringCmd,
-            Message::SetConVar(_) => MessageType::SetConVar,
-            Message::SigOnState(_) => MessageType::SigOnState,
-            Message::Print(_) => MessageType::Print,
-            Message::ServerInfo(_) => MessageType::ServerInfo,
-            Message::ClassInfo(_) => MessageType::ClassInfo,
-            Message::SetPause(_) => MessageType::SetPause,
-            Message::CreateStringTable(_) => MessageType::CreateStringTable,
-            Message::UpdateStringTable(_) => MessageType::UpdateStringTable,
-            Message::VoiceInit(_) => MessageType::VoiceInit,
-            Message::VoiceData(_) => MessageType::VoiceData,
-            Message::ParseSounds(_) => MessageType::ParseSounds,
-            Message::SetView(_) => MessageType::SetView,
-            Message::FixAngle(_) => MessageType::FixAngle,
-            Message::BspDecal(_) => MessageType::BspDecal,
-            Message::UserMessage(_) => MessageType::UserMessage,
-            Message::EntityMessage(_) => MessageType::EntityMessage,
-            Message::GameEvent(_) => MessageType::GameEvent,
-            Message::PacketEntities(_) => MessageType::PacketEntities,
-            Message::TempEntities(_) => MessageType::TempEntities,
-            Message::PreFetch(_) => MessageType::PreFetch,
-            Message::Menu(_) => MessageType::Menu,
-            Message::GameEventList(_) => MessageType::GameEventList,
-            Message::GetCvarValue(_) => MessageType::GetCvarValue,
-            Message::CmdKeyValues(_) => MessageType::CmdKeyValues,
+    pub fn skip_type(message_type: MessageType, stream: &mut Stream) -> Result<()> {
+        match message_type {
+            MessageType::Empty => Ok(()),
+            MessageType::File => FileMessage::parse_skip(stream),
+            MessageType::NetTick => NetTickMessage::parse_skip(stream),
+            MessageType::StringCmd => StringCmdMessage::parse_skip(stream),
+            MessageType::SetConVar => SetConVarMessage::parse_skip(stream),
+            MessageType::SigOnState => SigOnStateMessage::parse_skip(stream),
+            MessageType::Print => PrintMessage::parse_skip(stream),
+            MessageType::ServerInfo => ServerInfoMessage::parse_skip(stream),
+            MessageType::ClassInfo => ClassInfoMessage::parse_skip(stream),
+            MessageType::SetPause => SetPauseMessage::parse_skip(stream),
+            MessageType::CreateStringTable => CreateStringTableMessage::parse_skip(stream),
+            MessageType::UpdateStringTable => UpdateStringTableMessage::parse_skip(stream),
+            MessageType::VoiceInit => VoiceInitMessage::parse_skip(stream),
+            MessageType::VoiceData => VoiceDataMessage::parse_skip(stream),
+            MessageType::ParseSounds => ParseSoundsMessage::parse_skip(stream),
+            MessageType::SetView => SetViewMessage::parse_skip(stream),
+            MessageType::FixAngle => FixAngleMessage::parse_skip(stream),
+            MessageType::BspDecal => BSPDecalMessage::parse_skip(stream),
+            MessageType::UserMessage => UserMessage::parse_skip(stream),
+            MessageType::EntityMessage => EntityMessage::parse_skip(stream),
+            MessageType::GameEvent => GameEventMessage::parse_skip(stream),
+            MessageType::PacketEntities => PacketEntitiesMessage::parse_skip(stream),
+            MessageType::TempEntities => TempEntitiesMessage::parse_skip(stream),
+            MessageType::PreFetch => PreFetchMessage::parse_skip(stream),
+            MessageType::Menu => MenuMessage::parse_skip(stream),
+            MessageType::GameEventList => GameEventListMessage::parse_skip(stream),
+            MessageType::GetCvarValue => GetCvarValueMessage::parse_skip(stream),
+            MessageType::CmdKeyValues => CmdKeyValuesMessage::parse_skip(stream),
         }
     }
 }

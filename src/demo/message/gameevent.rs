@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 use std::iter::FromIterator;
 
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian, BitSkip};
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{
     GameEvent, GameEventDefinition, GameEventEntry, GameEventValue, GameEventValueType,
     RawGameEvent,
 };
-use crate::{Parse, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParserState, ReadResult, Result, Stream, ParseError};
+use crate::demo::parser::ParseBitSkip;
 
 fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {
     Ok(match definition.kind {
@@ -49,6 +50,13 @@ impl Parse for GameEventMessage {
         };
         let event = GameEvent::from_raw_event(raw_event)?;
         Ok(GameEventMessage { event })
+    }
+}
+
+impl ParseBitSkip for GameEventMessage {
+    fn parse_skip(stream: &mut Stream) -> Result<()> {
+        let length: u16 = stream.read_sized(11)?;
+        stream.skip_bits(length as usize).map_err(ParseError::from)
     }
 }
 
@@ -102,3 +110,5 @@ impl BitRead<LittleEndian> for GameEventListMessage {
         Ok(GameEventListMessage { event_list })
     }
 }
+
+impl BitSkip<LittleEndian> for GameEventListMessage{}

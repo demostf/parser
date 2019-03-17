@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian, ReadError};
+use bitstream_reader::{BitRead, BitSkip, LittleEndian, ReadError};
 
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};
 use crate::demo::header::Header;
@@ -71,6 +71,17 @@ pub trait Parse: Sized {
 impl<T: BitRead<LittleEndian>> Parse for T {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         Self::read(stream).map_err(ParseError::from)
+    }
+}
+
+pub trait ParseBitSkip {
+    fn parse_skip(stream: &mut Stream) -> Result<()>;
+}
+
+impl<T: BitSkip<LittleEndian>> ParseBitSkip for T {
+    #[inline(always)]
+    fn parse_skip(stream: &mut Stream) -> Result<()> {
+        Self::skip(stream).map_err(ParseError::from)
     }
 }
 

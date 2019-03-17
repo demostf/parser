@@ -1,9 +1,10 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::{BitRead, BitSkip, LittleEndian};
 use enum_primitive_derive::Primitive;
 use num_traits::FromPrimitive;
 use serde::Serialize;
 
-use crate::{ReadResult, Stream};
+use crate::{ReadResult, Stream, Result, ParseError};
+use crate::demo::parser::ParseBitSkip;
 
 #[derive(Primitive, Clone, Copy, Debug)]
 pub enum UserMessageType {
@@ -98,6 +99,15 @@ impl BitRead<LittleEndian> for UserMessage {
     }
 }
 
+impl ParseBitSkip for UserMessage {
+    fn parse_skip(stream: &mut Stream) -> Result<()> {
+        let _ = stream.skip_bits(8)?;
+        let length:u32 = stream.read_int(11)?;
+        stream.skip_bits(length as usize).map_err(ParseError::from)
+    }
+}
+
+
 #[derive(Debug, Clone, Serialize)]
 pub enum ChatMessageKind {
     #[serde(rename = "TF_Chat_All")]
@@ -146,7 +156,7 @@ impl BitRead<LittleEndian> for SayText2Message {
             if first == 7 {
                 let _color = stream.read_string(Some(6))?;
             } else {
-                let _ = stream.skip(8)?;
+                let _ = stream.skip_bits(8)?;
             }
 
             let text: String = stream.read()?;
@@ -169,7 +179,7 @@ impl BitRead<LittleEndian> for SayText2Message {
             let kind = stream.read()?;
             let from = stream.read()?;
             let text = stream.read()?;
-            let _ = stream.skip(16)?;
+            let _ = stream.skip_bits(16)?;
             (kind, from, text)
         };
 
