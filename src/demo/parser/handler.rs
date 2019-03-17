@@ -6,7 +6,7 @@ use crate::demo::parser::analyser::{Analyser, MatchState};
 use crate::ParserState;
 
 pub trait MessageHandler {
-    fn does_handle(&self, message_type: MessageType) -> bool;
+    fn does_handle(message_type: MessageType) -> bool;
 
     fn handle_message(&mut self, message: Message, tick: u32);
 }
@@ -25,15 +25,14 @@ pub struct DemoHandler {
 
 impl DemoHandler {
     pub fn new() -> Self {
-        let mut state = ParserState::new();
         let analyser = Analyser::new();
-        state.parse_message_types.extend(analyser.get_message_types());
+        let state_handler = ParserState::new();
 
         DemoHandler {
             tick: 0,
             string_table_names: Vec::new(),
             analyser,
-            state_handler: state,
+            state_handler,
         }
     }
 
@@ -101,11 +100,11 @@ impl DemoHandler {
 
     fn handle_message(&mut self, message: Message) {
         let message_type = message.get_message_type();
-        if self.state_handler.does_handle(message_type) {
+        if ParserState::does_handle(message_type) {
             self.state_handler.handle_message(message, self.tick);
             return;
         }
-        if self.analyser.does_handle(message_type) {
+        if Analyser::does_handle(message_type) {
             self.analyser.handle_message(message, self.tick);
             return;
         }

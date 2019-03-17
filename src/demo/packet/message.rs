@@ -59,7 +59,7 @@ impl Parse for MessagePacket {
         while packet_data.bits_left() > 6 {
             let message_type = MessageType::parse(&mut packet_data, state)?;
 
-            if state.parse_message_types.contains(&message_type) {
+            if state.should_parse_message(message_type) {
                 let message = Message::from_type(message_type, &mut packet_data, state)?;
                 messages.push(message);
             } else {

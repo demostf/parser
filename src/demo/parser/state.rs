@@ -10,6 +10,7 @@ use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
+use crate::demo::parser::analyser::Analyser;
 
 #[derive(Default)]
 pub struct DemoMeta {
@@ -28,7 +29,6 @@ pub struct ParserState {
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub demo_meta: DemoMeta,
-    pub parse_message_types: Vec<MessageType>,
 }
 
 pub struct StaticBaseline {
@@ -49,14 +49,7 @@ impl StaticBaseline {
 
 impl ParserState {
     pub fn new() -> Self {
-        let mut state = ParserState::default();
-        state.parse_message_types.extend_from_slice(&[
-            MessageType::ServerInfo,
-            MessageType::GameEventList,
-            MessageType::CreateStringTable,
-            MessageType::UpdateStringTable
-        ]);
-        state
+        ParserState::default()
     }
 
     pub fn handle_data_table(
@@ -73,10 +66,14 @@ impl ParserState {
     pub fn handle_string_table_meta(&mut self, table: StringTableMeta) {
         self.string_tables.push(table);
     }
+
+    pub fn should_parse_message(&self, message_type: MessageType) -> bool {
+        Self::does_handle(message_type) || Analyser::does_handle(message_type)
+    }
 }
 
 impl MessageHandler for ParserState {
-    fn does_handle(&self, message_type: MessageType) -> bool {
+    fn does_handle(message_type: MessageType) -> bool {
         match message_type {
             MessageType::ServerInfo
             | MessageType::GameEventList

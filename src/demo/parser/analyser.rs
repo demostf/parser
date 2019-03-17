@@ -176,7 +176,7 @@ pub struct Analyser {
 }
 
 impl MessageHandler for Analyser {
-    fn does_handle(&self, message_type: MessageType) -> bool {
+    fn does_handle(message_type: MessageType) -> bool {
         match message_type {
             MessageType::GameEvent | MessageType::UserMessage => true,
             _ => false,
