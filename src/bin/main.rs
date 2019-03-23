@@ -11,9 +11,7 @@ fn main() -> std::result::Result<(), Box<ParseError>> {
     let path = args[1].clone();
     let file = fs::read(path).expect("Unable to read file");
     let demo = Demo::new(file);
-    let stream: Stream = demo.get_stream();
-    let parser = DemoParser::new(stream);
-    let (_, state) = parser.parse_demo()?;
+    let (_, state) = DemoParser::parse_demo(demo.get_stream())?;
     let json = serde_json::to_string(&state).unwrap_or("err".to_string());
     println!("{}", json);
     Ok(())

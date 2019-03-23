@@ -1,14 +1,12 @@
 use std::fs;
 use pretty_assertions::assert_eq;
 
-use tf_demo_parser::{Demo, DemoParser, Stream, MatchState};
+use tf_demo_parser::{Demo, DemoParser, MatchState};
 
 fn snapshot_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
-    let stream: Stream = demo.get_stream();
-    let parser = DemoParser::new(stream);
-    let (_, state) = parser.parse_demo().unwrap();
+    let (_, state) = DemoParser::parse_demo(demo.get_stream()).unwrap();
 
     let expected: MatchState = serde_json::from_slice(fs::read(snapshot_file).expect("Unable to read file").as_slice()).unwrap();
     assert_eq!(expected, state);

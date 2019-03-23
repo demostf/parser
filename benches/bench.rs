@@ -13,8 +13,7 @@ fn bench_file(input_file: &str, b: &mut Bencher) {
     let stream: Stream = demo.get_stream();
 
     b.iter(|| {
-        let parser = DemoParser::new(stream.clone());
-        let (_, state) = parser.parse_demo().unwrap();
+        let (_, state) = DemoParser::parse_demo(stream.clone()).unwrap();
         test::black_box(state);
     })
 }

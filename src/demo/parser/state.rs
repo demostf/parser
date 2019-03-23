@@ -7,7 +7,7 @@ use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::packet::datatable::{SendTable, ServerClass};
 use crate::demo::packet::stringtable::StringTableEntry;
-use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
+use crate::demo::parser::handler::{MessageHandler};
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
 use crate::demo::parser::analyser::Analyser;
@@ -73,6 +73,8 @@ impl ParserState {
 }
 
 impl MessageHandler for ParserState {
+    type Output = Self;
+
     fn does_handle(message_type: MessageType) -> bool {
         match message_type {
             MessageType::ServerInfo
@@ -96,9 +98,7 @@ impl MessageHandler for ParserState {
             _ => {}
         }
     }
-}
 
-impl StringTableEntryHandler for ParserState {
     fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
         match table.as_str() {
             "instancebaseline" => match &entry.extra_data {
@@ -113,5 +113,9 @@ impl StringTableEntryHandler for ParserState {
             },
             _ => {}
         }
+    }
+
+    fn get_output(self, _state: ParserState) -> Self {
+        self
     }
 }

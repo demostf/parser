@@ -3,8 +3,9 @@ use bitstream_reader::{BitRead, BitSkip, LittleEndian, ReadError};
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};
 use crate::demo::header::Header;
 use crate::demo::packet::Packet;
+use crate::demo::parser::analyser::Analyser;
 pub use crate::demo::parser::analyser::MatchState;
-use crate::demo::parser::handler::DemoHandler;
+use crate::demo::parser::handler::{DemoHandler, MessageHandler};
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
 
@@ -85,28 +86,23 @@ impl<T: BitSkip<LittleEndian>> ParseBitSkip for T {
     }
 }
 
-pub struct DemoParser {
-    stream: Stream,
-    handler: DemoHandler,
-}
+pub struct DemoParser {}
 
 impl DemoParser {
-    pub fn new(stream: Stream) -> Self {
-        DemoParser {
-            stream,
-            handler: DemoHandler::new(),
-        }
+    pub fn parse_demo(stream: Stream) -> Result<(Header, MatchState)> {
+        Self::parse_with_analyser(stream, Analyser::new())
     }
 
-    pub fn parse_demo(mut self) -> Result<(Header, MatchState)> {
-        let header = Header::read(&mut self.stream)?;
+    pub fn parse_with_analyser<T: MessageHandler>(mut stream: Stream, analyser: T) -> Result<(Header, T::Output)> {
+        let mut handler = DemoHandler::with_analyser(analyser);
+        let header = Header::read(&mut stream)?;
         loop {
-            let packet = Packet::parse(&mut self.stream, self.handler.get_parser_state())?;
+            let packet = Packet::parse(&mut stream, handler.get_parser_state())?;
             match packet {
                 Packet::Stop(_) => break,
-                packet => self.handler.handle_packet(packet),
+                packet => handler.handle_packet(packet),
             };
         }
-        Ok((header, self.handler.get_match_state()))
+        Ok((header, handler.get_output()))
     }
 }

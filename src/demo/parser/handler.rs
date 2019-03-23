@@ -2,30 +2,37 @@ use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
-use crate::demo::parser::analyser::{Analyser, MatchState};
+use crate::demo::parser::analyser::{Analyser};
 use crate::ParserState;
 
 pub trait MessageHandler {
+    type Output;
+
     fn does_handle(message_type: MessageType) -> bool;
 
     fn handle_message(&mut self, message: Message, tick: u32);
-}
 
-pub trait StringTableEntryHandler {
     fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry);
+
+    fn get_output(self, state: ParserState) -> Self::Output;
 }
 
 #[derive(Default)]
-pub struct DemoHandler {
+pub struct DemoHandler<T: MessageHandler> {
     tick: u32,
     string_table_names: Vec<String>,
-    analyser: Analyser,
+    analyser: T,
     state_handler: ParserState,
 }
 
-impl DemoHandler {
+impl DemoHandler<Analyser> {
     pub fn new() -> Self {
-        let analyser = Analyser::new();
+        Self::with_analyser(Analyser::new())
+    }
+}
+
+impl<T: MessageHandler> DemoHandler<T> {
+    pub fn with_analyser(analyser: T) -> Self {
         let state_handler = ParserState::new();
 
         DemoHandler {
@@ -110,8 +117,8 @@ impl DemoHandler {
         }
     }
 
-    pub fn get_match_state(self) -> MatchState {
-        self.analyser.get_match_state(self.state_handler)
+    pub fn get_output(self) -> T::Output {
+        self.analyser.get_output(self.state_handler)
     }
 
     pub fn get_parser_state(&self) -> &ParserState {

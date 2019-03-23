@@ -1,18 +1,18 @@
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
-use serde_repr::{Serialize_repr, Deserialize_repr};
+use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
+use crate::{ParserState, ReadResult, Stream};
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
+use crate::demo::message::{Message, MessageType};
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::usermessage::{ChatMessageKind, SayText2Message, UserMessage};
-use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
-use crate::demo::parser::handler::{MessageHandler, StringTableEntryHandler};
+use crate::demo::parser::handler::MessageHandler;
 use crate::demo::vector::Vector;
-use crate::{ParserState, ReadResult, Stream};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChatMassage {
@@ -176,6 +176,8 @@ pub struct Analyser {
 }
 
 impl MessageHandler for Analyser {
+    type Output = MatchState;
+
     fn does_handle(message_type: MessageType) -> bool {
         match message_type {
             MessageType::GameEvent | MessageType::UserMessage => true,
@@ -193,9 +195,7 @@ impl MessageHandler for Analyser {
             _ => {}
         }
     }
-}
 
-impl StringTableEntryHandler for Analyser {
     fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
         match table.as_str() {
             "userinfo" => {
@@ -209,6 +209,17 @@ impl StringTableEntryHandler for Analyser {
                 }
             }
             _ => {}
+        }
+    }
+
+    fn get_output(self, state: ParserState) -> MatchState {
+        MatchState {
+            start_tick: self.start_tick,
+            interval_per_tick: state.demo_meta.interval_per_tick,
+            chat: self.chat,
+            deaths: self.deaths,
+            rounds: self.rounds,
+            users: UserState::from_users_and_spawn(self.users, self.user_spawns),
         }
     }
 }
@@ -273,17 +284,6 @@ impl Analyser {
             self.users.insert(user_id, user);
         }
         Ok(())
-    }
-
-    pub fn get_match_state(self, state: ParserState) -> MatchState {
-        MatchState {
-            start_tick: self.start_tick,
-            interval_per_tick: state.demo_meta.interval_per_tick,
-            chat: self.chat,
-            deaths: self.deaths,
-            rounds: self.rounds,
-            users: UserState::from_users_and_spawn(self.users, self.user_spawns),
-        }
     }
 }
 
