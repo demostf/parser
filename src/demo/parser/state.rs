@@ -7,10 +7,10 @@ use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::packet::datatable::{SendTable, ServerClass};
 use crate::demo::packet::stringtable::StringTableEntry;
-use crate::demo::parser::handler::{MessageHandler};
+use crate::demo::parser::analyser::Analyser;
+use crate::demo::parser::handler::MessageHandler;
 use crate::demo::sendprop::SendProp;
 use crate::Stream;
-use crate::demo::parser::analyser::Analyser;
 
 #[derive(Default)]
 pub struct DemoMeta {
@@ -19,7 +19,6 @@ pub struct DemoMeta {
     pub interval_per_tick: f32,
 }
 
-#[derive(Default)]
 pub struct ParserState {
     pub static_baselines: HashMap<u32, StaticBaseline>,
     pub event_definitions: HashMap<GameEventTypeId, GameEventDefinition>,
@@ -29,6 +28,7 @@ pub struct ParserState {
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub demo_meta: DemoMeta,
+    analyser_handles: fn(message_type: MessageType) -> bool,
 }
 
 pub struct StaticBaseline {
@@ -48,8 +48,18 @@ impl StaticBaseline {
 }
 
 impl ParserState {
-    pub fn new() -> Self {
-        ParserState::default()
+    pub fn new(analyser_handles: fn(message_type: MessageType) -> bool) -> Self {
+        ParserState {
+            static_baselines: HashMap::new(),
+            event_definitions: HashMap::new(),
+            string_tables: Vec::new(),
+            entity_classes: HashMap::new(),
+            send_tables: HashMap::new(),
+            server_classes: Vec::new(),
+            instance_baselines: [HashMap::new(), HashMap::new()],
+            demo_meta: DemoMeta::default(),
+            analyser_handles,
+        }
     }
 
     pub fn handle_data_table(
@@ -68,7 +78,7 @@ impl ParserState {
     }
 
     pub fn should_parse_message(&self, message_type: MessageType) -> bool {
-        Self::does_handle(message_type) || Analyser::does_handle(message_type)
+        Self::does_handle(message_type) || (self.analyser_handles)(message_type)
     }
 }
 

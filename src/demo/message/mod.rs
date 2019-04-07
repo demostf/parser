@@ -2,6 +2,8 @@ use enum_primitive_derive::Primitive;
 use num_traits::FromPrimitive;
 
 pub use generated::*;
+use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::{Parse, ParseError, ParserState, Result, Stream};
 use crate::demo::message::bspdecal::*;
@@ -24,7 +26,8 @@ pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
 
-#[derive(Primitive, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Primitive, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
+#[repr(u8)]
 pub enum MessageType {
     Empty = 0,
     File = 2,

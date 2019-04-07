@@ -8,10 +8,12 @@ pub use crate::demo::parser::analyser::MatchState;
 use crate::demo::parser::handler::{DemoHandler, MessageHandler};
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
+pub use self::messagetypeanalyser::MessageTypeAnalyser;
 
 mod analyser;
 mod handler;
 mod state;
+mod messagetypeanalyser;
 
 /// Errors that can occur during parsing
 #[derive(Debug)]

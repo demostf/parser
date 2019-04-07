@@ -1,8 +1,8 @@
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
-use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
-use crate::demo::parser::analyser::{Analyser};
+use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
+use crate::demo::parser::analyser::Analyser;
 use crate::ParserState;
 
 pub trait MessageHandler {
@@ -17,7 +17,6 @@ pub trait MessageHandler {
     fn get_output(self, state: ParserState) -> Self::Output;
 }
 
-#[derive(Default)]
 pub struct DemoHandler<T: MessageHandler> {
     tick: u32,
     string_table_names: Vec<String>,
@@ -33,7 +32,7 @@ impl DemoHandler<Analyser> {
 
 impl<T: MessageHandler> DemoHandler<T> {
     pub fn with_analyser(analyser: T) -> Self {
-        let state_handler = ParserState::new();
+        let state_handler = ParserState::new(T::does_handle);
 
         DemoHandler {
             tick: 0,
