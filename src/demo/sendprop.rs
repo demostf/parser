@@ -2,7 +2,7 @@ use bitstream_reader::{BitRead, LittleEndian};
 use enumflags2::BitFlags;
 use enumflags2_derive::EnumFlags;
 
-use crate::{ReadResult, Result, Stream};
+use crate::{ReadResult, Result, Stream, Parse};
 
 use super::packet::datatable::SendTable;
 use super::vector::{Vector, VectorXY};
@@ -17,14 +17,29 @@ pub struct SendPropDefinition {
     pub high_value: Option<f32>,
     pub bit_count: Option<u32>,
     pub original_bit_count: Option<u32>,
-    pub table: Option<SendTable>,
     pub element_count: Option<u16>,
     pub array_property: Option<Box<SendPropDefinition>>,
-    pub owner_table_name: String,
 }
 
 impl SendPropDefinition {
-    pub fn read(stream: &mut Stream, owner_table_name: String) -> Result<Self> {
+    pub fn with_array_property(self, array_property: Self) -> Self {
+        SendPropDefinition {
+            prop_type: self.prop_type,
+            name: self.name,
+            flags: self.flags,
+            exclude_dt_name: self.exclude_dt_name,
+            low_value: self.low_value,
+            high_value: self.high_value,
+            bit_count: self.bit_count,
+            original_bit_count: self.original_bit_count,
+            element_count: self.element_count,
+            array_property: Some(Box::new(array_property)),
+        }
+    }
+}
+
+impl BitRead<LittleEndian> for SendPropDefinition {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
         let prop_type = SendPropType::read(stream)?;
         let name = stream.read_string(None)?;
         let flags = SendPropFlags::read(stream)?;
@@ -67,28 +82,9 @@ impl SendPropDefinition {
             high_value,
             bit_count,
             original_bit_count,
-            table: None,
             element_count,
             array_property: None,
-            owner_table_name,
         })
-    }
-
-    pub fn with_array_property(self, array_property: Self) -> Self {
-        SendPropDefinition {
-            prop_type: self.prop_type,
-            name: self.name,
-            flags: self.flags,
-            exclude_dt_name: self.exclude_dt_name,
-            low_value: self.low_value,
-            high_value: self.high_value,
-            bit_count: self.bit_count,
-            original_bit_count: self.original_bit_count,
-            table: None,
-            element_count: self.element_count,
-            array_property: Some(Box::new(array_property)),
-            owner_table_name: self.owner_table_name,
-        }
     }
 }
 

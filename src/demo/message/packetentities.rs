@@ -18,10 +18,10 @@ impl EntityId {
 #[derive(BitRead, Clone, Copy, Debug)]
 #[discriminant_bits = 3]
 pub enum PVS {
-    PRESERVE = 0,
-    ENTER = 1,
-    LEAVE = 2,
-    DELETE = 4,
+    Preserve = 0,
+    Leave = 1,
+    Enter = 2,
+    Delete = 3,
 }
 
 #[derive(Debug)]
@@ -77,5 +77,17 @@ impl ParseBitSkip for PacketEntitiesMessage {
         let length: u32 = stream.read_sized(20)?;
         let _: bool = stream.read()?;
         stream.skip_bits(length as usize).map_err(ParseError::from)
+    }
+}
+
+pub struct EntityUpdate {
+    props: Vec<SendProp>
+}
+
+impl Parse for EntityUpdate {
+    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+        Ok(EntityUpdate {
+            props: Vec::new()
+        })
     }
 }

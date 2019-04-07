@@ -29,7 +29,7 @@ impl Parse for SendTable {
 
         for _ in 0..prop_count {
             let prop: SendPropDefinition =
-                SendPropDefinition::read(stream, name.clone())?;
+                SendPropDefinition::read(stream)?;
             if prop.flags.contains(SendPropFlag::InsideArray) {
                 if array_element_prop.is_some()
                     || prop.flags.contains(SendPropFlag::ChangesOften)
