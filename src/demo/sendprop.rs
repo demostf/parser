@@ -8,26 +8,26 @@ use super::packet::datatable::SendTable;
 use super::vector::{Vector, VectorXY};
 
 #[derive(Debug)]
-pub struct SendPropDefinition {
+pub struct RawSendPropDefinition {
     pub prop_type: SendPropType,
     pub name: String,
     pub flags: SendPropFlags,
-    pub exclude_dt_name: Option<String>,
+    pub table_name: Option<String>,
     pub low_value: Option<f32>,
     pub high_value: Option<f32>,
     pub bit_count: Option<u32>,
     pub original_bit_count: Option<u32>,
     pub element_count: Option<u16>,
-    pub array_property: Option<Box<SendPropDefinition>>,
+    pub array_property: Option<Box<RawSendPropDefinition>>,
 }
 
-impl SendPropDefinition {
+impl RawSendPropDefinition {
     pub fn with_array_property(self, array_property: Self) -> Self {
-        SendPropDefinition {
+        RawSendPropDefinition {
             prop_type: self.prop_type,
             name: self.name,
             flags: self.flags,
-            exclude_dt_name: self.exclude_dt_name,
+            table_name: self.table_name,
             low_value: self.low_value,
             high_value: self.high_value,
             bit_count: self.bit_count,
@@ -38,26 +38,26 @@ impl SendPropDefinition {
     }
 }
 
-impl BitRead<LittleEndian> for SendPropDefinition {
+impl BitRead<LittleEndian> for RawSendPropDefinition {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let prop_type = SendPropType::read(stream)?;
         let name = stream.read_string(None)?;
         let flags = SendPropFlags::read(stream)?;
-        let mut exclude_dt_name = None;
+        let mut table_name = None;
         let mut element_count = None;
         let mut low_value = None;
         let mut high_value = None;
         let mut bit_count = None;
         if prop_type == SendPropType::DataTable {
-            exclude_dt_name = Some(stream.read_string(None)?);
+            table_name = Some(stream.read()?);
         } else {
             if flags.contains(SendPropFlag::Exclude) {
-                exclude_dt_name = Some(stream.read_string(None)?);
+                table_name = Some(stream.read()?);
             } else if prop_type == SendPropType::Array {
                 element_count = Some(stream.read_int(10)?);
             } else {
-                low_value = Some(stream.read_float()?);
-                high_value = Some(stream.read_float()?);
+                low_value = Some(stream.read()?);
+                high_value = Some(stream.read()?);
                 bit_count = Some(stream.read_int(7)?);
             }
         }
@@ -73,11 +73,11 @@ impl BitRead<LittleEndian> for SendPropDefinition {
             }
         }
 
-        Ok(SendPropDefinition {
+        Ok(RawSendPropDefinition {
             prop_type,
             name,
             flags,
-            exclude_dt_name,
+            table_name,
             low_value,
             high_value,
             bit_count,
@@ -192,7 +192,7 @@ pub enum SendPropValue {
 
 #[derive(Debug)]
 pub struct SendProp {
-    definition: SendPropDefinition,
+    definition: RawSendPropDefinition,
     value: SendPropValue,
 }
 

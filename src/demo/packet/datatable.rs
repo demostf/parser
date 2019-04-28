@@ -1,6 +1,6 @@
 use bitstream_reader::BitRead;
 
-use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropType};
+use crate::demo::sendprop::{RawSendPropDefinition, SendPropFlag, SendPropType};
 use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 #[derive(BitRead, Debug)]
@@ -13,9 +13,9 @@ pub struct ServerClass {
 #[derive(Debug)]
 pub struct SendTable {
     pub name: String,
-    pub props: Vec<SendPropDefinition>,
+    pub props: Vec<RawSendPropDefinition>,
     pub needs_decoder: bool,
-    pub flattened_props: Option<Vec<SendPropDefinition>>,
+    pub flattened_props: Option<Vec<RawSendPropDefinition>>,
 }
 
 impl Parse for SendTable {
@@ -28,8 +28,8 @@ impl Parse for SendTable {
         let mut props = Vec::with_capacity(prop_count);
 
         for _ in 0..prop_count {
-            let prop: SendPropDefinition =
-                SendPropDefinition::read(stream)?;
+            let prop: RawSendPropDefinition =
+                RawSendPropDefinition::read(stream)?;
             if prop.flags.contains(SendPropFlag::InsideArray) {
                 if array_element_prop.is_some()
                     || prop.flags.contains(SendPropFlag::ChangesOften)
