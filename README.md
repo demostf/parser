@@ -1,5 +1,7 @@
 # TF Demo Parser
 
+[![Build Status](https://travis-ci.org/demostf/parser.svg?branch=master)](https://travis-ci.org/demostf/parser)
+
 Parsing of tf2 demo files
 
 ## Building
