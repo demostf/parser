@@ -10,7 +10,7 @@ dependencies = [
 
 [[package]]
 name = "bitstream_reader"
-version = "0.5.0"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitstream_reader_derive 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -218,7 +218,7 @@ dependencies = [
 name = "tf-demo-parser"
 version = "0.1.0"
 dependencies = [
- "bitstream_reader 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "bitstream_reader 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "enum-primitive-derive 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "enumflags2 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "enumflags2_derive 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -261,7 +261,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
 "checksum ansi_term 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ee49baf6cb617b853aa8d93bf420db2383fab46d314482ca2803b40d5fde979b"
-"checksum bitstream_reader 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "379870632be0e114a5b8951251ae7a8aaaa863590468d35f4a474a7ee8ea625b"
+"checksum bitstream_reader 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)" = "ce18d8bbe27f4f79e0221775535a640c40760888431a63c22d92e926c5839c77"
 "checksum bitstream_reader_derive 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "7ae1ff36caa3f111504ee053686356bf98bbc1cfe9a5b71e19bbc8294b04bdb1"
 "checksum byteorder 1.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "a019b10a2a7cdeb292db131fc8113e57ea2a908f6e7894b0c3c671893b65dbeb"
 "checksum ctor 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "9a43db2bba5cafdc6aa068c892a518e477ee0df3705e53ec70247a9ff93546d5"

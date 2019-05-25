@@ -130,11 +130,3 @@ pub struct CmdKeyValuesMessage {
 }
 
 impl BitSkip<LittleEndian> for CmdKeyValuesMessage{}
-
-#[derive(BitRead, Debug)]
-pub struct SetConVarMessage {
-    #[size_bits = 8]
-    vars: HashMap<String, String>,
-}
-
-impl BitSkip<LittleEndian> for SetConVarMessage{}

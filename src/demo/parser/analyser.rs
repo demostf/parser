@@ -268,7 +268,7 @@ impl Analyser {
     }
 
     fn parse_user_info(&mut self, text: &String, mut data: Stream) -> ReadResult<()> {
-        let name: String = data.read_sized(32)?;
+        let name: String = data.read_sized(32).unwrap_or("Malformed Name".into());
         let user_id = UserId((data.read::<u32>()? & 255) as u8);
         let steam_id: String = data.read()?;
         let entity_id: Option<u32> = text.parse().ok();

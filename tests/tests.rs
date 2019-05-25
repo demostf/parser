@@ -44,6 +44,12 @@ fn snapshot_test_comp() {
     snapshot_test("data/comp.dem", "data/comp.json");
 }
 
+
+#[test]
+fn snapshot_test_malformed_cvar() {
+    snapshot_test("data/malformed_cvar.dem", "data/malformed_cvar.json");
+}
+
 #[test]
 fn message_type_test_comp() {
     dump_message_types("data/comp.dem", "data/comp_message_types.json");

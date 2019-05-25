@@ -14,6 +14,7 @@ use crate::demo::message::stringtable::*;
 use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
+use crate::demo::message::setconvar::*;
 use crate::demo::parser::ParseBitSkip;
 
 pub mod bspdecal;
@@ -25,6 +26,7 @@ pub mod stringtable;
 pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
+pub mod setconvar;
 
 #[derive(Primitive, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
