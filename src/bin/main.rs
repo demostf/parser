@@ -4,6 +4,8 @@ use std::fs;
 pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Result, Stream};
 
 fn main() -> std::result::Result<(), Box<ParseError>> {
+    better_panic::install();
+
     let args: Vec<_> = env::args().collect();
     if args.len() < 2 {
         panic!("1 argument required");
