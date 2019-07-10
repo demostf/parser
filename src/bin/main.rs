@@ -8,7 +8,8 @@ fn main() -> std::result::Result<(), Box<ParseError>> {
 
     let args: Vec<_> = env::args().collect();
     if args.len() < 2 {
-        panic!("1 argument required");
+        println!("1 argument required");
+        return Ok(());
     }
     let path = args[1].clone();
     let file = fs::read(path).expect("Unable to read file");

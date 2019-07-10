@@ -5,7 +5,7 @@ use crate::demo::message::{Message, MessageType};
 use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::stringtable::StringTableMeta;
-use crate::demo::packet::datatable::{SendTable, ServerClass};
+use crate::demo::packet::datatable::{SendTable, ServerClass, SendTableName};
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::analyser::Analyser;
 use crate::demo::parser::handler::MessageHandler;
@@ -24,7 +24,7 @@ pub struct ParserState {
     pub event_definitions: HashMap<GameEventTypeId, GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
     pub entity_classes: HashMap<EntityId, ServerClass>,
-    pub send_tables: HashMap<String, SendTable>,
+    pub send_tables: HashMap<SendTableName, SendTable>,
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub demo_meta: DemoMeta,

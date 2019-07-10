@@ -6,24 +6,24 @@ use crate::{ReadResult, Result, Stream, Parse};
 
 use super::packet::datatable::SendTable;
 use super::vector::{Vector, VectorXY};
+use crate::demo::packet::datatable::SendTableName;
 
 #[derive(Debug)]
-pub struct RawSendPropDefinition {
+pub struct SendPropDefinition {
     pub prop_type: SendPropType,
     pub name: String,
     pub flags: SendPropFlags,
-    pub table_name: Option<String>,
+    pub table_name: Option<SendTableName>,
     pub low_value: Option<f32>,
     pub high_value: Option<f32>,
     pub bit_count: Option<u32>,
-    pub original_bit_count: Option<u32>,
     pub element_count: Option<u16>,
-    pub array_property: Option<Box<RawSendPropDefinition>>,
+    pub array_property: Option<Box<SendPropDefinition>>,
 }
 
-impl RawSendPropDefinition {
+impl SendPropDefinition {
     pub fn with_array_property(self, array_property: Self) -> Self {
-        RawSendPropDefinition {
+        SendPropDefinition {
             prop_type: self.prop_type,
             name: self.name,
             flags: self.flags,
@@ -31,14 +31,18 @@ impl RawSendPropDefinition {
             low_value: self.low_value,
             high_value: self.high_value,
             bit_count: self.bit_count,
-            original_bit_count: self.original_bit_count,
             element_count: self.element_count,
             array_property: Some(Box::new(array_property)),
         }
     }
+
+    pub fn get_data_table<'a>(&self, tables: &'a [SendTable]) -> Option<&'a SendTable> {
+        self.table_name.as_ref()
+            .and_then(|name| tables.iter().find(|table| table.name == *name))
+    }
 }
 
-impl BitRead<LittleEndian> for RawSendPropDefinition {
+impl BitRead<LittleEndian> for SendPropDefinition {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let prop_type = SendPropType::read(stream)?;
         let name = stream.read_string(None)?;
@@ -61,7 +65,6 @@ impl BitRead<LittleEndian> for RawSendPropDefinition {
                 bit_count = Some(stream.read_int(7)?);
             }
         }
-        let original_bit_count = bit_count;
 
         if flags.contains(SendPropFlag::NoScale) {
             if prop_type == SendPropType::Float {
@@ -73,7 +76,7 @@ impl BitRead<LittleEndian> for RawSendPropDefinition {
             }
         }
 
-        Ok(RawSendPropDefinition {
+        Ok(SendPropDefinition {
             prop_type,
             name,
             flags,
@@ -81,7 +84,6 @@ impl BitRead<LittleEndian> for RawSendPropDefinition {
             low_value,
             high_value,
             bit_count,
-            original_bit_count,
             element_count,
             array_property: None,
         })
@@ -192,7 +194,7 @@ pub enum SendPropValue {
 
 #[derive(Debug)]
 pub struct SendProp {
-    definition: RawSendPropDefinition,
+    definition: SendPropDefinition,
     value: SendPropValue,
 }
 
