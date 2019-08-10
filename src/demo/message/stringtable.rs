@@ -179,14 +179,14 @@ fn parse_string_table_list(
     stream: &mut Stream,
     table_meta: &StringTableMeta,
     entry_count: u16,
-) -> ReadResult<Vec<StringTableEntry>> {
+) -> Result<Vec<StringTableEntry>> {
     let mut entries = Vec::with_capacity(entry_count as usize);
 
     let mut history: Vec<Option<String>> = Vec::new();
 
     for _ in 0..entry_count {
         if !stream.read::<bool>()? {
-            panic!("there should be no holes when reading CreateStringTable message");
+            return Err(ParseError::InvalidDemo("there should be no holes when reading CreateStringTable message".to_string()));
         };
 
         let entry = read_table_entry(stream, table_meta, &history)?;

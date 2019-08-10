@@ -51,6 +51,8 @@ pub enum ParseError {
         /// Actual decompressed size
         size: u32,
     },
+    /// Misc malformed demo error
+    InvalidDemo(String)
 }
 
 impl From<ReadError> for ParseError {
