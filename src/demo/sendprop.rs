@@ -4,7 +4,7 @@ use enumflags2_derive::EnumFlags;
 
 use crate::{ReadResult, Result, Stream, Parse};
 
-use super::packet::datatable::SendTable;
+use super::packet::datatable::ParseSendTable;
 use super::vector::{Vector, VectorXY};
 use crate::demo::packet::datatable::SendTableName;
 
@@ -41,7 +41,7 @@ impl SendPropDefinition {
     /// Get the refered data table
     ///
     /// Note that this is not the owner table
-    pub fn get_data_table<'a>(&self, tables: &'a [SendTable]) -> Option<&'a SendTable> {
+    pub fn get_data_table<'a>(&self, tables: &'a [ParseSendTable]) -> Option<&'a ParseSendTable> {
         self.table_name.as_ref()
             .and_then(|name| tables.iter().find(|table| table.name == *name))
     }

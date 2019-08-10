@@ -6,7 +6,7 @@ use std::fs;
 use pretty_assertions::assert_eq;
 
 use tf_demo_parser::{Demo, DemoParser, MatchState, MessageTypeAnalyser, MessageType, ParserState};
-use tf_demo_parser::demo::packet::datatable::{SendTable, SendTableName};
+use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName};
 use tf_demo_parser::demo::packet::stringtable::StringTableEntry;
 use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::sendprop::SendPropDefinition;
@@ -16,7 +16,7 @@ use tf_demo_parser::demo::parser::MessageHandler;
 pub struct SendPropAnalyser;
 
 impl MessageHandler for SendPropAnalyser {
-    type Output = Vec<SendTable>;
+    type Output = Vec<ParseSendTable>;
 
     fn does_handle(message_type: MessageType) -> bool {
         false
@@ -27,7 +27,11 @@ impl MessageHandler for SendPropAnalyser {
     fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {}
 
     fn get_output(self, state: ParserState) -> Self::Output {
-        state.send_tables.into_iter().map(|(_k, v)| v).collect()
+        state.send_tables.into_iter().map(|(_k, v)| ParseSendTable {
+            name: v.name,
+            props: v.props,
+            needs_decoder: v.needs_decoder
+        }).collect()
     }
 }
 

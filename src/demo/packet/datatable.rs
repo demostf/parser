@@ -5,6 +5,8 @@ use crate::{Parse, ParseError, ParserState, Result, Stream, ReadResult};
 use std::fmt;
 use serde::{Serialize, Deserialize};
 use std::rc::Rc;
+use std::cell::{Cell, RefCell};
+use std::ops::Deref;
 
 #[derive(BitRead, Debug)]
 pub struct ServerClass {
@@ -41,14 +43,13 @@ impl BitRead<LittleEndian> for SendTableName {
 }
 
 #[derive(Debug)]
-pub struct SendTable {
+pub struct ParseSendTable {
     pub name: SendTableName,
     pub props: Vec<SendPropDefinition>,
     pub needs_decoder: bool,
-    pub flattened_props: Option<Vec<SendPropDefinition>>,
 }
 
-impl Parse for SendTable {
+impl Parse for ParseSendTable {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let needs_decoder = stream.read()?;
         let raw_name: String = stream.read()?;
@@ -83,17 +84,16 @@ impl Parse for SendTable {
             }
         }
 
-        Ok(SendTable {
+        Ok(ParseSendTable {
             name,
-            flattened_props: None,
             needs_decoder,
             props,
         })
     }
 }
 
-impl SendTable {
-    pub fn flatten_props<'a>(&'a self, tables: &'a [SendTable]) -> Vec<&'a SendPropDefinition> {
+impl ParseSendTable {
+    pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Vec<SendPropDefinition> {
         let mut flat = Vec::new();
         self.get_all_props(tables, &self.get_excludes(tables), &mut flat);
 
@@ -108,10 +108,10 @@ impl SendTable {
             }
         }
 
-        flat
+        flat.into_iter().map(|prop| prop.clone()).collect()
     }
 
-    fn get_excludes<'a>(&'a self, tables: &'a [SendTable]) -> Vec<Exclude<'a>> {
+    fn get_excludes<'a>(&'a self, tables: &'a [ParseSendTable]) -> Vec<Exclude<'a>> {
         let mut excludes = Vec::new();
 
         for prop in self.props.iter() {
@@ -131,14 +131,14 @@ impl SendTable {
     }
 
     // TODO: below is a direct port from the js which is a direct port from C++ and not very optimal
-    fn get_all_props<'a>(&'a self, tables: &'a [SendTable], excludes: &[Exclude], props: &mut Vec<&'a SendPropDefinition>) {
+    fn get_all_props<'a>(&'a self, tables: &'a [ParseSendTable], excludes: &[Exclude], props: &mut Vec<&'a SendPropDefinition>) {
         let mut local_props = Vec::new();
 
         self.get_all_props_iterator_props(tables, excludes, &mut local_props, props);
         props.extend_from_slice(&local_props);
     }
 
-    fn get_all_props_iterator_props<'a>(&'a self, tables: &'a [SendTable], excludes: &[Exclude], local_props: &mut Vec<&'a SendPropDefinition>, props: &mut Vec<&'a SendPropDefinition>) {
+    fn get_all_props_iterator_props<'a>(&'a self, tables: &'a [ParseSendTable], excludes: &[Exclude], local_props: &mut Vec<&'a SendPropDefinition>, props: &mut Vec<&'a SendPropDefinition>) {
         for prop in self.props.iter() {
             if prop.is_exclude() {
                 continue;
@@ -176,6 +176,14 @@ impl<'a> Exclude<'a> {
 }
 
 #[derive(Debug)]
+pub struct SendTable {
+    pub name: SendTableName,
+    pub props: Vec<SendPropDefinition>,
+    pub needs_decoder: bool,
+    pub flattened_props: Vec<SendPropDefinition>,
+}
+
+#[derive(Debug)]
 pub struct DataTablePacket {
     pub tick: u32,
     pub tables: Vec<SendTable>,
@@ -188,11 +196,27 @@ impl Parse for DataTablePacket {
         let len = stream.read_int::<usize>(32)?;
         let mut packet_data = stream.read_bits(len * 8)?;
 
-        let mut tables = Vec::new();
+        let mut parse_tables = Vec::new();
         while packet_data.read_bool()? {
-            let table = SendTable::parse(&mut packet_data, state)?;
-            tables.push(table);
+            let table = ParseSendTable::parse(&mut packet_data, state)?;
+            parse_tables.push(table);
         }
+
+        let flat_props: Vec<_> = parse_tables.iter()
+            .map(|table| table.flatten_props(&parse_tables))
+            .collect();
+
+        let tables = parse_tables.into_iter()
+            .zip(flat_props.into_iter())
+            .map(|(parse_table, flat)| {
+                SendTable {
+                    name: parse_table.name,
+                    props: parse_table.props,
+                    needs_decoder: parse_table.needs_decoder,
+                    flattened_props: flat,
+                }
+            })
+            .collect();
 
         // TODO linked tables?
 
