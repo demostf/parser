@@ -2,7 +2,9 @@ use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropType};
 use crate::{Parse, ParseError, ParserState, Result, Stream, ReadResult};
-use strum_macros::{EnumString, Display};
+use std::fmt;
+use serde::{Serialize, Deserialize};
+use std::rc::Rc;
 
 #[derive(BitRead, Debug)]
 pub struct ServerClass {
@@ -11,15 +13,24 @@ pub struct ServerClass {
     pub data_table: String,
 }
 
-#[derive(PartialEq, Eq, Hash, Debug, Clone, EnumString, Display)]
-pub enum SendTableName {
-    #[strum(default = "true")]
-    Other(String)
+#[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize)]
+pub struct SendTableName(Rc<String>);
+
+impl Clone for SendTableName {
+    fn clone(&self) -> Self {
+        SendTableName(Rc::clone(&self.0))
+    }
+}
+
+impl fmt::Display for SendTableName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
 }
 
 impl From<String> for SendTableName {
     fn from(value: String) -> Self {
-        value.parse().unwrap()
+        Self(Rc::new(value))
     }
 }
 
@@ -40,7 +51,8 @@ pub struct SendTable {
 impl Parse for SendTable {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let needs_decoder = stream.read()?;
-        let name: String = stream.read()?;
+        let raw_name: String = stream.read()?;
+        let name: SendTableName = raw_name.into();
         let prop_count = stream.read_int(10)?;
 
         let mut array_element_prop = None;
@@ -48,7 +60,7 @@ impl Parse for SendTable {
 
         for _ in 0..prop_count {
             let prop: SendPropDefinition =
-                SendPropDefinition::read(stream)?;
+                SendPropDefinition::read(stream, name.clone())?;
             if prop.flags.contains(SendPropFlag::InsideArray) {
                 if array_element_prop.is_some()
                     || prop.flags.contains(SendPropFlag::ChangesOften)
@@ -72,7 +84,7 @@ impl Parse for SendTable {
         }
 
         Ok(SendTable {
-            name: SendTableName::from(name),
+            name,
             flattened_props: None,
             needs_decoder,
             props,
@@ -80,35 +92,88 @@ impl Parse for SendTable {
     }
 }
 
-//impl SendTable {
-//    fn get_excludes(&self) -> ExcludesIterator {
-//        ExcludesIterator {
-//            table: self,
-//            index: 0,
-//        }
-//    }
-//}
-//
-//struct ExcludesIterator<'a> {
-//    table: &'a SendTable,
-//    index: usize,
-//}
-//
-//impl<'a> Iterator for ExcludesIterator<'a> {
-//    type Item = &'a SendPropDefinition;
-//
-//    fn next(&mut self) -> Option<Self::Item> {
-//        while let Some(prop) = self.table.props.get(index) {
-//            index += 1;
-//            if prop.flags.contains(SendPropFlag::Exclude) {
-//                return Some(prop);
-//            } else if prop.prop_type == SendPropType::DataTable {
-//                if let Some(table)
-//            }
-//        }
-//        None
-//    }
-//}
+impl SendTable {
+    pub fn flatten_props(&self, tables: &[SendTable]) -> Vec<SendPropDefinition> {
+        let mut flat = Vec::new();
+        self.get_all_props(tables, &self.get_excludes(tables), &mut flat);
+
+        // sort often changed props before the others
+        let mut start = 0;
+        for i in 0..flat.len() {
+            if flat[i].flags.contains(SendPropFlag::ChangesOften) {
+                if i != start {
+                    flat.swap(i, start);
+                }
+                start += 1;
+            }
+        }
+
+        flat
+    }
+
+    fn get_excludes<'a>(&'a self, tables: &'a [SendTable]) -> Vec<Exclude<'a>> {
+        let mut excludes = Vec::new();
+
+        for prop in self.props.iter() {
+            if prop.is_exclude() && prop.table_name.is_some() {
+                excludes.push(Exclude {
+                    table: prop.table_name.as_ref().unwrap(),
+                    prop: &prop.name,
+                })
+            } else if prop.prop_type == SendPropType::DataTable {
+                if let Some(table) = prop.get_data_table(tables) {
+                    excludes.extend_from_slice(&table.get_excludes(tables));
+                }
+            }
+        }
+
+        excludes
+    }
+
+    // TODO: below is a direct port from the js which is a direct port from C++ and not very optimal
+    fn get_all_props(&self, tables: &[SendTable], excludes: &[Exclude], props: &mut Vec<SendPropDefinition>) {
+        let mut local_props = Vec::new();
+
+        self.get_all_props_iterator_props(tables, excludes, &mut local_props, props);
+        props.extend_from_slice(&local_props);
+    }
+
+    fn get_all_props_iterator_props(&self, tables: &[SendTable], excludes: &[Exclude], props: &mut Vec<SendPropDefinition>, child_props: &mut Vec<SendPropDefinition>) {
+        for prop in self.props.iter() {
+            if prop.is_exclude() {
+                continue;
+            }
+
+            if excludes.iter().any(|exclude| exclude.matches(prop)) {
+                continue;
+            }
+
+            if prop.prop_type == SendPropType::DataTable {
+                if let Some(table) = prop.get_data_table(tables) {
+                    if prop.flags.contains(SendPropFlag::Collapsible) {
+                        table.get_all_props_iterator_props(tables, excludes, props, child_props);
+                    } else {
+                        table.get_all_props(tables, excludes, child_props);
+                    }
+                }
+            } else {
+                props.push(prop.clone());
+            }
+        }
+    }
+}
+
+#[derive(Clone)]
+struct Exclude<'a> {
+    table: &'a SendTableName,
+    prop: &'a str,
+}
+
+impl<'a> Exclude<'a> {
+    pub fn matches(&self, prop: &SendPropDefinition) -> bool {
+        self.prop == prop.name && self.table == &prop.owner_table
+    }
+}
 
 #[derive(Debug)]
 pub struct DataTablePacket {

@@ -8,12 +8,13 @@ use super::packet::datatable::SendTable;
 use super::vector::{Vector, VectorXY};
 use crate::demo::packet::datatable::SendTableName;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct SendPropDefinition {
     pub prop_type: SendPropType,
     pub name: String,
     pub flags: SendPropFlags,
     pub table_name: Option<SendTableName>,
+    pub owner_table: SendTableName,
     pub low_value: Option<f32>,
     pub high_value: Option<f32>,
     pub bit_count: Option<u32>,
@@ -33,17 +34,19 @@ impl SendPropDefinition {
             bit_count: self.bit_count,
             element_count: self.element_count,
             array_property: Some(Box::new(array_property)),
+            owner_table: self.owner_table,
         }
     }
 
+    /// Get the refered data table
+    ///
+    /// Note that this is not the owner table
     pub fn get_data_table<'a>(&self, tables: &'a [SendTable]) -> Option<&'a SendTable> {
         self.table_name.as_ref()
             .and_then(|name| tables.iter().find(|table| table.name == *name))
     }
-}
 
-impl BitRead<LittleEndian> for SendPropDefinition {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
+    pub fn read(stream: &mut Stream, owner_table: SendTableName) -> ReadResult<Self> {
         let prop_type = SendPropType::read(stream)?;
         let name = stream.read_string(None)?;
         let flags = SendPropFlags::read(stream)?;
@@ -86,7 +89,12 @@ impl BitRead<LittleEndian> for SendPropDefinition {
             bit_count,
             element_count,
             array_property: None,
+            owner_table,
         })
+    }
+
+    pub fn is_exclude(&self) -> bool {
+        self.flags.contains(SendPropFlag::Exclude)
     }
 }
 
@@ -165,7 +173,7 @@ pub enum SendPropFlag {
     NormalVarInt = 32, //(1 << 5)
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct SendPropFlags(BitFlags<SendPropFlag>);
 
 impl SendPropFlags {
