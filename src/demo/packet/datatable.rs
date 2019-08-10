@@ -93,7 +93,7 @@ impl Parse for SendTable {
 }
 
 impl SendTable {
-    pub fn flatten_props(&self, tables: &[SendTable]) -> Vec<SendPropDefinition> {
+    pub fn flatten_props<'a>(&'a self, tables: &'a [SendTable]) -> Vec<&'a SendPropDefinition> {
         let mut flat = Vec::new();
         self.get_all_props(tables, &self.get_excludes(tables), &mut flat);
 
@@ -131,14 +131,14 @@ impl SendTable {
     }
 
     // TODO: below is a direct port from the js which is a direct port from C++ and not very optimal
-    fn get_all_props(&self, tables: &[SendTable], excludes: &[Exclude], props: &mut Vec<SendPropDefinition>) {
+    fn get_all_props<'a>(&'a self, tables: &'a [SendTable], excludes: &[Exclude], props: &mut Vec<&'a SendPropDefinition>) {
         let mut local_props = Vec::new();
 
         self.get_all_props_iterator_props(tables, excludes, &mut local_props, props);
         props.extend_from_slice(&local_props);
     }
 
-    fn get_all_props_iterator_props(&self, tables: &[SendTable], excludes: &[Exclude], props: &mut Vec<SendPropDefinition>, child_props: &mut Vec<SendPropDefinition>) {
+    fn get_all_props_iterator_props<'a>(&'a self, tables: &'a [SendTable], excludes: &[Exclude], local_props: &mut Vec<&'a SendPropDefinition>, props: &mut Vec<&'a SendPropDefinition>) {
         for prop in self.props.iter() {
             if prop.is_exclude() {
                 continue;
@@ -151,13 +151,13 @@ impl SendTable {
             if prop.prop_type == SendPropType::DataTable {
                 if let Some(table) = prop.get_data_table(tables) {
                     if prop.flags.contains(SendPropFlag::Collapsible) {
-                        table.get_all_props_iterator_props(tables, excludes, props, child_props);
+                        table.get_all_props_iterator_props(tables, excludes, local_props, props);
                     } else {
-                        table.get_all_props(tables, excludes, child_props);
+                        table.get_all_props(tables, excludes, props);
                     }
                 }
             } else {
-                props.push(prop.clone());
+                local_props.push(prop);
             }
         }
     }
