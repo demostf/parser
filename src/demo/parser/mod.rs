@@ -1,5 +1,6 @@
 use bitstream_reader::{BitRead, BitSkip, LittleEndian, ReadError};
 
+pub use self::messagetypeanalyser::MessageTypeAnalyser;
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};
 use crate::demo::header::Header;
 use crate::demo::packet::Packet;
@@ -8,12 +9,11 @@ pub use crate::demo::parser::analyser::MatchState;
 pub use crate::demo::parser::handler::{DemoHandler, MessageHandler};
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
-pub use self::messagetypeanalyser::MessageTypeAnalyser;
 
 mod analyser;
 mod handler;
-mod state;
 mod messagetypeanalyser;
+mod state;
 
 /// Errors that can occur during parsing
 #[derive(Debug)]
@@ -26,8 +26,8 @@ pub enum ParseError {
     InvalidMessageType(u8),
     /// SendProp type is invalid
     InvalidSendPropType(u8),
-    /// Invalid structure found while creating array SendProp
-    InvalidSendPropArray(String),
+    /// Invalid SendProp
+    InvalidSendProp(String),
     /// Expected amount of data left after parsing an object
     DataRemaining(usize),
     /// String table that was send for update doesn't exist
@@ -95,7 +95,10 @@ impl DemoParser {
         Self::parse_with_analyser(stream, Analyser::new())
     }
 
-    pub fn parse_with_analyser<T: MessageHandler>(mut stream: Stream, analyser: T) -> Result<(Header, T::Output)> {
+    pub fn parse_with_analyser<T: MessageHandler>(
+        mut stream: Stream,
+        analyser: T,
+    ) -> Result<(Header, T::Output)> {
         let mut handler = DemoHandler::with_analyser(analyser);
         let header = Header::read(&mut stream)?;
         loop {

@@ -3,16 +3,16 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::{ParserState, ReadResult, Stream};
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
-use crate::demo::message::{Message, MessageType};
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::usermessage::{ChatMessageKind, SayText2Message, UserMessage};
+use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::MessageHandler;
 use crate::demo::vector::Vector;
+use crate::{ParserState, ReadResult, Stream};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChatMassage {

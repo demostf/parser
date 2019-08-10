@@ -5,28 +5,28 @@ pub use generated::*;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::{Parse, ParseError, ParserState, Result, Stream};
 use crate::demo::message::bspdecal::*;
 use crate::demo::message::classinfo::*;
 use crate::demo::message::gameevent::*;
 use crate::demo::message::packetentities::*;
+use crate::demo::message::setconvar::*;
 use crate::demo::message::stringtable::*;
 use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
-use crate::demo::message::setconvar::*;
 use crate::demo::parser::ParseBitSkip;
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 pub mod bspdecal;
 pub mod classinfo;
 pub mod gameevent;
 pub mod generated;
 pub mod packetentities;
+pub mod setconvar;
 pub mod stringtable;
 pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
-pub mod setconvar;
 
 #[derive(Primitive, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
@@ -142,7 +142,11 @@ impl Message {
         }
     }
 
-    pub fn from_type(message_type: MessageType, stream: &mut Stream, state: &ParserState) -> Result<Self> {
+    pub fn from_type(
+        message_type: MessageType,
+        stream: &mut Stream,
+        state: &ParserState,
+    ) -> Result<Self> {
         Ok(match message_type {
             MessageType::Empty => Message::Empty,
             MessageType::File => Message::File(FileMessage::parse(stream, state)?),

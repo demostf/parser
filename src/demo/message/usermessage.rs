@@ -1,10 +1,10 @@
 use bitstream_reader::{BitRead, LittleEndian};
 use enum_primitive_derive::Primitive;
 use num_traits::FromPrimitive;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{ReadResult, Stream, Result, ParseError};
 use crate::demo::parser::ParseBitSkip;
+use crate::{ParseError, ReadResult, Result, Stream};
 
 #[derive(Primitive, Clone, Copy, Debug)]
 pub enum UserMessageType {
@@ -102,11 +102,10 @@ impl BitRead<LittleEndian> for UserMessage {
 impl ParseBitSkip for UserMessage {
     fn parse_skip(stream: &mut Stream) -> Result<()> {
         let _ = stream.skip_bits(8)?;
-        let length:u32 = stream.read_int(11)?;
+        let length: u32 = stream.read_int(11)?;
         stream.skip_bits(length as usize).map_err(ParseError::from)
     }
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum ChatMessageKind {

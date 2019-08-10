@@ -2,11 +2,13 @@ use bitstream_reader::{BitRead, LittleEndian};
 use enumflags2::BitFlags;
 use enumflags2_derive::EnumFlags;
 
-use crate::{ReadResult, Result, Stream, Parse};
+use crate::{Parse, ParseError, ReadResult, Result, Stream};
 
 use super::packet::datatable::ParseSendTable;
 use super::vector::{Vector, VectorXY};
+use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
+use std::convert::TryInto;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SendPropDefinition {
@@ -42,7 +44,8 @@ impl SendPropDefinition {
     ///
     /// Note that this is not the owner table
     pub fn get_data_table<'a>(&self, tables: &'a [ParseSendTable]) -> Option<&'a ParseSendTable> {
-        self.table_name.as_ref()
+        self.table_name
+            .as_ref()
             .and_then(|name| tables.iter().find(|table| table.name == *name))
     }
 
@@ -200,10 +203,171 @@ pub enum SendPropValue {
     Array(Vec<SendPropValue>),
 }
 
+impl SendPropValue {
+    pub fn parse(stream: &mut Stream, definition: &SendPropDefinition) -> Result<Self> {
+        match definition.prop_type {
+            SendPropType::Int => Self::read_int(stream, definition).map(SendPropValue::from),
+            SendPropType::Float => Self::read_float(stream, definition).map(SendPropValue::from),
+            SendPropType::String => Self::read_string(stream, definition).map(SendPropValue::from),
+            SendPropType::Vector => Self::read_vector(stream, definition).map(SendPropValue::from),
+            SendPropType::VectorXY => {
+                Self::read_vector_xy(stream, definition).map(SendPropValue::from)
+            }
+            SendPropType::Array => Self::read_array(stream, definition).map(SendPropValue::from),
+            _ => Err(ParseError::InvalidSendProp(
+                "Prop type not allowed in entity".to_string(),
+            )),
+        }
+    }
+
+    fn read_int(stream: &mut Stream, definition: &SendPropDefinition) -> Result<i32> {
+        if definition.flags.contains(SendPropFlag::NormalVarInt) {
+            read_var_int(stream, !definition.flags.contains(SendPropFlag::Unsigned))
+                .map_err(ParseError::from)
+        } else {
+            if definition.flags.contains(SendPropFlag::Unsigned) {
+                let unsigned: u32 = stream.read()?;
+                unsigned.try_into().map_err(|_| {
+                    ParseError::InvalidSendProp("SendProp value out of range".to_string())
+                })
+            } else {
+                stream.read().map_err(ParseError::from)
+            }
+        }
+    }
+
+    fn read_array(
+        stream: &mut Stream,
+        definition: &SendPropDefinition,
+    ) -> Result<Vec<SendPropValue>> {
+        let num_bits = log_base2(definition.element_count.unwrap_or_default());
+
+        let count = stream.read_int(num_bits as usize)?;
+        let mut values = Vec::with_capacity(count);
+
+        for _ in 0..count {
+            let value = Self::parse(
+                stream,
+                definition
+                    .array_property
+                    .as_ref()
+                    .ok_or_else(|| ParseError::InvalidSendProp("Untyped array".to_string()))?,
+            )?;
+            values.push(value);
+        }
+
+        Ok(values)
+    }
+
+    fn read_string(stream: &mut Stream, definition: &SendPropDefinition) -> Result<String> {
+        let length = stream.read_int(9)?;
+        stream.read_sized(length).map_err(ParseError::from)
+    }
+
+    fn read_vector(stream: &mut Stream, definition: &SendPropDefinition) -> Result<Vector> {
+        Ok(Vector {
+            x: Self::read_float(stream, definition)?,
+            y: Self::read_float(stream, definition)?,
+            z: Self::read_float(stream, definition)?,
+        })
+    }
+
+    fn read_vector_xy(stream: &mut Stream, definition: &SendPropDefinition) -> Result<VectorXY> {
+        Ok(VectorXY {
+            x: Self::read_float(stream, definition)?,
+            y: Self::read_float(stream, definition)?,
+        })
+    }
+
+    fn read_float(stream: &mut Stream, definition: &SendPropDefinition) -> Result<f32> {
+        if definition.flags.contains(SendPropFlag::Coord) {
+            read_bit_coord(stream).map_err(ParseError::from)
+        } else if definition.flags.contains(SendPropFlag::CoordMP) {
+            read_bit_coord_mp(stream, false, false).map_err(ParseError::from)
+        } else if definition.flags.contains(SendPropFlag::CoordMPLowPercision) {
+            read_bit_coord_mp(stream, false, true).map_err(ParseError::from)
+        } else if definition.flags.contains(SendPropFlag::CoordMPIntegral) {
+            read_bit_coord_mp(stream, true, false).map_err(ParseError::from)
+        } else if definition.flags.contains(SendPropFlag::NoScale) {
+            stream.read().map_err(ParseError::from)
+        } else if definition.flags.contains(SendPropFlag::NormalVarInt) {
+            read_bit_normal(stream).map_err(ParseError::from)
+        } else {
+            let bit_count = definition
+                .bit_count
+                .ok_or_else(|| ParseError::InvalidSendProp("Unsized float".to_string()))?;
+            let high = definition
+                .high_value
+                .ok_or_else(|| ParseError::InvalidSendProp("Unsized float".to_string()))?;
+            let low = definition
+                .low_value
+                .ok_or_else(|| ParseError::InvalidSendProp("Unsized float".to_string()))?;
+            let raw: u32 = stream.read_int(bit_count as usize)?;
+            let percentage = (raw as f32) * get_frac_factor(bit_count as usize);
+            Ok(low + ((high - low) * percentage))
+        }
+    }
+}
+
+impl From<i32> for SendPropValue {
+    fn from(value: i32) -> Self {
+        SendPropValue::Integer(value)
+    }
+}
+
+impl From<Vector> for SendPropValue {
+    fn from(value: Vector) -> Self {
+        SendPropValue::Vector(value)
+    }
+}
+
+impl From<VectorXY> for SendPropValue {
+    fn from(value: VectorXY) -> Self {
+        SendPropValue::VectorXY(value)
+    }
+}
+
+impl From<f32> for SendPropValue {
+    fn from(value: f32) -> Self {
+        SendPropValue::Float(value)
+    }
+}
+
+impl From<String> for SendPropValue {
+    fn from(value: String) -> Self {
+        SendPropValue::String(value)
+    }
+}
+
+impl From<Vec<SendPropValue>> for SendPropValue {
+    fn from(value: Vec<SendPropValue>) -> Self {
+        SendPropValue::Array(value)
+    }
+}
+
 #[derive(Debug)]
 pub struct SendProp {
     definition: SendPropDefinition,
     value: SendPropValue,
+}
+
+pub fn read_var_int(stream: &mut Stream, signed: bool) -> ReadResult<i32> {
+    let mut result: i32 = 0;
+
+    for i in (0..35).step_by(7) {
+        let byte: u8 = stream.read()?;
+        result |= ((byte & 0x7F) << i) as i32;
+
+        if (byte >> 7) == 0 {
+            break;
+        }
+    }
+
+    if signed {
+        Ok((result >> 1) ^ -(result & 1))
+    } else {
+        Ok(result)
+    }
 }
 
 pub fn read_bit_coord(stream: &mut Stream) -> ReadResult<f32> {
@@ -223,4 +387,55 @@ pub fn read_bit_coord(stream: &mut Stream) -> ReadResult<f32> {
     } else {
         0f32
     })
+}
+
+fn get_frac_factor(bits: usize) -> f32 {
+    1.0 / ((1 << bits) as f32)
+}
+
+pub fn read_bit_coord_mp(
+    stream: &mut Stream,
+    is_integral: bool,
+    low_precision: bool,
+) -> ReadResult<f32> {
+    let mut value = 0.0;
+    let mut is_negative = false;
+
+    let in_bounds = stream.read()?;
+    let has_int_val = stream.read()?;
+
+    if is_integral {
+        if has_int_val {
+            is_negative = stream.read()?;
+
+            let int_val = stream.read_sized::<u32>(if in_bounds { 11 } else { 14 })? + 1;
+            value = int_val as f32;
+        }
+    } else {
+        is_negative = stream.read()?;
+        if has_int_val {
+            let int_val = stream.read_sized::<u32>(if in_bounds { 11 } else { 14 })? + 1;
+            value = int_val as f32;
+        }
+        let frac_bits = if low_precision { 3 } else { 5 };
+        let frac_val: u32 = stream.read_sized(frac_bits)?;
+        value += (frac_val as f32) * get_frac_factor(frac_bits);
+    }
+
+    if is_negative {
+        value = -value;
+    }
+
+    Ok(value)
+}
+
+pub fn read_bit_normal(stream: &mut Stream) -> ReadResult<f32> {
+    let is_negative = stream.read()?;
+    let frac_val: u16 = stream.read_sized(11)?;
+    let value = (frac_val as f32) * get_frac_factor(11);
+    if is_negative {
+        Ok(-value)
+    } else {
+        Ok(value)
+    }
 }

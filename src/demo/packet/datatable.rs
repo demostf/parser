@@ -1,12 +1,12 @@
 use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropType};
-use crate::{Parse, ParseError, ParserState, Result, Stream, ReadResult};
-use std::fmt;
-use serde::{Serialize, Deserialize};
-use std::rc::Rc;
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use serde::{Deserialize, Serialize};
 use std::cell::{Cell, RefCell};
+use std::fmt;
 use std::ops::Deref;
+use std::rc::Rc;
 
 #[derive(BitRead, Debug)]
 pub struct ServerClass {
@@ -60,20 +60,17 @@ impl Parse for ParseSendTable {
         let mut props = Vec::with_capacity(prop_count);
 
         for _ in 0..prop_count {
-            let prop: SendPropDefinition =
-                SendPropDefinition::read(stream, name.clone())?;
+            let prop: SendPropDefinition = SendPropDefinition::read(stream, name.clone())?;
             if prop.flags.contains(SendPropFlag::InsideArray) {
-                if array_element_prop.is_some()
-                    || prop.flags.contains(SendPropFlag::ChangesOften)
-                {
-                    return Err(ParseError::InvalidSendPropArray(
+                if array_element_prop.is_some() || prop.flags.contains(SendPropFlag::ChangesOften) {
+                    return Err(ParseError::InvalidSendProp(
                         "Array contents can't have the 'ChangesOften' flag".to_owned(),
                     ));
                 }
                 array_element_prop = Some(prop);
             } else if let Some(array_element) = array_element_prop {
                 if prop.prop_type != SendPropType::Array {
-                    return Err(ParseError::InvalidSendPropArray(
+                    return Err(ParseError::InvalidSendProp(
                         "Array contents can without array".to_owned(),
                     ));
                 }
@@ -131,14 +128,25 @@ impl ParseSendTable {
     }
 
     // TODO: below is a direct port from the js which is a direct port from C++ and not very optimal
-    fn get_all_props<'a>(&'a self, tables: &'a [ParseSendTable], excludes: &[Exclude], props: &mut Vec<&'a SendPropDefinition>) {
+    fn get_all_props<'a>(
+        &'a self,
+        tables: &'a [ParseSendTable],
+        excludes: &[Exclude],
+        props: &mut Vec<&'a SendPropDefinition>,
+    ) {
         let mut local_props = Vec::new();
 
         self.get_all_props_iterator_props(tables, excludes, &mut local_props, props);
         props.extend_from_slice(&local_props);
     }
 
-    fn get_all_props_iterator_props<'a>(&'a self, tables: &'a [ParseSendTable], excludes: &[Exclude], local_props: &mut Vec<&'a SendPropDefinition>, props: &mut Vec<&'a SendPropDefinition>) {
+    fn get_all_props_iterator_props<'a>(
+        &'a self,
+        tables: &'a [ParseSendTable],
+        excludes: &[Exclude],
+        local_props: &mut Vec<&'a SendPropDefinition>,
+        props: &mut Vec<&'a SendPropDefinition>,
+    ) {
         for prop in self.props.iter() {
             if prop.is_exclude() {
                 continue;
@@ -202,23 +210,21 @@ impl Parse for DataTablePacket {
             parse_tables.push(table);
         }
 
-        let flat_props: Vec<_> = parse_tables.iter()
+        let flat_props: Vec<_> = parse_tables
+            .iter()
             .map(|table| table.flatten_props(&parse_tables))
             .collect();
 
-        let tables = parse_tables.into_iter()
+        let tables = parse_tables
+            .into_iter()
             .zip(flat_props.into_iter())
-            .map(|(parse_table, flat)| {
-                SendTable {
-                    name: parse_table.name,
-                    props: parse_table.props,
-                    needs_decoder: parse_table.needs_decoder,
-                    flattened_props: flat,
-                }
+            .map(|(parse_table, flat)| SendTable {
+                name: parse_table.name,
+                props: parse_table.props,
+                needs_decoder: parse_table.needs_decoder,
+                flattened_props: flat,
             })
             .collect();
-
-        // TODO linked tables?
 
         let server_class_count = packet_data.read_int(16)?;
         let server_classes = packet_data.read_sized(server_class_count)?;

@@ -1,7 +1,7 @@
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{SendTable, ServerClass};
-use crate::demo::packet::Packet;
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
+use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 use crate::ParserState;
 

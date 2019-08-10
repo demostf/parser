@@ -2,11 +2,11 @@ use bitstream_reader::{BitBuffer, BitStream, LittleEndian};
 use num_traits::{PrimInt, Unsigned};
 use snap::Decoder;
 
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserdataSize, StringTable, StringTableEntry,
 };
 use crate::demo::parser::ParseBitSkip;
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -104,7 +104,6 @@ impl ParseBitSkip for CreateStringTableMessage {
         stream.skip_bits(length as usize).map_err(ParseError::from)
     }
 }
-
 
 #[derive(Debug)]
 pub struct UpdateStringTableMessage {
@@ -246,7 +245,7 @@ fn read_table_entry(
     } else {
         None
     }
-        .map(ExtraData::new);
+    .map(ExtraData::new);
 
     Ok(StringTableEntry { text, extra_data })
 }

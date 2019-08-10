@@ -1,5 +1,5 @@
 use bitstream_reader::{BitRead, BitSize};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(BitRead, BitSize, Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq)]
 pub struct Vector {

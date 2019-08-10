@@ -1,4 +1,4 @@
-use crate::{Parse, ParserState, Result, Stream, ParseError};
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 use super::packetentities::PacketEntity;
 use super::stringtable::read_var_int;

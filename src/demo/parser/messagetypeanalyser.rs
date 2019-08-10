@@ -3,20 +3,20 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::{ParserState, ReadResult, Stream};
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
-use crate::demo::message::{Message, MessageType};
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::usermessage::{ChatMessageKind, SayText2Message, UserMessage};
-use crate::demo::packet::PacketType;
+use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
+use crate::demo::packet::PacketType;
 use crate::demo::parser::handler::MessageHandler;
 use crate::demo::vector::Vector;
+use crate::{ParserState, ReadResult, Stream};
 
 pub struct MessageTypeAnalyser {
-    packet_types: Vec<MessageType>
+    packet_types: Vec<MessageType>,
 }
 
 impl MessageHandler for MessageTypeAnalyser {
@@ -40,7 +40,7 @@ impl MessageHandler for MessageTypeAnalyser {
 impl MessageTypeAnalyser {
     pub fn new() -> Self {
         MessageTypeAnalyser {
-            packet_types: Vec::with_capacity(1024)
+            packet_types: Vec::with_capacity(1024),
         }
     }
 }
