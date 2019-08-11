@@ -1,6 +1,6 @@
 use bitstream_reader::{BitRead, LittleEndian};
 
-use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropType};
+use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropName, SendPropType};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use serde::{Deserialize, Serialize};
 use std::cell::{Cell, RefCell};
@@ -166,12 +166,12 @@ impl ParseSendTable {
 #[derive(Clone)]
 struct Exclude<'a> {
     table: &'a SendTableName,
-    prop: &'a str,
+    prop: &'a SendPropName,
 }
 
 impl<'a> Exclude<'a> {
     pub fn matches(&self, prop: &SendPropDefinition) -> bool {
-        self.table == &prop.owner_table && self.prop == prop.name
+        self.table == &prop.owner_table && *self.prop == prop.name
     }
 }
 

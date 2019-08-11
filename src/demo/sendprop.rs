@@ -9,11 +9,40 @@ use super::vector::{Vector, VectorXY};
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
 use std::convert::TryInto;
+use std::fmt;
+use std::rc::Rc;
+
+#[derive(PartialEq, Eq, Hash, Debug)]
+pub struct SendPropName(Rc<String>);
+
+impl Clone for SendPropName {
+    fn clone(&self) -> Self {
+        SendPropName(Rc::clone(&self.0))
+    }
+}
+
+impl fmt::Display for SendPropName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl From<String> for SendPropName {
+    fn from(value: String) -> Self {
+        Self(Rc::new(value))
+    }
+}
+
+impl BitRead<LittleEndian> for SendPropName {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
+        String::read(stream).map(SendPropName::from)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct SendPropDefinition {
     pub prop_type: SendPropType,
-    pub name: String,
+    pub name: SendPropName,
     pub flags: SendPropFlags,
     pub table_name: Option<SendTableName>,
     pub owner_table: SendTableName,
@@ -55,7 +84,7 @@ impl SendPropDefinition {
 
     pub fn read(stream: &mut Stream, owner_table: SendTableName) -> ReadResult<Self> {
         let prop_type = SendPropType::read(stream)?;
-        let name = stream.read_string(None)?;
+        let name = stream.read_string(None)?.into();
         let flags = SendPropFlags::read(stream)?;
         let mut table_name = None;
         let mut element_count = None;
