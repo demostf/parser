@@ -3,12 +3,13 @@ rust:
   - stable
   - beta
   - nightly
+cache: cargo
 matrix:
   allow_failures:
     - rust: nightly
   fast_finish: true
 install:
-  - cargo install --git https://github.com/Technolution/rustig rustig
+  - ls ~/.cargo/bin/rustig || cargo install --git https://github.com/Technolution/rustig rustig
 script:
   - cargo build
   - cargo test
