@@ -44,9 +44,13 @@ impl SendPropDefinition {
     ///
     /// Note that this is not the owner table
     pub fn get_data_table<'a>(&self, tables: &'a [ParseSendTable]) -> Option<&'a ParseSendTable> {
-        self.table_name
-            .as_ref()
-            .and_then(|name| tables.iter().find(|table| table.name == *name))
+        if self.prop_type == SendPropType::DataTable {
+            self.table_name
+                .as_ref()
+                .and_then(|name| tables.iter().find(|table| table.name == *name))
+        } else {
+            None
+        }
     }
 
     pub fn read(stream: &mut Stream, owner_table: SendTableName) -> ReadResult<Self> {
@@ -98,6 +102,14 @@ impl SendPropDefinition {
 
     pub fn is_exclude(&self) -> bool {
         self.flags.contains(SendPropFlag::Exclude)
+    }
+
+    pub fn get_exclude_table(&self) -> Option<&SendTableName> {
+        if self.is_exclude() {
+            self.table_name.as_ref()
+        } else {
+            None
+        }
     }
 }
 

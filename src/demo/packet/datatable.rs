@@ -91,7 +91,7 @@ impl Parse for ParseSendTable {
 
 impl ParseSendTable {
     pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Vec<SendPropDefinition> {
-        let mut flat = Vec::new();
+        let mut flat = Vec::with_capacity(32);
         self.get_all_props(tables, &self.get_excludes(tables), &mut flat);
 
         // sort often changed props before the others
@@ -109,18 +109,16 @@ impl ParseSendTable {
     }
 
     fn get_excludes<'a>(&'a self, tables: &'a [ParseSendTable]) -> Vec<Exclude<'a>> {
-        let mut excludes = Vec::new();
+        let mut excludes = Vec::with_capacity(8);
 
         for prop in self.props.iter() {
-            if prop.is_exclude() && prop.table_name.is_some() {
+            if let Some(exclude_table) = prop.get_exclude_table() {
                 excludes.push(Exclude {
-                    table: prop.table_name.as_ref().unwrap(),
+                    table: exclude_table,
                     prop: &prop.name,
                 })
-            } else if prop.prop_type == SendPropType::DataTable {
-                if let Some(table) = prop.get_data_table(tables) {
-                    excludes.extend_from_slice(&table.get_excludes(tables));
-                }
+            } else if let Some(table) = prop.get_data_table(tables) {
+                excludes.extend_from_slice(&table.get_excludes(tables));
             }
         }
 
@@ -147,27 +145,21 @@ impl ParseSendTable {
         local_props: &mut Vec<&'a SendPropDefinition>,
         props: &mut Vec<&'a SendPropDefinition>,
     ) {
-        for prop in self.props.iter() {
-            if prop.is_exclude() {
-                continue;
-            }
-
-            if excludes.iter().any(|exclude| exclude.matches(prop)) {
-                continue;
-            }
-
-            if prop.prop_type == SendPropType::DataTable {
+        self.props
+            .iter()
+            .filter(|prop| !prop.is_exclude())
+            .filter(|prop| !excludes.iter().any(|exclude| exclude.matches(prop)))
+            .for_each(|prop| {
                 if let Some(table) = prop.get_data_table(tables) {
                     if prop.flags.contains(SendPropFlag::Collapsible) {
                         table.get_all_props_iterator_props(tables, excludes, local_props, props);
                     } else {
                         table.get_all_props(tables, excludes, props);
                     }
+                } else {
+                    local_props.push(prop);
                 }
-            } else {
-                local_props.push(prop);
-            }
-        }
+            })
     }
 }
 
@@ -179,7 +171,7 @@ struct Exclude<'a> {
 
 impl<'a> Exclude<'a> {
     pub fn matches(&self, prop: &SendPropDefinition) -> bool {
-        self.prop == prop.name && self.table == &prop.owner_table
+        self.table == &prop.owner_table && self.prop == prop.name
     }
 }
 

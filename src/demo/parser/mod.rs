@@ -52,7 +52,7 @@ pub enum ParseError {
         size: u32,
     },
     /// Misc malformed demo error
-    InvalidDemo(String)
+    InvalidDemo(String),
 }
 
 impl From<ReadError> for ParseError {
