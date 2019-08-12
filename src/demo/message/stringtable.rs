@@ -187,7 +187,7 @@ fn parse_string_table_list(
     for _ in 0..entry_count {
         if !stream.read::<bool>()? {
             return Err(ParseError::InvalidDemo(
-                "there should be no holes when reading CreateStringTable message".to_string(),
+                "there should be no holes when reading CreateStringTable message",
             ));
         };
 
