@@ -76,32 +76,27 @@ impl<T: MessageHandler> DemoHandler<T> {
         self.state_handler
             .handle_string_table_meta(table.get_table_meta());
         for (entry_index, entry) in table.entries.into_iter().enumerate() {
-            self.handle_string_entry(&table.name, entry_index, entry);
+            self.state_handler
+                .handle_string_entry(&table.name, entry_index, &entry);
+            self.analyser
+                .handle_string_entry(&table.name, entry_index, &entry);
         }
     }
 
     fn handle_table_update(&mut self, table_id: u8, entries: Vec<(u16, StringTableEntry)>) {
-        let table_name = self.string_table_names.get(table_id as usize);
-        match table_name {
-            Some(table_name) => {
-                let table_name = table_name.clone();
-                for (index, entry) in entries {
-                    self.handle_string_entry(&table_name, index as usize, entry);
-                }
+        if let Some(table_name) = self.string_table_names.get(table_id as usize) {
+            for (index, entry) in entries {
+                let index = index as usize;
+                self.state_handler
+                    .handle_string_entry(table_name, index, &entry);
+                self.analyser.handle_string_entry(table_name, index, &entry);
             }
-            _ => unreachable!("trying to update non existing table"),
         }
     }
 
     fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
         self.state_handler
             .handle_data_table(send_tables, server_classes);
-    }
-
-    fn handle_string_entry(&mut self, table: &String, index: usize, entries: StringTableEntry) {
-        self.state_handler
-            .handle_string_entry(table, index, &entries);
-        self.analyser.handle_string_entry(table, index, &entries);
     }
 
     fn handle_message(&mut self, message: Message) {

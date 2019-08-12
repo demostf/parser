@@ -119,7 +119,7 @@ impl MessageHandler for ParserState {
                     }
                     Err(_) => {}
                 },
-                _ => unreachable!("missing baseline"),
+                _ => {}
             },
             _ => {}
         }

@@ -60,6 +60,8 @@ pub enum ParseError {
 #[derive(Debug)]
 pub enum GameEventError {
     IncorrectValueCount,
+    NoneValue,
+    UnknownType,
 }
 
 impl From<ReadError> for ParseError {
