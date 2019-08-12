@@ -75,7 +75,8 @@ impl<T: MessageHandler> DemoHandler<T> {
 
         self.state_handler
             .handle_string_table_meta(table.get_table_meta());
-        for (entry_index, entry) in table.entries.into_iter().enumerate() {
+        for (entry_index, entry) in table.entries.into_iter() {
+            let entry_index = entry_index as usize;
             self.state_handler
                 .handle_string_entry(&table.name, entry_index, &entry);
             self.analyser

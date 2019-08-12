@@ -16,7 +16,7 @@ pub struct FixedUserdataSize {
 #[derive(Debug)]
 pub struct StringTable {
     pub name: String,
-    pub entries: Vec<StringTableEntry>,
+    pub entries: Vec<(u16, StringTableEntry)>,
     pub max_entries: u16,
     pub fixed_userdata_size: Option<FixedUserdataSize>,
     pub client_entries: Option<Vec<StringTableEntry>>,
@@ -36,7 +36,11 @@ impl BitRead<LittleEndian> for StringTable {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let name = stream.read()?;
         let entry_count = stream.read_int(16)?;
-        let entries = stream.read_sized(entry_count as usize)?;
+        let mut entries = Vec::with_capacity(entry_count as usize);
+
+        for index in 0..entry_count {
+            entries.push((index, stream.read()?))
+        }
 
         let client_entries = if stream.read_bool()? {
             let count = stream.read_int(16)?;

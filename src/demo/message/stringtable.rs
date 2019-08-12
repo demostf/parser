@@ -139,16 +139,49 @@ impl ParseBitSkip for UpdateStringTableMessage {
     }
 }
 
+struct TableEntries {
+    entries: Vec<(u16, StringTableEntry)>,
+    history: Vec<u16>,
+}
+
+impl TableEntries {
+    pub fn new(count: usize) -> Self {
+        TableEntries {
+            entries: Vec::with_capacity(count),
+            history: Vec::with_capacity(32),
+        }
+    }
+
+    pub fn push(&mut self, entry: (u16, StringTableEntry)) {
+        if self.history.len() > 31 {
+            self.history.remove(0);
+        }
+        let entry_index = self.entries.len();
+        self.entries.push(entry);
+        self.history.push(entry_index as u16);
+    }
+
+    pub fn get_history(&self, index: usize) -> Option<&StringTableEntry> {
+        self.history
+            .get(index)
+            .and_then(|entry_index| self.entries.get(*entry_index as usize))
+            .map(|entry| &entry.1)
+    }
+
+    pub fn into_entries(self) -> Vec<(u16, StringTableEntry)> {
+        self.entries
+    }
+}
+
 fn parse_string_table_update(
     stream: &mut Stream,
     table_meta: &StringTableMeta,
     entry_count: u16,
 ) -> ReadResult<Vec<(u16, StringTableEntry)>> {
     let entry_bits = log_base2(table_meta.max_entries);
-    let mut entries = Vec::with_capacity(entry_count as usize);
+    let mut entries = TableEntries::new(entry_count as usize);
 
     let mut last_entry: i16 = -1;
-    let mut history: Vec<Option<String>> = Vec::new();
 
     for _ in 0..entry_count {
         let index = if stream.read()? {
@@ -159,58 +192,38 @@ fn parse_string_table_update(
 
         last_entry = index as i16;
 
-        let entry = read_table_entry(stream, table_meta, &history)?;
-        // optimize: any way to get rid of the clone here?
-        // `entries` always outlives `history` without reallocation
-        let text = entry.text.clone();
+        let entry = read_table_entry(stream, table_meta, &entries)?;
         entries.push((index, entry));
-        // not 100% sure we should be pushing front here, and not appending
-        history.push(text);
-
-        if history.len() > 32 {
-            history.remove(0);
-        }
     }
 
-    Ok(entries)
+    Ok(entries.into_entries())
 }
 
 fn parse_string_table_list(
     stream: &mut Stream,
     table_meta: &StringTableMeta,
     entry_count: u16,
-) -> Result<Vec<StringTableEntry>> {
-    let mut entries = Vec::with_capacity(entry_count as usize);
+) -> Result<Vec<(u16, StringTableEntry)>> {
+    let mut entries = TableEntries::new(entry_count as usize);
 
-    let mut history: Vec<Option<String>> = Vec::new();
-
-    for _ in 0..entry_count {
+    for index in 0..entry_count {
         if !stream.read::<bool>()? {
             return Err(ParseError::InvalidDemo(
                 "there should be no holes when reading CreateStringTable message",
             ));
         };
 
-        let entry = read_table_entry(stream, table_meta, &history)?;
-        // optimize: any way to get rid of the clone here?
-        // `entries` always outlives `history` without reallocation
-        let text = entry.text.clone();
-        entries.push(entry);
-        // not 100% sure we should be pushing front here, and not appending
-        history.push(text);
-
-        if history.len() > 32 {
-            history.remove(0);
-        }
+        let entry = read_table_entry(stream, table_meta, &entries)?;
+        entries.push((index, entry));
     }
 
-    Ok(entries)
+    Ok(entries.into_entries())
 }
 
 fn read_table_entry(
     stream: &mut Stream,
     table_meta: &StringTableMeta,
-    history: &Vec<Option<String>>,
+    history: &TableEntries,
 ) -> ReadResult<StringTableEntry> {
     let text = if stream.read()? {
         // set value
@@ -220,15 +233,20 @@ fn read_table_entry(
             let bytes_to_copy: u32 = stream.read_sized(5)?;
             let rest_of_string: String = stream.read()?;
 
-            Some(match history.get(index as usize).and_then(|h| h.as_ref()) {
-                Some(text) => String::from_utf8({
-                    text.bytes()
-                        .take(bytes_to_copy as usize)
-                        .chain(rest_of_string.bytes())
-                        .collect()
-                })?,
-                None => rest_of_string, // best guess, happens in some pov demos but only for unimportant tables it seems
-            })
+            Some(
+                match history
+                    .get_history(index as usize)
+                    .and_then(|entry| entry.text.as_ref())
+                {
+                    Some(text) => String::from_utf8({
+                        text.bytes()
+                            .take(bytes_to_copy as usize)
+                            .chain(rest_of_string.bytes())
+                            .collect()
+                    })?,
+                    None => rest_of_string, // best guess, happens in some pov demos but only for unimportant tables it seems
+                },
+            )
         } else {
             Some(stream.read()?)
         }
