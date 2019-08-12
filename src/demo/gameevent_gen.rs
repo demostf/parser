@@ -1,5 +1,5 @@
 use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
-use crate::{ParseError, Result};
+use crate::{GameEventError, ParseError, Result};
 
 // auto generated, nobody in their right mind would write this manually
 
@@ -17,59 +17,73 @@ pub struct ServerSpawnEvent {
     pub password: bool,
 }
 impl FromRawGameEvent for ServerSpawnEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let hostname: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("hostname"))?;
-            String::from_value(value.clone(), "hostname")?
-        };
-        let address: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("address"))?;
-            String::from_value(value.clone(), "address")?
-        };
-        let ip: u32 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("ip"))?;
-            u32::from_value(value.clone(), "ip")?
-        };
-        let port: u16 = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("port"))?;
-            u16::from_value(value.clone(), "port")?
-        };
-        let game: String = {
-            let value = values.get(4).ok_or(ParseError::UnknownGameEvent("game"))?;
-            String::from_value(value.clone(), "game")?
-        };
-        let map_name: String = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("map_name"))?;
-            String::from_value(value.clone(), "map_name")?
-        };
-        let max_players: u32 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("max_players"))?;
-            u32::from_value(value.clone(), "max_players")?
-        };
-        let os: String = {
-            let value = values.get(7).ok_or(ParseError::UnknownGameEvent("os"))?;
-            String::from_value(value.clone(), "os")?
-        };
-        let dedicated: bool = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("dedicated"))?;
-            bool::from_value(value.clone(), "dedicated")?
-        };
-        let password: bool = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("password"))?;
-            bool::from_value(value.clone(), "password")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 10 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(10);
+        let password: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "password",
+        )?;
+        let dedicated: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "dedicated",
+        )?;
+        let os: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "os",
+        )?;
+        let max_players: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "max_players",
+        )?;
+        let map_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "map_name",
+        )?;
+        let game: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "game",
+        )?;
+        let port: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "port",
+        )?;
+        let ip: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ip",
+        )?;
+        let address: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "address",
+        )?;
+        let hostname: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "hostname",
+        )?;
         Ok(ServerSpawnEvent {
             hostname,
             address,
@@ -90,13 +104,19 @@ pub struct ServerShutdownEvent {
     pub reason: String,
 }
 impl FromRawGameEvent for ServerShutdownEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let reason: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("reason"))?;
-            String::from_value(value.clone(), "reason")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let reason: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "reason",
+        )?;
         Ok(ServerShutdownEvent { reason })
     }
 }
@@ -107,19 +127,25 @@ pub struct ServerCvarEvent {
     pub cvar_value: String,
 }
 impl FromRawGameEvent for ServerCvarEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let cvar_name: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("cvar_name"))?;
-            String::from_value(value.clone(), "cvar_name")?
-        };
-        let cvar_value: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cvar_value"))?;
-            String::from_value(value.clone(), "cvar_value")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let cvar_value: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cvar_value",
+        )?;
+        let cvar_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cvar_name",
+        )?;
         Ok(ServerCvarEvent {
             cvar_name,
             cvar_value,
@@ -132,11 +158,19 @@ pub struct ServerMessageEvent {
     pub text: String,
 }
 impl FromRawGameEvent for ServerMessageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let text: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
         Ok(ServerMessageEvent { text })
     }
 }
@@ -152,43 +186,55 @@ pub struct ServerAddBanEvent {
     pub kicked: bool,
 }
 impl FromRawGameEvent for ServerAddBanEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let name: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("name"))?;
-            String::from_value(value.clone(), "name")?
-        };
-        let user_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let network_id: String = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("network_id"))?;
-            String::from_value(value.clone(), "network_id")?
-        };
-        let ip: String = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("ip"))?;
-            String::from_value(value.clone(), "ip")?
-        };
-        let duration: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("duration"))?;
-            String::from_value(value.clone(), "duration")?
-        };
-        let by: String = {
-            let value = values.get(5).ok_or(ParseError::UnknownGameEvent("by"))?;
-            String::from_value(value.clone(), "by")?
-        };
-        let kicked: bool = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("kicked"))?;
-            bool::from_value(value.clone(), "kicked")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 7 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(7);
+        let kicked: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kicked",
+        )?;
+        let by: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "by",
+        )?;
+        let duration: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "duration",
+        )?;
+        let ip: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ip",
+        )?;
+        let network_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "network_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
+        let name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "name",
+        )?;
         Ok(ServerAddBanEvent {
             name,
             user_id,
@@ -208,21 +254,31 @@ pub struct ServerRemoveBanEvent {
     pub by: String,
 }
 impl FromRawGameEvent for ServerRemoveBanEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let network_id: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("network_id"))?;
-            String::from_value(value.clone(), "network_id")?
-        };
-        let ip: String = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("ip"))?;
-            String::from_value(value.clone(), "ip")?
-        };
-        let by: String = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("by"))?;
-            String::from_value(value.clone(), "by")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let by: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "by",
+        )?;
+        let ip: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ip",
+        )?;
+        let network_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "network_id",
+        )?;
         Ok(ServerRemoveBanEvent { network_id, ip, by })
     }
 }
@@ -237,37 +293,49 @@ pub struct PlayerConnectEvent {
     pub bot: u16,
 }
 impl FromRawGameEvent for PlayerConnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let name: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("name"))?;
-            String::from_value(value.clone(), "name")?
-        };
-        let index: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u8::from_value(value.clone(), "index")?
-        };
-        let user_id: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let network_id: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("network_id"))?;
-            String::from_value(value.clone(), "network_id")?
-        };
-        let address: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("address"))?;
-            String::from_value(value.clone(), "address")?
-        };
-        let bot: u16 = {
-            let value = values.get(5).ok_or(ParseError::UnknownGameEvent("bot"))?;
-            u16::from_value(value.clone(), "bot")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 6 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(6);
+        let bot: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bot",
+        )?;
+        let address: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "address",
+        )?;
+        let network_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "network_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
+        let index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "name",
+        )?;
         Ok(PlayerConnectEvent {
             name,
             index,
@@ -288,31 +356,43 @@ pub struct PlayerConnectClientEvent {
     pub bot: u16,
 }
 impl FromRawGameEvent for PlayerConnectClientEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let name: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("name"))?;
-            String::from_value(value.clone(), "name")?
-        };
-        let index: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u8::from_value(value.clone(), "index")?
-        };
-        let user_id: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let network_id: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("network_id"))?;
-            String::from_value(value.clone(), "network_id")?
-        };
-        let bot: u16 = {
-            let value = values.get(4).ok_or(ParseError::UnknownGameEvent("bot"))?;
-            u16::from_value(value.clone(), "bot")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 5 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(5);
+        let bot: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bot",
+        )?;
+        let network_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "network_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
+        let index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "name",
+        )?;
         Ok(PlayerConnectClientEvent {
             name,
             index,
@@ -332,31 +412,43 @@ pub struct PlayerInfoEvent {
     pub bot: bool,
 }
 impl FromRawGameEvent for PlayerInfoEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let name: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("name"))?;
-            String::from_value(value.clone(), "name")?
-        };
-        let index: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u8::from_value(value.clone(), "index")?
-        };
-        let user_id: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let network_id: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("network_id"))?;
-            String::from_value(value.clone(), "network_id")?
-        };
-        let bot: bool = {
-            let value = values.get(4).ok_or(ParseError::UnknownGameEvent("bot"))?;
-            bool::from_value(value.clone(), "bot")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 5 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(5);
+        let bot: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bot",
+        )?;
+        let network_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "network_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
+        let index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "name",
+        )?;
         Ok(PlayerInfoEvent {
             name,
             index,
@@ -376,33 +468,43 @@ pub struct PlayerDisconnectEvent {
     pub bot: u16,
 }
 impl FromRawGameEvent for PlayerDisconnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let reason: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("reason"))?;
-            String::from_value(value.clone(), "reason")?
-        };
-        let name: String = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("name"))?;
-            String::from_value(value.clone(), "name")?
-        };
-        let network_id: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("network_id"))?;
-            String::from_value(value.clone(), "network_id")?
-        };
-        let bot: u16 = {
-            let value = values.get(4).ok_or(ParseError::UnknownGameEvent("bot"))?;
-            u16::from_value(value.clone(), "bot")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 5 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(5);
+        let bot: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bot",
+        )?;
+        let network_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "network_id",
+        )?;
+        let name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "name",
+        )?;
+        let reason: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "reason",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerDisconnectEvent {
             user_id,
             reason,
@@ -418,13 +520,19 @@ pub struct PlayerActivateEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerActivateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerActivateEvent { user_id })
     }
 }
@@ -435,17 +543,25 @@ pub struct PlayerSayEvent {
     pub text: String,
 }
 impl FromRawGameEvent for PlayerSayEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let text: String = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerSayEvent { user_id, text })
     }
 }
@@ -455,13 +571,19 @@ pub struct ClientDisconnectEvent {
     pub message: String,
 }
 impl FromRawGameEvent for ClientDisconnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let message: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("message"))?;
-            String::from_value(value.clone(), "message")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let message: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "message",
+        )?;
         Ok(ClientDisconnectEvent { message })
     }
 }
@@ -474,27 +596,37 @@ pub struct ClientBeginConnectEvent {
     pub source: String,
 }
 impl FromRawGameEvent for ClientBeginConnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let address: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("address"))?;
-            String::from_value(value.clone(), "address")?
-        };
-        let ip: u32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("ip"))?;
-            u32::from_value(value.clone(), "ip")?
-        };
-        let port: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("port"))?;
-            u16::from_value(value.clone(), "port")?
-        };
-        let source: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("source"))?;
-            String::from_value(value.clone(), "source")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let source: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "source",
+        )?;
+        let port: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "port",
+        )?;
+        let ip: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ip",
+        )?;
+        let address: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "address",
+        )?;
         Ok(ClientBeginConnectEvent {
             address,
             ip,
@@ -511,21 +643,31 @@ pub struct ClientConnectedEvent {
     pub port: u16,
 }
 impl FromRawGameEvent for ClientConnectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let address: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("address"))?;
-            String::from_value(value.clone(), "address")?
-        };
-        let ip: u32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("ip"))?;
-            u32::from_value(value.clone(), "ip")?
-        };
-        let port: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("port"))?;
-            u16::from_value(value.clone(), "port")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let port: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "port",
+        )?;
+        let ip: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ip",
+        )?;
+        let address: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "address",
+        )?;
         Ok(ClientConnectedEvent { address, ip, port })
     }
 }
@@ -537,21 +679,31 @@ pub struct ClientFullConnectEvent {
     pub port: u16,
 }
 impl FromRawGameEvent for ClientFullConnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let address: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("address"))?;
-            String::from_value(value.clone(), "address")?
-        };
-        let ip: u32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("ip"))?;
-            u32::from_value(value.clone(), "ip")?
-        };
-        let port: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("port"))?;
-            u16::from_value(value.clone(), "port")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let port: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "port",
+        )?;
+        let ip: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ip",
+        )?;
+        let address: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "address",
+        )?;
         Ok(ClientFullConnectEvent { address, ip, port })
     }
 }
@@ -559,7 +711,7 @@ impl FromRawGameEvent for ClientFullConnectEvent {
 #[derive(Debug)]
 pub struct HostQuitEvent {}
 impl FromRawGameEvent for HostQuitEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HostQuitEvent {})
     }
 }
@@ -570,19 +722,25 @@ pub struct TeamInfoEvent {
     pub team_name: String,
 }
 impl FromRawGameEvent for TeamInfoEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team_id: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("team_id"))?;
-            u8::from_value(value.clone(), "team_id")?
-        };
-        let team_name: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("team_name"))?;
-            String::from_value(value.clone(), "team_name")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let team_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team_name",
+        )?;
+        let team_id: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team_id",
+        )?;
         Ok(TeamInfoEvent { team_id, team_name })
     }
 }
@@ -593,17 +751,25 @@ pub struct TeamScoreEvent {
     pub score: u16,
 }
 impl FromRawGameEvent for TeamScoreEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team_id: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("team_id"))?;
-            u8::from_value(value.clone(), "team_id")?
-        };
-        let score: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("score"))?;
-            u16::from_value(value.clone(), "score")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "score",
+        )?;
+        let team_id: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team_id",
+        )?;
         Ok(TeamScoreEvent { team_id, score })
     }
 }
@@ -615,21 +781,31 @@ pub struct TeamPlayBroadcastAudioEvent {
     pub additional_flags: u16,
 }
 impl FromRawGameEvent for TeamPlayBroadcastAudioEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let sound: String = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("sound"))?;
-            String::from_value(value.clone(), "sound")?
-        };
-        let additional_flags: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("additional_flags"))?;
-            u16::from_value(value.clone(), "additional_flags")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let additional_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "additional_flags",
+        )?;
+        let sound: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "sound",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(TeamPlayBroadcastAudioEvent {
             team,
             sound,
@@ -649,45 +825,55 @@ pub struct PlayerTeamEvent {
     pub name: String,
 }
 impl FromRawGameEvent for PlayerTeamEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let team: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let old_team: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("old_team"))?;
-            u8::from_value(value.clone(), "old_team")?
-        };
-        let disconnect: bool = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("disconnect"))?;
-            bool::from_value(value.clone(), "disconnect")?
-        };
-        let auto_team: bool = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("auto_team"))?;
-            bool::from_value(value.clone(), "auto_team")?
-        };
-        let silent: bool = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("silent"))?;
-            bool::from_value(value.clone(), "silent")?
-        };
-        let name: String = {
-            let value = values.get(6).ok_or(ParseError::UnknownGameEvent("name"))?;
-            String::from_value(value.clone(), "name")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 7 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(7);
+        let name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "name",
+        )?;
+        let silent: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "silent",
+        )?;
+        let auto_team: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "auto_team",
+        )?;
+        let disconnect: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "disconnect",
+        )?;
+        let old_team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "old_team",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerTeamEvent {
             user_id,
             team,
@@ -706,17 +892,25 @@ pub struct PlayerClassEvent {
     pub class: String,
 }
 impl FromRawGameEvent for PlayerClassEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let class: String = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("class"))?;
-            String::from_value(value.clone(), "class")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let class: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "class",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerClassEvent { user_id, class })
     }
 }
@@ -749,151 +943,157 @@ pub struct PlayerDeathEvent {
     pub rocket_jump: bool,
 }
 impl FromRawGameEvent for PlayerDeathEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let victim_ent_index: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u32::from_value(value.clone(), "victim_ent_index")?
-        };
-        let inflictor_ent_index: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("inflictor_ent_index"))?;
-            u32::from_value(value.clone(), "inflictor_ent_index")?
-        };
-        let attacker: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let weapon: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("weapon"))?;
-            String::from_value(value.clone(), "weapon")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let damage_bits: u32 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("damage_bits"))?;
-            u32::from_value(value.clone(), "damage_bits")?
-        };
-        let custom_kill: u16 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("custom_kill"))?;
-            u16::from_value(value.clone(), "custom_kill")?
-        };
-        let assister: u16 = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("assister"))?;
-            u16::from_value(value.clone(), "assister")?
-        };
-        let weapon_log_class_name: String = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("weapon_log_class_name"))?;
-            String::from_value(value.clone(), "weapon_log_class_name")?
-        };
-        let stun_flags: u16 = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("stun_flags"))?;
-            u16::from_value(value.clone(), "stun_flags")?
-        };
-        let death_flags: u16 = {
-            let value = values
-                .get(11)
-                .ok_or(ParseError::UnknownGameEvent("death_flags"))?;
-            u16::from_value(value.clone(), "death_flags")?
-        };
-        let silent_kill: bool = {
-            let value = values
-                .get(12)
-                .ok_or(ParseError::UnknownGameEvent("silent_kill"))?;
-            bool::from_value(value.clone(), "silent_kill")?
-        };
-        let player_penetrate_count: u16 = {
-            let value = values
-                .get(13)
-                .ok_or(ParseError::UnknownGameEvent("player_penetrate_count"))?;
-            u16::from_value(value.clone(), "player_penetrate_count")?
-        };
-        let assister_fallback: String = {
-            let value = values
-                .get(14)
-                .ok_or(ParseError::UnknownGameEvent("assister_fallback"))?;
-            String::from_value(value.clone(), "assister_fallback")?
-        };
-        let kill_streak_total: u16 = {
-            let value = values
-                .get(15)
-                .ok_or(ParseError::UnknownGameEvent("kill_streak_total"))?;
-            u16::from_value(value.clone(), "kill_streak_total")?
-        };
-        let kill_streak_wep: u16 = {
-            let value = values
-                .get(16)
-                .ok_or(ParseError::UnknownGameEvent("kill_streak_wep"))?;
-            u16::from_value(value.clone(), "kill_streak_wep")?
-        };
-        let kill_streak_assist: u16 = {
-            let value = values
-                .get(17)
-                .ok_or(ParseError::UnknownGameEvent("kill_streak_assist"))?;
-            u16::from_value(value.clone(), "kill_streak_assist")?
-        };
-        let kill_streak_victim: u16 = {
-            let value = values
-                .get(18)
-                .ok_or(ParseError::UnknownGameEvent("kill_streak_victim"))?;
-            u16::from_value(value.clone(), "kill_streak_victim")?
-        };
-        let ducks_streaked: u16 = {
-            let value = values
-                .get(19)
-                .ok_or(ParseError::UnknownGameEvent("ducks_streaked"))?;
-            u16::from_value(value.clone(), "ducks_streaked")?
-        };
-        let duck_streak_total: u16 = {
-            let value = values
-                .get(20)
-                .ok_or(ParseError::UnknownGameEvent("duck_streak_total"))?;
-            u16::from_value(value.clone(), "duck_streak_total")?
-        };
-        let duck_streak_assist: u16 = {
-            let value = values
-                .get(21)
-                .ok_or(ParseError::UnknownGameEvent("duck_streak_assist"))?;
-            u16::from_value(value.clone(), "duck_streak_assist")?
-        };
-        let duck_streak_victim: u16 = {
-            let value = values
-                .get(22)
-                .ok_or(ParseError::UnknownGameEvent("duck_streak_victim"))?;
-            u16::from_value(value.clone(), "duck_streak_victim")?
-        };
-        let rocket_jump: bool = {
-            let value = values
-                .get(23)
-                .ok_or(ParseError::UnknownGameEvent("rocket_jump"))?;
-            bool::from_value(value.clone(), "rocket_jump")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 24 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(24);
+        let rocket_jump: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "rocket_jump",
+        )?;
+        let duck_streak_victim: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "duck_streak_victim",
+        )?;
+        let duck_streak_assist: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "duck_streak_assist",
+        )?;
+        let duck_streak_total: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "duck_streak_total",
+        )?;
+        let ducks_streaked: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ducks_streaked",
+        )?;
+        let kill_streak_victim: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kill_streak_victim",
+        )?;
+        let kill_streak_assist: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kill_streak_assist",
+        )?;
+        let kill_streak_wep: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kill_streak_wep",
+        )?;
+        let kill_streak_total: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kill_streak_total",
+        )?;
+        let assister_fallback: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister_fallback",
+        )?;
+        let player_penetrate_count: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_penetrate_count",
+        )?;
+        let silent_kill: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "silent_kill",
+        )?;
+        let death_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "death_flags",
+        )?;
+        let stun_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "stun_flags",
+        )?;
+        let weapon_log_class_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_log_class_name",
+        )?;
+        let assister: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister",
+        )?;
+        let custom_kill: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "custom_kill",
+        )?;
+        let damage_bits: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage_bits",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let weapon: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
+        let inflictor_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "inflictor_ent_index",
+        )?;
+        let victim_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerDeathEvent {
             user_id,
             victim_ent_index,
@@ -938,71 +1138,79 @@ pub struct PlayerHurtEvent {
     pub bonus_effect: u8,
 }
 impl FromRawGameEvent for PlayerHurtEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let health: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("health"))?;
-            u16::from_value(value.clone(), "health")?
-        };
-        let attacker: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let damage_amount: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("damage_amount"))?;
-            u16::from_value(value.clone(), "damage_amount")?
-        };
-        let custom: u16 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("custom"))?;
-            u16::from_value(value.clone(), "custom")?
-        };
-        let show_disguised_crit: bool = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("show_disguised_crit"))?;
-            bool::from_value(value.clone(), "show_disguised_crit")?
-        };
-        let crit: bool = {
-            let value = values.get(6).ok_or(ParseError::UnknownGameEvent("crit"))?;
-            bool::from_value(value.clone(), "crit")?
-        };
-        let mini_crit: bool = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("mini_crit"))?;
-            bool::from_value(value.clone(), "mini_crit")?
-        };
-        let all_see_crit: bool = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("all_see_crit"))?;
-            bool::from_value(value.clone(), "all_see_crit")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let bonus_effect: u8 = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("bonus_effect"))?;
-            u8::from_value(value.clone(), "bonus_effect")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 11 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(11);
+        let bonus_effect: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bonus_effect",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let all_see_crit: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "all_see_crit",
+        )?;
+        let mini_crit: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "mini_crit",
+        )?;
+        let crit: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "crit",
+        )?;
+        let show_disguised_crit: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "show_disguised_crit",
+        )?;
+        let custom: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "custom",
+        )?;
+        let damage_amount: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage_amount",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
+        let health: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "health",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerHurtEvent {
             user_id,
             health,
@@ -1026,23 +1234,31 @@ pub struct PlayerChatEvent {
     pub text: String,
 }
 impl FromRawGameEvent for PlayerChatEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team_only: bool = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("team_only"))?;
-            bool::from_value(value.clone(), "team_only")?
-        };
-        let user_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let text: String = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
+        let team_only: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team_only",
+        )?;
         Ok(PlayerChatEvent {
             team_only,
             user_id,
@@ -1059,27 +1275,37 @@ pub struct PlayerScoreEvent {
     pub score: u16,
 }
 impl FromRawGameEvent for PlayerScoreEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let kills: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("kills"))?;
-            u16::from_value(value.clone(), "kills")?
-        };
-        let deaths: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("deaths"))?;
-            u16::from_value(value.clone(), "deaths")?
-        };
-        let score: u16 = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("score"))?;
-            u16::from_value(value.clone(), "score")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "score",
+        )?;
+        let deaths: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "deaths",
+        )?;
+        let kills: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kills",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerScoreEvent {
             user_id,
             kills,
@@ -1096,21 +1322,31 @@ pub struct PlayerSpawnEvent {
     pub class: u16,
 }
 impl FromRawGameEvent for PlayerSpawnEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let team: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u16::from_value(value.clone(), "team")?
-        };
-        let class: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("class"))?;
-            u16::from_value(value.clone(), "class")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let class: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "class",
+        )?;
+        let team: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerSpawnEvent {
             user_id,
             team,
@@ -1126,23 +1362,31 @@ pub struct PlayerShootEvent {
     pub mode: u8,
 }
 impl FromRawGameEvent for PlayerShootEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let weapon: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("weapon"))?;
-            u8::from_value(value.clone(), "weapon")?
-        };
-        let mode: u8 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("mode"))?;
-            u8::from_value(value.clone(), "mode")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let mode: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "mode",
+        )?;
+        let weapon: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerShootEvent {
             user_id,
             weapon,
@@ -1157,19 +1401,25 @@ pub struct PlayerUseEvent {
     pub entity: u16,
 }
 impl FromRawGameEvent for PlayerUseEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let entity: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("entity"))?;
-            u16::from_value(value.clone(), "entity")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let entity: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "entity",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerUseEvent { user_id, entity })
     }
 }
@@ -1181,25 +1431,31 @@ pub struct PlayerChangeNameEvent {
     pub new_name: String,
 }
 impl FromRawGameEvent for PlayerChangeNameEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let old_name: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("old_name"))?;
-            String::from_value(value.clone(), "old_name")?
-        };
-        let new_name: String = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("new_name"))?;
-            String::from_value(value.clone(), "new_name")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let new_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "new_name",
+        )?;
+        let old_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "old_name",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerChangeNameEvent {
             user_id,
             old_name,
@@ -1213,13 +1469,19 @@ pub struct PlayerHintMessageEvent {
     pub hint_message: String,
 }
 impl FromRawGameEvent for PlayerHintMessageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let hint_message: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("hint_message"))?;
-            String::from_value(value.clone(), "hint_message")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let hint_message: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "hint_message",
+        )?;
         Ok(PlayerHintMessageEvent { hint_message })
     }
 }
@@ -1229,13 +1491,19 @@ pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
 }
 impl FromRawGameEvent for BasePlayerTeleportedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u16::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(BasePlayerTeleportedEvent { ent_index })
     }
 }
@@ -1243,7 +1511,7 @@ impl FromRawGameEvent for BasePlayerTeleportedEvent {
 #[derive(Debug)]
 pub struct GameInitEvent {}
 impl FromRawGameEvent for GameInitEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameInitEvent {})
     }
 }
@@ -1253,13 +1521,19 @@ pub struct GameNewMapEvent {
     pub map_name: String,
 }
 impl FromRawGameEvent for GameNewMapEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let map_name: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("map_name"))?;
-            String::from_value(value.clone(), "map_name")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let map_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "map_name",
+        )?;
         Ok(GameNewMapEvent { map_name })
     }
 }
@@ -1272,31 +1546,37 @@ pub struct GameStartEvent {
     pub objective: String,
 }
 impl FromRawGameEvent for GameStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let rounds_limit: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("rounds_limit"))?;
-            u32::from_value(value.clone(), "rounds_limit")?
-        };
-        let time_limit: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("time_limit"))?;
-            u32::from_value(value.clone(), "time_limit")?
-        };
-        let frag_limit: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("frag_limit"))?;
-            u32::from_value(value.clone(), "frag_limit")?
-        };
-        let objective: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("objective"))?;
-            String::from_value(value.clone(), "objective")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let objective: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "objective",
+        )?;
+        let frag_limit: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "frag_limit",
+        )?;
+        let time_limit: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time_limit",
+        )?;
+        let rounds_limit: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "rounds_limit",
+        )?;
         Ok(GameStartEvent {
             rounds_limit,
             time_limit,
@@ -1311,13 +1591,19 @@ pub struct GameEndEvent {
     pub winner: u8,
 }
 impl FromRawGameEvent for GameEndEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let winner: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("winner"))?;
-            u8::from_value(value.clone(), "winner")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let winner: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "winner",
+        )?;
         Ok(GameEndEvent { winner })
     }
 }
@@ -1329,25 +1615,31 @@ pub struct RoundStartEvent {
     pub objective: String,
 }
 impl FromRawGameEvent for RoundStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let time_limit: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("time_limit"))?;
-            u32::from_value(value.clone(), "time_limit")?
-        };
-        let frag_limit: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("frag_limit"))?;
-            u32::from_value(value.clone(), "frag_limit")?
-        };
-        let objective: String = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("objective"))?;
-            String::from_value(value.clone(), "objective")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let objective: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "objective",
+        )?;
+        let frag_limit: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "frag_limit",
+        )?;
+        let time_limit: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time_limit",
+        )?;
         Ok(RoundStartEvent {
             time_limit,
             frag_limit,
@@ -1363,25 +1655,31 @@ pub struct RoundEndEvent {
     pub message: String,
 }
 impl FromRawGameEvent for RoundEndEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let winner: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("winner"))?;
-            u8::from_value(value.clone(), "winner")?
-        };
-        let reason: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("reason"))?;
-            u8::from_value(value.clone(), "reason")?
-        };
-        let message: String = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("message"))?;
-            String::from_value(value.clone(), "message")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let message: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "message",
+        )?;
+        let reason: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "reason",
+        )?;
+        let winner: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "winner",
+        )?;
         Ok(RoundEndEvent {
             winner,
             reason,
@@ -1396,17 +1694,25 @@ pub struct GameMessageEvent {
     pub text: String,
 }
 impl FromRawGameEvent for GameMessageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let target: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("target"))?;
-            u8::from_value(value.clone(), "target")?
-        };
-        let text: String = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
+        let target: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target",
+        )?;
         Ok(GameMessageEvent { target, text })
     }
 }
@@ -1418,25 +1724,31 @@ pub struct BreakBreakableEvent {
     pub material: u8,
 }
 impl FromRawGameEvent for BreakBreakableEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u32::from_value(value.clone(), "ent_index")?
-        };
-        let user_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let material: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("material"))?;
-            u8::from_value(value.clone(), "material")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let material: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "material",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
+        let ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(BreakBreakableEvent {
             ent_index,
             user_id,
@@ -1451,19 +1763,25 @@ pub struct BreakPropEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for BreakPropEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u32::from_value(value.clone(), "ent_index")?
-        };
-        let user_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
+        let ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(BreakPropEvent { ent_index, user_id })
     }
 }
@@ -1476,31 +1794,37 @@ pub struct EntityKilledEvent {
     pub damage_bits: u32,
 }
 impl FromRawGameEvent for EntityKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index_killed: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index_killed"))?;
-            u32::from_value(value.clone(), "ent_index_killed")?
-        };
-        let ent_index_attacker: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("ent_index_attacker"))?;
-            u32::from_value(value.clone(), "ent_index_attacker")?
-        };
-        let ent_index_inflictor: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("ent_index_inflictor"))?;
-            u32::from_value(value.clone(), "ent_index_inflictor")?
-        };
-        let damage_bits: u32 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("damage_bits"))?;
-            u32::from_value(value.clone(), "damage_bits")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let damage_bits: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage_bits",
+        )?;
+        let ent_index_inflictor: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index_inflictor",
+        )?;
+        let ent_index_attacker: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index_attacker",
+        )?;
+        let ent_index_killed: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index_killed",
+        )?;
         Ok(EntityKilledEvent {
             ent_index_killed,
             ent_index_attacker,
@@ -1518,31 +1842,37 @@ pub struct BonusUpdatedEvent {
     pub num_gold: u16,
 }
 impl FromRawGameEvent for BonusUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let num_advanced: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("num_advanced"))?;
-            u16::from_value(value.clone(), "num_advanced")?
-        };
-        let num_bronze: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("num_bronze"))?;
-            u16::from_value(value.clone(), "num_bronze")?
-        };
-        let num_silver: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("num_silver"))?;
-            u16::from_value(value.clone(), "num_silver")?
-        };
-        let num_gold: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("num_gold"))?;
-            u16::from_value(value.clone(), "num_gold")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let num_gold: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "num_gold",
+        )?;
+        let num_silver: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "num_silver",
+        )?;
+        let num_bronze: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "num_bronze",
+        )?;
+        let num_advanced: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "num_advanced",
+        )?;
         Ok(BonusUpdatedEvent {
             num_advanced,
             num_bronze,
@@ -1559,25 +1889,31 @@ pub struct AchievementEventEvent {
     pub max_val: u16,
 }
 impl FromRawGameEvent for AchievementEventEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let achievement_name: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("achievement_name"))?;
-            String::from_value(value.clone(), "achievement_name")?
-        };
-        let cur_val: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cur_val"))?;
-            u16::from_value(value.clone(), "cur_val")?
-        };
-        let max_val: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("max_val"))?;
-            u16::from_value(value.clone(), "max_val")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let max_val: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "max_val",
+        )?;
+        let cur_val: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cur_val",
+        )?;
+        let achievement_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "achievement_name",
+        )?;
         Ok(AchievementEventEvent {
             achievement_name,
             cur_val,
@@ -1593,25 +1929,31 @@ pub struct AchievementIncrementEvent {
     pub max_val: u16,
 }
 impl FromRawGameEvent for AchievementIncrementEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let achievement_id: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("achievement_id"))?;
-            u32::from_value(value.clone(), "achievement_id")?
-        };
-        let cur_val: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cur_val"))?;
-            u16::from_value(value.clone(), "cur_val")?
-        };
-        let max_val: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("max_val"))?;
-            u16::from_value(value.clone(), "max_val")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let max_val: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "max_val",
+        )?;
+        let cur_val: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cur_val",
+        )?;
+        let achievement_id: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "achievement_id",
+        )?;
         Ok(AchievementIncrementEvent {
             achievement_id,
             cur_val,
@@ -1625,13 +1967,19 @@ pub struct PhysgunPickupEvent {
     pub ent_index: u32,
 }
 impl FromRawGameEvent for PhysgunPickupEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u32::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(PhysgunPickupEvent { ent_index })
     }
 }
@@ -1641,13 +1989,19 @@ pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
 }
 impl FromRawGameEvent for FlareIgniteNpcEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u32::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(FlareIgniteNpcEvent { ent_index })
     }
 }
@@ -1655,7 +2009,7 @@ impl FromRawGameEvent for FlareIgniteNpcEvent {
 #[derive(Debug)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl FromRawGameEvent for HelicopterGrenadePuntMissEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
@@ -1663,7 +2017,7 @@ impl FromRawGameEvent for HelicopterGrenadePuntMissEvent {
 #[derive(Debug)]
 pub struct UserDataDownloadedEvent {}
 impl FromRawGameEvent for UserDataDownloadedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(UserDataDownloadedEvent {})
     }
 }
@@ -1673,13 +2027,19 @@ pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
 }
 impl FromRawGameEvent for RagdollDissolvedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u32::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(RagdollDissolvedEvent { ent_index })
     }
 }
@@ -1691,25 +2051,31 @@ pub struct HLTVChangedModeEvent {
     pub obs_target: u16,
 }
 impl FromRawGameEvent for HLTVChangedModeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let old_mode: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("old_mode"))?;
-            u16::from_value(value.clone(), "old_mode")?
-        };
-        let new_mode: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("new_mode"))?;
-            u16::from_value(value.clone(), "new_mode")?
-        };
-        let obs_target: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("obs_target"))?;
-            u16::from_value(value.clone(), "obs_target")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let obs_target: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "obs_target",
+        )?;
+        let new_mode: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "new_mode",
+        )?;
+        let old_mode: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "old_mode",
+        )?;
         Ok(HLTVChangedModeEvent {
             old_mode,
             new_mode,
@@ -1725,23 +2091,31 @@ pub struct HLTVChangedTargetEvent {
     pub obs_target: u16,
 }
 impl FromRawGameEvent for HLTVChangedTargetEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mode: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("mode"))?;
-            u16::from_value(value.clone(), "mode")?
-        };
-        let old_target: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("old_target"))?;
-            u16::from_value(value.clone(), "old_target")?
-        };
-        let obs_target: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("obs_target"))?;
-            u16::from_value(value.clone(), "obs_target")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let obs_target: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "obs_target",
+        )?;
+        let old_target: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "old_target",
+        )?;
+        let mode: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "mode",
+        )?;
         Ok(HLTVChangedTargetEvent {
             mode,
             old_target,
@@ -1753,7 +2127,7 @@ impl FromRawGameEvent for HLTVChangedTargetEvent {
 #[derive(Debug)]
 pub struct VoteEndedEvent {}
 impl FromRawGameEvent for VoteEndedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(VoteEndedEvent {})
     }
 }
@@ -1766,27 +2140,37 @@ pub struct VoteStartedEvent {
     pub initiator: u32,
 }
 impl FromRawGameEvent for VoteStartedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let issue: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("issue"))?;
-            String::from_value(value.clone(), "issue")?
-        };
-        let param1: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("param1"))?;
-            String::from_value(value.clone(), "param1")?
-        };
-        let team: u8 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let initiator: u32 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("initiator"))?;
-            u32::from_value(value.clone(), "initiator")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let initiator: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "initiator",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let param1: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "param1",
+        )?;
+        let issue: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "issue",
+        )?;
         Ok(VoteStartedEvent {
             issue,
             param1,
@@ -1806,43 +2190,49 @@ pub struct VoteChangedEvent {
     pub potential_votes: u8,
 }
 impl FromRawGameEvent for VoteChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let vote_option1: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("vote_option1"))?;
-            u8::from_value(value.clone(), "vote_option1")?
-        };
-        let vote_option2: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("vote_option2"))?;
-            u8::from_value(value.clone(), "vote_option2")?
-        };
-        let vote_option3: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("vote_option3"))?;
-            u8::from_value(value.clone(), "vote_option3")?
-        };
-        let vote_option4: u8 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("vote_option4"))?;
-            u8::from_value(value.clone(), "vote_option4")?
-        };
-        let vote_option5: u8 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("vote_option5"))?;
-            u8::from_value(value.clone(), "vote_option5")?
-        };
-        let potential_votes: u8 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("potential_votes"))?;
-            u8::from_value(value.clone(), "potential_votes")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 6 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(6);
+        let potential_votes: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "potential_votes",
+        )?;
+        let vote_option5: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "vote_option5",
+        )?;
+        let vote_option4: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "vote_option4",
+        )?;
+        let vote_option3: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "vote_option3",
+        )?;
+        let vote_option2: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "vote_option2",
+        )?;
+        let vote_option1: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "vote_option1",
+        )?;
         Ok(VoteChangedEvent {
             vote_option1,
             vote_option2,
@@ -1861,23 +2251,31 @@ pub struct VotePassedEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for VotePassedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let details: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("details"))?;
-            String::from_value(value.clone(), "details")?
-        };
-        let param1: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("param1"))?;
-            String::from_value(value.clone(), "param1")?
-        };
-        let team: u8 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let param1: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "param1",
+        )?;
+        let details: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "details",
+        )?;
         Ok(VotePassedEvent {
             details,
             param1,
@@ -1891,11 +2289,19 @@ pub struct VoteFailedEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for VoteFailedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(VoteFailedEvent { team })
     }
 }
@@ -1907,23 +2313,31 @@ pub struct VoteCastEvent {
     pub entity_id: u32,
 }
 impl FromRawGameEvent for VoteCastEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let vote_option: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("vote_option"))?;
-            u8::from_value(value.clone(), "vote_option")?
-        };
-        let team: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u16::from_value(value.clone(), "team")?
-        };
-        let entity_id: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("entity_id"))?;
-            u32::from_value(value.clone(), "entity_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let entity_id: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "entity_id",
+        )?;
+        let team: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let vote_option: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "vote_option",
+        )?;
         Ok(VoteCastEvent {
             vote_option,
             team,
@@ -1942,41 +2356,49 @@ pub struct VoteOptionsEvent {
     pub option5: String,
 }
 impl FromRawGameEvent for VoteOptionsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let count: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("count"))?;
-            u8::from_value(value.clone(), "count")?
-        };
-        let option1: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("option1"))?;
-            String::from_value(value.clone(), "option1")?
-        };
-        let option2: String = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("option2"))?;
-            String::from_value(value.clone(), "option2")?
-        };
-        let option3: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("option3"))?;
-            String::from_value(value.clone(), "option3")?
-        };
-        let option4: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("option4"))?;
-            String::from_value(value.clone(), "option4")?
-        };
-        let option5: String = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("option5"))?;
-            String::from_value(value.clone(), "option5")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 6 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(6);
+        let option5: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "option5",
+        )?;
+        let option4: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "option4",
+        )?;
+        let option3: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "option3",
+        )?;
+        let option2: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "option2",
+        )?;
+        let option1: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "option1",
+        )?;
+        let count: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "count",
+        )?;
         Ok(VoteOptionsEvent {
             count,
             option1,
@@ -1991,7 +2413,7 @@ impl FromRawGameEvent for VoteOptionsEvent {
 #[derive(Debug)]
 pub struct ReplaySavedEvent {}
 impl FromRawGameEvent for ReplaySavedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplaySavedEvent {})
     }
 }
@@ -1999,7 +2421,7 @@ impl FromRawGameEvent for ReplaySavedEvent {
 #[derive(Debug)]
 pub struct EnteredPerformanceModeEvent {}
 impl FromRawGameEvent for EnteredPerformanceModeEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
@@ -2007,7 +2429,7 @@ impl FromRawGameEvent for EnteredPerformanceModeEvent {
 #[derive(Debug)]
 pub struct BrowseReplaysEvent {}
 impl FromRawGameEvent for BrowseReplaysEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(BrowseReplaysEvent {})
     }
 }
@@ -2019,21 +2441,31 @@ pub struct ReplayYoutubeStatsEvent {
     pub favorited: u32,
 }
 impl FromRawGameEvent for ReplayYoutubeStatsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let views: u32 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("views"))?;
-            u32::from_value(value.clone(), "views")?
-        };
-        let likes: u32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("likes"))?;
-            u32::from_value(value.clone(), "likes")?
-        };
-        let favorited: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("favorited"))?;
-            u32::from_value(value.clone(), "favorited")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let favorited: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "favorited",
+        )?;
+        let likes: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "likes",
+        )?;
+        let views: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "views",
+        )?;
         Ok(ReplayYoutubeStatsEvent {
             views,
             likes,
@@ -2045,7 +2477,7 @@ impl FromRawGameEvent for ReplayYoutubeStatsEvent {
 #[derive(Debug)]
 pub struct InventoryUpdatedEvent {}
 impl FromRawGameEvent for InventoryUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(InventoryUpdatedEvent {})
     }
 }
@@ -2053,7 +2485,7 @@ impl FromRawGameEvent for InventoryUpdatedEvent {
 #[derive(Debug)]
 pub struct CartUpdatedEvent {}
 impl FromRawGameEvent for CartUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(CartUpdatedEvent {})
     }
 }
@@ -2061,7 +2493,7 @@ impl FromRawGameEvent for CartUpdatedEvent {
 #[derive(Debug)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
@@ -2069,7 +2501,7 @@ impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
 #[derive(Debug)]
 pub struct GcConnectedEvent {}
 impl FromRawGameEvent for GcConnectedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GcConnectedEvent {})
     }
 }
@@ -2077,7 +2509,7 @@ impl FromRawGameEvent for GcConnectedEvent {
 #[derive(Debug)]
 pub struct ItemSchemaInitializedEvent {}
 impl FromRawGameEvent for ItemSchemaInitializedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
@@ -2087,13 +2519,19 @@ pub struct IntroFinishEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for IntroFinishEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(IntroFinishEvent { player })
     }
 }
@@ -2103,13 +2541,19 @@ pub struct IntroNextCameraEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for IntroNextCameraEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(IntroNextCameraEvent { player })
     }
 }
@@ -2121,21 +2565,31 @@ pub struct MmLobbyChatEvent {
     pub kind: u16,
 }
 impl FromRawGameEvent for MmLobbyChatEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let steam_id: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("steam_id"))?;
-            String::from_value(value.clone(), "steam_id")?
-        };
-        let text: String = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
-        let kind: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("kind"))?;
-            u16::from_value(value.clone(), "kind")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let kind: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kind",
+        )?;
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
+        let steam_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "steam_id",
+        )?;
         Ok(MmLobbyChatEvent {
             steam_id,
             text,
@@ -2149,13 +2603,19 @@ pub struct MmLobbyMemberJoinEvent {
     pub steam_id: String,
 }
 impl FromRawGameEvent for MmLobbyMemberJoinEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let steam_id: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("steam_id"))?;
-            String::from_value(value.clone(), "steam_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let steam_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "steam_id",
+        )?;
         Ok(MmLobbyMemberJoinEvent { steam_id })
     }
 }
@@ -2166,17 +2626,25 @@ pub struct MmLobbyMemberLeaveEvent {
     pub flags: u32,
 }
 impl FromRawGameEvent for MmLobbyMemberLeaveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let steam_id: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("steam_id"))?;
-            String::from_value(value.clone(), "steam_id")?
-        };
-        let flags: u32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("flags"))?;
-            u32::from_value(value.clone(), "flags")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let flags: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "flags",
+        )?;
+        let steam_id: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "steam_id",
+        )?;
         Ok(MmLobbyMemberLeaveEvent { steam_id, flags })
     }
 }
@@ -2187,17 +2655,25 @@ pub struct PlayerChangeClassEvent {
     pub class: u16,
 }
 impl FromRawGameEvent for PlayerChangeClassEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let class: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("class"))?;
-            u16::from_value(value.clone(), "class")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let class: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "class",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerChangeClassEvent { user_id, class })
     }
 }
@@ -2207,13 +2683,19 @@ pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
 }
 impl FromRawGameEvent for TfMapTimeRemainingEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let seconds: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("seconds"))?;
-            u32::from_value(value.clone(), "seconds")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let seconds: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "seconds",
+        )?;
         Ok(TfMapTimeRemainingEvent { seconds })
     }
 }
@@ -2223,13 +2705,19 @@ pub struct TfGameOverEvent {
     pub reason: String,
 }
 impl FromRawGameEvent for TfGameOverEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let reason: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("reason"))?;
-            String::from_value(value.clone(), "reason")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let reason: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "reason",
+        )?;
         Ok(TfGameOverEvent { reason })
     }
 }
@@ -2240,19 +2728,25 @@ pub struct CtfFlagCapturedEvent {
     pub capping_team_score: u16,
 }
 impl FromRawGameEvent for CtfFlagCapturedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let capping_team: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("capping_team"))?;
-            u16::from_value(value.clone(), "capping_team")?
-        };
-        let capping_team_score: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("capping_team_score"))?;
-            u16::from_value(value.clone(), "capping_team_score")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let capping_team_score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "capping_team_score",
+        )?;
+        let capping_team: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "capping_team",
+        )?;
         Ok(CtfFlagCapturedEvent {
             capping_team,
             capping_team_score,
@@ -2263,7 +2757,7 @@ impl FromRawGameEvent for CtfFlagCapturedEvent {
 #[derive(Debug)]
 pub struct ControlPointInitializedEvent {}
 impl FromRawGameEvent for ControlPointInitializedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ControlPointInitializedEvent {})
     }
 }
@@ -2273,11 +2767,19 @@ pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ControlPointUpdateImagesEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(ControlPointUpdateImagesEvent { index })
     }
 }
@@ -2287,11 +2789,19 @@ pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ControlPointUpdateLayoutEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(ControlPointUpdateLayoutEvent { index })
     }
 }
@@ -2301,11 +2811,19 @@ pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ControlPointUpdateCappingEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(ControlPointUpdateCappingEvent { index })
     }
 }
@@ -2315,11 +2833,19 @@ pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ControlPointUpdateOwnerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(ControlPointUpdateOwnerEvent { index })
     }
 }
@@ -2330,17 +2856,25 @@ pub struct ControlPointStartTouchEvent {
     pub area: u16,
 }
 impl FromRawGameEvent for ControlPointStartTouchEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let area: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("area"))?;
-            u16::from_value(value.clone(), "area")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let area: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "area",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(ControlPointStartTouchEvent { player, area })
     }
 }
@@ -2351,17 +2885,25 @@ pub struct ControlPointEndTouchEvent {
     pub area: u16,
 }
 impl FromRawGameEvent for ControlPointEndTouchEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let area: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("area"))?;
-            u16::from_value(value.clone(), "area")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let area: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "area",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(ControlPointEndTouchEvent { player, area })
     }
 }
@@ -2371,13 +2913,19 @@ pub struct ControlPointPulseElementEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for ControlPointPulseElementEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(ControlPointPulseElementEvent { player })
     }
 }
@@ -2388,19 +2936,25 @@ pub struct ControlPointFakeCaptureEvent {
     pub int_data: u16,
 }
 impl FromRawGameEvent for ControlPointFakeCaptureEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let int_data: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("int_data"))?;
-            u16::from_value(value.clone(), "int_data")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let int_data: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "int_data",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(ControlPointFakeCaptureEvent { player, int_data })
     }
 }
@@ -2411,19 +2965,25 @@ pub struct ControlPointFakeCaptureMultiplierEvent {
     pub int_data: u16,
 }
 impl FromRawGameEvent for ControlPointFakeCaptureMultiplierEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let int_data: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("int_data"))?;
-            u16::from_value(value.clone(), "int_data")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let int_data: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "int_data",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(ControlPointFakeCaptureMultiplierEvent { player, int_data })
     }
 }
@@ -2433,11 +2993,19 @@ pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
 }
 impl FromRawGameEvent for TeamPlayRoundSelectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let round: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("round"))?;
-            String::from_value(value.clone(), "round")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let round: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "round",
+        )?;
         Ok(TeamPlayRoundSelectedEvent { round })
     }
 }
@@ -2447,13 +3015,19 @@ pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
 }
 impl FromRawGameEvent for TeamPlayRoundStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let full_reset: bool = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("full_reset"))?;
-            bool::from_value(value.clone(), "full_reset")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let full_reset: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "full_reset",
+        )?;
         Ok(TeamPlayRoundStartEvent { full_reset })
     }
 }
@@ -2461,7 +3035,7 @@ impl FromRawGameEvent for TeamPlayRoundStartEvent {
 #[derive(Debug)]
 pub struct TeamPlayRoundActiveEvent {}
 impl FromRawGameEvent for TeamPlayRoundActiveEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
@@ -2469,7 +3043,7 @@ impl FromRawGameEvent for TeamPlayRoundActiveEvent {
 #[derive(Debug)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl FromRawGameEvent for TeamPlayWaitingBeginsEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
@@ -2477,7 +3051,7 @@ impl FromRawGameEvent for TeamPlayWaitingBeginsEvent {
 #[derive(Debug)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl FromRawGameEvent for TeamPlayWaitingEndsEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
@@ -2485,7 +3059,7 @@ impl FromRawGameEvent for TeamPlayWaitingEndsEvent {
 #[derive(Debug)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl FromRawGameEvent for TeamPlayWaitingAboutToEndEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
@@ -2493,7 +3067,7 @@ impl FromRawGameEvent for TeamPlayWaitingAboutToEndEvent {
 #[derive(Debug)]
 pub struct TeamPlayRestartRoundEvent {}
 impl FromRawGameEvent for TeamPlayRestartRoundEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
@@ -2501,7 +3075,7 @@ impl FromRawGameEvent for TeamPlayRestartRoundEvent {
 #[derive(Debug)]
 pub struct TeamPlayReadyRestartEvent {}
 impl FromRawGameEvent for TeamPlayReadyRestartEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
@@ -2511,13 +3085,19 @@ pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
 }
 impl FromRawGameEvent for TeamPlayRoundRestartSecondsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let seconds: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("seconds"))?;
-            u16::from_value(value.clone(), "seconds")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let seconds: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "seconds",
+        )?;
         Ok(TeamPlayRoundRestartSecondsEvent { seconds })
     }
 }
@@ -2527,11 +3107,19 @@ pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayTeamReadyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(TeamPlayTeamReadyEvent { team })
     }
 }
@@ -2547,47 +3135,55 @@ pub struct TeamPlayRoundWinEvent {
     pub was_sudden_death: u8,
 }
 impl FromRawGameEvent for TeamPlayRoundWinEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let win_reason: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("win_reason"))?;
-            u8::from_value(value.clone(), "win_reason")?
-        };
-        let flag_cap_limit: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("flag_cap_limit"))?;
-            u16::from_value(value.clone(), "flag_cap_limit")?
-        };
-        let full_round: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("full_round"))?;
-            u16::from_value(value.clone(), "full_round")?
-        };
-        let round_time: f32 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("round_time"))?;
-            f32::from_value(value.clone(), "round_time")?
-        };
-        let losing_team_num_caps: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("losing_team_num_caps"))?;
-            u16::from_value(value.clone(), "losing_team_num_caps")?
-        };
-        let was_sudden_death: u8 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("was_sudden_death"))?;
-            u8::from_value(value.clone(), "was_sudden_death")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 7 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(7);
+        let was_sudden_death: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "was_sudden_death",
+        )?;
+        let losing_team_num_caps: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "losing_team_num_caps",
+        )?;
+        let round_time: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "round_time",
+        )?;
+        let full_round: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "full_round",
+        )?;
+        let flag_cap_limit: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "flag_cap_limit",
+        )?;
+        let win_reason: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "win_reason",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(TeamPlayRoundWinEvent {
             team,
             win_reason,
@@ -2603,7 +3199,7 @@ impl FromRawGameEvent for TeamPlayRoundWinEvent {
 #[derive(Debug)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl FromRawGameEvent for TeamPlayUpdateTimerEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
@@ -2613,13 +3209,19 @@ pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
 }
 impl FromRawGameEvent for TeamPlayRoundStalemateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let reason: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("reason"))?;
-            u8::from_value(value.clone(), "reason")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let reason: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "reason",
+        )?;
         Ok(TeamPlayRoundStalemateEvent { reason })
     }
 }
@@ -2627,7 +3229,7 @@ impl FromRawGameEvent for TeamPlayRoundStalemateEvent {
 #[derive(Debug)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl FromRawGameEvent for TeamPlayOvertimeBeginEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
@@ -2635,7 +3237,7 @@ impl FromRawGameEvent for TeamPlayOvertimeBeginEvent {
 #[derive(Debug)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl FromRawGameEvent for TeamPlayOvertimeEndEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
@@ -2643,7 +3245,7 @@ impl FromRawGameEvent for TeamPlayOvertimeEndEvent {
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl FromRawGameEvent for TeamPlaySuddenDeathBeginEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
@@ -2651,7 +3253,7 @@ impl FromRawGameEvent for TeamPlaySuddenDeathBeginEvent {
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl FromRawGameEvent for TeamPlaySuddenDeathEndEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
@@ -2661,13 +3263,19 @@ pub struct TeamPlayGameOverEvent {
     pub reason: String,
 }
 impl FromRawGameEvent for TeamPlayGameOverEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let reason: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("reason"))?;
-            String::from_value(value.clone(), "reason")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let reason: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "reason",
+        )?;
         Ok(TeamPlayGameOverEvent { reason })
     }
 }
@@ -2677,13 +3285,19 @@ pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
 }
 impl FromRawGameEvent for TeamPlayMapTimeRemainingEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let seconds: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("seconds"))?;
-            u16::from_value(value.clone(), "seconds")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let seconds: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "seconds",
+        )?;
         Ok(TeamPlayMapTimeRemainingEvent { seconds })
     }
 }
@@ -2693,13 +3307,19 @@ pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
 }
 impl FromRawGameEvent for TeamPlayTimerFlashEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let time_remaining: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("time_remaining"))?;
-            u16::from_value(value.clone(), "time_remaining")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let time_remaining: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time_remaining",
+        )?;
         Ok(TeamPlayTimerFlashEvent { time_remaining })
     }
 }
@@ -2710,17 +3330,25 @@ pub struct TeamPlayTimerTimeAddedEvent {
     pub seconds_added: u16,
 }
 impl FromRawGameEvent for TeamPlayTimerTimeAddedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let timer: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("timer"))?;
-            u16::from_value(value.clone(), "timer")?
-        };
-        let seconds_added: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("seconds_added"))?;
-            u16::from_value(value.clone(), "seconds_added")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let seconds_added: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "seconds_added",
+        )?;
+        let timer: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "timer",
+        )?;
         Ok(TeamPlayTimerTimeAddedEvent {
             timer,
             seconds_added,
@@ -2738,39 +3366,49 @@ pub struct TeamPlayPointStartCaptureEvent {
     pub cap_time: f32,
 }
 impl FromRawGameEvent for TeamPlayPointStartCaptureEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let cp: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("cp"))?;
-            u8::from_value(value.clone(), "cp")?
-        };
-        let cp_name: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cp_name"))?;
-            String::from_value(value.clone(), "cp_name")?
-        };
-        let team: u8 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let cap_team: u8 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("cap_team"))?;
-            u8::from_value(value.clone(), "cap_team")?
-        };
-        let cappers: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("cappers"))?;
-            String::from_value(value.clone(), "cappers")?
-        };
-        let cap_time: f32 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("cap_time"))?;
-            f32::from_value(value.clone(), "cap_time")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 6 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(6);
+        let cap_time: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cap_time",
+        )?;
+        let cappers: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cappers",
+        )?;
+        let cap_team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cap_team",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let cp_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp_name",
+        )?;
+        let cp: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp",
+        )?;
         Ok(TeamPlayPointStartCaptureEvent {
             cp,
             cp_name,
@@ -2790,27 +3428,37 @@ pub struct TeamPlayPointCapturedEvent {
     pub cappers: String,
 }
 impl FromRawGameEvent for TeamPlayPointCapturedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let cp: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("cp"))?;
-            u8::from_value(value.clone(), "cp")?
-        };
-        let cp_name: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cp_name"))?;
-            String::from_value(value.clone(), "cp_name")?
-        };
-        let team: u8 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let cappers: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("cappers"))?;
-            String::from_value(value.clone(), "cappers")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let cappers: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cappers",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let cp_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp_name",
+        )?;
+        let cp: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp",
+        )?;
         Ok(TeamPlayPointCapturedEvent {
             cp,
             cp_name,
@@ -2827,21 +3475,31 @@ pub struct TeamPlayPointLockedEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayPointLockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let cp: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("cp"))?;
-            u8::from_value(value.clone(), "cp")?
-        };
-        let cp_name: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cp_name"))?;
-            String::from_value(value.clone(), "cp_name")?
-        };
-        let team: u8 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let cp_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp_name",
+        )?;
+        let cp: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp",
+        )?;
         Ok(TeamPlayPointLockedEvent { cp, cp_name, team })
     }
 }
@@ -2853,21 +3511,31 @@ pub struct TeamPlayPointUnlockedEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayPointUnlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let cp: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("cp"))?;
-            u8::from_value(value.clone(), "cp")?
-        };
-        let cp_name: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cp_name"))?;
-            String::from_value(value.clone(), "cp_name")?
-        };
-        let team: u8 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let cp_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp_name",
+        )?;
+        let cp: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp",
+        )?;
         Ok(TeamPlayPointUnlockedEvent { cp, cp_name, team })
     }
 }
@@ -2879,23 +3547,31 @@ pub struct TeamPlayCaptureBrokenEvent {
     pub time_remaining: f32,
 }
 impl FromRawGameEvent for TeamPlayCaptureBrokenEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let cp: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("cp"))?;
-            u8::from_value(value.clone(), "cp")?
-        };
-        let cp_name: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cp_name"))?;
-            String::from_value(value.clone(), "cp_name")?
-        };
-        let time_remaining: f32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("time_remaining"))?;
-            f32::from_value(value.clone(), "time_remaining")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let time_remaining: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time_remaining",
+        )?;
+        let cp_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp_name",
+        )?;
+        let cp: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp",
+        )?;
         Ok(TeamPlayCaptureBrokenEvent {
             cp,
             cp_name,
@@ -2911,23 +3587,31 @@ pub struct TeamPlayCaptureBlockedEvent {
     pub blocker: u8,
 }
 impl FromRawGameEvent for TeamPlayCaptureBlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let cp: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("cp"))?;
-            u8::from_value(value.clone(), "cp")?
-        };
-        let cp_name: String = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("cp_name"))?;
-            String::from_value(value.clone(), "cp_name")?
-        };
-        let blocker: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("blocker"))?;
-            u8::from_value(value.clone(), "blocker")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let blocker: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "blocker",
+        )?;
+        let cp_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp_name",
+        )?;
+        let cp: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cp",
+        )?;
         Ok(TeamPlayCaptureBlockedEvent {
             cp,
             cp_name,
@@ -2945,33 +3629,43 @@ pub struct TeamPlayFlagEventEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayFlagEventEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let carrier: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("carrier"))?;
-            u16::from_value(value.clone(), "carrier")?
-        };
-        let event_type: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("event_type"))?;
-            u16::from_value(value.clone(), "event_type")?
-        };
-        let home: u8 = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("home"))?;
-            u8::from_value(value.clone(), "home")?
-        };
-        let team: u8 = {
-            let value = values.get(4).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 5 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(5);
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let home: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "home",
+        )?;
+        let event_type: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "event_type",
+        )?;
+        let carrier: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "carrier",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(TeamPlayFlagEventEvent {
             player,
             carrier,
@@ -3005,121 +3699,127 @@ pub struct TeamPlayWinPanelEvent {
     pub kill_stream_player_1_count: u16,
 }
 impl FromRawGameEvent for TeamPlayWinPanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let panel_style: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("panel_style"))?;
-            u8::from_value(value.clone(), "panel_style")?
-        };
-        let winning_team: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("winning_team"))?;
-            u8::from_value(value.clone(), "winning_team")?
-        };
-        let win_reason: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("win_reason"))?;
-            u8::from_value(value.clone(), "win_reason")?
-        };
-        let cappers: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("cappers"))?;
-            String::from_value(value.clone(), "cappers")?
-        };
-        let flag_cap_limit: u16 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("flag_cap_limit"))?;
-            u16::from_value(value.clone(), "flag_cap_limit")?
-        };
-        let blue_score: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("blue_score"))?;
-            u16::from_value(value.clone(), "blue_score")?
-        };
-        let red_score: u16 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("red_score"))?;
-            u16::from_value(value.clone(), "red_score")?
-        };
-        let blue_score_prev: u16 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("blue_score_prev"))?;
-            u16::from_value(value.clone(), "blue_score_prev")?
-        };
-        let red_score_prev: u16 = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("red_score_prev"))?;
-            u16::from_value(value.clone(), "red_score_prev")?
-        };
-        let round_complete: u16 = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("round_complete"))?;
-            u16::from_value(value.clone(), "round_complete")?
-        };
-        let rounds_remaining: u16 = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("rounds_remaining"))?;
-            u16::from_value(value.clone(), "rounds_remaining")?
-        };
-        let player_1: u16 = {
-            let value = values
-                .get(11)
-                .ok_or(ParseError::UnknownGameEvent("player_1"))?;
-            u16::from_value(value.clone(), "player_1")?
-        };
-        let player_1_points: u16 = {
-            let value = values
-                .get(12)
-                .ok_or(ParseError::UnknownGameEvent("player_1_points"))?;
-            u16::from_value(value.clone(), "player_1_points")?
-        };
-        let player_2: u16 = {
-            let value = values
-                .get(13)
-                .ok_or(ParseError::UnknownGameEvent("player_2"))?;
-            u16::from_value(value.clone(), "player_2")?
-        };
-        let player_2_points: u16 = {
-            let value = values
-                .get(14)
-                .ok_or(ParseError::UnknownGameEvent("player_2_points"))?;
-            u16::from_value(value.clone(), "player_2_points")?
-        };
-        let player_3: u16 = {
-            let value = values
-                .get(15)
-                .ok_or(ParseError::UnknownGameEvent("player_3"))?;
-            u16::from_value(value.clone(), "player_3")?
-        };
-        let player_3_points: u16 = {
-            let value = values
-                .get(16)
-                .ok_or(ParseError::UnknownGameEvent("player_3_points"))?;
-            u16::from_value(value.clone(), "player_3_points")?
-        };
-        let kill_stream_player_1: u16 = {
-            let value = values
-                .get(17)
-                .ok_or(ParseError::UnknownGameEvent("kill_stream_player_1"))?;
-            u16::from_value(value.clone(), "kill_stream_player_1")?
-        };
-        let kill_stream_player_1_count: u16 = {
-            let value = values
-                .get(18)
-                .ok_or(ParseError::UnknownGameEvent("kill_stream_player_1_count"))?;
-            u16::from_value(value.clone(), "kill_stream_player_1_count")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 19 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(19);
+        let kill_stream_player_1_count: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kill_stream_player_1_count",
+        )?;
+        let kill_stream_player_1: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kill_stream_player_1",
+        )?;
+        let player_3_points: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_3_points",
+        )?;
+        let player_3: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_3",
+        )?;
+        let player_2_points: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_2_points",
+        )?;
+        let player_2: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_2",
+        )?;
+        let player_1_points: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_1_points",
+        )?;
+        let player_1: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_1",
+        )?;
+        let rounds_remaining: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "rounds_remaining",
+        )?;
+        let round_complete: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "round_complete",
+        )?;
+        let red_score_prev: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "red_score_prev",
+        )?;
+        let blue_score_prev: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "blue_score_prev",
+        )?;
+        let red_score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "red_score",
+        )?;
+        let blue_score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "blue_score",
+        )?;
+        let flag_cap_limit: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "flag_cap_limit",
+        )?;
+        let cappers: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cappers",
+        )?;
+        let win_reason: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "win_reason",
+        )?;
+        let winning_team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "winning_team",
+        )?;
+        let panel_style: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "panel_style",
+        )?;
         Ok(TeamPlayWinPanelEvent {
             panel_style,
             winning_team,
@@ -3150,17 +3850,25 @@ pub struct TeamPlayTeamBalancedPlayerEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayTeamBalancedPlayerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let team: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(TeamPlayTeamBalancedPlayerEvent { player, team })
     }
 }
@@ -3168,7 +3876,7 @@ impl FromRawGameEvent for TeamPlayTeamBalancedPlayerEvent {
 #[derive(Debug)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl FromRawGameEvent for TeamPlaySetupFinishedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
@@ -3178,13 +3886,19 @@ pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
 }
 impl FromRawGameEvent for TeamPlayAlertEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let alert_type: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("alert_type"))?;
-            u16::from_value(value.clone(), "alert_type")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let alert_type: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "alert_type",
+        )?;
         Ok(TeamPlayAlertEvent { alert_type })
     }
 }
@@ -3196,21 +3910,31 @@ pub struct TrainingCompleteEvent {
     pub text: String,
 }
 impl FromRawGameEvent for TrainingCompleteEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let next_map: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("next_map"))?;
-            String::from_value(value.clone(), "next_map")?
-        };
-        let map: String = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("map"))?;
-            String::from_value(value.clone(), "map")?
-        };
-        let text: String = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
+        let map: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "map",
+        )?;
+        let next_map: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "next_map",
+        )?;
         Ok(TrainingCompleteEvent {
             next_map,
             map,
@@ -3224,13 +3948,19 @@ pub struct ShowFreezePanelEvent {
     pub killer: u16,
 }
 impl FromRawGameEvent for ShowFreezePanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let killer: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("killer"))?;
-            u16::from_value(value.clone(), "killer")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let killer: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "killer",
+        )?;
         Ok(ShowFreezePanelEvent { killer })
     }
 }
@@ -3238,7 +3968,7 @@ impl FromRawGameEvent for ShowFreezePanelEvent {
 #[derive(Debug)]
 pub struct HideFreezePanelEvent {}
 impl FromRawGameEvent for HideFreezePanelEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HideFreezePanelEvent {})
     }
 }
@@ -3246,7 +3976,7 @@ impl FromRawGameEvent for HideFreezePanelEvent {
 #[derive(Debug)]
 pub struct FreezeCamStartedEvent {}
 impl FromRawGameEvent for FreezeCamStartedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(FreezeCamStartedEvent {})
     }
 }
@@ -3254,7 +3984,7 @@ impl FromRawGameEvent for FreezeCamStartedEvent {
 #[derive(Debug)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl FromRawGameEvent for LocalPlayerChangeTeamEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
@@ -3264,11 +3994,19 @@ pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
 }
 impl FromRawGameEvent for LocalPlayerScoreChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let score: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("score"))?;
-            u16::from_value(value.clone(), "score")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "score",
+        )?;
         Ok(LocalPlayerScoreChangedEvent { score })
     }
 }
@@ -3276,7 +4014,7 @@ impl FromRawGameEvent for LocalPlayerScoreChangedEvent {
 #[derive(Debug)]
 pub struct LocalPlayerChangeClassEvent {}
 impl FromRawGameEvent for LocalPlayerChangeClassEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
@@ -3284,7 +4022,7 @@ impl FromRawGameEvent for LocalPlayerChangeClassEvent {
 #[derive(Debug)]
 pub struct LocalPlayerRespawnEvent {}
 impl FromRawGameEvent for LocalPlayerRespawnEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
@@ -3296,25 +4034,31 @@ pub struct BuildingInfoChangedEvent {
     pub remove: u8,
 }
 impl FromRawGameEvent for BuildingInfoChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let building_type: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("building_type"))?;
-            u8::from_value(value.clone(), "building_type")?
-        };
-        let object_mode: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("object_mode"))?;
-            u8::from_value(value.clone(), "object_mode")?
-        };
-        let remove: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("remove"))?;
-            u8::from_value(value.clone(), "remove")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let remove: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "remove",
+        )?;
+        let object_mode: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object_mode",
+        )?;
+        let building_type: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "building_type",
+        )?;
         Ok(BuildingInfoChangedEvent {
             building_type,
             object_mode,
@@ -3328,13 +4072,19 @@ pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
 }
 impl FromRawGameEvent for LocalPlayerChangeDisguiseEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let disguised: bool = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("disguised"))?;
-            bool::from_value(value.clone(), "disguised")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let disguised: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "disguised",
+        )?;
         Ok(LocalPlayerChangeDisguiseEvent { disguised })
     }
 }
@@ -3345,19 +4095,25 @@ pub struct PlayerAccountChangedEvent {
     pub new_value: u16,
 }
 impl FromRawGameEvent for PlayerAccountChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let old_value: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("old_value"))?;
-            u16::from_value(value.clone(), "old_value")?
-        };
-        let new_value: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("new_value"))?;
-            u16::from_value(value.clone(), "new_value")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let new_value: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "new_value",
+        )?;
+        let old_value: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "old_value",
+        )?;
         Ok(PlayerAccountChangedEvent {
             old_value,
             new_value,
@@ -3368,7 +4124,7 @@ impl FromRawGameEvent for PlayerAccountChangedEvent {
 #[derive(Debug)]
 pub struct SpyPdaResetEvent {}
 impl FromRawGameEvent for SpyPdaResetEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(SpyPdaResetEvent {})
     }
 }
@@ -3379,19 +4135,25 @@ pub struct FlagStatusUpdateEvent {
     pub ent_index: u32,
 }
 impl FromRawGameEvent for FlagStatusUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let ent_index: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u32::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(FlagStatusUpdateEvent { user_id, ent_index })
     }
 }
@@ -3401,13 +4163,19 @@ pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
 }
 impl FromRawGameEvent for PlayerStatsUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let force_upload: bool = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("force_upload"))?;
-            bool::from_value(value.clone(), "force_upload")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let force_upload: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "force_upload",
+        )?;
         Ok(PlayerStatsUpdatedEvent { force_upload })
     }
 }
@@ -3415,7 +4183,7 @@ impl FromRawGameEvent for PlayerStatsUpdatedEvent {
 #[derive(Debug)]
 pub struct PlayingCommentaryEvent {}
 impl FromRawGameEvent for PlayingCommentaryEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayingCommentaryEvent {})
     }
 }
@@ -3426,19 +4194,25 @@ pub struct PlayerChargeDeployedEvent {
     pub target_id: u16,
 }
 impl FromRawGameEvent for PlayerChargeDeployedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let target_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("target_id"))?;
-            u16::from_value(value.clone(), "target_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let target_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerChargeDeployedEvent { user_id, target_id })
     }
 }
@@ -3450,23 +4224,31 @@ pub struct PlayerBuiltObjectEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PlayerBuiltObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let object: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("object"))?;
-            u16::from_value(value.clone(), "object")?
-        };
-        let index: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let object: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerBuiltObjectEvent {
             user_id,
             object,
@@ -3483,29 +4265,37 @@ pub struct PlayerUpgradedObjectEvent {
     pub is_builder: bool,
 }
 impl FromRawGameEvent for PlayerUpgradedObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let object: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("object"))?;
-            u16::from_value(value.clone(), "object")?
-        };
-        let index: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
-        let is_builder: bool = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("is_builder"))?;
-            bool::from_value(value.clone(), "is_builder")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let is_builder: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "is_builder",
+        )?;
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let object: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerUpgradedObjectEvent {
             user_id,
             object,
@@ -3522,23 +4312,31 @@ pub struct PlayerCarryObjectEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PlayerCarryObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let object: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("object"))?;
-            u16::from_value(value.clone(), "object")?
-        };
-        let index: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let object: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerCarryObjectEvent {
             user_id,
             object,
@@ -3554,23 +4352,31 @@ pub struct PlayerDropObjectEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PlayerDropObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let object: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("object"))?;
-            u16::from_value(value.clone(), "object")?
-        };
-        let index: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let object: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerDropObjectEvent {
             user_id,
             object,
@@ -3586,23 +4392,31 @@ pub struct ObjectRemovedEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ObjectRemovedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let object_type: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("object_type"))?;
-            u16::from_value(value.clone(), "object_type")?
-        };
-        let index: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let object_type: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object_type",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(ObjectRemovedEvent {
             user_id,
             object_type,
@@ -3623,53 +4437,61 @@ pub struct ObjectDestroyedEvent {
     pub was_building: bool,
 }
 impl FromRawGameEvent for ObjectDestroyedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let attacker: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let assister: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("assister"))?;
-            u16::from_value(value.clone(), "assister")?
-        };
-        let weapon: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("weapon"))?;
-            String::from_value(value.clone(), "weapon")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let object_type: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("object_type"))?;
-            u16::from_value(value.clone(), "object_type")?
-        };
-        let index: u16 = {
-            let value = values.get(6).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
-        let was_building: bool = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("was_building"))?;
-            bool::from_value(value.clone(), "was_building")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 8 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(8);
+        let was_building: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "was_building",
+        )?;
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let object_type: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object_type",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let weapon: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon",
+        )?;
+        let assister: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(ObjectDestroyedEvent {
             user_id,
             attacker,
@@ -3690,23 +4512,31 @@ pub struct ObjectDetonatedEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ObjectDetonatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let object_type: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("object_type"))?;
-            u16::from_value(value.clone(), "object_type")?
-        };
-        let index: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
+        let object_type: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object_type",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(ObjectDetonatedEvent {
             user_id,
             object_type,
@@ -3721,19 +4551,25 @@ pub struct AchievementEarnedEvent {
     pub achievement: u16,
 }
 impl FromRawGameEvent for AchievementEarnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u8::from_value(value.clone(), "player")?
-        };
-        let achievement: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("achievement"))?;
-            u16::from_value(value.clone(), "achievement")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let achievement: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "achievement",
+        )?;
+        let player: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(AchievementEarnedEvent {
             player,
             achievement,
@@ -3744,7 +4580,7 @@ impl FromRawGameEvent for AchievementEarnedEvent {
 #[derive(Debug)]
 pub struct SpecTargetUpdatedEvent {}
 impl FromRawGameEvent for SpecTargetUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
@@ -3757,31 +4593,37 @@ pub struct TournamentStateUpdateEvent {
     pub new_name: String,
 }
 impl FromRawGameEvent for TournamentStateUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let name_change: bool = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("name_change"))?;
-            bool::from_value(value.clone(), "name_change")?
-        };
-        let ready_state: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("ready_state"))?;
-            u16::from_value(value.clone(), "ready_state")?
-        };
-        let new_name: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("new_name"))?;
-            String::from_value(value.clone(), "new_name")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let new_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "new_name",
+        )?;
+        let ready_state: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ready_state",
+        )?;
+        let name_change: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "name_change",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(TournamentStateUpdateEvent {
             user_id,
             name_change,
@@ -3794,7 +4636,7 @@ impl FromRawGameEvent for TournamentStateUpdateEvent {
 #[derive(Debug)]
 pub struct TournamentEnableCountdownEvent {}
 impl FromRawGameEvent for TournamentEnableCountdownEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
@@ -3804,13 +4646,19 @@ pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerCalledForMedicEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerCalledForMedicEvent { user_id })
     }
 }
@@ -3818,7 +4666,7 @@ impl FromRawGameEvent for PlayerCalledForMedicEvent {
 #[derive(Debug)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl FromRawGameEvent for LocalPlayerBecameObserverEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
@@ -3830,25 +4678,31 @@ pub struct PlayerIgnitedInvEvent {
     pub medic_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerIgnitedInvEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let pyro_ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("pyro_ent_index"))?;
-            u8::from_value(value.clone(), "pyro_ent_index")?
-        };
-        let victim_ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u8::from_value(value.clone(), "victim_ent_index")?
-        };
-        let medic_ent_index: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("medic_ent_index"))?;
-            u8::from_value(value.clone(), "medic_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let medic_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "medic_ent_index",
+        )?;
+        let victim_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let pyro_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "pyro_ent_index",
+        )?;
         Ok(PlayerIgnitedInvEvent {
             pyro_ent_index,
             victim_ent_index,
@@ -3864,25 +4718,31 @@ pub struct PlayerIgnitedEvent {
     pub weapon_id: u8,
 }
 impl FromRawGameEvent for PlayerIgnitedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let pyro_ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("pyro_ent_index"))?;
-            u8::from_value(value.clone(), "pyro_ent_index")?
-        };
-        let victim_ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u8::from_value(value.clone(), "victim_ent_index")?
-        };
-        let weapon_id: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u8::from_value(value.clone(), "weapon_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let weapon_id: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let victim_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let pyro_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "pyro_ent_index",
+        )?;
         Ok(PlayerIgnitedEvent {
             pyro_ent_index,
             victim_ent_index,
@@ -3897,19 +4757,25 @@ pub struct PlayerExtinguishedEvent {
     pub healer: u8,
 }
 impl FromRawGameEvent for PlayerExtinguishedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let victim: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("victim"))?;
-            u8::from_value(value.clone(), "victim")?
-        };
-        let healer: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("healer"))?;
-            u8::from_value(value.clone(), "healer")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let healer: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "healer",
+        )?;
+        let victim: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim",
+        )?;
         Ok(PlayerExtinguishedEvent { victim, healer })
     }
 }
@@ -3921,23 +4787,31 @@ pub struct PlayerTeleportedEvent {
     pub dist: f32,
 }
 impl FromRawGameEvent for PlayerTeleportedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let builder_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("builder_id"))?;
-            u16::from_value(value.clone(), "builder_id")?
-        };
-        let dist: f32 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("dist"))?;
-            f32::from_value(value.clone(), "dist")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let dist: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "dist",
+        )?;
+        let builder_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "builder_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerTeleportedEvent {
             user_id,
             builder_id,
@@ -3951,13 +4825,19 @@ pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerHealedMedicCallEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerHealedMedicCallEvent { user_id })
     }
 }
@@ -3965,7 +4845,7 @@ impl FromRawGameEvent for PlayerHealedMedicCallEvent {
 #[derive(Debug)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
@@ -3973,7 +4853,7 @@ impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
 #[derive(Debug)]
 pub struct LocalPlayerWindDownEvent {}
 impl FromRawGameEvent for LocalPlayerWindDownEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
@@ -3984,19 +4864,25 @@ pub struct PlayerInvulnedEvent {
     pub medic_user_id: u16,
 }
 impl FromRawGameEvent for PlayerInvulnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let medic_user_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("medic_user_id"))?;
-            u16::from_value(value.clone(), "medic_user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let medic_user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "medic_user_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerInvulnedEvent {
             user_id,
             medic_user_id,
@@ -4011,21 +4897,31 @@ pub struct EscortSpeedEvent {
     pub players: u8,
 }
 impl FromRawGameEvent for EscortSpeedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let speed: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("speed"))?;
-            u8::from_value(value.clone(), "speed")?
-        };
-        let players: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("players"))?;
-            u8::from_value(value.clone(), "players")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let players: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "players",
+        )?;
+        let speed: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "speed",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(EscortSpeedEvent {
             team,
             speed,
@@ -4041,21 +4937,31 @@ pub struct EscortProgressEvent {
     pub reset: bool,
 }
 impl FromRawGameEvent for EscortProgressEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let progress: f32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("progress"))?;
-            f32::from_value(value.clone(), "progress")?
-        };
-        let reset: bool = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("reset"))?;
-            bool::from_value(value.clone(), "reset")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let reset: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "reset",
+        )?;
+        let progress: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "progress",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(EscortProgressEvent {
             team,
             progress,
@@ -4070,17 +4976,25 @@ pub struct EscortRecedeEvent {
     pub recede_time: f32,
 }
 impl FromRawGameEvent for EscortRecedeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let recede_time: f32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("recede_time"))?;
-            f32::from_value(value.clone(), "recede_time")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let recede_time: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "recede_time",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(EscortRecedeEvent { team, recede_time })
     }
 }
@@ -4088,7 +5002,7 @@ impl FromRawGameEvent for EscortRecedeEvent {
 #[derive(Debug)]
 pub struct GameUIActivatedEvent {}
 impl FromRawGameEvent for GameUIActivatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameUIActivatedEvent {})
     }
 }
@@ -4096,7 +5010,7 @@ impl FromRawGameEvent for GameUIActivatedEvent {
 #[derive(Debug)]
 pub struct GameUIHiddenEvent {}
 impl FromRawGameEvent for GameUIHiddenEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameUIHiddenEvent {})
     }
 }
@@ -4107,19 +5021,25 @@ pub struct PlayerEscortScoreEvent {
     pub points: u8,
 }
 impl FromRawGameEvent for PlayerEscortScoreEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u8::from_value(value.clone(), "player")?
-        };
-        let points: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("points"))?;
-            u8::from_value(value.clone(), "points")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let points: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "points",
+        )?;
+        let player: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(PlayerEscortScoreEvent { player, points })
     }
 }
@@ -4130,19 +5050,25 @@ pub struct PlayerHealOnHitEvent {
     pub ent_index: u8,
 }
 impl FromRawGameEvent for PlayerHealOnHitEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let amount: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("amount"))?;
-            u16::from_value(value.clone(), "amount")?
-        };
-        let ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u8::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
+        let amount: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "amount",
+        )?;
         Ok(PlayerHealOnHitEvent { amount, ent_index })
     }
 }
@@ -4153,17 +5079,25 @@ pub struct PlayerStealSandvichEvent {
     pub target: u16,
 }
 impl FromRawGameEvent for PlayerStealSandvichEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let owner: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("owner"))?;
-            u16::from_value(value.clone(), "owner")?
-        };
-        let target: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("target"))?;
-            u16::from_value(value.clone(), "target")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let target: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target",
+        )?;
+        let owner: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "owner",
+        )?;
         Ok(PlayerStealSandvichEvent { owner, target })
     }
 }
@@ -4173,11 +5107,19 @@ pub struct ShowClassLayoutEvent {
     pub show: bool,
 }
 impl FromRawGameEvent for ShowClassLayoutEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let show: bool = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("show"))?;
-            bool::from_value(value.clone(), "show")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let show: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "show",
+        )?;
         Ok(ShowClassLayoutEvent { show })
     }
 }
@@ -4187,11 +5129,19 @@ pub struct ShowVsPanelEvent {
     pub show: bool,
 }
 impl FromRawGameEvent for ShowVsPanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let show: bool = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("show"))?;
-            bool::from_value(value.clone(), "show")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let show: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "show",
+        )?;
         Ok(ShowVsPanelEvent { show })
     }
 }
@@ -4202,17 +5152,25 @@ pub struct PlayerDamagedEvent {
     pub kind: u32,
 }
 impl FromRawGameEvent for PlayerDamagedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let amount: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("amount"))?;
-            u16::from_value(value.clone(), "amount")?
-        };
-        let kind: u32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("kind"))?;
-            u32::from_value(value.clone(), "kind")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let kind: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kind",
+        )?;
+        let amount: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "amount",
+        )?;
         Ok(PlayerDamagedEvent { amount, kind })
     }
 }
@@ -4223,19 +5181,25 @@ pub struct ArenaPlayerNotificationEvent {
     pub message: u8,
 }
 impl FromRawGameEvent for ArenaPlayerNotificationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u8::from_value(value.clone(), "player")?
-        };
-        let message: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("message"))?;
-            u8::from_value(value.clone(), "message")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let message: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "message",
+        )?;
+        let player: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(ArenaPlayerNotificationEvent { player, message })
     }
 }
@@ -4246,17 +5210,25 @@ pub struct ArenaMatchMaxStreakEvent {
     pub streak: u8,
 }
 impl FromRawGameEvent for ArenaMatchMaxStreakEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let streak: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("streak"))?;
-            u8::from_value(value.clone(), "streak")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let streak: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "streak",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(ArenaMatchMaxStreakEvent { team, streak })
     }
 }
@@ -4264,7 +5236,7 @@ impl FromRawGameEvent for ArenaMatchMaxStreakEvent {
 #[derive(Debug)]
 pub struct ArenaRoundStartEvent {}
 impl FromRawGameEvent for ArenaRoundStartEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ArenaRoundStartEvent {})
     }
 }
@@ -4313,247 +5285,253 @@ pub struct ArenaWinPanelEvent {
     pub player_6_kills: u16,
 }
 impl FromRawGameEvent for ArenaWinPanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let panel_style: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("panel_style"))?;
-            u8::from_value(value.clone(), "panel_style")?
-        };
-        let winning_team: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("winning_team"))?;
-            u8::from_value(value.clone(), "winning_team")?
-        };
-        let win_reason: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("win_reason"))?;
-            u8::from_value(value.clone(), "win_reason")?
-        };
-        let cappers: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("cappers"))?;
-            String::from_value(value.clone(), "cappers")?
-        };
-        let flag_cap_limit: u16 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("flag_cap_limit"))?;
-            u16::from_value(value.clone(), "flag_cap_limit")?
-        };
-        let blue_score: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("blue_score"))?;
-            u16::from_value(value.clone(), "blue_score")?
-        };
-        let red_score: u16 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("red_score"))?;
-            u16::from_value(value.clone(), "red_score")?
-        };
-        let blue_score_prev: u16 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("blue_score_prev"))?;
-            u16::from_value(value.clone(), "blue_score_prev")?
-        };
-        let red_score_prev: u16 = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("red_score_prev"))?;
-            u16::from_value(value.clone(), "red_score_prev")?
-        };
-        let round_complete: u16 = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("round_complete"))?;
-            u16::from_value(value.clone(), "round_complete")?
-        };
-        let player_1: u16 = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("player_1"))?;
-            u16::from_value(value.clone(), "player_1")?
-        };
-        let player_1_damage: u16 = {
-            let value = values
-                .get(11)
-                .ok_or(ParseError::UnknownGameEvent("player_1_damage"))?;
-            u16::from_value(value.clone(), "player_1_damage")?
-        };
-        let player_1_healing: u16 = {
-            let value = values
-                .get(12)
-                .ok_or(ParseError::UnknownGameEvent("player_1_healing"))?;
-            u16::from_value(value.clone(), "player_1_healing")?
-        };
-        let player_1_lifetime: u16 = {
-            let value = values
-                .get(13)
-                .ok_or(ParseError::UnknownGameEvent("player_1_lifetime"))?;
-            u16::from_value(value.clone(), "player_1_lifetime")?
-        };
-        let player_1_kills: u16 = {
-            let value = values
-                .get(14)
-                .ok_or(ParseError::UnknownGameEvent("player_1_kills"))?;
-            u16::from_value(value.clone(), "player_1_kills")?
-        };
-        let player_2: u16 = {
-            let value = values
-                .get(15)
-                .ok_or(ParseError::UnknownGameEvent("player_2"))?;
-            u16::from_value(value.clone(), "player_2")?
-        };
-        let player_2_damage: u16 = {
-            let value = values
-                .get(16)
-                .ok_or(ParseError::UnknownGameEvent("player_2_damage"))?;
-            u16::from_value(value.clone(), "player_2_damage")?
-        };
-        let player_2_healing: u16 = {
-            let value = values
-                .get(17)
-                .ok_or(ParseError::UnknownGameEvent("player_2_healing"))?;
-            u16::from_value(value.clone(), "player_2_healing")?
-        };
-        let player_2_lifetime: u16 = {
-            let value = values
-                .get(18)
-                .ok_or(ParseError::UnknownGameEvent("player_2_lifetime"))?;
-            u16::from_value(value.clone(), "player_2_lifetime")?
-        };
-        let player_2_kills: u16 = {
-            let value = values
-                .get(19)
-                .ok_or(ParseError::UnknownGameEvent("player_2_kills"))?;
-            u16::from_value(value.clone(), "player_2_kills")?
-        };
-        let player_3: u16 = {
-            let value = values
-                .get(20)
-                .ok_or(ParseError::UnknownGameEvent("player_3"))?;
-            u16::from_value(value.clone(), "player_3")?
-        };
-        let player_3_damage: u16 = {
-            let value = values
-                .get(21)
-                .ok_or(ParseError::UnknownGameEvent("player_3_damage"))?;
-            u16::from_value(value.clone(), "player_3_damage")?
-        };
-        let player_3_healing: u16 = {
-            let value = values
-                .get(22)
-                .ok_or(ParseError::UnknownGameEvent("player_3_healing"))?;
-            u16::from_value(value.clone(), "player_3_healing")?
-        };
-        let player_3_lifetime: u16 = {
-            let value = values
-                .get(23)
-                .ok_or(ParseError::UnknownGameEvent("player_3_lifetime"))?;
-            u16::from_value(value.clone(), "player_3_lifetime")?
-        };
-        let player_3_kills: u16 = {
-            let value = values
-                .get(24)
-                .ok_or(ParseError::UnknownGameEvent("player_3_kills"))?;
-            u16::from_value(value.clone(), "player_3_kills")?
-        };
-        let player_4: u16 = {
-            let value = values
-                .get(25)
-                .ok_or(ParseError::UnknownGameEvent("player_4"))?;
-            u16::from_value(value.clone(), "player_4")?
-        };
-        let player_4_damage: u16 = {
-            let value = values
-                .get(26)
-                .ok_or(ParseError::UnknownGameEvent("player_4_damage"))?;
-            u16::from_value(value.clone(), "player_4_damage")?
-        };
-        let player_4_healing: u16 = {
-            let value = values
-                .get(27)
-                .ok_or(ParseError::UnknownGameEvent("player_4_healing"))?;
-            u16::from_value(value.clone(), "player_4_healing")?
-        };
-        let player_4_lifetime: u16 = {
-            let value = values
-                .get(28)
-                .ok_or(ParseError::UnknownGameEvent("player_4_lifetime"))?;
-            u16::from_value(value.clone(), "player_4_lifetime")?
-        };
-        let player_4_kills: u16 = {
-            let value = values
-                .get(29)
-                .ok_or(ParseError::UnknownGameEvent("player_4_kills"))?;
-            u16::from_value(value.clone(), "player_4_kills")?
-        };
-        let player_5: u16 = {
-            let value = values
-                .get(30)
-                .ok_or(ParseError::UnknownGameEvent("player_5"))?;
-            u16::from_value(value.clone(), "player_5")?
-        };
-        let player_5_damage: u16 = {
-            let value = values
-                .get(31)
-                .ok_or(ParseError::UnknownGameEvent("player_5_damage"))?;
-            u16::from_value(value.clone(), "player_5_damage")?
-        };
-        let player_5_healing: u16 = {
-            let value = values
-                .get(32)
-                .ok_or(ParseError::UnknownGameEvent("player_5_healing"))?;
-            u16::from_value(value.clone(), "player_5_healing")?
-        };
-        let player_5_lifetime: u16 = {
-            let value = values
-                .get(33)
-                .ok_or(ParseError::UnknownGameEvent("player_5_lifetime"))?;
-            u16::from_value(value.clone(), "player_5_lifetime")?
-        };
-        let player_5_kills: u16 = {
-            let value = values
-                .get(34)
-                .ok_or(ParseError::UnknownGameEvent("player_5_kills"))?;
-            u16::from_value(value.clone(), "player_5_kills")?
-        };
-        let player_6: u16 = {
-            let value = values
-                .get(35)
-                .ok_or(ParseError::UnknownGameEvent("player_6"))?;
-            u16::from_value(value.clone(), "player_6")?
-        };
-        let player_6_damage: u16 = {
-            let value = values
-                .get(36)
-                .ok_or(ParseError::UnknownGameEvent("player_6_damage"))?;
-            u16::from_value(value.clone(), "player_6_damage")?
-        };
-        let player_6_healing: u16 = {
-            let value = values
-                .get(37)
-                .ok_or(ParseError::UnknownGameEvent("player_6_healing"))?;
-            u16::from_value(value.clone(), "player_6_healing")?
-        };
-        let player_6_lifetime: u16 = {
-            let value = values
-                .get(38)
-                .ok_or(ParseError::UnknownGameEvent("player_6_lifetime"))?;
-            u16::from_value(value.clone(), "player_6_lifetime")?
-        };
-        let player_6_kills: u16 = {
-            let value = values
-                .get(39)
-                .ok_or(ParseError::UnknownGameEvent("player_6_kills"))?;
-            u16::from_value(value.clone(), "player_6_kills")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 40 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(40);
+        let player_6_kills: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_6_kills",
+        )?;
+        let player_6_lifetime: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_6_lifetime",
+        )?;
+        let player_6_healing: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_6_healing",
+        )?;
+        let player_6_damage: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_6_damage",
+        )?;
+        let player_6: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_6",
+        )?;
+        let player_5_kills: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_5_kills",
+        )?;
+        let player_5_lifetime: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_5_lifetime",
+        )?;
+        let player_5_healing: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_5_healing",
+        )?;
+        let player_5_damage: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_5_damage",
+        )?;
+        let player_5: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_5",
+        )?;
+        let player_4_kills: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_4_kills",
+        )?;
+        let player_4_lifetime: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_4_lifetime",
+        )?;
+        let player_4_healing: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_4_healing",
+        )?;
+        let player_4_damage: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_4_damage",
+        )?;
+        let player_4: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_4",
+        )?;
+        let player_3_kills: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_3_kills",
+        )?;
+        let player_3_lifetime: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_3_lifetime",
+        )?;
+        let player_3_healing: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_3_healing",
+        )?;
+        let player_3_damage: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_3_damage",
+        )?;
+        let player_3: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_3",
+        )?;
+        let player_2_kills: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_2_kills",
+        )?;
+        let player_2_lifetime: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_2_lifetime",
+        )?;
+        let player_2_healing: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_2_healing",
+        )?;
+        let player_2_damage: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_2_damage",
+        )?;
+        let player_2: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_2",
+        )?;
+        let player_1_kills: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_1_kills",
+        )?;
+        let player_1_lifetime: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_1_lifetime",
+        )?;
+        let player_1_healing: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_1_healing",
+        )?;
+        let player_1_damage: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_1_damage",
+        )?;
+        let player_1: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_1",
+        )?;
+        let round_complete: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "round_complete",
+        )?;
+        let red_score_prev: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "red_score_prev",
+        )?;
+        let blue_score_prev: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "blue_score_prev",
+        )?;
+        let red_score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "red_score",
+        )?;
+        let blue_score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "blue_score",
+        )?;
+        let flag_cap_limit: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "flag_cap_limit",
+        )?;
+        let cappers: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cappers",
+        )?;
+        let win_reason: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "win_reason",
+        )?;
+        let winning_team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "winning_team",
+        )?;
+        let panel_style: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "panel_style",
+        )?;
         Ok(ArenaWinPanelEvent {
             panel_style,
             winning_team,
@@ -4606,25 +5584,31 @@ pub struct PveWinPanelEvent {
     pub win_reason: u8,
 }
 impl FromRawGameEvent for PveWinPanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let panel_style: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("panel_style"))?;
-            u8::from_value(value.clone(), "panel_style")?
-        };
-        let winning_team: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("winning_team"))?;
-            u8::from_value(value.clone(), "winning_team")?
-        };
-        let win_reason: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("win_reason"))?;
-            u8::from_value(value.clone(), "win_reason")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let win_reason: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "win_reason",
+        )?;
+        let winning_team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "winning_team",
+        )?;
+        let panel_style: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "panel_style",
+        )?;
         Ok(PveWinPanelEvent {
             panel_style,
             winning_team,
@@ -4638,13 +5622,19 @@ pub struct AirDashEvent {
     pub player: u8,
 }
 impl FromRawGameEvent for AirDashEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u8::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(AirDashEvent { player })
     }
 }
@@ -4654,13 +5644,19 @@ pub struct LandedEvent {
     pub player: u8,
 }
 impl FromRawGameEvent for LandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u8::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(LandedEvent { player })
     }
 }
@@ -4670,13 +5666,19 @@ pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
 }
 impl FromRawGameEvent for PlayerDamageDodgedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let damage: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("damage"))?;
-            u16::from_value(value.clone(), "damage")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let damage: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage",
+        )?;
         Ok(PlayerDamageDodgedEvent { damage })
     }
 }
@@ -4689,31 +5691,37 @@ pub struct PlayerStunnedEvent {
     pub big_stun: bool,
 }
 impl FromRawGameEvent for PlayerStunnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let stunner: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("stunner"))?;
-            u16::from_value(value.clone(), "stunner")?
-        };
-        let victim: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim"))?;
-            u16::from_value(value.clone(), "victim")?
-        };
-        let victim_capping: bool = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("victim_capping"))?;
-            bool::from_value(value.clone(), "victim_capping")?
-        };
-        let big_stun: bool = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("big_stun"))?;
-            bool::from_value(value.clone(), "big_stun")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let big_stun: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "big_stun",
+        )?;
+        let victim_capping: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_capping",
+        )?;
+        let victim: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim",
+        )?;
+        let stunner: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "stunner",
+        )?;
         Ok(PlayerStunnedEvent {
             stunner,
             victim,
@@ -4729,19 +5737,25 @@ pub struct ScoutGrandSlamEvent {
     pub target_id: u16,
 }
 impl FromRawGameEvent for ScoutGrandSlamEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let scout_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("scout_id"))?;
-            u16::from_value(value.clone(), "scout_id")?
-        };
-        let target_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("target_id"))?;
-            u16::from_value(value.clone(), "target_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let target_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target_id",
+        )?;
+        let scout_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "scout_id",
+        )?;
         Ok(ScoutGrandSlamEvent {
             scout_id,
             target_id,
@@ -4757,25 +5771,37 @@ pub struct ScoutSlamdollLandedEvent {
     pub z: f32,
 }
 impl FromRawGameEvent for ScoutSlamdollLandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let target_index: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("target_index"))?;
-            u16::from_value(value.clone(), "target_index")?
-        };
-        let x: f32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("x"))?;
-            f32::from_value(value.clone(), "x")?
-        };
-        let y: f32 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("y"))?;
-            f32::from_value(value.clone(), "y")?
-        };
-        let z: f32 = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("z"))?;
-            f32::from_value(value.clone(), "z")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let z: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "z",
+        )?;
+        let y: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "y",
+        )?;
+        let x: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "x",
+        )?;
+        let target_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target_index",
+        )?;
         Ok(ScoutSlamdollLandedEvent {
             target_index,
             x,
@@ -4800,73 +5826,79 @@ pub struct ArrowImpactEvent {
     pub is_crit: bool,
 }
 impl FromRawGameEvent for ArrowImpactEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let attached_entity: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("attached_entity"))?;
-            u16::from_value(value.clone(), "attached_entity")?
-        };
-        let shooter: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("shooter"))?;
-            u16::from_value(value.clone(), "shooter")?
-        };
-        let bone_index_attached: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("bone_index_attached"))?;
-            u16::from_value(value.clone(), "bone_index_attached")?
-        };
-        let bone_position_x: f32 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("bone_position_x"))?;
-            f32::from_value(value.clone(), "bone_position_x")?
-        };
-        let bone_position_y: f32 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("bone_position_y"))?;
-            f32::from_value(value.clone(), "bone_position_y")?
-        };
-        let bone_position_z: f32 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("bone_position_z"))?;
-            f32::from_value(value.clone(), "bone_position_z")?
-        };
-        let bone_angles_x: f32 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("bone_angles_x"))?;
-            f32::from_value(value.clone(), "bone_angles_x")?
-        };
-        let bone_angles_y: f32 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("bone_angles_y"))?;
-            f32::from_value(value.clone(), "bone_angles_y")?
-        };
-        let bone_angles_z: f32 = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("bone_angles_z"))?;
-            f32::from_value(value.clone(), "bone_angles_z")?
-        };
-        let projectile_type: u16 = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("projectile_type"))?;
-            u16::from_value(value.clone(), "projectile_type")?
-        };
-        let is_crit: bool = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("is_crit"))?;
-            bool::from_value(value.clone(), "is_crit")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 11 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(11);
+        let is_crit: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "is_crit",
+        )?;
+        let projectile_type: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "projectile_type",
+        )?;
+        let bone_angles_z: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bone_angles_z",
+        )?;
+        let bone_angles_y: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bone_angles_y",
+        )?;
+        let bone_angles_x: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bone_angles_x",
+        )?;
+        let bone_position_z: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bone_position_z",
+        )?;
+        let bone_position_y: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bone_position_y",
+        )?;
+        let bone_position_x: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bone_position_x",
+        )?;
+        let bone_index_attached: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "bone_index_attached",
+        )?;
+        let shooter: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "shooter",
+        )?;
+        let attached_entity: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attached_entity",
+        )?;
         Ok(ArrowImpactEvent {
             attached_entity,
             shooter,
@@ -4889,19 +5921,25 @@ pub struct PlayerJaratedEvent {
     pub victim_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerJaratedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let thrower_ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("thrower_ent_index"))?;
-            u8::from_value(value.clone(), "thrower_ent_index")?
-        };
-        let victim_ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u8::from_value(value.clone(), "victim_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let victim_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let thrower_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "thrower_ent_index",
+        )?;
         Ok(PlayerJaratedEvent {
             thrower_ent_index,
             victim_ent_index,
@@ -4915,19 +5953,25 @@ pub struct PlayerJaratedFadeEvent {
     pub victim_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerJaratedFadeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let thrower_ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("thrower_ent_index"))?;
-            u8::from_value(value.clone(), "thrower_ent_index")?
-        };
-        let victim_ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u8::from_value(value.clone(), "victim_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let victim_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let thrower_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "thrower_ent_index",
+        )?;
         Ok(PlayerJaratedFadeEvent {
             thrower_ent_index,
             victim_ent_index,
@@ -4941,19 +5985,25 @@ pub struct PlayerShieldBlockedEvent {
     pub blocker_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerShieldBlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let attacker_ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("attacker_ent_index"))?;
-            u8::from_value(value.clone(), "attacker_ent_index")?
-        };
-        let blocker_ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("blocker_ent_index"))?;
-            u8::from_value(value.clone(), "blocker_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let blocker_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "blocker_ent_index",
+        )?;
+        let attacker_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker_ent_index",
+        )?;
         Ok(PlayerShieldBlockedEvent {
             attacker_ent_index,
             blocker_ent_index,
@@ -4966,13 +6016,19 @@ pub struct PlayerPinnedEvent {
     pub pinned: u8,
 }
 impl FromRawGameEvent for PlayerPinnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let pinned: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("pinned"))?;
-            u8::from_value(value.clone(), "pinned")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let pinned: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "pinned",
+        )?;
         Ok(PlayerPinnedEvent { pinned })
     }
 }
@@ -4982,11 +6038,19 @@ pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
 }
 impl FromRawGameEvent for PlayerHealedByMedicEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let medic: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("medic"))?;
-            u8::from_value(value.clone(), "medic")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let medic: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "medic",
+        )?;
         Ok(PlayerHealedByMedicEvent { medic })
     }
 }
@@ -4999,31 +6063,37 @@ pub struct PlayerSappedObjectEvent {
     pub sapper_id: u16,
 }
 impl FromRawGameEvent for PlayerSappedObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let owner_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("owner_id"))?;
-            u16::from_value(value.clone(), "owner_id")?
-        };
-        let object: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("object"))?;
-            u8::from_value(value.clone(), "object")?
-        };
-        let sapper_id: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("sapper_id"))?;
-            u16::from_value(value.clone(), "sapper_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let sapper_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "sapper_id",
+        )?;
+        let object: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object",
+        )?;
+        let owner_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "owner_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerSappedObjectEvent {
             user_id,
             owner_id,
@@ -5041,31 +6111,37 @@ pub struct ItemFoundEvent {
     pub item_def: u32,
 }
 impl FromRawGameEvent for ItemFoundEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u8::from_value(value.clone(), "player")?
-        };
-        let quality: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("quality"))?;
-            u8::from_value(value.clone(), "quality")?
-        };
-        let method: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("method"))?;
-            u8::from_value(value.clone(), "method")?
-        };
-        let item_def: u32 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("item_def"))?;
-            u32::from_value(value.clone(), "item_def")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let item_def: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "item_def",
+        )?;
+        let method: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "method",
+        )?;
+        let quality: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "quality",
+        )?;
+        let player: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(ItemFoundEvent {
             player,
             quality,
@@ -5093,87 +6169,97 @@ pub struct ShowAnnotationEvent {
     pub show_effect: bool,
 }
 impl FromRawGameEvent for ShowAnnotationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let world_pos_x: f32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("world_pos_x"))?;
-            f32::from_value(value.clone(), "world_pos_x")?
-        };
-        let world_pos_y: f32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("world_pos_y"))?;
-            f32::from_value(value.clone(), "world_pos_y")?
-        };
-        let world_pos_z: f32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("world_pos_z"))?;
-            f32::from_value(value.clone(), "world_pos_z")?
-        };
-        let world_normal_x: f32 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("world_normal_x"))?;
-            f32::from_value(value.clone(), "world_normal_x")?
-        };
-        let world_normal_y: f32 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("world_normal_y"))?;
-            f32::from_value(value.clone(), "world_normal_y")?
-        };
-        let world_normal_z: f32 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("world_normal_z"))?;
-            f32::from_value(value.clone(), "world_normal_z")?
-        };
-        let id: u32 = {
-            let value = values.get(6).ok_or(ParseError::UnknownGameEvent("id"))?;
-            u32::from_value(value.clone(), "id")?
-        };
-        let text: String = {
-            let value = values.get(7).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
-        let lifetime: f32 = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("lifetime"))?;
-            f32::from_value(value.clone(), "lifetime")?
-        };
-        let visibility_bit_field: u32 = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("visibility_bit_field"))?;
-            u32::from_value(value.clone(), "visibility_bit_field")?
-        };
-        let follow_ent_index: u32 = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("follow_ent_index"))?;
-            u32::from_value(value.clone(), "follow_ent_index")?
-        };
-        let show_distance: bool = {
-            let value = values
-                .get(11)
-                .ok_or(ParseError::UnknownGameEvent("show_distance"))?;
-            bool::from_value(value.clone(), "show_distance")?
-        };
-        let play_sound: String = {
-            let value = values
-                .get(12)
-                .ok_or(ParseError::UnknownGameEvent("play_sound"))?;
-            String::from_value(value.clone(), "play_sound")?
-        };
-        let show_effect: bool = {
-            let value = values
-                .get(13)
-                .ok_or(ParseError::UnknownGameEvent("show_effect"))?;
-            bool::from_value(value.clone(), "show_effect")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 14 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(14);
+        let show_effect: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "show_effect",
+        )?;
+        let play_sound: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "play_sound",
+        )?;
+        let show_distance: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "show_distance",
+        )?;
+        let follow_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "follow_ent_index",
+        )?;
+        let visibility_bit_field: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "visibility_bit_field",
+        )?;
+        let lifetime: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "lifetime",
+        )?;
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
+        let id: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "id",
+        )?;
+        let world_normal_z: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "world_normal_z",
+        )?;
+        let world_normal_y: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "world_normal_y",
+        )?;
+        let world_normal_x: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "world_normal_x",
+        )?;
+        let world_pos_z: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "world_pos_z",
+        )?;
+        let world_pos_y: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "world_pos_y",
+        )?;
+        let world_pos_x: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "world_pos_x",
+        )?;
         Ok(ShowAnnotationEvent {
             world_pos_x,
             world_pos_y,
@@ -5198,11 +6284,19 @@ pub struct HideAnnotationEvent {
     pub id: u32,
 }
 impl FromRawGameEvent for HideAnnotationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let id: u32 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("id"))?;
-            u32::from_value(value.clone(), "id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let id: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "id",
+        )?;
         Ok(HideAnnotationEvent { id })
     }
 }
@@ -5212,13 +6306,19 @@ pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PostInventoryApplicationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PostInventoryApplicationEvent { user_id })
     }
 }
@@ -5229,15 +6329,25 @@ pub struct ControlPointUnlockUpdatedEvent {
     pub time: f32,
 }
 impl FromRawGameEvent for ControlPointUnlockUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
-        let time: f32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("time"))?;
-            f32::from_value(value.clone(), "time")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let time: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time",
+        )?;
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(ControlPointUnlockUpdatedEvent { index, time })
     }
 }
@@ -5248,19 +6358,25 @@ pub struct DeployBuffBannerEvent {
     pub buff_owner: u16,
 }
 impl FromRawGameEvent for DeployBuffBannerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let buff_type: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("buff_type"))?;
-            u8::from_value(value.clone(), "buff_type")?
-        };
-        let buff_owner: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("buff_owner"))?;
-            u16::from_value(value.clone(), "buff_owner")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let buff_owner: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "buff_owner",
+        )?;
+        let buff_type: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "buff_type",
+        )?;
         Ok(DeployBuffBannerEvent {
             buff_type,
             buff_owner,
@@ -5275,25 +6391,31 @@ pub struct PlayerBuffEvent {
     pub buff_type: u8,
 }
 impl FromRawGameEvent for PlayerBuffEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let buff_owner: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("buff_owner"))?;
-            u16::from_value(value.clone(), "buff_owner")?
-        };
-        let buff_type: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("buff_type"))?;
-            u8::from_value(value.clone(), "buff_type")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let buff_type: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "buff_type",
+        )?;
+        let buff_owner: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "buff_owner",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerBuffEvent {
             user_id,
             buff_owner,
@@ -5310,31 +6432,37 @@ pub struct MedicDeathEvent {
     pub charged: bool,
 }
 impl FromRawGameEvent for MedicDeathEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let attacker: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let healing: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("healing"))?;
-            u16::from_value(value.clone(), "healing")?
-        };
-        let charged: bool = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("charged"))?;
-            bool::from_value(value.clone(), "charged")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let charged: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "charged",
+        )?;
+        let healing: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "healing",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(MedicDeathEvent {
             user_id,
             attacker,
@@ -5347,7 +6475,7 @@ impl FromRawGameEvent for MedicDeathEvent {
 #[derive(Debug)]
 pub struct OvertimeNagEvent {}
 impl FromRawGameEvent for OvertimeNagEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(OvertimeNagEvent {})
     }
 }
@@ -5355,7 +6483,7 @@ impl FromRawGameEvent for OvertimeNagEvent {
 #[derive(Debug)]
 pub struct TeamsChangedEvent {}
 impl FromRawGameEvent for TeamsChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamsChangedEvent {})
     }
 }
@@ -5365,13 +6493,19 @@ pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for HalloweenPumpkinGrabEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(HalloweenPumpkinGrabEvent { user_id })
     }
 }
@@ -5382,19 +6516,25 @@ pub struct RocketJumpEvent {
     pub play_sound: bool,
 }
 impl FromRawGameEvent for RocketJumpEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let play_sound: bool = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("play_sound"))?;
-            bool::from_value(value.clone(), "play_sound")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let play_sound: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "play_sound",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(RocketJumpEvent {
             user_id,
             play_sound,
@@ -5407,13 +6547,19 @@ pub struct RocketJumpLandedEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for RocketJumpLandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(RocketJumpLandedEvent { user_id })
     }
 }
@@ -5424,19 +6570,25 @@ pub struct StickyJumpEvent {
     pub play_sound: bool,
 }
 impl FromRawGameEvent for StickyJumpEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let play_sound: bool = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("play_sound"))?;
-            bool::from_value(value.clone(), "play_sound")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let play_sound: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "play_sound",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(StickyJumpEvent {
             user_id,
             play_sound,
@@ -5449,13 +6601,19 @@ pub struct StickyJumpLandedEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for StickyJumpLandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(StickyJumpLandedEvent { user_id })
     }
 }
@@ -5466,17 +6624,25 @@ pub struct MedicDefendedEvent {
     pub medic: u16,
 }
 impl FromRawGameEvent for MedicDefendedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let medic: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("medic"))?;
-            u16::from_value(value.clone(), "medic")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let medic: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "medic",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(MedicDefendedEvent { user_id, medic })
     }
 }
@@ -5486,13 +6652,19 @@ pub struct LocalPlayerHealedEvent {
     pub amount: u16,
 }
 impl FromRawGameEvent for LocalPlayerHealedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let amount: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("amount"))?;
-            u16::from_value(value.clone(), "amount")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let amount: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "amount",
+        )?;
         Ok(LocalPlayerHealedEvent { amount })
     }
 }
@@ -5502,13 +6674,19 @@ pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerDestroyedPipeBombEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerDestroyedPipeBombEvent { user_id })
     }
 }
@@ -5521,31 +6699,37 @@ pub struct ObjectDeflectedEvent {
     pub object_ent_index: u16,
 }
 impl FromRawGameEvent for ObjectDeflectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let owner_id: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("owner_id"))?;
-            u16::from_value(value.clone(), "owner_id")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let object_ent_index: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("object_ent_index"))?;
-            u16::from_value(value.clone(), "object_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let object_ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object_ent_index",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let owner_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "owner_id",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(ObjectDeflectedEvent {
             user_id,
             owner_id,
@@ -5560,13 +6744,19 @@ pub struct PlayerMvpEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for PlayerMvpEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(PlayerMvpEvent { player })
     }
 }
@@ -5574,7 +6764,7 @@ impl FromRawGameEvent for PlayerMvpEvent {
 #[derive(Debug)]
 pub struct RaidSpawnMobEvent {}
 impl FromRawGameEvent for RaidSpawnMobEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RaidSpawnMobEvent {})
     }
 }
@@ -5582,7 +6772,7 @@ impl FromRawGameEvent for RaidSpawnMobEvent {
 #[derive(Debug)]
 pub struct RaidSpawnSquadEvent {}
 impl FromRawGameEvent for RaidSpawnSquadEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RaidSpawnSquadEvent {})
     }
 }
@@ -5593,17 +6783,25 @@ pub struct NavBlockedEvent {
     pub blocked: bool,
 }
 impl FromRawGameEvent for NavBlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let area: u32 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("area"))?;
-            u32::from_value(value.clone(), "area")?
-        };
-        let blocked: bool = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("blocked"))?;
-            bool::from_value(value.clone(), "blocked")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let blocked: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "blocked",
+        )?;
+        let area: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "area",
+        )?;
         Ok(NavBlockedEvent { area, blocked })
     }
 }
@@ -5613,11 +6811,19 @@ pub struct PathTrackPassedEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PathTrackPassedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(PathTrackPassedEvent { index })
     }
 }
@@ -5628,15 +6834,25 @@ pub struct NumCappersChangedEvent {
     pub count: u8,
 }
 impl FromRawGameEvent for NumCappersChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
-        let count: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("count"))?;
-            u8::from_value(value.clone(), "count")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let count: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "count",
+        )?;
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(NumCappersChangedEvent { index, count })
     }
 }
@@ -5644,7 +6860,7 @@ impl FromRawGameEvent for NumCappersChangedEvent {
 #[derive(Debug)]
 pub struct PlayerRegenerateEvent {}
 impl FromRawGameEvent for PlayerRegenerateEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayerRegenerateEvent {})
     }
 }
@@ -5655,17 +6871,25 @@ pub struct UpdateStatusItemEvent {
     pub object: u8,
 }
 impl FromRawGameEvent for UpdateStatusItemEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u8::from_value(value.clone(), "index")?
-        };
-        let object: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("object"))?;
-            u8::from_value(value.clone(), "object")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let object: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "object",
+        )?;
+        let index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(UpdateStatusItemEvent { index, object })
     }
 }
@@ -5673,7 +6897,7 @@ impl FromRawGameEvent for UpdateStatusItemEvent {
 #[derive(Debug)]
 pub struct StatsResetRoundEvent {}
 impl FromRawGameEvent for StatsResetRoundEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(StatsResetRoundEvent {})
     }
 }
@@ -5681,7 +6905,7 @@ impl FromRawGameEvent for StatsResetRoundEvent {
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl FromRawGameEvent for ScoreStatsAccumulatedUpdateEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
@@ -5689,7 +6913,7 @@ impl FromRawGameEvent for ScoreStatsAccumulatedUpdateEvent {
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl FromRawGameEvent for ScoreStatsAccumulatedResetEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
@@ -5699,13 +6923,19 @@ pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
 }
 impl FromRawGameEvent for AchievementEarnedLocalEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let achievement: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("achievement"))?;
-            u16::from_value(value.clone(), "achievement")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let achievement: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "achievement",
+        )?;
         Ok(AchievementEarnedLocalEvent { achievement })
     }
 }
@@ -5717,25 +6947,31 @@ pub struct PlayerHealedEvent {
     pub amount: u16,
 }
 impl FromRawGameEvent for PlayerHealedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let patient: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("patient"))?;
-            u16::from_value(value.clone(), "patient")?
-        };
-        let healer: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("healer"))?;
-            u16::from_value(value.clone(), "healer")?
-        };
-        let amount: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("amount"))?;
-            u16::from_value(value.clone(), "amount")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let amount: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "amount",
+        )?;
+        let healer: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "healer",
+        )?;
+        let patient: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "patient",
+        )?;
         Ok(PlayerHealedEvent {
             patient,
             healer,
@@ -5751,25 +6987,31 @@ pub struct BuildingHealedEvent {
     pub amount: u16,
 }
 impl FromRawGameEvent for BuildingHealedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let building: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("building"))?;
-            u16::from_value(value.clone(), "building")?
-        };
-        let healer: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("healer"))?;
-            u16::from_value(value.clone(), "healer")?
-        };
-        let amount: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("amount"))?;
-            u16::from_value(value.clone(), "amount")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let amount: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "amount",
+        )?;
+        let healer: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "healer",
+        )?;
+        let building: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "building",
+        )?;
         Ok(BuildingHealedEvent {
             building,
             healer,
@@ -5784,17 +7026,25 @@ pub struct ItemPickupEvent {
     pub item: String,
 }
 impl FromRawGameEvent for ItemPickupEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let item: String = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("item"))?;
-            String::from_value(value.clone(), "item")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let item: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "item",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(ItemPickupEvent { user_id, item })
     }
 }
@@ -5809,43 +7059,49 @@ pub struct DuelStatusEvent {
     pub target_score: u16,
 }
 impl FromRawGameEvent for DuelStatusEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let killer: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("killer"))?;
-            u16::from_value(value.clone(), "killer")?
-        };
-        let score_type: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("score_type"))?;
-            u16::from_value(value.clone(), "score_type")?
-        };
-        let initiator: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("initiator"))?;
-            u16::from_value(value.clone(), "initiator")?
-        };
-        let target: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("target"))?;
-            u16::from_value(value.clone(), "target")?
-        };
-        let initiator_score: u16 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("initiator_score"))?;
-            u16::from_value(value.clone(), "initiator_score")?
-        };
-        let target_score: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("target_score"))?;
-            u16::from_value(value.clone(), "target_score")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 6 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(6);
+        let target_score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target_score",
+        )?;
+        let initiator_score: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "initiator_score",
+        )?;
+        let target: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target",
+        )?;
+        let initiator: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "initiator",
+        )?;
+        let score_type: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "score_type",
+        )?;
+        let killer: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "killer",
+        )?;
         Ok(DuelStatusEvent {
             killer,
             score_type,
@@ -5875,91 +7131,97 @@ pub struct FishNoticeEvent {
     pub assister_fallback: String,
 }
 impl FromRawGameEvent for FishNoticeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let victim_ent_index: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u32::from_value(value.clone(), "victim_ent_index")?
-        };
-        let inflictor_ent_index: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("inflictor_ent_index"))?;
-            u32::from_value(value.clone(), "inflictor_ent_index")?
-        };
-        let attacker: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let weapon: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("weapon"))?;
-            String::from_value(value.clone(), "weapon")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let damage_bits: u32 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("damage_bits"))?;
-            u32::from_value(value.clone(), "damage_bits")?
-        };
-        let custom_kill: u16 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("custom_kill"))?;
-            u16::from_value(value.clone(), "custom_kill")?
-        };
-        let assister: u16 = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("assister"))?;
-            u16::from_value(value.clone(), "assister")?
-        };
-        let weapon_log_class_name: String = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("weapon_log_class_name"))?;
-            String::from_value(value.clone(), "weapon_log_class_name")?
-        };
-        let stun_flags: u16 = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("stun_flags"))?;
-            u16::from_value(value.clone(), "stun_flags")?
-        };
-        let death_flags: u16 = {
-            let value = values
-                .get(11)
-                .ok_or(ParseError::UnknownGameEvent("death_flags"))?;
-            u16::from_value(value.clone(), "death_flags")?
-        };
-        let silent_kill: bool = {
-            let value = values
-                .get(12)
-                .ok_or(ParseError::UnknownGameEvent("silent_kill"))?;
-            bool::from_value(value.clone(), "silent_kill")?
-        };
-        let assister_fallback: String = {
-            let value = values
-                .get(13)
-                .ok_or(ParseError::UnknownGameEvent("assister_fallback"))?;
-            String::from_value(value.clone(), "assister_fallback")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 14 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(14);
+        let assister_fallback: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister_fallback",
+        )?;
+        let silent_kill: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "silent_kill",
+        )?;
+        let death_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "death_flags",
+        )?;
+        let stun_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "stun_flags",
+        )?;
+        let weapon_log_class_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_log_class_name",
+        )?;
+        let assister: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister",
+        )?;
+        let custom_kill: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "custom_kill",
+        )?;
+        let damage_bits: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage_bits",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let weapon: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
+        let inflictor_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "inflictor_ent_index",
+        )?;
+        let victim_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(FishNoticeEvent {
             user_id,
             victim_ent_index,
@@ -5997,91 +7259,97 @@ pub struct FishNoticeArmEvent {
     pub assister_fallback: String,
 }
 impl FromRawGameEvent for FishNoticeArmEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let victim_ent_index: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u32::from_value(value.clone(), "victim_ent_index")?
-        };
-        let inflictor_ent_index: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("inflictor_ent_index"))?;
-            u32::from_value(value.clone(), "inflictor_ent_index")?
-        };
-        let attacker: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let weapon: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("weapon"))?;
-            String::from_value(value.clone(), "weapon")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let damage_bits: u32 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("damage_bits"))?;
-            u32::from_value(value.clone(), "damage_bits")?
-        };
-        let custom_kill: u16 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("custom_kill"))?;
-            u16::from_value(value.clone(), "custom_kill")?
-        };
-        let assister: u16 = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("assister"))?;
-            u16::from_value(value.clone(), "assister")?
-        };
-        let weapon_log_class_name: String = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("weapon_log_class_name"))?;
-            String::from_value(value.clone(), "weapon_log_class_name")?
-        };
-        let stun_flags: u16 = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("stun_flags"))?;
-            u16::from_value(value.clone(), "stun_flags")?
-        };
-        let death_flags: u16 = {
-            let value = values
-                .get(11)
-                .ok_or(ParseError::UnknownGameEvent("death_flags"))?;
-            u16::from_value(value.clone(), "death_flags")?
-        };
-        let silent_kill: bool = {
-            let value = values
-                .get(12)
-                .ok_or(ParseError::UnknownGameEvent("silent_kill"))?;
-            bool::from_value(value.clone(), "silent_kill")?
-        };
-        let assister_fallback: String = {
-            let value = values
-                .get(13)
-                .ok_or(ParseError::UnknownGameEvent("assister_fallback"))?;
-            String::from_value(value.clone(), "assister_fallback")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 14 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(14);
+        let assister_fallback: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister_fallback",
+        )?;
+        let silent_kill: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "silent_kill",
+        )?;
+        let death_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "death_flags",
+        )?;
+        let stun_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "stun_flags",
+        )?;
+        let weapon_log_class_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_log_class_name",
+        )?;
+        let assister: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister",
+        )?;
+        let custom_kill: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "custom_kill",
+        )?;
+        let damage_bits: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage_bits",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let weapon: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
+        let inflictor_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "inflictor_ent_index",
+        )?;
+        let victim_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(FishNoticeArmEvent {
             user_id,
             victim_ent_index,
@@ -6120,97 +7388,103 @@ pub struct ThrowableHitEvent {
     pub total_hits: u16,
 }
 impl FromRawGameEvent for ThrowableHitEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let victim_ent_index: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u32::from_value(value.clone(), "victim_ent_index")?
-        };
-        let inflictor_ent_index: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("inflictor_ent_index"))?;
-            u32::from_value(value.clone(), "inflictor_ent_index")?
-        };
-        let attacker: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let weapon: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("weapon"))?;
-            String::from_value(value.clone(), "weapon")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let damage_bits: u32 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("damage_bits"))?;
-            u32::from_value(value.clone(), "damage_bits")?
-        };
-        let custom_kill: u16 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("custom_kill"))?;
-            u16::from_value(value.clone(), "custom_kill")?
-        };
-        let assister: u16 = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("assister"))?;
-            u16::from_value(value.clone(), "assister")?
-        };
-        let weapon_log_class_name: String = {
-            let value = values
-                .get(9)
-                .ok_or(ParseError::UnknownGameEvent("weapon_log_class_name"))?;
-            String::from_value(value.clone(), "weapon_log_class_name")?
-        };
-        let stun_flags: u16 = {
-            let value = values
-                .get(10)
-                .ok_or(ParseError::UnknownGameEvent("stun_flags"))?;
-            u16::from_value(value.clone(), "stun_flags")?
-        };
-        let death_flags: u16 = {
-            let value = values
-                .get(11)
-                .ok_or(ParseError::UnknownGameEvent("death_flags"))?;
-            u16::from_value(value.clone(), "death_flags")?
-        };
-        let silent_kill: bool = {
-            let value = values
-                .get(12)
-                .ok_or(ParseError::UnknownGameEvent("silent_kill"))?;
-            bool::from_value(value.clone(), "silent_kill")?
-        };
-        let assister_fallback: String = {
-            let value = values
-                .get(13)
-                .ok_or(ParseError::UnknownGameEvent("assister_fallback"))?;
-            String::from_value(value.clone(), "assister_fallback")?
-        };
-        let total_hits: u16 = {
-            let value = values
-                .get(14)
-                .ok_or(ParseError::UnknownGameEvent("total_hits"))?;
-            u16::from_value(value.clone(), "total_hits")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 15 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(15);
+        let total_hits: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "total_hits",
+        )?;
+        let assister_fallback: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister_fallback",
+        )?;
+        let silent_kill: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "silent_kill",
+        )?;
+        let death_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "death_flags",
+        )?;
+        let stun_flags: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "stun_flags",
+        )?;
+        let weapon_log_class_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_log_class_name",
+        )?;
+        let assister: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "assister",
+        )?;
+        let custom_kill: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "custom_kill",
+        )?;
+        let damage_bits: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage_bits",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let weapon: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
+        let inflictor_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "inflictor_ent_index",
+        )?;
+        let victim_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(ThrowableHitEvent {
             user_id,
             victim_ent_index,
@@ -6234,7 +7508,7 @@ impl FromRawGameEvent for ThrowableHitEvent {
 #[derive(Debug)]
 pub struct PumpkinLordSummonedEvent {}
 impl FromRawGameEvent for PumpkinLordSummonedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
@@ -6242,7 +7516,7 @@ impl FromRawGameEvent for PumpkinLordSummonedEvent {
 #[derive(Debug)]
 pub struct PumpkinLordKilledEvent {}
 impl FromRawGameEvent for PumpkinLordKilledEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PumpkinLordKilledEvent {})
     }
 }
@@ -6252,11 +7526,19 @@ pub struct MerasmusSummonedEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for MerasmusSummonedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(MerasmusSummonedEvent { level })
     }
 }
@@ -6266,11 +7548,19 @@ pub struct MerasmusKilledEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for MerasmusKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(MerasmusKilledEvent { level })
     }
 }
@@ -6281,17 +7571,25 @@ pub struct MerasmusEscapeWarningEvent {
     pub time_remaining: u8,
 }
 impl FromRawGameEvent for MerasmusEscapeWarningEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
-        let time_remaining: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("time_remaining"))?;
-            u8::from_value(value.clone(), "time_remaining")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let time_remaining: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time_remaining",
+        )?;
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(MerasmusEscapeWarningEvent {
             level,
             time_remaining,
@@ -6304,11 +7602,19 @@ pub struct MerasmusEscapedEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for MerasmusEscapedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(MerasmusEscapedEvent { level })
     }
 }
@@ -6318,11 +7624,19 @@ pub struct EyeballBossSummonedEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for EyeballBossSummonedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(EyeballBossSummonedEvent { level })
     }
 }
@@ -6333,17 +7647,25 @@ pub struct EyeballBossStunnedEvent {
     pub player_ent_index: u8,
 }
 impl FromRawGameEvent for EyeballBossStunnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
-        let player_ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("player_ent_index"))?;
-            u8::from_value(value.clone(), "player_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let player_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_ent_index",
+        )?;
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(EyeballBossStunnedEvent {
             level,
             player_ent_index,
@@ -6356,11 +7678,19 @@ pub struct EyeballBossKilledEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for EyeballBossKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(EyeballBossKilledEvent { level })
     }
 }
@@ -6371,17 +7701,25 @@ pub struct EyeballBossKillerEvent {
     pub player_ent_index: u8,
 }
 impl FromRawGameEvent for EyeballBossKillerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
-        let player_ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("player_ent_index"))?;
-            u8::from_value(value.clone(), "player_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let player_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_ent_index",
+        )?;
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(EyeballBossKillerEvent {
             level,
             player_ent_index,
@@ -6395,17 +7733,25 @@ pub struct EyeballBossEscapeImminentEvent {
     pub time_remaining: u8,
 }
 impl FromRawGameEvent for EyeballBossEscapeImminentEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
-        let time_remaining: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("time_remaining"))?;
-            u8::from_value(value.clone(), "time_remaining")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let time_remaining: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time_remaining",
+        )?;
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(EyeballBossEscapeImminentEvent {
             level,
             time_remaining,
@@ -6418,11 +7764,19 @@ pub struct EyeballBossEscapedEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for EyeballBossEscapedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(EyeballBossEscapedEvent { level })
     }
 }
@@ -6437,41 +7791,49 @@ pub struct NpcHurtEvent {
     pub crit: bool,
 }
 impl FromRawGameEvent for NpcHurtEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u16::from_value(value.clone(), "ent_index")?
-        };
-        let health: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("health"))?;
-            u16::from_value(value.clone(), "health")?
-        };
-        let attacker_player: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("attacker_player"))?;
-            u16::from_value(value.clone(), "attacker_player")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let damage_amount: u16 = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("damage_amount"))?;
-            u16::from_value(value.clone(), "damage_amount")?
-        };
-        let crit: bool = {
-            let value = values.get(5).ok_or(ParseError::UnknownGameEvent("crit"))?;
-            bool::from_value(value.clone(), "crit")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 6 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(6);
+        let crit: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "crit",
+        )?;
+        let damage_amount: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage_amount",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let attacker_player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker_player",
+        )?;
+        let health: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "health",
+        )?;
+        let ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(NpcHurtEvent {
             ent_index,
             health,
@@ -6489,15 +7851,25 @@ pub struct ControlPointTimerUpdatedEvent {
     pub time: f32,
 }
 impl FromRawGameEvent for ControlPointTimerUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
-        let time: f32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("time"))?;
-            f32::from_value(value.clone(), "time")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let time: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time",
+        )?;
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(ControlPointTimerUpdatedEvent { index, time })
     }
 }
@@ -6507,13 +7879,19 @@ pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
 }
 impl FromRawGameEvent for PlayerHighFiveStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u8::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(PlayerHighFiveStartEvent { ent_index })
     }
 }
@@ -6523,13 +7901,19 @@ pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
 }
 impl FromRawGameEvent for PlayerHighFiveCancelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u8::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(PlayerHighFiveCancelEvent { ent_index })
     }
 }
@@ -6540,19 +7924,25 @@ pub struct PlayerHighFiveSuccessEvent {
     pub partner_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerHighFiveSuccessEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let initiator_ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("initiator_ent_index"))?;
-            u8::from_value(value.clone(), "initiator_ent_index")?
-        };
-        let partner_ent_index: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("partner_ent_index"))?;
-            u8::from_value(value.clone(), "partner_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let partner_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "partner_ent_index",
+        )?;
+        let initiator_ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "initiator_ent_index",
+        )?;
         Ok(PlayerHighFiveSuccessEvent {
             initiator_ent_index,
             partner_ent_index,
@@ -6567,25 +7957,31 @@ pub struct PlayerBonusPointsEvent {
     pub source_ent_index: u16,
 }
 impl FromRawGameEvent for PlayerBonusPointsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let points: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("points"))?;
-            u16::from_value(value.clone(), "points")?
-        };
-        let player_ent_index: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("player_ent_index"))?;
-            u16::from_value(value.clone(), "player_ent_index")?
-        };
-        let source_ent_index: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("source_ent_index"))?;
-            u16::from_value(value.clone(), "source_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let source_ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "source_ent_index",
+        )?;
+        let player_ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player_ent_index",
+        )?;
+        let points: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "points",
+        )?;
         Ok(PlayerBonusPointsEvent {
             points,
             player_ent_index,
@@ -6597,7 +7993,7 @@ impl FromRawGameEvent for PlayerBonusPointsEvent {
 #[derive(Debug)]
 pub struct PlayerUpgradedEvent {}
 impl FromRawGameEvent for PlayerUpgradedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayerUpgradedEvent {})
     }
 }
@@ -6608,17 +8004,25 @@ pub struct PlayerBuybackEvent {
     pub cost: u16,
 }
 impl FromRawGameEvent for PlayerBuybackEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let cost: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("cost"))?;
-            u16::from_value(value.clone(), "cost")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let cost: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cost",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(PlayerBuybackEvent { player, cost })
     }
 }
@@ -6630,21 +8034,31 @@ pub struct PlayerUsedPowerUpBottleEvent {
     pub time: f32,
 }
 impl FromRawGameEvent for PlayerUsedPowerUpBottleEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let kind: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("kind"))?;
-            u16::from_value(value.clone(), "kind")?
-        };
-        let time: f32 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("time"))?;
-            f32::from_value(value.clone(), "time")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let time: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time",
+        )?;
+        let kind: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kind",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(PlayerUsedPowerUpBottleEvent { player, kind, time })
     }
 }
@@ -6654,13 +8068,19 @@ pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for ChristmasGiftGrabEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(ChristmasGiftGrabEvent { user_id })
     }
 }
@@ -6672,25 +8092,31 @@ pub struct PlayerKilledAchievementZoneEvent {
     pub zone_id: u16,
 }
 impl FromRawGameEvent for PlayerKilledAchievementZoneEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let attacker: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let victim: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim"))?;
-            u16::from_value(value.clone(), "victim")?
-        };
-        let zone_id: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("zone_id"))?;
-            u16::from_value(value.clone(), "zone_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let zone_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "zone_id",
+        )?;
+        let victim: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
         Ok(PlayerKilledAchievementZoneEvent {
             attacker,
             victim,
@@ -6702,7 +8128,7 @@ impl FromRawGameEvent for PlayerKilledAchievementZoneEvent {
 #[derive(Debug)]
 pub struct PartyUpdatedEvent {}
 impl FromRawGameEvent for PartyUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PartyUpdatedEvent {})
     }
 }
@@ -6710,7 +8136,7 @@ impl FromRawGameEvent for PartyUpdatedEvent {
 #[derive(Debug)]
 pub struct LobbyUpdatedEvent {}
 impl FromRawGameEvent for LobbyUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LobbyUpdatedEvent {})
     }
 }
@@ -6721,15 +8147,25 @@ pub struct MvmMissionUpdateEvent {
     pub count: u16,
 }
 impl FromRawGameEvent for MvmMissionUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let class: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("class"))?;
-            u16::from_value(value.clone(), "class")?
-        };
-        let count: u16 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("count"))?;
-            u16::from_value(value.clone(), "count")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let count: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "count",
+        )?;
+        let class: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "class",
+        )?;
         Ok(MvmMissionUpdateEvent { class, count })
     }
 }
@@ -6737,7 +8173,7 @@ impl FromRawGameEvent for MvmMissionUpdateEvent {
 #[derive(Debug)]
 pub struct RecalculateHolidaysEvent {}
 impl FromRawGameEvent for RecalculateHolidaysEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RecalculateHolidaysEvent {})
     }
 }
@@ -6747,13 +8183,19 @@ pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
 }
 impl FromRawGameEvent for PlayerCurrencyChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let currency: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("currency"))?;
-            u16::from_value(value.clone(), "currency")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let currency: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "currency",
+        )?;
         Ok(PlayerCurrencyChangedEvent { currency })
     }
 }
@@ -6763,11 +8205,19 @@ pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for DoomsdayRocketOpenEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(DoomsdayRocketOpenEvent { team })
     }
 }
@@ -6777,13 +8227,19 @@ pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for RemoveNemesisRelationshipsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(RemoveNemesisRelationshipsEvent { player })
     }
 }
@@ -6791,7 +8247,7 @@ impl FromRawGameEvent for RemoveNemesisRelationshipsEvent {
 #[derive(Debug)]
 pub struct MvmCreditBonusWaveEvent {}
 impl FromRawGameEvent for MvmCreditBonusWaveEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
@@ -6799,7 +8255,7 @@ impl FromRawGameEvent for MvmCreditBonusWaveEvent {
 #[derive(Debug)]
 pub struct MvmCreditBonusAllEvent {}
 impl FromRawGameEvent for MvmCreditBonusAllEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
@@ -6807,7 +8263,7 @@ impl FromRawGameEvent for MvmCreditBonusAllEvent {
 #[derive(Debug)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl FromRawGameEvent for MvmCreditBonusAllAdvancedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
@@ -6817,13 +8273,19 @@ pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmQuickSentryUpgradeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(MvmQuickSentryUpgradeEvent { player })
     }
 }
@@ -6831,7 +8293,7 @@ impl FromRawGameEvent for MvmQuickSentryUpgradeEvent {
 #[derive(Debug)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl FromRawGameEvent for MvmTankDestroyedByPlayersEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
@@ -6841,13 +8303,19 @@ pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmKillRobotDeliveringBombEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(MvmKillRobotDeliveringBombEvent { player })
     }
 }
@@ -6858,19 +8326,25 @@ pub struct MvmPickupCurrencyEvent {
     pub currency: u16,
 }
 impl FromRawGameEvent for MvmPickupCurrencyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let currency: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("currency"))?;
-            u16::from_value(value.clone(), "currency")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let currency: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "currency",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(MvmPickupCurrencyEvent { player, currency })
     }
 }
@@ -6880,11 +8354,19 @@ pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for MvmBombCarrierKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(MvmBombCarrierKilledEvent { level })
     }
 }
@@ -6897,25 +8379,37 @@ pub struct MvmSentryBusterDetonateEvent {
     pub det_z: f32,
 }
 impl FromRawGameEvent for MvmSentryBusterDetonateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
-        let det_x: f32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("det_x"))?;
-            f32::from_value(value.clone(), "det_x")?
-        };
-        let det_y: f32 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("det_y"))?;
-            f32::from_value(value.clone(), "det_y")?
-        };
-        let det_z: f32 = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("det_z"))?;
-            f32::from_value(value.clone(), "det_z")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let det_z: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "det_z",
+        )?;
+        let det_y: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "det_y",
+        )?;
+        let det_x: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "det_x",
+        )?;
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(MvmSentryBusterDetonateEvent {
             player,
             det_x,
@@ -6930,13 +8424,19 @@ pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmScoutMarkedForDeathEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(MvmScoutMarkedForDeathEvent { player })
     }
 }
@@ -6946,13 +8446,19 @@ pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmMedicPowerUpSharedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(MvmMedicPowerUpSharedEvent { player })
     }
 }
@@ -6964,25 +8470,31 @@ pub struct MvmBeginWaveEvent {
     pub advanced: u16,
 }
 impl FromRawGameEvent for MvmBeginWaveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let wave_index: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("wave_index"))?;
-            u16::from_value(value.clone(), "wave_index")?
-        };
-        let max_waves: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("max_waves"))?;
-            u16::from_value(value.clone(), "max_waves")?
-        };
-        let advanced: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("advanced"))?;
-            u16::from_value(value.clone(), "advanced")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let advanced: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "advanced",
+        )?;
+        let max_waves: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "max_waves",
+        )?;
+        let wave_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "wave_index",
+        )?;
         Ok(MvmBeginWaveEvent {
             wave_index,
             max_waves,
@@ -6996,13 +8508,19 @@ pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
 }
 impl FromRawGameEvent for MvmWaveCompleteEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let advanced: bool = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("advanced"))?;
-            bool::from_value(value.clone(), "advanced")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let advanced: bool = bool::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "advanced",
+        )?;
         Ok(MvmWaveCompleteEvent { advanced })
     }
 }
@@ -7012,13 +8530,19 @@ pub struct MvmMissionCompleteEvent {
     pub mission: String,
 }
 impl FromRawGameEvent for MvmMissionCompleteEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mission: String = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("mission"))?;
-            String::from_value(value.clone(), "mission")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let mission: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "mission",
+        )?;
         Ok(MvmMissionCompleteEvent { mission })
     }
 }
@@ -7028,13 +8552,19 @@ pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmBombResetByPlayerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(MvmBombResetByPlayerEvent { player })
     }
 }
@@ -7042,7 +8572,7 @@ impl FromRawGameEvent for MvmBombResetByPlayerEvent {
 #[derive(Debug)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl FromRawGameEvent for MvmBombAlarmTriggeredEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
@@ -7052,13 +8582,19 @@ pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmBombDeployResetByPlayerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let player: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("player"))?;
-            u16::from_value(value.clone(), "player")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let player: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "player",
+        )?;
         Ok(MvmBombDeployResetByPlayerEvent { player })
     }
 }
@@ -7066,7 +8602,7 @@ impl FromRawGameEvent for MvmBombDeployResetByPlayerEvent {
 #[derive(Debug)]
 pub struct MvmWaveFailedEvent {}
 impl FromRawGameEvent for MvmWaveFailedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmWaveFailedEvent {})
     }
 }
@@ -7074,7 +8610,7 @@ impl FromRawGameEvent for MvmWaveFailedEvent {
 #[derive(Debug)]
 pub struct MvmResetStatsEvent {}
 impl FromRawGameEvent for MvmResetStatsEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmResetStatsEvent {})
     }
 }
@@ -7084,13 +8620,19 @@ pub struct DamageResistedEvent {
     pub ent_index: u8,
 }
 impl FromRawGameEvent for DamageResistedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u8 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u8::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(DamageResistedEvent { ent_index })
     }
 }
@@ -7101,19 +8643,25 @@ pub struct RevivePlayerNotifyEvent {
     pub marker_ent_index: u16,
 }
 impl FromRawGameEvent for RevivePlayerNotifyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u16::from_value(value.clone(), "ent_index")?
-        };
-        let marker_ent_index: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("marker_ent_index"))?;
-            u16::from_value(value.clone(), "marker_ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let marker_ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "marker_ent_index",
+        )?;
+        let ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(RevivePlayerNotifyEvent {
             ent_index,
             marker_ent_index,
@@ -7126,13 +8674,19 @@ pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
 }
 impl FromRawGameEvent for RevivePlayerStoppedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u16::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(RevivePlayerStoppedEvent { ent_index })
     }
 }
@@ -7142,13 +8696,19 @@ pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
 }
 impl FromRawGameEvent for RevivePlayerCompleteEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u16::from_value(value.clone(), "ent_index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(RevivePlayerCompleteEvent { ent_index })
     }
 }
@@ -7158,13 +8718,19 @@ pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerTurnedToGhostEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(PlayerTurnedToGhostEvent { user_id })
     }
 }
@@ -7175,19 +8741,25 @@ pub struct MedigunShieldBlockedDamageEvent {
     pub damage: f32,
 }
 impl FromRawGameEvent for MedigunShieldBlockedDamageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let damage: f32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("damage"))?;
-            f32::from_value(value.clone(), "damage")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let damage: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(MedigunShieldBlockedDamageEvent { user_id, damage })
     }
 }
@@ -7197,11 +8769,19 @@ pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for MvmAdvWaveCompleteNoGatesEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(MvmAdvWaveCompleteNoGatesEvent { index })
     }
 }
@@ -7212,19 +8792,25 @@ pub struct MvmSniperHeadshotCurrencyEvent {
     pub currency: u16,
 }
 impl FromRawGameEvent for MvmSniperHeadshotCurrencyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let currency: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("currency"))?;
-            u16::from_value(value.clone(), "currency")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let currency: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "currency",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(MvmSniperHeadshotCurrencyEvent { user_id, currency })
     }
 }
@@ -7232,7 +8818,7 @@ impl FromRawGameEvent for MvmSniperHeadshotCurrencyEvent {
 #[derive(Debug)]
 pub struct MvmMannhattanPitEvent {}
 impl FromRawGameEvent for MvmMannhattanPitEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmMannhattanPitEvent {})
     }
 }
@@ -7240,7 +8826,7 @@ impl FromRawGameEvent for MvmMannhattanPitEvent {
 #[derive(Debug)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FromRawGameEvent for FlagCarriedInDetectionZoneEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
@@ -7248,7 +8834,7 @@ impl FromRawGameEvent for FlagCarriedInDetectionZoneEvent {
 #[derive(Debug)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl FromRawGameEvent for MvmAdvWaveKilledStunRadioEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
@@ -7259,19 +8845,25 @@ pub struct PlayerDirectHitStunEvent {
     pub victim: u16,
 }
 impl FromRawGameEvent for PlayerDirectHitStunEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let attacker: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let victim: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim"))?;
-            u16::from_value(value.clone(), "victim")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let victim: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
         Ok(PlayerDirectHitStunEvent { attacker, victim })
     }
 }
@@ -7281,13 +8873,19 @@ pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
 }
 impl FromRawGameEvent for MvmSentryBusterKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let sentry_buster: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("sentry_buster"))?;
-            u16::from_value(value.clone(), "sentry_buster")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let sentry_buster: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "sentry_buster",
+        )?;
         Ok(MvmSentryBusterKilledEvent { sentry_buster })
     }
 }
@@ -7297,11 +8895,19 @@ pub struct UpgradesFileChangedEvent {
     pub path: String,
 }
 impl FromRawGameEvent for UpgradesFileChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let path: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("path"))?;
-            String::from_value(value.clone(), "path")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let path: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "path",
+        )?;
         Ok(UpgradesFileChangedEvent { path })
     }
 }
@@ -7313,23 +8919,31 @@ pub struct RdTeamPointsChangedEvent {
     pub method: u8,
 }
 impl FromRawGameEvent for RdTeamPointsChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let points: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("points"))?;
-            u16::from_value(value.clone(), "points")?
-        };
-        let team: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let method: u8 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("method"))?;
-            u8::from_value(value.clone(), "method")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let method: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "method",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
+        let points: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "points",
+        )?;
         Ok(RdTeamPointsChangedEvent {
             points,
             team,
@@ -7341,7 +8955,7 @@ impl FromRawGameEvent for RdTeamPointsChangedEvent {
 #[derive(Debug)]
 pub struct RdRulesStateChangedEvent {}
 impl FromRawGameEvent for RdRulesStateChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RdRulesStateChangedEvent {})
     }
 }
@@ -7359,61 +8973,67 @@ pub struct RdRobotKilledEvent {
     pub weapon_log_class_name: String,
 }
 impl FromRawGameEvent for RdRobotKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let user_id: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("user_id"))?;
-            u16::from_value(value.clone(), "user_id")?
-        };
-        let victim_ent_index: u32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("victim_ent_index"))?;
-            u32::from_value(value.clone(), "victim_ent_index")?
-        };
-        let inflictor_ent_index: u32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("inflictor_ent_index"))?;
-            u32::from_value(value.clone(), "inflictor_ent_index")?
-        };
-        let attacker: u16 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("attacker"))?;
-            u16::from_value(value.clone(), "attacker")?
-        };
-        let weapon: String = {
-            let value = values
-                .get(4)
-                .ok_or(ParseError::UnknownGameEvent("weapon"))?;
-            String::from_value(value.clone(), "weapon")?
-        };
-        let weapon_id: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("weapon_id"))?;
-            u16::from_value(value.clone(), "weapon_id")?
-        };
-        let damage_bits: u32 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("damage_bits"))?;
-            u32::from_value(value.clone(), "damage_bits")?
-        };
-        let custom_kill: u16 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("custom_kill"))?;
-            u16::from_value(value.clone(), "custom_kill")?
-        };
-        let weapon_log_class_name: String = {
-            let value = values
-                .get(8)
-                .ok_or(ParseError::UnknownGameEvent("weapon_log_class_name"))?;
-            String::from_value(value.clone(), "weapon_log_class_name")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 9 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(9);
+        let weapon_log_class_name: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_log_class_name",
+        )?;
+        let custom_kill: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "custom_kill",
+        )?;
+        let damage_bits: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "damage_bits",
+        )?;
+        let weapon_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon_id",
+        )?;
+        let weapon: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "weapon",
+        )?;
+        let attacker: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "attacker",
+        )?;
+        let inflictor_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "inflictor_ent_index",
+        )?;
+        let victim_ent_index: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "victim_ent_index",
+        )?;
+        let user_id: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "user_id",
+        )?;
         Ok(RdRobotKilledEvent {
             user_id,
             victim_ent_index,
@@ -7436,31 +9056,37 @@ pub struct RdRobotImpactEvent {
     pub impulse_z: f32,
 }
 impl FromRawGameEvent for RdRobotImpactEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let ent_index: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("ent_index"))?;
-            u16::from_value(value.clone(), "ent_index")?
-        };
-        let impulse_x: f32 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("impulse_x"))?;
-            f32::from_value(value.clone(), "impulse_x")?
-        };
-        let impulse_y: f32 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("impulse_y"))?;
-            f32::from_value(value.clone(), "impulse_y")?
-        };
-        let impulse_z: f32 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("impulse_z"))?;
-            f32::from_value(value.clone(), "impulse_z")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let impulse_z: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "impulse_z",
+        )?;
+        let impulse_y: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "impulse_y",
+        )?;
+        let impulse_x: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "impulse_x",
+        )?;
+        let ent_index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "ent_index",
+        )?;
         Ok(RdRobotImpactEvent {
             ent_index,
             impulse_x,
@@ -7475,11 +9101,19 @@ pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
 }
 impl FromRawGameEvent for TeamPlayPreRoundTimeLeftEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let time: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("time"))?;
-            u16::from_value(value.clone(), "time")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let time: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "time",
+        )?;
         Ok(TeamPlayPreRoundTimeLeftEvent { time })
     }
 }
@@ -7489,11 +9123,19 @@ pub struct ParachuteDeployEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ParachuteDeployEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(ParachuteDeployEvent { index })
     }
 }
@@ -7503,11 +9145,19 @@ pub struct ParachuteHolsterEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ParachuteHolsterEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(ParachuteHolsterEvent { index })
     }
 }
@@ -7517,11 +9167,19 @@ pub struct KillRefillsMeterEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for KillRefillsMeterEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(KillRefillsMeterEvent { index })
     }
 }
@@ -7534,29 +9192,37 @@ pub struct RpsTauntEventEvent {
     pub loser_rps: u8,
 }
 impl FromRawGameEvent for RpsTauntEventEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let winner: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("winner"))?;
-            u16::from_value(value.clone(), "winner")?
-        };
-        let winner_rps: u8 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("winner_rps"))?;
-            u8::from_value(value.clone(), "winner_rps")?
-        };
-        let loser: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("loser"))?;
-            u16::from_value(value.clone(), "loser")?
-        };
-        let loser_rps: u8 = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("loser_rps"))?;
-            u8::from_value(value.clone(), "loser_rps")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let loser_rps: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "loser_rps",
+        )?;
+        let loser: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "loser",
+        )?;
+        let winner_rps: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "winner_rps",
+        )?;
+        let winner: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "winner",
+        )?;
         Ok(RpsTauntEventEvent {
             winner,
             winner_rps,
@@ -7571,11 +9237,19 @@ pub struct CongaKillEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for CongaKillEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(CongaKillEvent { index })
     }
 }
@@ -7585,11 +9259,19 @@ pub struct PlayerInitialSpawnEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PlayerInitialSpawnEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(PlayerInitialSpawnEvent { index })
     }
 }
@@ -7597,7 +9279,7 @@ impl FromRawGameEvent for PlayerInitialSpawnEvent {
 #[derive(Debug)]
 pub struct CompetitiveVictoryEvent {}
 impl FromRawGameEvent for CompetitiveVictoryEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(CompetitiveVictoryEvent {})
     }
 }
@@ -7609,21 +9291,31 @@ pub struct CompetitiveSkillRatingUpdateEvent {
     pub delta: u16,
 }
 impl FromRawGameEvent for CompetitiveSkillRatingUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
-        let rating: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("rating"))?;
-            u16::from_value(value.clone(), "rating")?
-        };
-        let delta: u16 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("delta"))?;
-            u16::from_value(value.clone(), "delta")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let delta: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "delta",
+        )?;
+        let rating: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "rating",
+        )?;
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(CompetitiveSkillRatingUpdateEvent {
             index,
             rating,
@@ -7638,15 +9330,25 @@ pub struct MiniGameWinEvent {
     pub kind: u8,
 }
 impl FromRawGameEvent for MiniGameWinEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let team: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("team"))?;
-            u8::from_value(value.clone(), "team")?
-        };
-        let kind: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("kind"))?;
-            u8::from_value(value.clone(), "kind")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 2 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(2);
+        let kind: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "kind",
+        )?;
+        let team: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "team",
+        )?;
         Ok(MiniGameWinEvent { team, kind })
     }
 }
@@ -7656,11 +9358,19 @@ pub struct SentryOnGoActiveEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for SentryOnGoActiveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(SentryOnGoActiveEvent { index })
     }
 }
@@ -7670,11 +9380,19 @@ pub struct DuckXpLevelUpEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for DuckXpLevelUpEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let level: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("level"))?;
-            u16::from_value(value.clone(), "level")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let level: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "level",
+        )?;
         Ok(DuckXpLevelUpEvent { level })
     }
 }
@@ -7687,29 +9405,37 @@ pub struct HLTVStatusEvent {
     pub master: String,
 }
 impl FromRawGameEvent for HLTVStatusEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let clients: u32 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("clients"))?;
-            u32::from_value(value.clone(), "clients")?
-        };
-        let slots: u32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("slots"))?;
-            u32::from_value(value.clone(), "slots")?
-        };
-        let proxies: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("proxies"))?;
-            u16::from_value(value.clone(), "proxies")?
-        };
-        let master: String = {
-            let value = values
-                .get(3)
-                .ok_or(ParseError::UnknownGameEvent("master"))?;
-            String::from_value(value.clone(), "master")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let master: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "master",
+        )?;
+        let proxies: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "proxies",
+        )?;
+        let slots: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "slots",
+        )?;
+        let clients: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "clients",
+        )?;
         Ok(HLTVStatusEvent {
             clients,
             slots,
@@ -7724,11 +9450,19 @@ pub struct HLTVCameramanEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for HLTVCameramanEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(HLTVCameramanEvent { index })
     }
 }
@@ -7740,21 +9474,31 @@ pub struct HLTVRankCameraEvent {
     pub target: u16,
 }
 impl FromRawGameEvent for HLTVRankCameraEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u8 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u8::from_value(value.clone(), "index")?
-        };
-        let rank: f32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("rank"))?;
-            f32::from_value(value.clone(), "rank")?
-        };
-        let target: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("target"))?;
-            u16::from_value(value.clone(), "target")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let target: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target",
+        )?;
+        let rank: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "rank",
+        )?;
+        let index: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(HLTVRankCameraEvent {
             index,
             rank,
@@ -7770,21 +9514,31 @@ pub struct HLTVRankEntityEvent {
     pub target: u16,
 }
 impl FromRawGameEvent for HLTVRankEntityEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let index: u16 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("index"))?;
-            u16::from_value(value.clone(), "index")?
-        };
-        let rank: f32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("rank"))?;
-            f32::from_value(value.clone(), "rank")?
-        };
-        let target: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("target"))?;
-            u16::from_value(value.clone(), "target")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 3 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(3);
+        let target: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target",
+        )?;
+        let rank: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "rank",
+        )?;
+        let index: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "index",
+        )?;
         Ok(HLTVRankEntityEvent {
             index,
             rank,
@@ -7805,43 +9559,61 @@ pub struct HLTVFixedEvent {
     pub target: u16,
 }
 impl FromRawGameEvent for HLTVFixedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let pos_x: u32 = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("pos_x"))?;
-            u32::from_value(value.clone(), "pos_x")?
-        };
-        let pos_y: u32 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("pos_y"))?;
-            u32::from_value(value.clone(), "pos_y")?
-        };
-        let pos_z: u32 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("pos_z"))?;
-            u32::from_value(value.clone(), "pos_z")?
-        };
-        let theta: u16 = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("theta"))?;
-            u16::from_value(value.clone(), "theta")?
-        };
-        let phi: u16 = {
-            let value = values.get(4).ok_or(ParseError::UnknownGameEvent("phi"))?;
-            u16::from_value(value.clone(), "phi")?
-        };
-        let offset: u16 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("offset"))?;
-            u16::from_value(value.clone(), "offset")?
-        };
-        let fov: f32 = {
-            let value = values.get(6).ok_or(ParseError::UnknownGameEvent("fov"))?;
-            f32::from_value(value.clone(), "fov")?
-        };
-        let target: u16 = {
-            let value = values
-                .get(7)
-                .ok_or(ParseError::UnknownGameEvent("target"))?;
-            u16::from_value(value.clone(), "target")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 8 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(8);
+        let target: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target",
+        )?;
+        let fov: f32 = f32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "fov",
+        )?;
+        let offset: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "offset",
+        )?;
+        let phi: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "phi",
+        )?;
+        let theta: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "theta",
+        )?;
+        let pos_z: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "pos_z",
+        )?;
+        let pos_y: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "pos_y",
+        )?;
+        let pos_x: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "pos_x",
+        )?;
         Ok(HLTVFixedEvent {
             pos_x,
             pos_y,
@@ -7866,45 +9638,55 @@ pub struct HLTVChaseEvent {
     pub in_eye: u8,
 }
 impl FromRawGameEvent for HLTVChaseEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let target1: u16 = {
-            let value = values
-                .get(0)
-                .ok_or(ParseError::UnknownGameEvent("target1"))?;
-            u16::from_value(value.clone(), "target1")?
-        };
-        let target2: u16 = {
-            let value = values
-                .get(1)
-                .ok_or(ParseError::UnknownGameEvent("target2"))?;
-            u16::from_value(value.clone(), "target2")?
-        };
-        let distance: u16 = {
-            let value = values
-                .get(2)
-                .ok_or(ParseError::UnknownGameEvent("distance"))?;
-            u16::from_value(value.clone(), "distance")?
-        };
-        let theta: u16 = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("theta"))?;
-            u16::from_value(value.clone(), "theta")?
-        };
-        let phi: u16 = {
-            let value = values.get(4).ok_or(ParseError::UnknownGameEvent("phi"))?;
-            u16::from_value(value.clone(), "phi")?
-        };
-        let inertia: u8 = {
-            let value = values
-                .get(5)
-                .ok_or(ParseError::UnknownGameEvent("inertia"))?;
-            u8::from_value(value.clone(), "inertia")?
-        };
-        let in_eye: u8 = {
-            let value = values
-                .get(6)
-                .ok_or(ParseError::UnknownGameEvent("in_eye"))?;
-            u8::from_value(value.clone(), "in_eye")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 7 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(7);
+        let in_eye: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "in_eye",
+        )?;
+        let inertia: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "inertia",
+        )?;
+        let phi: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "phi",
+        )?;
+        let theta: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "theta",
+        )?;
+        let distance: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "distance",
+        )?;
+        let target2: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target2",
+        )?;
+        let target1: u16 = u16::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "target1",
+        )?;
         Ok(HLTVChaseEvent {
             target1,
             target2,
@@ -7922,11 +9704,19 @@ pub struct HLTVMessageEvent {
     pub text: String,
 }
 impl FromRawGameEvent for HLTVMessageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let text: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
         Ok(HLTVMessageEvent { text })
     }
 }
@@ -7936,11 +9726,19 @@ pub struct HLTVTitleEvent {
     pub text: String,
 }
 impl FromRawGameEvent for HLTVTitleEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let text: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
         Ok(HLTVTitleEvent { text })
     }
 }
@@ -7950,11 +9748,19 @@ pub struct HLTVChatEvent {
     pub text: String,
 }
 impl FromRawGameEvent for HLTVChatEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let text: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("text"))?;
-            String::from_value(value.clone(), "text")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let text: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "text",
+        )?;
         Ok(HLTVChatEvent { text })
     }
 }
@@ -7962,7 +9768,7 @@ impl FromRawGameEvent for HLTVChatEvent {
 #[derive(Debug)]
 pub struct ReplayStartRecordEvent {}
 impl FromRawGameEvent for ReplayStartRecordEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayStartRecordEvent {})
     }
 }
@@ -7975,23 +9781,37 @@ pub struct ReplaySessionInfoEvent {
     pub st: u32,
 }
 impl FromRawGameEvent for ReplaySessionInfoEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let sn: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("sn"))?;
-            String::from_value(value.clone(), "sn")?
-        };
-        let di: u8 = {
-            let value = values.get(1).ok_or(ParseError::UnknownGameEvent("di"))?;
-            u8::from_value(value.clone(), "di")?
-        };
-        let cb: u32 = {
-            let value = values.get(2).ok_or(ParseError::UnknownGameEvent("cb"))?;
-            u32::from_value(value.clone(), "cb")?
-        };
-        let st: u32 = {
-            let value = values.get(3).ok_or(ParseError::UnknownGameEvent("st"))?;
-            u32::from_value(value.clone(), "st")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 4 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(4);
+        let st: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "st",
+        )?;
+        let cb: u32 = u32::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "cb",
+        )?;
+        let di: u8 = u8::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "di",
+        )?;
+        let sn: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "sn",
+        )?;
         Ok(ReplaySessionInfoEvent { sn, di, cb, st })
     }
 }
@@ -7999,7 +9819,7 @@ impl FromRawGameEvent for ReplaySessionInfoEvent {
 #[derive(Debug)]
 pub struct ReplayEndRecordEvent {}
 impl FromRawGameEvent for ReplayEndRecordEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayEndRecordEvent {})
     }
 }
@@ -8007,7 +9827,7 @@ impl FromRawGameEvent for ReplayEndRecordEvent {
 #[derive(Debug)]
 pub struct ReplayReplaysAvailableEvent {}
 impl FromRawGameEvent for ReplayReplaysAvailableEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
@@ -8017,11 +9837,19 @@ pub struct ReplayServerErrorEvent {
     pub error: String,
 }
 impl FromRawGameEvent for ReplayServerErrorEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let error: String = {
-            let value = values.get(0).ok_or(ParseError::UnknownGameEvent("error"))?;
-            String::from_value(value.clone(), "error")?
-        };
+    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
+        if values.len() < 1 {
+            return Err(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ));
+        }
+        values.truncate(1);
+        let error: String = String::from_value(
+            values.pop().ok_or(ParseError::MalformedGameEvent(
+                GameEventError::IncorrectValueCount,
+            ))?,
+            "error",
+        )?;
         Ok(ReplayServerErrorEvent { error })
     }
 }

@@ -34,10 +34,12 @@ pub enum ParseError {
     StringTableNotFound(u8),
     /// A unknown game event type was read
     UnknownGameEvent(&'static str),
+    /// A malformed game event was read
+    MalformedGameEvent(GameEventError),
     /// A read game event doesn't contain the expected values
     InvalidGameEvent {
         expected_type: GameEventValueType,
-        name: String,
+        name: &'static str,
         value: GameEventValue,
     },
     /// Unexpected type of compressed data
@@ -53,6 +55,11 @@ pub enum ParseError {
     },
     /// Misc malformed demo error
     InvalidDemo(&'static str),
+}
+
+#[derive(Debug)]
+pub enum GameEventError {
+    IncorrectValueCount,
 }
 
 impl From<ReadError> for ParseError {

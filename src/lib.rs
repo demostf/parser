@@ -6,7 +6,10 @@ pub use bitstream_reader::Result as ReadResult;
 
 pub use crate::demo::{
     message::MessageType,
-    parser::{DemoParser, MatchState, MessageTypeAnalyser, Parse, ParseError, ParserState, Result},
+    parser::{
+        DemoParser, GameEventError, MatchState, MessageTypeAnalyser, Parse, ParseError,
+        ParserState, Result,
+    },
     Demo, Stream,
 };
 
