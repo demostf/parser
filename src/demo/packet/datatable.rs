@@ -64,14 +64,14 @@ impl Parse for ParseSendTable {
             if prop.flags.contains(SendPropFlag::InsideArray) {
                 if array_element_prop.is_some() || prop.flags.contains(SendPropFlag::ChangesOften) {
                     return Err(ParseError::InvalidSendProp(
-                        "Array contents can't have the 'ChangesOften' flag".to_owned(),
+                        "Array contents can't have the 'ChangesOften' flag",
                     ));
                 }
                 array_element_prop = Some(prop);
             } else if let Some(array_element) = array_element_prop {
                 if prop.prop_type != SendPropType::Array {
                     return Err(ParseError::InvalidSendProp(
-                        "Array contents can without array".to_owned(),
+                        "Array contents can without array",
                     ));
                 }
                 array_element_prop = None;

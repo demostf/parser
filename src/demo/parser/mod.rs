@@ -27,7 +27,7 @@ pub enum ParseError {
     /// SendProp type is invalid
     InvalidSendPropType(u8),
     /// Invalid SendProp
-    InvalidSendProp(String),
+    InvalidSendProp(&'static str),
     /// Expected amount of data left after parsing an object
     DataRemaining(usize),
     /// String table that was send for update doesn't exist

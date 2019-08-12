@@ -158,63 +158,45 @@ pub enum SendPropType {
 #[derive(EnumFlags, Copy, Clone, PartialEq, Debug)]
 #[repr(u16)]
 pub enum SendPropFlag {
-    Unsigned = 1,
-    //(1 << 0)
     // Unsigned integer data.
-    Coord = 2,
-    //(1 << 1)
+    Unsigned = 1,
     // If this is set, the float/vector is treated like a world coordinate.
     // Note that the bit count is ignored in this case.
-    NoScale = 4,
-    //(1 << 2)
+    Coord = 2,
     // For floating point, don't scale into range, just take value as is.
-    RoundDown = 8,
-    //(1 << 3)
+    NoScale = 4,
     // For floating point, limit high value to range minus one bit unit
-    RoundUp = 16,
-    //(1 << 4)
+    RoundDown = 8,
     // For floating point, limit low value to range minus one bit unit
-    // Normal = 32, // seems to be depricated
-    //(1 << 5)
-    // If this is set, the vector is treated like a normal (only valid for vectors)
+    RoundUp = 16,
+    // This is an exclude prop (not excluded, but it points at another prop to be excluded).
     Exclude = 64,
-    //(1 << 6)
-    // This is an exclude prop (not excludED, but it points at another prop to be excluded).
-    XYZE = 128,
-    //(1 << 7)
     // Use XYZ/Exponent encoding for vectors.
-    InsideArray = 256,
-    //(1 << 8)
+    XYZE = 128,
     // This tells us that the property is inside an array, so it shouldn't be put into the
     // flattened property list. Its array will point at it when it needs to.
-    PropxyAlwaysYes = 512,
-    //(1 << 9)
+    InsideArray = 256,
     // Set for datatable props using one of the default datatable proxies like
     // SendProxy_DataTableToDataTable that always send the data to all clients.
-    ChangesOften = 1024,
-    //(1 << 10)
+    ProxyAlwaysYes = 512,
     // this is an often changed field, moved to head of sendtable so it gets a small index
-    IsVectorElement = 2048,
-    //(1 << 11)
+    ChangesOften = 1024,
     // Set automatically if SPROP_VECTORELEM is used.
-    Collapsible = 4096,
-    //(1 << 12)
+    IsVectorElement = 2048,
     // Set automatically if it's a datatable with an offset of 0 that doesn't change the pointer
     // (ie: for all automatically-chained base classes).
     // In this case, it can get rid of this SendPropDataTable altogether and spare the
     // trouble of walking the hierarchy more than necessary.
-    CoordMP = 8192,
-    //(1 << 13)
+    Collapsible = 4096,
     // Like SPROP_COORD, but special handling for multiplayer games
-    CoordMPLowPercision = 16384,
-    //(1 << 14)
+    CoordMP = 8192,
     // Like SPROP_COORD, but special handling for multiplayer games
     // where the fractional component only gets a 3 bits instead of 5
-    CoordMPIntegral = 32768,
-    //(1 << 15)
+    CoordMPLowPrecision = 16384,
     // SPROP_COORD_MP, but coordinates are rounded to integral boundaries
     // overloaded as both "Normal" and "VarInt"
-    NormalVarInt = 32, //(1 << 5)
+    CoordMPIntegral = 32768,
+    NormalVarInt = 32,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -228,9 +210,8 @@ impl SendPropFlags {
 
 impl BitRead<LittleEndian> for SendPropFlags {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let raw = stream.read_int(16)?;
         // since all 16 bits worth of flags are used there are no invalid flags
-        Ok(SendPropFlags(BitFlags::from_bits_truncate(raw)))
+        Ok(SendPropFlags(BitFlags::from_bits_truncate(stream.read()?)))
     }
 }
 
@@ -256,7 +237,7 @@ impl SendPropValue {
             }
             SendPropType::Array => Self::read_array(stream, definition).map(SendPropValue::from),
             _ => Err(ParseError::InvalidSendProp(
-                "Prop type not allowed in entity".to_string(),
+                "Prop type not allowed in entity",
             )),
         }
     }
@@ -268,9 +249,9 @@ impl SendPropValue {
         } else {
             if definition.flags.contains(SendPropFlag::Unsigned) {
                 let unsigned: u32 = stream.read()?;
-                unsigned.try_into().map_err(|_| {
-                    ParseError::InvalidSendProp("SendProp value out of range".to_string())
-                })
+                unsigned
+                    .try_into()
+                    .map_err(|_| ParseError::InvalidSendProp("SendProp value out of range"))
             } else {
                 stream.read().map_err(ParseError::from)
             }
@@ -281,7 +262,11 @@ impl SendPropValue {
         stream: &mut Stream,
         definition: &SendPropDefinition,
     ) -> Result<Vec<SendPropValue>> {
-        let num_bits = log_base2(definition.element_count.unwrap_or_default());
+        let num_bits = log_base2(
+            definition
+                .element_count
+                .ok_or(ParseError::InvalidSendProp("Unsized array"))?,
+        );
 
         let count = stream.read_int(num_bits as usize)?;
         let mut values = Vec::with_capacity(count);
@@ -292,7 +277,7 @@ impl SendPropValue {
                 definition
                     .array_property
                     .as_ref()
-                    .ok_or_else(|| ParseError::InvalidSendProp("Untyped array".to_string()))?,
+                    .ok_or(ParseError::InvalidSendProp("Untyped array"))?,
             )?;
             values.push(value);
         }
@@ -325,7 +310,7 @@ impl SendPropValue {
             read_bit_coord(stream).map_err(ParseError::from)
         } else if definition.flags.contains(SendPropFlag::CoordMP) {
             read_bit_coord_mp(stream, false, false).map_err(ParseError::from)
-        } else if definition.flags.contains(SendPropFlag::CoordMPLowPercision) {
+        } else if definition.flags.contains(SendPropFlag::CoordMPLowPrecision) {
             read_bit_coord_mp(stream, false, true).map_err(ParseError::from)
         } else if definition.flags.contains(SendPropFlag::CoordMPIntegral) {
             read_bit_coord_mp(stream, true, false).map_err(ParseError::from)
@@ -336,13 +321,13 @@ impl SendPropValue {
         } else {
             let bit_count = definition
                 .bit_count
-                .ok_or_else(|| ParseError::InvalidSendProp("Unsized float".to_string()))?;
+                .ok_or(ParseError::InvalidSendProp("Unsized float"))?;
             let high = definition
                 .high_value
-                .ok_or_else(|| ParseError::InvalidSendProp("Unsized float".to_string()))?;
+                .ok_or(ParseError::InvalidSendProp("Unsized float"))?;
             let low = definition
                 .low_value
-                .ok_or_else(|| ParseError::InvalidSendProp("Unsized float".to_string()))?;
+                .ok_or(ParseError::InvalidSendProp("Unsized float"))?;
             let raw: u32 = stream.read_int(bit_count as usize)?;
             let percentage = (raw as f32) * get_frac_factor(bit_count as usize);
             Ok(low + ((high - low) * percentage))
