@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian, ReadError};
 use enum_primitive_derive::Primitive;
 use num_traits::FromPrimitive;
 use serde::{Deserialize, Serialize};
@@ -146,6 +146,13 @@ pub struct SayText2Message {
     pub text: String,
 }
 
+fn handle_utf8_error(error: ReadError) -> ReadResult<String> {
+    match error {
+        ReadError::Utf8Error(_) => Ok("-- Malformed utf8 --".into()),
+        _ => Err(error),
+    }
+}
+
 impl BitRead<LittleEndian> for SayText2Message {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let client = stream.read()?;
@@ -158,7 +165,7 @@ impl BitRead<LittleEndian> for SayText2Message {
                 let _ = stream.skip_bits(8)?;
             }
 
-            let text: String = stream.read()?;
+            let text: String = stream.read().or_else(handle_utf8_error)?;
             if text.starts_with("*DEAD*") {
                 // grave talk is in the format '*DEAD* \u0003$from\u0001:    $text'b
                 let start = text.find(char::from(3)).unwrap_or(0);
@@ -176,8 +183,8 @@ impl BitRead<LittleEndian> for SayText2Message {
             let _ = stream.set_pos(stream.pos() - 8)?;
 
             let kind = stream.read()?;
-            let from = stream.read()?;
-            let text = stream.read()?;
+            let from = stream.read().or_else(handle_utf8_error)?;
+            let text = stream.read().or_else(handle_utf8_error)?;
             let _ = stream.skip_bits(16)?;
             (kind, from, text)
         };
