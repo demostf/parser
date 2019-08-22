@@ -408,7 +408,7 @@ pub fn read_bit_coord(stream: &mut Stream) -> ReadResult<f32> {
             0
         };
         let frac_val: u8 = if has_frac { stream.read_sized(5)? } else { 0 };
-        let value = int_val as f32 + (frac_val as f32 * (1f32 / 32f32));
+        let value = int_val as f32 + (frac_val as f32 * get_frac_factor(5));
         value * sign
     } else {
         0f32

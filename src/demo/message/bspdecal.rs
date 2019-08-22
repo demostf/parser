@@ -29,7 +29,7 @@ impl BitRead<LittleEndian> for BSPDecalMessage {
 
         let texture_index = stream.read_sized(9)?;
         let (ent_index, model_index): (u16, u16) = if stream.read()? {
-            (stream.read_sized(11)?, stream.read_sized(12)?)
+            (stream.read_sized(12)?, stream.read_sized(12)?)
         } else {
             (0, 0)
         };
