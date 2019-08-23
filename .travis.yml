@@ -13,4 +13,4 @@ install:
 script:
   - cargo build
   - cargo test
-  - cargo build --release && ~/.cargo/bin/rustig -b target/release/parse_demo
+  - RUSTFLAGS=-g cargo build --release && ~/.cargo/bin/rustig -b target/release/parse_demo
