@@ -1,7 +1,8 @@
 use bitstream_reader::{BitRead, LittleEndian};
 
+use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropName, SendPropType};
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use serde::{Deserialize, Serialize};
 use std::cell::{Cell, RefCell};
 use std::fmt;
@@ -63,16 +64,12 @@ impl Parse for ParseSendTable {
             let prop: SendPropDefinition = SendPropDefinition::read(stream, name.clone())?;
             if prop.flags.contains(SendPropFlag::InsideArray) {
                 if array_element_prop.is_some() || prop.flags.contains(SendPropFlag::ChangesOften) {
-                    return Err(ParseError::InvalidSendProp(
-                        "Array contents can't have the 'ChangesOften' flag",
-                    ));
+                    return Err(MalformedSendPropDefinitionError::ArrayChangesOften.into());
                 }
                 array_element_prop = Some(prop);
             } else if let Some(array_element) = array_element_prop {
                 if prop.prop_type != SendPropType::Array {
-                    return Err(ParseError::InvalidSendProp(
-                        "Array contents can without array",
-                    ));
+                    return Err(MalformedSendPropDefinitionError::UntypedArray.into());
                 }
                 array_element_prop = None;
                 props.push(prop.with_array_property(array_element));
@@ -222,7 +219,7 @@ impl Parse for DataTablePacket {
         let server_classes = packet_data.read_sized(server_class_count)?;
 
         if packet_data.bits_left() > 7 {
-            Err(ParseError::DataRemaining(packet_data.bits_left()))
+            Err(MalformedDemoError::DataRemaining(packet_data.bits_left()).into())
         } else {
             Ok(DataTablePacket {
                 tick,

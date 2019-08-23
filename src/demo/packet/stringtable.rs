@@ -3,10 +3,10 @@ use std::fmt;
 use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::message::stringtable::StringTableMeta;
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(BitRead, Clone, Copy, Debug)]
-pub struct FixedUserdataSize {
+pub struct FixedUserDataSize {
     #[size = 12]
     pub size: u16,
     #[size = 4]
@@ -18,7 +18,7 @@ pub struct StringTable {
     pub name: String,
     pub entries: Vec<(u16, StringTableEntry)>,
     pub max_entries: u16,
-    pub fixed_userdata_size: Option<FixedUserdataSize>,
+    pub fixed_user_data_size: Option<FixedUserDataSize>,
     pub client_entries: Option<Vec<StringTableEntry>>,
     pub compressed: bool,
 }
@@ -26,7 +26,7 @@ pub struct StringTable {
 impl StringTable {
     pub fn get_table_meta(&self) -> StringTableMeta {
         StringTableMeta {
-            fixed_userdata_size: self.fixed_userdata_size,
+            fixed_userdata_size: self.fixed_user_data_size,
             max_entries: self.max_entries,
         }
     }
@@ -53,7 +53,7 @@ impl BitRead<LittleEndian> for StringTable {
             name,
             entries,
             max_entries: entry_count,
-            fixed_userdata_size: None,
+            fixed_user_data_size: None,
             client_entries,
             compressed: false,
         })
@@ -125,7 +125,7 @@ impl Parse for StringTablePacket {
         let tables = packet_data.read_sized(count)?;
 
         if packet_data.bits_left() > 7 {
-            Err(ParseError::DataRemaining(packet_data.bits_left()))
+            Err(MalformedDemoError::DataRemaining(packet_data.bits_left()).into())
         } else {
             Ok(StringTablePacket { tick, tables })
         }

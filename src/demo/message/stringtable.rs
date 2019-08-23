@@ -3,10 +3,10 @@ use num_traits::{PrimInt, Unsigned};
 use snap::Decoder;
 
 use crate::demo::packet::stringtable::{
-    ExtraData, FixedUserdataSize, StringTable, StringTableEntry,
+    ExtraData, FixedUserDataSize, StringTable, StringTableEntry,
 };
 use crate::demo::parser::ParseBitSkip;
-use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -16,14 +16,14 @@ pub struct CreateStringTableMessage {
 #[derive(Debug)]
 pub struct StringTableMeta {
     pub max_entries: u16,
-    pub fixed_userdata_size: Option<FixedUserdataSize>,
+    pub fixed_userdata_size: Option<FixedUserDataSize>,
 }
 
 impl From<&StringTable> for StringTableMeta {
     fn from(table: &StringTable) -> Self {
         StringTableMeta {
             max_entries: table.max_entries,
-            fixed_userdata_size: table.fixed_userdata_size,
+            fixed_userdata_size: table.fixed_user_data_size,
         }
     }
 }
@@ -80,7 +80,7 @@ impl Parse for CreateStringTableMessage {
         let table = StringTable {
             entries,
             max_entries,
-            fixed_userdata_size,
+            fixed_user_data_size: fixed_userdata_size,
             client_entries: None,
             compressed,
             name,
@@ -97,7 +97,7 @@ impl ParseBitSkip for CreateStringTableMessage {
         let _: u16 = stream.read_sized(encode_bits as usize + 1)?;
         let length = read_var_int(stream)?;
 
-        let _: Option<FixedUserdataSize> = stream.read()?;
+        let _: Option<FixedUserDataSize> = stream.read()?;
 
         let _: bool = stream.read()?;
 
@@ -122,7 +122,7 @@ impl Parse for UpdateStringTableMessage {
 
         let entries = match state.string_tables.get(table_id as usize) {
             Some(table) => parse_string_table_update(&mut data, table, changed),
-            None => return Err(ParseError::StringTableNotFound(table_id)),
+            None => return Err(MalformedDemoError::StringTableNotFound(table_id).into()),
         }?;
 
         Ok(UpdateStringTableMessage { table_id, entries })

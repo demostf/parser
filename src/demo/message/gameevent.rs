@@ -9,7 +9,9 @@ use crate::demo::gamevent::{
     RawGameEvent,
 };
 use crate::demo::parser::ParseBitSkip;
-use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{
+    GameEventError, MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream,
+};
 
 fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {
     Ok(match definition.kind {
@@ -20,9 +22,7 @@ fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<
         GameEventValueType::Byte => GameEventValue::Byte(stream.read()?),
         GameEventValueType::Boolean => GameEventValue::Boolean(stream.read()?),
         GameEventValueType::Local => GameEventValue::Local,
-        GameEventValueType::None => {
-            return Err(ParseError::MalformedGameEvent(GameEventError::NoneValue))
-        }
+        GameEventValueType::None => return Err(GameEventError::NoneValue.into()),
     })
 }
 
@@ -48,7 +48,11 @@ impl Parse for GameEventMessage {
                     values,
                 }
             }
-            None => return Err(ParseError::MalformedGameEvent(GameEventError::UnknownType)),
+            None => {
+                return Err(
+                    MalformedDemoError::MalformedGameEvent(GameEventError::UnknownType).into(),
+                )
+            }
         };
         let event = GameEvent::from_raw_event(raw_event)?;
         Ok(GameEventMessage { event })

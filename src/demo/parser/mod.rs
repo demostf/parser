@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, BitSkip, LittleEndian, ReadError};
+use bitstream_reader::{BitRead, BitSkip, FromUtf8Error, LittleEndian, ReadError};
 
 pub use self::messagetypeanalyser::MessageTypeAnalyser;
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};
@@ -9,6 +9,7 @@ pub use crate::demo::parser::analyser::MatchState;
 pub use crate::demo::parser::handler::{DemoHandler, MessageHandler};
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
+use err_derive::Error;
 
 mod analyser;
 mod handler;
@@ -16,63 +17,125 @@ mod messagetypeanalyser;
 mod state;
 
 /// Errors that can occur during parsing
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum ParseError {
-    /// Error while reading bits from stream
-    ReadError(ReadError),
-    /// Packet identifier is invalid
-    InvalidPacketType(u8),
-    /// Message identifier is invalid
-    InvalidMessageType(u8),
-    /// SendProp type is invalid
-    InvalidSendPropType(u8),
-    /// Invalid SendProp
-    InvalidSendProp(&'static str),
-    /// Expected amount of data left after parsing an object
-    DataRemaining(usize),
-    /// String table that was send for update doesn't exist
-    StringTableNotFound(u8),
-    /// A unknown game event type was read
-    UnknownGameEvent(&'static str),
-    /// A malformed game event was read
-    MalformedGameEvent(GameEventError),
-    /// A read game event doesn't contain the expected values
-    InvalidGameEvent {
-        expected_type: GameEventValueType,
-        name: &'static str,
-        value: GameEventValue,
-    },
-    /// Unexpected type of compressed data
+    #[error(display = "Error while reading bits from stream: {}", _0)]
+    ReadError(#[error(cause)] ReadError),
+    #[error(display = "Malformed utf8 while reading string")]
+    MalformedUTF8(#[error(cause)] FromUtf8Error),
+    #[error(display = "Malformed demo file: {}", _0)]
+    MalformedDemo(#[error(cause)] MalformedDemoError),
+    #[error(display = "Unexpected type of compressed data: {}", _0)]
     UnexpectedCompressionType(String),
-    /// Error while decompressing SNAP compressed string table
-    SnapError(snap::Error),
-    /// Unexpected size after decompressing SNAP data
+    #[error(
+        display = "Error while decompressing SNAP compressed string table: {}",
+        _0
+    )]
+    SnapError(#[error(cause)] snap::Error),
+    #[error(
+        display = "Unexpected size after decompressing SNAP data, got {} bytes, expected {} bytes",
+        size,
+        expected
+    )]
     UnexpectedDecompressedSize {
         /// Expected decompressed size
         expected: u32,
         /// Actual decompressed size
         size: u32,
     },
-    /// Misc malformed demo error
+    #[error(display = "Malformed demo file: {}", _0)]
     InvalidDemo(&'static str),
 }
 
-#[derive(Debug)]
+/// Malformed demo file
+#[derive(Debug, Error)]
+pub enum MalformedDemoError {
+    #[error(display = "Packet identifier is invalid: {}", _0)]
+    InvalidPacketType(u8),
+    #[error(display = "Message identifier is invalid: {}", _0)]
+    InvalidMessageType(u8),
+    #[error(display = "Invalid SendProp type: {}", _0)]
+    InvalidSendPropType(u8),
+    #[error(display = "Invalid SendProp: {}", _0)]
+    InvalidSendProp(MalformedSendPropDefinitionError),
+    #[error(
+        display = "Unexpected amount of data left after parsing an object, {} bits remaining",
+        _0
+    )]
+    DataRemaining(usize),
+    #[error(display = "String table with index {} not found", _0)]
+    StringTableNotFound(u8),
+    #[error(display = "A malformed game event was read")]
+    MalformedGameEvent(#[error(cause)] GameEventError),
+    #[error(
+        display = "A read game event doesn't contain the expected values, expected type {} for {} event, got type {}",
+        expected_type,
+        name,
+        found_type
+    )]
+    InvalidGameEvent {
+        expected_type: GameEventValueType,
+        name: &'static str,
+        found_type: GameEventValueType,
+    },
+}
+
+#[derive(Debug, Error)]
+pub enum MalformedSendPropDefinitionError {
+    #[error(display = "Float property without defined size")]
+    UnsizedFloat,
+    #[error(display = "Array property without defined size")]
+    UnsizedArray,
+    #[error(display = "Array property without defined inner type")]
+    UntypedArray,
+    #[error(display = "Property used that can't be read")]
+    InvalidPropType,
+    #[error(display = "Array contents can't have the 'ChangesOften' flag")]
+    ArrayChangesOften,
+    #[error(display = "SendProp value out of range")]
+    OutOfRange,
+}
+
+#[derive(Debug, Error)]
 pub enum GameEventError {
+    #[error(display = "Incorrect number of values")]
     IncorrectValueCount,
+    #[error(display = "Event with 'none' value")]
     NoneValue,
+    #[error(display = "Unknown type")]
     UnknownType,
 }
 
 impl From<ReadError> for ParseError {
     fn from(err: ReadError) -> ParseError {
-        ParseError::ReadError(err)
+        match err {
+            ReadError::Utf8Error(utf8_error) => ParseError::MalformedUTF8(utf8_error),
+            _ => ParseError::ReadError(err),
+        }
     }
 }
 
 impl From<snap::Error> for ParseError {
     fn from(err: snap::Error) -> ParseError {
         ParseError::SnapError(err)
+    }
+}
+
+impl From<MalformedDemoError> for ParseError {
+    fn from(err: MalformedDemoError) -> ParseError {
+        ParseError::MalformedDemo(err)
+    }
+}
+
+impl From<MalformedSendPropDefinitionError> for ParseError {
+    fn from(err: MalformedSendPropDefinitionError) -> ParseError {
+        ParseError::MalformedDemo(MalformedDemoError::InvalidSendProp(err))
+    }
+}
+
+impl From<GameEventError> for ParseError {
+    fn from(err: GameEventError) -> ParseError {
+        ParseError::MalformedDemo(MalformedDemoError::MalformedGameEvent(err))
     }
 }
 

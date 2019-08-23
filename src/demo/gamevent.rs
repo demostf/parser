@@ -1,9 +1,10 @@
 use bitstream_reader::BitRead;
 
-use crate::{ParseError, Result};
+use crate::{MalformedDemoError, ParseError, Result};
 
 pub use super::gameevent_gen::{GameEvent, GameEventType};
 use crate::demo::message::gameevent::GameEventTypeId;
+use std::fmt;
 
 #[derive(Debug)]
 pub struct GameEventDefinition {
@@ -32,6 +33,21 @@ pub enum GameEventValueType {
     Local = 7,
 }
 
+impl fmt::Display for GameEventValueType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            GameEventValueType::None => write!(f, "None"),
+            GameEventValueType::String => write!(f, "String"),
+            GameEventValueType::Float => write!(f, "Float"),
+            GameEventValueType::Long => write!(f, "Long"),
+            GameEventValueType::Short => write!(f, "Short"),
+            GameEventValueType::Byte => write!(f, "Byte"),
+            GameEventValueType::Boolean => write!(f, "Boolean"),
+            GameEventValueType::Local => write!(f, "Local"),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum GameEventValue {
     String(String),
@@ -43,6 +59,20 @@ pub enum GameEventValue {
     Local,
 }
 
+impl GameEventValue {
+    pub fn get_type(&self) -> GameEventValueType {
+        match self {
+            GameEventValue::String(_) => GameEventValueType::String,
+            GameEventValue::Float(_) => GameEventValueType::Float,
+            GameEventValue::Long(_) => GameEventValueType::Long,
+            GameEventValue::Short(_) => GameEventValueType::Short,
+            GameEventValue::Byte(_) => GameEventValueType::Byte,
+            GameEventValue::Boolean(_) => GameEventValueType::Boolean,
+            GameEventValue::Local => GameEventValueType::Local,
+        }
+    }
+}
+
 pub trait FromGameEventValue: Sized {
     fn from_value(value: GameEventValue, name: &'static str) -> Result<Self>;
 }
@@ -51,11 +81,12 @@ impl FromGameEventValue for String {
     fn from_value(value: GameEventValue, name: &'static str) -> Result<Self> {
         match value {
             GameEventValue::String(val) => Ok(val),
-            _ => Err(ParseError::InvalidGameEvent {
+            _ => Err(MalformedDemoError::InvalidGameEvent {
                 expected_type: GameEventValueType::String,
                 name,
-                value,
-            }),
+                found_type: value.get_type(),
+            }
+            .into()),
         }
     }
 }
@@ -64,11 +95,12 @@ impl FromGameEventValue for f32 {
     fn from_value(value: GameEventValue, name: &'static str) -> Result<Self> {
         match value {
             GameEventValue::Float(val) => Ok(val),
-            _ => Err(ParseError::InvalidGameEvent {
+            _ => Err(MalformedDemoError::InvalidGameEvent {
                 expected_type: GameEventValueType::Float,
                 name,
-                value,
-            }),
+                found_type: value.get_type(),
+            }
+            .into()),
         }
     }
 }
@@ -77,11 +109,12 @@ impl FromGameEventValue for u32 {
     fn from_value(value: GameEventValue, name: &'static str) -> Result<Self> {
         match value {
             GameEventValue::Long(val) => Ok(val),
-            _ => Err(ParseError::InvalidGameEvent {
+            _ => Err(MalformedDemoError::InvalidGameEvent {
                 expected_type: GameEventValueType::Long,
                 name,
-                value,
-            }),
+                found_type: value.get_type(),
+            }
+            .into()),
         }
     }
 }
@@ -90,11 +123,12 @@ impl FromGameEventValue for u16 {
     fn from_value(value: GameEventValue, name: &'static str) -> Result<Self> {
         match value {
             GameEventValue::Short(val) => Ok(val),
-            _ => Err(ParseError::InvalidGameEvent {
+            _ => Err(MalformedDemoError::InvalidGameEvent {
                 expected_type: GameEventValueType::Short,
                 name,
-                value,
-            }),
+                found_type: value.get_type(),
+            }
+            .into()),
         }
     }
 }
@@ -103,11 +137,12 @@ impl FromGameEventValue for u8 {
     fn from_value(value: GameEventValue, name: &'static str) -> Result<Self> {
         match value {
             GameEventValue::Byte(val) => Ok(val),
-            _ => Err(ParseError::InvalidGameEvent {
+            _ => Err(MalformedDemoError::InvalidGameEvent {
                 expected_type: GameEventValueType::Byte,
                 name,
-                value,
-            }),
+                found_type: value.get_type(),
+            }
+            .into()),
         }
     }
 }
@@ -116,11 +151,12 @@ impl FromGameEventValue for bool {
     fn from_value(value: GameEventValue, name: &'static str) -> Result<Self> {
         match value {
             GameEventValue::Boolean(val) => Ok(val),
-            _ => Err(ParseError::InvalidGameEvent {
+            _ => Err(MalformedDemoError::InvalidGameEvent {
                 expected_type: GameEventValueType::Boolean,
                 name,
-                value,
-            }),
+                found_type: value.get_type(),
+            }
+            .into()),
         }
     }
 }
@@ -129,11 +165,12 @@ impl FromGameEventValue for () {
     fn from_value(value: GameEventValue, name: &'static str) -> Result<Self> {
         match value {
             GameEventValue::Local => Ok(()),
-            _ => Err(ParseError::InvalidGameEvent {
+            _ => Err(MalformedDemoError::InvalidGameEvent {
                 expected_type: GameEventValueType::Local,
                 name,
-                value,
-            }),
+                found_type: value.get_type(),
+            }
+            .into()),
         }
     }
 }

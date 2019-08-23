@@ -2,12 +2,13 @@ use bitstream_reader::{BitRead, LittleEndian};
 use enumflags2::BitFlags;
 use enumflags2_derive::EnumFlags;
 
-use crate::{Parse, ParseError, ReadResult, Result, Stream};
+use crate::{MalformedDemoError, Parse, ParseError, ReadResult, Result, Stream};
 
 use super::packet::datatable::ParseSendTable;
 use super::vector::{Vector, VectorXY};
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
+use crate::demo::parser::MalformedSendPropDefinitionError;
 use std::convert::TryInto;
 use std::fmt;
 use std::rc::Rc;
@@ -236,9 +237,7 @@ impl SendPropValue {
                 Self::read_vector_xy(stream, definition).map(SendPropValue::from)
             }
             SendPropType::Array => Self::read_array(stream, definition).map(SendPropValue::from),
-            _ => Err(ParseError::InvalidSendProp(
-                "Prop type not allowed in entity",
-            )),
+            _ => Err(MalformedSendPropDefinitionError::InvalidPropType.into()),
         }
     }
 
@@ -251,7 +250,7 @@ impl SendPropValue {
                 let unsigned: u32 = stream.read()?;
                 unsigned
                     .try_into()
-                    .map_err(|_| ParseError::InvalidSendProp("SendProp value out of range"))
+                    .map_err(|_| MalformedSendPropDefinitionError::OutOfRange.into())
             } else {
                 stream.read().map_err(ParseError::from)
             }
@@ -265,7 +264,7 @@ impl SendPropValue {
         let num_bits = log_base2(
             definition
                 .element_count
-                .ok_or(ParseError::InvalidSendProp("Unsized array"))?,
+                .ok_or(MalformedSendPropDefinitionError::UnsizedArray)?,
         );
 
         let count = stream.read_int(num_bits as usize)?;
@@ -277,7 +276,7 @@ impl SendPropValue {
                 definition
                     .array_property
                     .as_ref()
-                    .ok_or(ParseError::InvalidSendProp("Untyped array"))?,
+                    .ok_or(MalformedSendPropDefinitionError::UntypedArray)?,
             )?;
             values.push(value);
         }
@@ -321,13 +320,13 @@ impl SendPropValue {
         } else {
             let bit_count = definition
                 .bit_count
-                .ok_or(ParseError::InvalidSendProp("Unsized float"))?;
+                .ok_or(MalformedSendPropDefinitionError::UnsizedFloat)?;
             let high = definition
                 .high_value
-                .ok_or(ParseError::InvalidSendProp("Unsized float"))?;
+                .ok_or(MalformedSendPropDefinitionError::UnsizedFloat)?;
             let low = definition
                 .low_value
-                .ok_or(ParseError::InvalidSendProp("Unsized float"))?;
+                .ok_or(MalformedSendPropDefinitionError::UnsizedFloat)?;
             let raw: u32 = stream.read_int(bit_count as usize)?;
             let percentage = (raw as f32) * get_frac_factor(bit_count as usize);
             Ok(low + ((high - low) * percentage))
