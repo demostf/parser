@@ -142,7 +142,7 @@ pub struct SayText2Message {
     pub client: u8,
     pub raw: u8,
     pub kind: ChatMessageKind,
-    pub from: String,
+    pub from: Option<String>,
     pub text: String,
 }
 
@@ -157,47 +157,45 @@ impl BitRead<LittleEndian> for SayText2Message {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let client = stream.read()?;
         let raw = stream.read()?;
-        let (kind, from, text): (ChatMessageKind, String, String) = if stream.read::<u8>()? == 1 {
-            let first = stream.read::<u8>()?;
-            if first == 7 {
-                let _color = stream.read_string(Some(6))?;
-            } else {
-                let _ = stream.skip_bits(8)?;
-            }
+        let (kind, from, text): (ChatMessageKind, Option<String>, String) =
+            if stream.read::<u8>()? == 1 {
+                let first = stream.read::<u8>()?;
+                if first == 7 {
+                    let _color = stream.read_string(Some(6))?;
+                } else {
+                    let _ = stream.skip_bits(8)?;
+                }
 
-            let text: String = stream.read().or_else(handle_utf8_error)?;
-            if text.starts_with("*DEAD*") {
-                // grave talk is in the format '*DEAD* \u0003$from\u0001:    $text'b
-                let start = text.find(char::from(3)).unwrap_or(0);
-                let end = text.find(char::from(1)).unwrap_or(0);
-                let from: String = String::from_utf8(
-                    text.bytes().skip(start + 1).take(end - start - 1).collect(),
-                )?;
-                let text: String = String::from_utf8(text.bytes().skip(end + 5).collect())?;
-                let kind = ChatMessageKind::ChatAllDead;
-                (kind, from, text)
+                let text: String = stream.read().or_else(handle_utf8_error)?;
+                if text.starts_with("*DEAD*") {
+                    // grave talk is in the format '*DEAD* \u0003$from\u0001:    $text'b
+                    let start = text.find(char::from(3)).unwrap_or(0);
+                    let end = text.find(char::from(1)).unwrap_or(0);
+                    let from: String = text.chars().skip(start + 1).take(end - start - 1).collect();
+                    let text: String = text.chars().skip(end + 5).collect();
+                    let kind = ChatMessageKind::ChatAllDead;
+                    (kind, Some(from), text)
+                } else {
+                    (ChatMessageKind::ChatAll, None, text)
+                }
             } else {
-                (ChatMessageKind::ChatAll, "".to_owned(), text)
-            }
-        } else {
-            let _ = stream.set_pos(stream.pos() - 8)?;
+                let _ = stream.set_pos(stream.pos() - 8)?;
 
-            let kind = stream.read()?;
-            let from = stream.read().or_else(handle_utf8_error)?;
-            let text = stream.read().or_else(handle_utf8_error)?;
-            let _ = stream.skip_bits(16)?;
-            (kind, from, text)
-        };
+                let kind = stream.read()?;
+                let from = stream.read().or_else(handle_utf8_error)?;
+                let text = stream.read().or_else(handle_utf8_error)?;
+                let _ = stream.skip_bits(16)?;
+                (kind, Some(from), text)
+            };
 
         // cleanup color codes
         let mut text = text.replace(char::from(1), "").replace(char::from(3), "");
         while let Some(pos) = text.find(char::from(7)) {
-            text = String::from_utf8(
-                text.bytes()
-                    .take(pos)
-                    .chain(text.bytes().skip(pos + 7))
-                    .collect(),
-            )?;
+            text = text
+                .chars()
+                .take(pos)
+                .chain(text.chars().skip(pos + 7))
+                .collect();
         }
 
         Ok(SayText2Message {

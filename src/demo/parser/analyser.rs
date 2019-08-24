@@ -26,7 +26,7 @@ impl ChatMassage {
     pub fn from_message(message: SayText2Message, tick: u32) -> Self {
         ChatMassage {
             kind: message.kind,
-            from: message.from,
+            from: message.from.unwrap_or_default(),
             text: message.text,
             tick,
         }
@@ -232,21 +232,21 @@ impl Analyser {
     }
 
     fn handle_user_message(&mut self, message: UserMessage, tick: u32) {
-        match message {
-            UserMessage::SayText2(message) => match message.kind {
-                ChatMessageKind::NameChange => self.change_name(message.from, message.text),
-                _ => self.chat.push(ChatMassage::from_message(message, tick)),
-            },
-            _ => {}
+        if let UserMessage::SayText2(text_message) = message {
+            if text_message.kind == ChatMessageKind::NameChange {
+                if let Some(from) = text_message.from {
+                    self.change_name(from, text_message.text);
+                }
+            } else {
+                self.chat
+                    .push(ChatMassage::from_message(text_message, tick));
+            }
         }
     }
 
     fn change_name(&mut self, from: String, to: String) {
-        for (_, user) in self.users.iter_mut() {
-            if user.name == from {
-                user.name = to;
-                return;
-            }
+        if let Some(user) = self.users.values_mut().find(|user| user.name == from) {
+            user.name = to;
         }
     }
 
@@ -316,9 +316,9 @@ impl UserState {
 
         users
             .into_iter()
-            .map(|(user_id, user)| {
+            .map(|(_, user)| {
                 (
-                    user_id,
+                    user.user_id,
                     UserState {
                         classes: classes.remove(&user.user_id).unwrap_or(HashMap::new()),
                         team: teams.remove(&user.user_id).unwrap_or(Team::Other),
