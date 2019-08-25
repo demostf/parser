@@ -1,8 +1,5 @@
 use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
 use crate::{GameEventError, MalformedDemoError, Result};
-
-// auto generated, nobody in their right mind would write this manually
-
 #[derive(Debug)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
@@ -99,7 +96,6 @@ impl FromRawGameEvent for ServerSpawnEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ServerShutdownEvent {
     pub reason: String,
@@ -122,7 +118,6 @@ impl FromRawGameEvent for ServerShutdownEvent {
         Ok(ServerShutdownEvent { reason })
     }
 }
-
 #[derive(Debug)]
 pub struct ServerCvarEvent {
     pub cvar_name: String,
@@ -155,7 +150,6 @@ impl FromRawGameEvent for ServerCvarEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ServerMessageEvent {
     pub text: String,
@@ -178,7 +172,6 @@ impl FromRawGameEvent for ServerMessageEvent {
         Ok(ServerMessageEvent { text })
     }
 }
-
 #[derive(Debug)]
 pub struct ServerAddBanEvent {
     pub name: String,
@@ -251,7 +244,6 @@ impl FromRawGameEvent for ServerAddBanEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ServerRemoveBanEvent {
     pub network_id: String,
@@ -288,7 +280,6 @@ impl FromRawGameEvent for ServerRemoveBanEvent {
         Ok(ServerRemoveBanEvent { network_id, ip, by })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerConnectEvent {
     pub name: String,
@@ -353,7 +344,6 @@ impl FromRawGameEvent for PlayerConnectEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerConnectClientEvent {
     pub name: String,
@@ -410,7 +400,6 @@ impl FromRawGameEvent for PlayerConnectClientEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerInfoEvent {
     pub name: String,
@@ -467,7 +456,6 @@ impl FromRawGameEvent for PlayerInfoEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerDisconnectEvent {
     pub user_id: u16,
@@ -524,7 +512,6 @@ impl FromRawGameEvent for PlayerDisconnectEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerActivateEvent {
     pub user_id: u16,
@@ -547,7 +534,6 @@ impl FromRawGameEvent for PlayerActivateEvent {
         Ok(PlayerActivateEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerSayEvent {
     pub user_id: u16,
@@ -577,7 +563,6 @@ impl FromRawGameEvent for PlayerSayEvent {
         Ok(PlayerSayEvent { user_id, text })
     }
 }
-
 #[derive(Debug)]
 pub struct ClientDisconnectEvent {
     pub message: String,
@@ -600,7 +585,6 @@ impl FromRawGameEvent for ClientDisconnectEvent {
         Ok(ClientDisconnectEvent { message })
     }
 }
-
 #[derive(Debug)]
 pub struct ClientBeginConnectEvent {
     pub address: String,
@@ -649,7 +633,6 @@ impl FromRawGameEvent for ClientBeginConnectEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ClientConnectedEvent {
     pub address: String,
@@ -686,7 +669,6 @@ impl FromRawGameEvent for ClientConnectedEvent {
         Ok(ClientConnectedEvent { address, ip, port })
     }
 }
-
 #[derive(Debug)]
 pub struct ClientFullConnectEvent {
     pub address: String,
@@ -723,7 +705,6 @@ impl FromRawGameEvent for ClientFullConnectEvent {
         Ok(ClientFullConnectEvent { address, ip, port })
     }
 }
-
 #[derive(Debug)]
 pub struct HostQuitEvent {}
 impl FromRawGameEvent for HostQuitEvent {
@@ -731,7 +712,6 @@ impl FromRawGameEvent for HostQuitEvent {
         Ok(HostQuitEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamInfoEvent {
     pub team_id: u8,
@@ -761,7 +741,6 @@ impl FromRawGameEvent for TeamInfoEvent {
         Ok(TeamInfoEvent { team_id, team_name })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamScoreEvent {
     pub team_id: u8,
@@ -791,7 +770,6 @@ impl FromRawGameEvent for TeamScoreEvent {
         Ok(TeamScoreEvent { team_id, score })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayBroadcastAudioEvent {
     pub team: u8,
@@ -832,7 +810,6 @@ impl FromRawGameEvent for TeamPlayBroadcastAudioEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerTeamEvent {
     pub user_id: u16,
@@ -905,7 +882,6 @@ impl FromRawGameEvent for PlayerTeamEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerClassEvent {
     pub user_id: u16,
@@ -935,7 +911,6 @@ impl FromRawGameEvent for PlayerClassEvent {
         Ok(PlayerClassEvent { user_id, class })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerDeathEvent {
     pub user_id: u16,
@@ -1144,7 +1119,6 @@ impl FromRawGameEvent for PlayerDeathEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHurtEvent {
     pub user_id: u16,
@@ -1249,7 +1223,6 @@ impl FromRawGameEvent for PlayerHurtEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerChatEvent {
     pub team_only: bool,
@@ -1290,7 +1263,6 @@ impl FromRawGameEvent for PlayerChatEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerScoreEvent {
     pub user_id: u16,
@@ -1339,7 +1311,6 @@ impl FromRawGameEvent for PlayerScoreEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerSpawnEvent {
     pub user_id: u16,
@@ -1380,7 +1351,6 @@ impl FromRawGameEvent for PlayerSpawnEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerShootEvent {
     pub user_id: u16,
@@ -1421,7 +1391,6 @@ impl FromRawGameEvent for PlayerShootEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerUseEvent {
     pub user_id: u16,
@@ -1451,7 +1420,6 @@ impl FromRawGameEvent for PlayerUseEvent {
         Ok(PlayerUseEvent { user_id, entity })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerChangeNameEvent {
     pub user_id: u16,
@@ -1492,7 +1460,6 @@ impl FromRawGameEvent for PlayerChangeNameEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHintMessageEvent {
     pub hint_message: String,
@@ -1515,7 +1482,6 @@ impl FromRawGameEvent for PlayerHintMessageEvent {
         Ok(PlayerHintMessageEvent { hint_message })
     }
 }
-
 #[derive(Debug)]
 pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
@@ -1538,7 +1504,6 @@ impl FromRawGameEvent for BasePlayerTeleportedEvent {
         Ok(BasePlayerTeleportedEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct GameInitEvent {}
 impl FromRawGameEvent for GameInitEvent {
@@ -1546,7 +1511,6 @@ impl FromRawGameEvent for GameInitEvent {
         Ok(GameInitEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct GameNewMapEvent {
     pub map_name: String,
@@ -1569,7 +1533,6 @@ impl FromRawGameEvent for GameNewMapEvent {
         Ok(GameNewMapEvent { map_name })
     }
 }
-
 #[derive(Debug)]
 pub struct GameStartEvent {
     pub rounds_limit: u32,
@@ -1618,7 +1581,6 @@ impl FromRawGameEvent for GameStartEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct GameEndEvent {
     pub winner: u8,
@@ -1641,7 +1603,6 @@ impl FromRawGameEvent for GameEndEvent {
         Ok(GameEndEvent { winner })
     }
 }
-
 #[derive(Debug)]
 pub struct RoundStartEvent {
     pub time_limit: u32,
@@ -1682,7 +1643,6 @@ impl FromRawGameEvent for RoundStartEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct RoundEndEvent {
     pub winner: u8,
@@ -1723,7 +1683,6 @@ impl FromRawGameEvent for RoundEndEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct GameMessageEvent {
     pub target: u8,
@@ -1753,7 +1712,6 @@ impl FromRawGameEvent for GameMessageEvent {
         Ok(GameMessageEvent { target, text })
     }
 }
-
 #[derive(Debug)]
 pub struct BreakBreakableEvent {
     pub ent_index: u32,
@@ -1794,7 +1752,6 @@ impl FromRawGameEvent for BreakBreakableEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct BreakPropEvent {
     pub ent_index: u32,
@@ -1824,7 +1781,6 @@ impl FromRawGameEvent for BreakPropEvent {
         Ok(BreakPropEvent { ent_index, user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct EntityKilledEvent {
     pub ent_index_killed: u32,
@@ -1873,7 +1829,6 @@ impl FromRawGameEvent for EntityKilledEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct BonusUpdatedEvent {
     pub num_advanced: u16,
@@ -1922,7 +1877,6 @@ impl FromRawGameEvent for BonusUpdatedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct AchievementEventEvent {
     pub achievement_name: String,
@@ -1963,7 +1917,6 @@ impl FromRawGameEvent for AchievementEventEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct AchievementIncrementEvent {
     pub achievement_id: u32,
@@ -2004,7 +1957,6 @@ impl FromRawGameEvent for AchievementIncrementEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PhysgunPickupEvent {
     pub ent_index: u32,
@@ -2027,7 +1979,6 @@ impl FromRawGameEvent for PhysgunPickupEvent {
         Ok(PhysgunPickupEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
@@ -2050,7 +2001,6 @@ impl FromRawGameEvent for FlareIgniteNpcEvent {
         Ok(FlareIgniteNpcEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl FromRawGameEvent for HelicopterGrenadePuntMissEvent {
@@ -2058,7 +2008,6 @@ impl FromRawGameEvent for HelicopterGrenadePuntMissEvent {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct UserDataDownloadedEvent {}
 impl FromRawGameEvent for UserDataDownloadedEvent {
@@ -2066,7 +2015,6 @@ impl FromRawGameEvent for UserDataDownloadedEvent {
         Ok(UserDataDownloadedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
@@ -2089,7 +2037,6 @@ impl FromRawGameEvent for RagdollDissolvedEvent {
         Ok(RagdollDissolvedEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVChangedModeEvent {
     pub old_mode: u16,
@@ -2130,7 +2077,6 @@ impl FromRawGameEvent for HLTVChangedModeEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVChangedTargetEvent {
     pub mode: u16,
@@ -2171,7 +2117,6 @@ impl FromRawGameEvent for HLTVChangedTargetEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct VoteEndedEvent {}
 impl FromRawGameEvent for VoteEndedEvent {
@@ -2179,11 +2124,10 @@ impl FromRawGameEvent for VoteEndedEvent {
         Ok(VoteEndedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct VoteStartedEvent {
     pub issue: String,
-    pub param1: String,
+    pub param_1: String,
     pub team: u8,
     pub initiator: u32,
 }
@@ -2208,11 +2152,11 @@ impl FromRawGameEvent for VoteStartedEvent {
             ))?,
             "team",
         )?;
-        let param1: String = String::from_value(
+        let param_1: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "param1",
+            "param_1",
         )?;
         let issue: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
@@ -2222,20 +2166,19 @@ impl FromRawGameEvent for VoteStartedEvent {
         )?;
         Ok(VoteStartedEvent {
             issue,
-            param1,
+            param_1,
             team,
             initiator,
         })
     }
 }
-
 #[derive(Debug)]
 pub struct VoteChangedEvent {
-    pub vote_option1: u8,
-    pub vote_option2: u8,
-    pub vote_option3: u8,
-    pub vote_option4: u8,
-    pub vote_option5: u8,
+    pub vote_option_1: u8,
+    pub vote_option_2: u8,
+    pub vote_option_3: u8,
+    pub vote_option_4: u8,
+    pub vote_option_5: u8,
     pub potential_votes: u8,
 }
 impl FromRawGameEvent for VoteChangedEvent {
@@ -2253,51 +2196,50 @@ impl FromRawGameEvent for VoteChangedEvent {
             ))?,
             "potential_votes",
         )?;
-        let vote_option5: u8 = u8::from_value(
+        let vote_option_5: u8 = u8::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "vote_option5",
+            "vote_option_5",
         )?;
-        let vote_option4: u8 = u8::from_value(
+        let vote_option_4: u8 = u8::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "vote_option4",
+            "vote_option_4",
         )?;
-        let vote_option3: u8 = u8::from_value(
+        let vote_option_3: u8 = u8::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "vote_option3",
+            "vote_option_3",
         )?;
-        let vote_option2: u8 = u8::from_value(
+        let vote_option_2: u8 = u8::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "vote_option2",
+            "vote_option_2",
         )?;
-        let vote_option1: u8 = u8::from_value(
+        let vote_option_1: u8 = u8::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "vote_option1",
+            "vote_option_1",
         )?;
         Ok(VoteChangedEvent {
-            vote_option1,
-            vote_option2,
-            vote_option3,
-            vote_option4,
-            vote_option5,
+            vote_option_1,
+            vote_option_2,
+            vote_option_3,
+            vote_option_4,
+            vote_option_5,
             potential_votes,
         })
     }
 }
-
 #[derive(Debug)]
 pub struct VotePassedEvent {
     pub details: String,
-    pub param1: String,
+    pub param_1: String,
     pub team: u8,
 }
 impl FromRawGameEvent for VotePassedEvent {
@@ -2315,11 +2257,11 @@ impl FromRawGameEvent for VotePassedEvent {
             ))?,
             "team",
         )?;
-        let param1: String = String::from_value(
+        let param_1: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "param1",
+            "param_1",
         )?;
         let details: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
@@ -2329,12 +2271,11 @@ impl FromRawGameEvent for VotePassedEvent {
         )?;
         Ok(VotePassedEvent {
             details,
-            param1,
+            param_1,
             team,
         })
     }
 }
-
 #[derive(Debug)]
 pub struct VoteFailedEvent {
     pub team: u8,
@@ -2357,7 +2298,6 @@ impl FromRawGameEvent for VoteFailedEvent {
         Ok(VoteFailedEvent { team })
     }
 }
-
 #[derive(Debug)]
 pub struct VoteCastEvent {
     pub vote_option: u8,
@@ -2398,15 +2338,14 @@ impl FromRawGameEvent for VoteCastEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct VoteOptionsEvent {
     pub count: u8,
-    pub option1: String,
-    pub option2: String,
-    pub option3: String,
-    pub option4: String,
-    pub option5: String,
+    pub option_1: String,
+    pub option_2: String,
+    pub option_3: String,
+    pub option_4: String,
+    pub option_5: String,
 }
 impl FromRawGameEvent for VoteOptionsEvent {
     fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
@@ -2417,35 +2356,35 @@ impl FromRawGameEvent for VoteOptionsEvent {
             .into());
         }
         values.truncate(6);
-        let option5: String = String::from_value(
+        let option_5: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "option5",
+            "option_5",
         )?;
-        let option4: String = String::from_value(
+        let option_4: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "option4",
+            "option_4",
         )?;
-        let option3: String = String::from_value(
+        let option_3: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "option3",
+            "option_3",
         )?;
-        let option2: String = String::from_value(
+        let option_2: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "option2",
+            "option_2",
         )?;
-        let option1: String = String::from_value(
+        let option_1: String = String::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "option1",
+            "option_1",
         )?;
         let count: u8 = u8::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
@@ -2455,15 +2394,14 @@ impl FromRawGameEvent for VoteOptionsEvent {
         )?;
         Ok(VoteOptionsEvent {
             count,
-            option1,
-            option2,
-            option3,
-            option4,
-            option5,
+            option_1,
+            option_2,
+            option_3,
+            option_4,
+            option_5,
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ReplaySavedEvent {}
 impl FromRawGameEvent for ReplaySavedEvent {
@@ -2471,7 +2409,6 @@ impl FromRawGameEvent for ReplaySavedEvent {
         Ok(ReplaySavedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct EnteredPerformanceModeEvent {}
 impl FromRawGameEvent for EnteredPerformanceModeEvent {
@@ -2479,7 +2416,6 @@ impl FromRawGameEvent for EnteredPerformanceModeEvent {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct BrowseReplaysEvent {}
 impl FromRawGameEvent for BrowseReplaysEvent {
@@ -2487,7 +2423,6 @@ impl FromRawGameEvent for BrowseReplaysEvent {
         Ok(BrowseReplaysEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ReplayYoutubeStatsEvent {
     pub views: u32,
@@ -2528,7 +2463,6 @@ impl FromRawGameEvent for ReplayYoutubeStatsEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct InventoryUpdatedEvent {}
 impl FromRawGameEvent for InventoryUpdatedEvent {
@@ -2536,7 +2470,6 @@ impl FromRawGameEvent for InventoryUpdatedEvent {
         Ok(InventoryUpdatedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct CartUpdatedEvent {}
 impl FromRawGameEvent for CartUpdatedEvent {
@@ -2544,7 +2477,6 @@ impl FromRawGameEvent for CartUpdatedEvent {
         Ok(CartUpdatedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
@@ -2552,7 +2484,6 @@ impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct GcConnectedEvent {}
 impl FromRawGameEvent for GcConnectedEvent {
@@ -2560,7 +2491,6 @@ impl FromRawGameEvent for GcConnectedEvent {
         Ok(GcConnectedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ItemSchemaInitializedEvent {}
 impl FromRawGameEvent for ItemSchemaInitializedEvent {
@@ -2568,7 +2498,6 @@ impl FromRawGameEvent for ItemSchemaInitializedEvent {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct IntroFinishEvent {
     pub player: u16,
@@ -2591,7 +2520,6 @@ impl FromRawGameEvent for IntroFinishEvent {
         Ok(IntroFinishEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct IntroNextCameraEvent {
     pub player: u16,
@@ -2614,7 +2542,6 @@ impl FromRawGameEvent for IntroNextCameraEvent {
         Ok(IntroNextCameraEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct MmLobbyChatEvent {
     pub steam_id: String,
@@ -2655,7 +2582,6 @@ impl FromRawGameEvent for MmLobbyChatEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct MmLobbyMemberJoinEvent {
     pub steam_id: String,
@@ -2678,7 +2604,6 @@ impl FromRawGameEvent for MmLobbyMemberJoinEvent {
         Ok(MmLobbyMemberJoinEvent { steam_id })
     }
 }
-
 #[derive(Debug)]
 pub struct MmLobbyMemberLeaveEvent {
     pub steam_id: String,
@@ -2708,7 +2633,6 @@ impl FromRawGameEvent for MmLobbyMemberLeaveEvent {
         Ok(MmLobbyMemberLeaveEvent { steam_id, flags })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerChangeClassEvent {
     pub user_id: u16,
@@ -2738,7 +2662,6 @@ impl FromRawGameEvent for PlayerChangeClassEvent {
         Ok(PlayerChangeClassEvent { user_id, class })
     }
 }
-
 #[derive(Debug)]
 pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
@@ -2761,7 +2684,6 @@ impl FromRawGameEvent for TfMapTimeRemainingEvent {
         Ok(TfMapTimeRemainingEvent { seconds })
     }
 }
-
 #[derive(Debug)]
 pub struct TfGameOverEvent {
     pub reason: String,
@@ -2784,7 +2706,6 @@ impl FromRawGameEvent for TfGameOverEvent {
         Ok(TfGameOverEvent { reason })
     }
 }
-
 #[derive(Debug)]
 pub struct CtfFlagCapturedEvent {
     pub capping_team: u16,
@@ -2817,7 +2738,6 @@ impl FromRawGameEvent for CtfFlagCapturedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointInitializedEvent {}
 impl FromRawGameEvent for ControlPointInitializedEvent {
@@ -2825,7 +2745,6 @@ impl FromRawGameEvent for ControlPointInitializedEvent {
         Ok(ControlPointInitializedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
@@ -2848,7 +2767,6 @@ impl FromRawGameEvent for ControlPointUpdateImagesEvent {
         Ok(ControlPointUpdateImagesEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
@@ -2871,7 +2789,6 @@ impl FromRawGameEvent for ControlPointUpdateLayoutEvent {
         Ok(ControlPointUpdateLayoutEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
@@ -2894,7 +2811,6 @@ impl FromRawGameEvent for ControlPointUpdateCappingEvent {
         Ok(ControlPointUpdateCappingEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
@@ -2917,7 +2833,6 @@ impl FromRawGameEvent for ControlPointUpdateOwnerEvent {
         Ok(ControlPointUpdateOwnerEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointStartTouchEvent {
     pub player: u16,
@@ -2947,7 +2862,6 @@ impl FromRawGameEvent for ControlPointStartTouchEvent {
         Ok(ControlPointStartTouchEvent { player, area })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointEndTouchEvent {
     pub player: u16,
@@ -2977,7 +2891,6 @@ impl FromRawGameEvent for ControlPointEndTouchEvent {
         Ok(ControlPointEndTouchEvent { player, area })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointPulseElementEvent {
     pub player: u16,
@@ -3000,7 +2913,6 @@ impl FromRawGameEvent for ControlPointPulseElementEvent {
         Ok(ControlPointPulseElementEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointFakeCaptureEvent {
     pub player: u16,
@@ -3030,7 +2942,6 @@ impl FromRawGameEvent for ControlPointFakeCaptureEvent {
         Ok(ControlPointFakeCaptureEvent { player, int_data })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointFakeCaptureMultiplierEvent {
     pub player: u16,
@@ -3060,7 +2971,6 @@ impl FromRawGameEvent for ControlPointFakeCaptureMultiplierEvent {
         Ok(ControlPointFakeCaptureMultiplierEvent { player, int_data })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
@@ -3083,7 +2993,6 @@ impl FromRawGameEvent for TeamPlayRoundSelectedEvent {
         Ok(TeamPlayRoundSelectedEvent { round })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
@@ -3106,7 +3015,6 @@ impl FromRawGameEvent for TeamPlayRoundStartEvent {
         Ok(TeamPlayRoundStartEvent { full_reset })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayRoundActiveEvent {}
 impl FromRawGameEvent for TeamPlayRoundActiveEvent {
@@ -3114,7 +3022,6 @@ impl FromRawGameEvent for TeamPlayRoundActiveEvent {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl FromRawGameEvent for TeamPlayWaitingBeginsEvent {
@@ -3122,7 +3029,6 @@ impl FromRawGameEvent for TeamPlayWaitingBeginsEvent {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl FromRawGameEvent for TeamPlayWaitingEndsEvent {
@@ -3130,7 +3036,6 @@ impl FromRawGameEvent for TeamPlayWaitingEndsEvent {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl FromRawGameEvent for TeamPlayWaitingAboutToEndEvent {
@@ -3138,7 +3043,6 @@ impl FromRawGameEvent for TeamPlayWaitingAboutToEndEvent {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayRestartRoundEvent {}
 impl FromRawGameEvent for TeamPlayRestartRoundEvent {
@@ -3146,7 +3050,6 @@ impl FromRawGameEvent for TeamPlayRestartRoundEvent {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayReadyRestartEvent {}
 impl FromRawGameEvent for TeamPlayReadyRestartEvent {
@@ -3154,7 +3057,6 @@ impl FromRawGameEvent for TeamPlayReadyRestartEvent {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
@@ -3177,7 +3079,6 @@ impl FromRawGameEvent for TeamPlayRoundRestartSecondsEvent {
         Ok(TeamPlayRoundRestartSecondsEvent { seconds })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
@@ -3200,7 +3101,6 @@ impl FromRawGameEvent for TeamPlayTeamReadyEvent {
         Ok(TeamPlayTeamReadyEvent { team })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayRoundWinEvent {
     pub team: u8,
@@ -3273,7 +3173,6 @@ impl FromRawGameEvent for TeamPlayRoundWinEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl FromRawGameEvent for TeamPlayUpdateTimerEvent {
@@ -3281,7 +3180,6 @@ impl FromRawGameEvent for TeamPlayUpdateTimerEvent {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
@@ -3304,7 +3202,6 @@ impl FromRawGameEvent for TeamPlayRoundStalemateEvent {
         Ok(TeamPlayRoundStalemateEvent { reason })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl FromRawGameEvent for TeamPlayOvertimeBeginEvent {
@@ -3312,7 +3209,6 @@ impl FromRawGameEvent for TeamPlayOvertimeBeginEvent {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl FromRawGameEvent for TeamPlayOvertimeEndEvent {
@@ -3320,7 +3216,6 @@ impl FromRawGameEvent for TeamPlayOvertimeEndEvent {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl FromRawGameEvent for TeamPlaySuddenDeathBeginEvent {
@@ -3328,7 +3223,6 @@ impl FromRawGameEvent for TeamPlaySuddenDeathBeginEvent {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl FromRawGameEvent for TeamPlaySuddenDeathEndEvent {
@@ -3336,7 +3230,6 @@ impl FromRawGameEvent for TeamPlaySuddenDeathEndEvent {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayGameOverEvent {
     pub reason: String,
@@ -3359,7 +3252,6 @@ impl FromRawGameEvent for TeamPlayGameOverEvent {
         Ok(TeamPlayGameOverEvent { reason })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
@@ -3382,7 +3274,6 @@ impl FromRawGameEvent for TeamPlayMapTimeRemainingEvent {
         Ok(TeamPlayMapTimeRemainingEvent { seconds })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
@@ -3405,7 +3296,6 @@ impl FromRawGameEvent for TeamPlayTimerFlashEvent {
         Ok(TeamPlayTimerFlashEvent { time_remaining })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayTimerTimeAddedEvent {
     pub timer: u16,
@@ -3438,7 +3328,6 @@ impl FromRawGameEvent for TeamPlayTimerTimeAddedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayPointStartCaptureEvent {
     pub cp: u8,
@@ -3503,7 +3392,6 @@ impl FromRawGameEvent for TeamPlayPointStartCaptureEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayPointCapturedEvent {
     pub cp: u8,
@@ -3552,7 +3440,6 @@ impl FromRawGameEvent for TeamPlayPointCapturedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayPointLockedEvent {
     pub cp: u8,
@@ -3589,7 +3476,6 @@ impl FromRawGameEvent for TeamPlayPointLockedEvent {
         Ok(TeamPlayPointLockedEvent { cp, cp_name, team })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayPointUnlockedEvent {
     pub cp: u8,
@@ -3626,7 +3512,6 @@ impl FromRawGameEvent for TeamPlayPointUnlockedEvent {
         Ok(TeamPlayPointUnlockedEvent { cp, cp_name, team })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayCaptureBrokenEvent {
     pub cp: u8,
@@ -3667,7 +3552,6 @@ impl FromRawGameEvent for TeamPlayCaptureBrokenEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayCaptureBlockedEvent {
     pub cp: u8,
@@ -3708,7 +3592,6 @@ impl FromRawGameEvent for TeamPlayCaptureBlockedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayFlagEventEvent {
     pub player: u16,
@@ -3765,7 +3648,6 @@ impl FromRawGameEvent for TeamPlayFlagEventEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayWinPanelEvent {
     pub panel_style: u8,
@@ -3934,7 +3816,6 @@ impl FromRawGameEvent for TeamPlayWinPanelEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
@@ -3964,7 +3845,6 @@ impl FromRawGameEvent for TeamPlayTeamBalancedPlayerEvent {
         Ok(TeamPlayTeamBalancedPlayerEvent { player, team })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl FromRawGameEvent for TeamPlaySetupFinishedEvent {
@@ -3972,7 +3852,6 @@ impl FromRawGameEvent for TeamPlaySetupFinishedEvent {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
@@ -3995,7 +3874,6 @@ impl FromRawGameEvent for TeamPlayAlertEvent {
         Ok(TeamPlayAlertEvent { alert_type })
     }
 }
-
 #[derive(Debug)]
 pub struct TrainingCompleteEvent {
     pub next_map: String,
@@ -4036,7 +3914,6 @@ impl FromRawGameEvent for TrainingCompleteEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ShowFreezePanelEvent {
     pub killer: u16,
@@ -4059,7 +3936,6 @@ impl FromRawGameEvent for ShowFreezePanelEvent {
         Ok(ShowFreezePanelEvent { killer })
     }
 }
-
 #[derive(Debug)]
 pub struct HideFreezePanelEvent {}
 impl FromRawGameEvent for HideFreezePanelEvent {
@@ -4067,7 +3943,6 @@ impl FromRawGameEvent for HideFreezePanelEvent {
         Ok(HideFreezePanelEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct FreezeCamStartedEvent {}
 impl FromRawGameEvent for FreezeCamStartedEvent {
@@ -4075,7 +3950,6 @@ impl FromRawGameEvent for FreezeCamStartedEvent {
         Ok(FreezeCamStartedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl FromRawGameEvent for LocalPlayerChangeTeamEvent {
@@ -4083,7 +3957,6 @@ impl FromRawGameEvent for LocalPlayerChangeTeamEvent {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
@@ -4106,7 +3979,6 @@ impl FromRawGameEvent for LocalPlayerScoreChangedEvent {
         Ok(LocalPlayerScoreChangedEvent { score })
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerChangeClassEvent {}
 impl FromRawGameEvent for LocalPlayerChangeClassEvent {
@@ -4114,7 +3986,6 @@ impl FromRawGameEvent for LocalPlayerChangeClassEvent {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerRespawnEvent {}
 impl FromRawGameEvent for LocalPlayerRespawnEvent {
@@ -4122,7 +3993,6 @@ impl FromRawGameEvent for LocalPlayerRespawnEvent {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct BuildingInfoChangedEvent {
     pub building_type: u8,
@@ -4163,7 +4033,6 @@ impl FromRawGameEvent for BuildingInfoChangedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
@@ -4186,7 +4055,6 @@ impl FromRawGameEvent for LocalPlayerChangeDisguiseEvent {
         Ok(LocalPlayerChangeDisguiseEvent { disguised })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerAccountChangedEvent {
     pub old_value: u16,
@@ -4219,7 +4087,6 @@ impl FromRawGameEvent for PlayerAccountChangedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct SpyPdaResetEvent {}
 impl FromRawGameEvent for SpyPdaResetEvent {
@@ -4227,7 +4094,6 @@ impl FromRawGameEvent for SpyPdaResetEvent {
         Ok(SpyPdaResetEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct FlagStatusUpdateEvent {
     pub user_id: u16,
@@ -4257,7 +4123,6 @@ impl FromRawGameEvent for FlagStatusUpdateEvent {
         Ok(FlagStatusUpdateEvent { user_id, ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
@@ -4280,7 +4145,6 @@ impl FromRawGameEvent for PlayerStatsUpdatedEvent {
         Ok(PlayerStatsUpdatedEvent { force_upload })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayingCommentaryEvent {}
 impl FromRawGameEvent for PlayingCommentaryEvent {
@@ -4288,7 +4152,6 @@ impl FromRawGameEvent for PlayingCommentaryEvent {
         Ok(PlayingCommentaryEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerChargeDeployedEvent {
     pub user_id: u16,
@@ -4318,7 +4181,6 @@ impl FromRawGameEvent for PlayerChargeDeployedEvent {
         Ok(PlayerChargeDeployedEvent { user_id, target_id })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerBuiltObjectEvent {
     pub user_id: u16,
@@ -4359,7 +4221,6 @@ impl FromRawGameEvent for PlayerBuiltObjectEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerUpgradedObjectEvent {
     pub user_id: u16,
@@ -4408,7 +4269,6 @@ impl FromRawGameEvent for PlayerUpgradedObjectEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerCarryObjectEvent {
     pub user_id: u16,
@@ -4449,7 +4309,6 @@ impl FromRawGameEvent for PlayerCarryObjectEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerDropObjectEvent {
     pub user_id: u16,
@@ -4490,7 +4349,6 @@ impl FromRawGameEvent for PlayerDropObjectEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ObjectRemovedEvent {
     pub user_id: u16,
@@ -4531,7 +4389,6 @@ impl FromRawGameEvent for ObjectRemovedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ObjectDestroyedEvent {
     pub user_id: u16,
@@ -4612,7 +4469,6 @@ impl FromRawGameEvent for ObjectDestroyedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ObjectDetonatedEvent {
     pub user_id: u16,
@@ -4653,7 +4509,6 @@ impl FromRawGameEvent for ObjectDetonatedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct AchievementEarnedEvent {
     pub player: u8,
@@ -4686,7 +4541,6 @@ impl FromRawGameEvent for AchievementEarnedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct SpecTargetUpdatedEvent {}
 impl FromRawGameEvent for SpecTargetUpdatedEvent {
@@ -4694,7 +4548,6 @@ impl FromRawGameEvent for SpecTargetUpdatedEvent {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TournamentStateUpdateEvent {
     pub user_id: u16,
@@ -4743,7 +4596,6 @@ impl FromRawGameEvent for TournamentStateUpdateEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TournamentEnableCountdownEvent {}
 impl FromRawGameEvent for TournamentEnableCountdownEvent {
@@ -4751,7 +4603,6 @@ impl FromRawGameEvent for TournamentEnableCountdownEvent {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
@@ -4774,7 +4625,6 @@ impl FromRawGameEvent for PlayerCalledForMedicEvent {
         Ok(PlayerCalledForMedicEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl FromRawGameEvent for LocalPlayerBecameObserverEvent {
@@ -4782,7 +4632,6 @@ impl FromRawGameEvent for LocalPlayerBecameObserverEvent {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerIgnitedInvEvent {
     pub pyro_ent_index: u8,
@@ -4823,7 +4672,6 @@ impl FromRawGameEvent for PlayerIgnitedInvEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerIgnitedEvent {
     pub pyro_ent_index: u8,
@@ -4864,7 +4712,6 @@ impl FromRawGameEvent for PlayerIgnitedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerExtinguishedEvent {
     pub victim: u8,
@@ -4894,7 +4741,6 @@ impl FromRawGameEvent for PlayerExtinguishedEvent {
         Ok(PlayerExtinguishedEvent { victim, healer })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerTeleportedEvent {
     pub user_id: u16,
@@ -4935,7 +4781,6 @@ impl FromRawGameEvent for PlayerTeleportedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
@@ -4958,7 +4803,6 @@ impl FromRawGameEvent for PlayerHealedMedicCallEvent {
         Ok(PlayerHealedMedicCallEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
@@ -4966,7 +4810,6 @@ impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerWindDownEvent {}
 impl FromRawGameEvent for LocalPlayerWindDownEvent {
@@ -4974,7 +4817,6 @@ impl FromRawGameEvent for LocalPlayerWindDownEvent {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerInvulnedEvent {
     pub user_id: u16,
@@ -5007,7 +4849,6 @@ impl FromRawGameEvent for PlayerInvulnedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct EscortSpeedEvent {
     pub team: u8,
@@ -5048,7 +4889,6 @@ impl FromRawGameEvent for EscortSpeedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct EscortProgressEvent {
     pub team: u8,
@@ -5089,7 +4929,6 @@ impl FromRawGameEvent for EscortProgressEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct EscortRecedeEvent {
     pub team: u8,
@@ -5119,7 +4958,6 @@ impl FromRawGameEvent for EscortRecedeEvent {
         Ok(EscortRecedeEvent { team, recede_time })
     }
 }
-
 #[derive(Debug)]
 pub struct GameUIActivatedEvent {}
 impl FromRawGameEvent for GameUIActivatedEvent {
@@ -5127,7 +4965,6 @@ impl FromRawGameEvent for GameUIActivatedEvent {
         Ok(GameUIActivatedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct GameUIHiddenEvent {}
 impl FromRawGameEvent for GameUIHiddenEvent {
@@ -5135,7 +4972,6 @@ impl FromRawGameEvent for GameUIHiddenEvent {
         Ok(GameUIHiddenEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerEscortScoreEvent {
     pub player: u8,
@@ -5165,7 +5001,6 @@ impl FromRawGameEvent for PlayerEscortScoreEvent {
         Ok(PlayerEscortScoreEvent { player, points })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHealOnHitEvent {
     pub amount: u16,
@@ -5195,7 +5030,6 @@ impl FromRawGameEvent for PlayerHealOnHitEvent {
         Ok(PlayerHealOnHitEvent { amount, ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerStealSandvichEvent {
     pub owner: u16,
@@ -5225,7 +5059,6 @@ impl FromRawGameEvent for PlayerStealSandvichEvent {
         Ok(PlayerStealSandvichEvent { owner, target })
     }
 }
-
 #[derive(Debug)]
 pub struct ShowClassLayoutEvent {
     pub show: bool,
@@ -5248,7 +5081,6 @@ impl FromRawGameEvent for ShowClassLayoutEvent {
         Ok(ShowClassLayoutEvent { show })
     }
 }
-
 #[derive(Debug)]
 pub struct ShowVsPanelEvent {
     pub show: bool,
@@ -5271,7 +5103,6 @@ impl FromRawGameEvent for ShowVsPanelEvent {
         Ok(ShowVsPanelEvent { show })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerDamagedEvent {
     pub amount: u16,
@@ -5301,7 +5132,6 @@ impl FromRawGameEvent for PlayerDamagedEvent {
         Ok(PlayerDamagedEvent { amount, kind })
     }
 }
-
 #[derive(Debug)]
 pub struct ArenaPlayerNotificationEvent {
     pub player: u8,
@@ -5331,7 +5161,6 @@ impl FromRawGameEvent for ArenaPlayerNotificationEvent {
         Ok(ArenaPlayerNotificationEvent { player, message })
     }
 }
-
 #[derive(Debug)]
 pub struct ArenaMatchMaxStreakEvent {
     pub team: u8,
@@ -5361,7 +5190,6 @@ impl FromRawGameEvent for ArenaMatchMaxStreakEvent {
         Ok(ArenaMatchMaxStreakEvent { team, streak })
     }
 }
-
 #[derive(Debug)]
 pub struct ArenaRoundStartEvent {}
 impl FromRawGameEvent for ArenaRoundStartEvent {
@@ -5369,7 +5197,6 @@ impl FromRawGameEvent for ArenaRoundStartEvent {
         Ok(ArenaRoundStartEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ArenaWinPanelEvent {
     pub panel_style: u8,
@@ -5706,7 +5533,6 @@ impl FromRawGameEvent for ArenaWinPanelEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PveWinPanelEvent {
     pub panel_style: u8,
@@ -5747,7 +5573,6 @@ impl FromRawGameEvent for PveWinPanelEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct AirDashEvent {
     pub player: u8,
@@ -5770,7 +5595,6 @@ impl FromRawGameEvent for AirDashEvent {
         Ok(AirDashEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct LandedEvent {
     pub player: u8,
@@ -5793,7 +5617,6 @@ impl FromRawGameEvent for LandedEvent {
         Ok(LandedEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
@@ -5816,7 +5639,6 @@ impl FromRawGameEvent for PlayerDamageDodgedEvent {
         Ok(PlayerDamageDodgedEvent { damage })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerStunnedEvent {
     pub stunner: u16,
@@ -5865,7 +5687,6 @@ impl FromRawGameEvent for PlayerStunnedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ScoutGrandSlamEvent {
     pub scout_id: u16,
@@ -5898,7 +5719,6 @@ impl FromRawGameEvent for ScoutGrandSlamEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ScoutSlamdollLandedEvent {
     pub target_index: u16,
@@ -5947,7 +5767,6 @@ impl FromRawGameEvent for ScoutSlamdollLandedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ArrowImpactEvent {
     pub attached_entity: u16,
@@ -6052,7 +5871,6 @@ impl FromRawGameEvent for ArrowImpactEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerJaratedEvent {
     pub thrower_ent_index: u8,
@@ -6085,7 +5903,6 @@ impl FromRawGameEvent for PlayerJaratedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerJaratedFadeEvent {
     pub thrower_ent_index: u8,
@@ -6118,7 +5935,6 @@ impl FromRawGameEvent for PlayerJaratedFadeEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerShieldBlockedEvent {
     pub attacker_ent_index: u8,
@@ -6151,7 +5967,6 @@ impl FromRawGameEvent for PlayerShieldBlockedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerPinnedEvent {
     pub pinned: u8,
@@ -6174,7 +5989,6 @@ impl FromRawGameEvent for PlayerPinnedEvent {
         Ok(PlayerPinnedEvent { pinned })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
@@ -6197,7 +6011,6 @@ impl FromRawGameEvent for PlayerHealedByMedicEvent {
         Ok(PlayerHealedByMedicEvent { medic })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerSappedObjectEvent {
     pub user_id: u16,
@@ -6246,7 +6059,6 @@ impl FromRawGameEvent for PlayerSappedObjectEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ItemFoundEvent {
     pub player: u8,
@@ -6295,7 +6107,6 @@ impl FromRawGameEvent for ItemFoundEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ShowAnnotationEvent {
     pub world_pos_x: f32,
@@ -6424,7 +6235,6 @@ impl FromRawGameEvent for ShowAnnotationEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct HideAnnotationEvent {
     pub id: u32,
@@ -6447,7 +6257,6 @@ impl FromRawGameEvent for HideAnnotationEvent {
         Ok(HideAnnotationEvent { id })
     }
 }
-
 #[derive(Debug)]
 pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
@@ -6470,7 +6279,6 @@ impl FromRawGameEvent for PostInventoryApplicationEvent {
         Ok(PostInventoryApplicationEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointUnlockUpdatedEvent {
     pub index: u16,
@@ -6500,7 +6308,6 @@ impl FromRawGameEvent for ControlPointUnlockUpdatedEvent {
         Ok(ControlPointUnlockUpdatedEvent { index, time })
     }
 }
-
 #[derive(Debug)]
 pub struct DeployBuffBannerEvent {
     pub buff_type: u8,
@@ -6533,7 +6340,6 @@ impl FromRawGameEvent for DeployBuffBannerEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerBuffEvent {
     pub user_id: u16,
@@ -6574,7 +6380,6 @@ impl FromRawGameEvent for PlayerBuffEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct MedicDeathEvent {
     pub user_id: u16,
@@ -6623,7 +6428,6 @@ impl FromRawGameEvent for MedicDeathEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct OvertimeNagEvent {}
 impl FromRawGameEvent for OvertimeNagEvent {
@@ -6631,7 +6435,6 @@ impl FromRawGameEvent for OvertimeNagEvent {
         Ok(OvertimeNagEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct TeamsChangedEvent {}
 impl FromRawGameEvent for TeamsChangedEvent {
@@ -6639,7 +6442,6 @@ impl FromRawGameEvent for TeamsChangedEvent {
         Ok(TeamsChangedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
@@ -6662,7 +6464,6 @@ impl FromRawGameEvent for HalloweenPumpkinGrabEvent {
         Ok(HalloweenPumpkinGrabEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct RocketJumpEvent {
     pub user_id: u16,
@@ -6695,7 +6496,6 @@ impl FromRawGameEvent for RocketJumpEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct RocketJumpLandedEvent {
     pub user_id: u16,
@@ -6718,7 +6518,6 @@ impl FromRawGameEvent for RocketJumpLandedEvent {
         Ok(RocketJumpLandedEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct StickyJumpEvent {
     pub user_id: u16,
@@ -6751,7 +6550,6 @@ impl FromRawGameEvent for StickyJumpEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct StickyJumpLandedEvent {
     pub user_id: u16,
@@ -6774,7 +6572,6 @@ impl FromRawGameEvent for StickyJumpLandedEvent {
         Ok(StickyJumpLandedEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct MedicDefendedEvent {
     pub user_id: u16,
@@ -6804,7 +6601,6 @@ impl FromRawGameEvent for MedicDefendedEvent {
         Ok(MedicDefendedEvent { user_id, medic })
     }
 }
-
 #[derive(Debug)]
 pub struct LocalPlayerHealedEvent {
     pub amount: u16,
@@ -6827,7 +6623,6 @@ impl FromRawGameEvent for LocalPlayerHealedEvent {
         Ok(LocalPlayerHealedEvent { amount })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
@@ -6850,7 +6645,6 @@ impl FromRawGameEvent for PlayerDestroyedPipeBombEvent {
         Ok(PlayerDestroyedPipeBombEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct ObjectDeflectedEvent {
     pub user_id: u16,
@@ -6899,7 +6693,6 @@ impl FromRawGameEvent for ObjectDeflectedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerMvpEvent {
     pub player: u16,
@@ -6922,7 +6715,6 @@ impl FromRawGameEvent for PlayerMvpEvent {
         Ok(PlayerMvpEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct RaidSpawnMobEvent {}
 impl FromRawGameEvent for RaidSpawnMobEvent {
@@ -6930,7 +6722,6 @@ impl FromRawGameEvent for RaidSpawnMobEvent {
         Ok(RaidSpawnMobEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct RaidSpawnSquadEvent {}
 impl FromRawGameEvent for RaidSpawnSquadEvent {
@@ -6938,7 +6729,6 @@ impl FromRawGameEvent for RaidSpawnSquadEvent {
         Ok(RaidSpawnSquadEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct NavBlockedEvent {
     pub area: u32,
@@ -6968,7 +6758,6 @@ impl FromRawGameEvent for NavBlockedEvent {
         Ok(NavBlockedEvent { area, blocked })
     }
 }
-
 #[derive(Debug)]
 pub struct PathTrackPassedEvent {
     pub index: u16,
@@ -6991,7 +6780,6 @@ impl FromRawGameEvent for PathTrackPassedEvent {
         Ok(PathTrackPassedEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct NumCappersChangedEvent {
     pub index: u16,
@@ -7021,7 +6809,6 @@ impl FromRawGameEvent for NumCappersChangedEvent {
         Ok(NumCappersChangedEvent { index, count })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerRegenerateEvent {}
 impl FromRawGameEvent for PlayerRegenerateEvent {
@@ -7029,7 +6816,6 @@ impl FromRawGameEvent for PlayerRegenerateEvent {
         Ok(PlayerRegenerateEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct UpdateStatusItemEvent {
     pub index: u8,
@@ -7059,7 +6845,6 @@ impl FromRawGameEvent for UpdateStatusItemEvent {
         Ok(UpdateStatusItemEvent { index, object })
     }
 }
-
 #[derive(Debug)]
 pub struct StatsResetRoundEvent {}
 impl FromRawGameEvent for StatsResetRoundEvent {
@@ -7067,7 +6852,6 @@ impl FromRawGameEvent for StatsResetRoundEvent {
         Ok(StatsResetRoundEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl FromRawGameEvent for ScoreStatsAccumulatedUpdateEvent {
@@ -7075,7 +6859,6 @@ impl FromRawGameEvent for ScoreStatsAccumulatedUpdateEvent {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl FromRawGameEvent for ScoreStatsAccumulatedResetEvent {
@@ -7083,7 +6866,6 @@ impl FromRawGameEvent for ScoreStatsAccumulatedResetEvent {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
@@ -7106,7 +6888,6 @@ impl FromRawGameEvent for AchievementEarnedLocalEvent {
         Ok(AchievementEarnedLocalEvent { achievement })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHealedEvent {
     pub patient: u16,
@@ -7147,7 +6928,6 @@ impl FromRawGameEvent for PlayerHealedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct BuildingHealedEvent {
     pub building: u16,
@@ -7188,7 +6968,6 @@ impl FromRawGameEvent for BuildingHealedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ItemPickupEvent {
     pub user_id: u16,
@@ -7218,7 +6997,6 @@ impl FromRawGameEvent for ItemPickupEvent {
         Ok(ItemPickupEvent { user_id, item })
     }
 }
-
 #[derive(Debug)]
 pub struct DuelStatusEvent {
     pub killer: u16,
@@ -7283,7 +7061,6 @@ impl FromRawGameEvent for DuelStatusEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct FishNoticeEvent {
     pub user_id: u16,
@@ -7412,7 +7189,6 @@ impl FromRawGameEvent for FishNoticeEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct FishNoticeArmEvent {
     pub user_id: u16,
@@ -7541,7 +7317,6 @@ impl FromRawGameEvent for FishNoticeArmEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ThrowableHitEvent {
     pub user_id: u16,
@@ -7678,7 +7453,6 @@ impl FromRawGameEvent for ThrowableHitEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PumpkinLordSummonedEvent {}
 impl FromRawGameEvent for PumpkinLordSummonedEvent {
@@ -7686,7 +7460,6 @@ impl FromRawGameEvent for PumpkinLordSummonedEvent {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PumpkinLordKilledEvent {}
 impl FromRawGameEvent for PumpkinLordKilledEvent {
@@ -7694,7 +7467,6 @@ impl FromRawGameEvent for PumpkinLordKilledEvent {
         Ok(PumpkinLordKilledEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MerasmusSummonedEvent {
     pub level: u16,
@@ -7717,7 +7489,6 @@ impl FromRawGameEvent for MerasmusSummonedEvent {
         Ok(MerasmusSummonedEvent { level })
     }
 }
-
 #[derive(Debug)]
 pub struct MerasmusKilledEvent {
     pub level: u16,
@@ -7740,7 +7511,6 @@ impl FromRawGameEvent for MerasmusKilledEvent {
         Ok(MerasmusKilledEvent { level })
     }
 }
-
 #[derive(Debug)]
 pub struct MerasmusEscapeWarningEvent {
     pub level: u16,
@@ -7773,7 +7543,6 @@ impl FromRawGameEvent for MerasmusEscapeWarningEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct MerasmusEscapedEvent {
     pub level: u16,
@@ -7796,7 +7565,6 @@ impl FromRawGameEvent for MerasmusEscapedEvent {
         Ok(MerasmusEscapedEvent { level })
     }
 }
-
 #[derive(Debug)]
 pub struct EyeballBossSummonedEvent {
     pub level: u16,
@@ -7819,7 +7587,6 @@ impl FromRawGameEvent for EyeballBossSummonedEvent {
         Ok(EyeballBossSummonedEvent { level })
     }
 }
-
 #[derive(Debug)]
 pub struct EyeballBossStunnedEvent {
     pub level: u16,
@@ -7852,7 +7619,6 @@ impl FromRawGameEvent for EyeballBossStunnedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct EyeballBossKilledEvent {
     pub level: u16,
@@ -7875,7 +7641,6 @@ impl FromRawGameEvent for EyeballBossKilledEvent {
         Ok(EyeballBossKilledEvent { level })
     }
 }
-
 #[derive(Debug)]
 pub struct EyeballBossKillerEvent {
     pub level: u16,
@@ -7908,7 +7673,6 @@ impl FromRawGameEvent for EyeballBossKillerEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct EyeballBossEscapeImminentEvent {
     pub level: u16,
@@ -7941,7 +7705,6 @@ impl FromRawGameEvent for EyeballBossEscapeImminentEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct EyeballBossEscapedEvent {
     pub level: u16,
@@ -7964,7 +7727,6 @@ impl FromRawGameEvent for EyeballBossEscapedEvent {
         Ok(EyeballBossEscapedEvent { level })
     }
 }
-
 #[derive(Debug)]
 pub struct NpcHurtEvent {
     pub ent_index: u16,
@@ -8029,7 +7791,6 @@ impl FromRawGameEvent for NpcHurtEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct ControlPointTimerUpdatedEvent {
     pub index: u16,
@@ -8059,7 +7820,6 @@ impl FromRawGameEvent for ControlPointTimerUpdatedEvent {
         Ok(ControlPointTimerUpdatedEvent { index, time })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
@@ -8082,7 +7842,6 @@ impl FromRawGameEvent for PlayerHighFiveStartEvent {
         Ok(PlayerHighFiveStartEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
@@ -8105,7 +7864,6 @@ impl FromRawGameEvent for PlayerHighFiveCancelEvent {
         Ok(PlayerHighFiveCancelEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerHighFiveSuccessEvent {
     pub initiator_ent_index: u8,
@@ -8138,7 +7896,6 @@ impl FromRawGameEvent for PlayerHighFiveSuccessEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerBonusPointsEvent {
     pub points: u16,
@@ -8179,7 +7936,6 @@ impl FromRawGameEvent for PlayerBonusPointsEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerUpgradedEvent {}
 impl FromRawGameEvent for PlayerUpgradedEvent {
@@ -8187,7 +7943,6 @@ impl FromRawGameEvent for PlayerUpgradedEvent {
         Ok(PlayerUpgradedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerBuybackEvent {
     pub player: u16,
@@ -8217,7 +7972,6 @@ impl FromRawGameEvent for PlayerBuybackEvent {
         Ok(PlayerBuybackEvent { player, cost })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerUsedPowerUpBottleEvent {
     pub player: u16,
@@ -8254,7 +8008,6 @@ impl FromRawGameEvent for PlayerUsedPowerUpBottleEvent {
         Ok(PlayerUsedPowerUpBottleEvent { player, kind, time })
     }
 }
-
 #[derive(Debug)]
 pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
@@ -8277,7 +8030,6 @@ impl FromRawGameEvent for ChristmasGiftGrabEvent {
         Ok(ChristmasGiftGrabEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerKilledAchievementZoneEvent {
     pub attacker: u16,
@@ -8318,7 +8070,6 @@ impl FromRawGameEvent for PlayerKilledAchievementZoneEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct PartyUpdatedEvent {}
 impl FromRawGameEvent for PartyUpdatedEvent {
@@ -8326,7 +8077,6 @@ impl FromRawGameEvent for PartyUpdatedEvent {
         Ok(PartyUpdatedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct LobbyUpdatedEvent {}
 impl FromRawGameEvent for LobbyUpdatedEvent {
@@ -8334,7 +8084,6 @@ impl FromRawGameEvent for LobbyUpdatedEvent {
         Ok(LobbyUpdatedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MvmMissionUpdateEvent {
     pub class: u16,
@@ -8364,7 +8113,6 @@ impl FromRawGameEvent for MvmMissionUpdateEvent {
         Ok(MvmMissionUpdateEvent { class, count })
     }
 }
-
 #[derive(Debug)]
 pub struct RecalculateHolidaysEvent {}
 impl FromRawGameEvent for RecalculateHolidaysEvent {
@@ -8372,7 +8120,6 @@ impl FromRawGameEvent for RecalculateHolidaysEvent {
         Ok(RecalculateHolidaysEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
@@ -8395,7 +8142,6 @@ impl FromRawGameEvent for PlayerCurrencyChangedEvent {
         Ok(PlayerCurrencyChangedEvent { currency })
     }
 }
-
 #[derive(Debug)]
 pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
@@ -8418,7 +8164,6 @@ impl FromRawGameEvent for DoomsdayRocketOpenEvent {
         Ok(DoomsdayRocketOpenEvent { team })
     }
 }
-
 #[derive(Debug)]
 pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
@@ -8441,7 +8186,6 @@ impl FromRawGameEvent for RemoveNemesisRelationshipsEvent {
         Ok(RemoveNemesisRelationshipsEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmCreditBonusWaveEvent {}
 impl FromRawGameEvent for MvmCreditBonusWaveEvent {
@@ -8449,7 +8193,6 @@ impl FromRawGameEvent for MvmCreditBonusWaveEvent {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MvmCreditBonusAllEvent {}
 impl FromRawGameEvent for MvmCreditBonusAllEvent {
@@ -8457,7 +8200,6 @@ impl FromRawGameEvent for MvmCreditBonusAllEvent {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl FromRawGameEvent for MvmCreditBonusAllAdvancedEvent {
@@ -8465,7 +8207,6 @@ impl FromRawGameEvent for MvmCreditBonusAllAdvancedEvent {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
@@ -8488,7 +8229,6 @@ impl FromRawGameEvent for MvmQuickSentryUpgradeEvent {
         Ok(MvmQuickSentryUpgradeEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl FromRawGameEvent for MvmTankDestroyedByPlayersEvent {
@@ -8496,7 +8236,6 @@ impl FromRawGameEvent for MvmTankDestroyedByPlayersEvent {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
@@ -8519,7 +8258,6 @@ impl FromRawGameEvent for MvmKillRobotDeliveringBombEvent {
         Ok(MvmKillRobotDeliveringBombEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmPickupCurrencyEvent {
     pub player: u16,
@@ -8549,7 +8287,6 @@ impl FromRawGameEvent for MvmPickupCurrencyEvent {
         Ok(MvmPickupCurrencyEvent { player, currency })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
@@ -8572,7 +8309,6 @@ impl FromRawGameEvent for MvmBombCarrierKilledEvent {
         Ok(MvmBombCarrierKilledEvent { level })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmSentryBusterDetonateEvent {
     pub player: u16,
@@ -8621,7 +8357,6 @@ impl FromRawGameEvent for MvmSentryBusterDetonateEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
@@ -8644,7 +8379,6 @@ impl FromRawGameEvent for MvmScoutMarkedForDeathEvent {
         Ok(MvmScoutMarkedForDeathEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
@@ -8667,7 +8401,6 @@ impl FromRawGameEvent for MvmMedicPowerUpSharedEvent {
         Ok(MvmMedicPowerUpSharedEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmBeginWaveEvent {
     pub wave_index: u16,
@@ -8708,7 +8441,6 @@ impl FromRawGameEvent for MvmBeginWaveEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
@@ -8731,7 +8463,6 @@ impl FromRawGameEvent for MvmWaveCompleteEvent {
         Ok(MvmWaveCompleteEvent { advanced })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmMissionCompleteEvent {
     pub mission: String,
@@ -8754,7 +8485,6 @@ impl FromRawGameEvent for MvmMissionCompleteEvent {
         Ok(MvmMissionCompleteEvent { mission })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
@@ -8777,7 +8507,6 @@ impl FromRawGameEvent for MvmBombResetByPlayerEvent {
         Ok(MvmBombResetByPlayerEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl FromRawGameEvent for MvmBombAlarmTriggeredEvent {
@@ -8785,7 +8514,6 @@ impl FromRawGameEvent for MvmBombAlarmTriggeredEvent {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
@@ -8808,7 +8536,6 @@ impl FromRawGameEvent for MvmBombDeployResetByPlayerEvent {
         Ok(MvmBombDeployResetByPlayerEvent { player })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmWaveFailedEvent {}
 impl FromRawGameEvent for MvmWaveFailedEvent {
@@ -8816,7 +8543,6 @@ impl FromRawGameEvent for MvmWaveFailedEvent {
         Ok(MvmWaveFailedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MvmResetStatsEvent {}
 impl FromRawGameEvent for MvmResetStatsEvent {
@@ -8824,7 +8550,6 @@ impl FromRawGameEvent for MvmResetStatsEvent {
         Ok(MvmResetStatsEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct DamageResistedEvent {
     pub ent_index: u8,
@@ -8847,7 +8572,6 @@ impl FromRawGameEvent for DamageResistedEvent {
         Ok(DamageResistedEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct RevivePlayerNotifyEvent {
     pub ent_index: u16,
@@ -8880,7 +8604,6 @@ impl FromRawGameEvent for RevivePlayerNotifyEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
@@ -8903,7 +8626,6 @@ impl FromRawGameEvent for RevivePlayerStoppedEvent {
         Ok(RevivePlayerStoppedEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
@@ -8926,7 +8648,6 @@ impl FromRawGameEvent for RevivePlayerCompleteEvent {
         Ok(RevivePlayerCompleteEvent { ent_index })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
@@ -8949,7 +8670,6 @@ impl FromRawGameEvent for PlayerTurnedToGhostEvent {
         Ok(PlayerTurnedToGhostEvent { user_id })
     }
 }
-
 #[derive(Debug)]
 pub struct MedigunShieldBlockedDamageEvent {
     pub user_id: u16,
@@ -8979,7 +8699,6 @@ impl FromRawGameEvent for MedigunShieldBlockedDamageEvent {
         Ok(MedigunShieldBlockedDamageEvent { user_id, damage })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
@@ -9002,7 +8721,6 @@ impl FromRawGameEvent for MvmAdvWaveCompleteNoGatesEvent {
         Ok(MvmAdvWaveCompleteNoGatesEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmSniperHeadshotCurrencyEvent {
     pub user_id: u16,
@@ -9032,7 +8750,6 @@ impl FromRawGameEvent for MvmSniperHeadshotCurrencyEvent {
         Ok(MvmSniperHeadshotCurrencyEvent { user_id, currency })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmMannhattanPitEvent {}
 impl FromRawGameEvent for MvmMannhattanPitEvent {
@@ -9040,7 +8757,6 @@ impl FromRawGameEvent for MvmMannhattanPitEvent {
         Ok(MvmMannhattanPitEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FromRawGameEvent for FlagCarriedInDetectionZoneEvent {
@@ -9048,7 +8764,6 @@ impl FromRawGameEvent for FlagCarriedInDetectionZoneEvent {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl FromRawGameEvent for MvmAdvWaveKilledStunRadioEvent {
@@ -9056,7 +8771,6 @@ impl FromRawGameEvent for MvmAdvWaveKilledStunRadioEvent {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
@@ -9086,7 +8800,6 @@ impl FromRawGameEvent for PlayerDirectHitStunEvent {
         Ok(PlayerDirectHitStunEvent { attacker, victim })
     }
 }
-
 #[derive(Debug)]
 pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
@@ -9109,7 +8822,6 @@ impl FromRawGameEvent for MvmSentryBusterKilledEvent {
         Ok(MvmSentryBusterKilledEvent { sentry_buster })
     }
 }
-
 #[derive(Debug)]
 pub struct UpgradesFileChangedEvent {
     pub path: String,
@@ -9132,7 +8844,6 @@ impl FromRawGameEvent for UpgradesFileChangedEvent {
         Ok(UpgradesFileChangedEvent { path })
     }
 }
-
 #[derive(Debug)]
 pub struct RdTeamPointsChangedEvent {
     pub points: u16,
@@ -9173,7 +8884,6 @@ impl FromRawGameEvent for RdTeamPointsChangedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct RdRulesStateChangedEvent {}
 impl FromRawGameEvent for RdRulesStateChangedEvent {
@@ -9181,7 +8891,6 @@ impl FromRawGameEvent for RdRulesStateChangedEvent {
         Ok(RdRulesStateChangedEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct RdRobotKilledEvent {
     pub user_id: u16,
@@ -9270,7 +8979,6 @@ impl FromRawGameEvent for RdRobotKilledEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct RdRobotImpactEvent {
     pub ent_index: u16,
@@ -9319,7 +9027,6 @@ impl FromRawGameEvent for RdRobotImpactEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
@@ -9342,7 +9049,6 @@ impl FromRawGameEvent for TeamPlayPreRoundTimeLeftEvent {
         Ok(TeamPlayPreRoundTimeLeftEvent { time })
     }
 }
-
 #[derive(Debug)]
 pub struct ParachuteDeployEvent {
     pub index: u16,
@@ -9365,7 +9071,6 @@ impl FromRawGameEvent for ParachuteDeployEvent {
         Ok(ParachuteDeployEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct ParachuteHolsterEvent {
     pub index: u16,
@@ -9388,7 +9093,6 @@ impl FromRawGameEvent for ParachuteHolsterEvent {
         Ok(ParachuteHolsterEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct KillRefillsMeterEvent {
     pub index: u16,
@@ -9411,7 +9115,6 @@ impl FromRawGameEvent for KillRefillsMeterEvent {
         Ok(KillRefillsMeterEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct RpsTauntEventEvent {
     pub winner: u16,
@@ -9460,7 +9163,6 @@ impl FromRawGameEvent for RpsTauntEventEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct CongaKillEvent {
     pub index: u16,
@@ -9483,7 +9185,6 @@ impl FromRawGameEvent for CongaKillEvent {
         Ok(CongaKillEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct PlayerInitialSpawnEvent {
     pub index: u16,
@@ -9506,7 +9207,6 @@ impl FromRawGameEvent for PlayerInitialSpawnEvent {
         Ok(PlayerInitialSpawnEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct CompetitiveVictoryEvent {}
 impl FromRawGameEvent for CompetitiveVictoryEvent {
@@ -9514,7 +9214,6 @@ impl FromRawGameEvent for CompetitiveVictoryEvent {
         Ok(CompetitiveVictoryEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct CompetitiveSkillRatingUpdateEvent {
     pub index: u16,
@@ -9555,7 +9254,6 @@ impl FromRawGameEvent for CompetitiveSkillRatingUpdateEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct MiniGameWinEvent {
     pub team: u8,
@@ -9585,7 +9283,6 @@ impl FromRawGameEvent for MiniGameWinEvent {
         Ok(MiniGameWinEvent { team, kind })
     }
 }
-
 #[derive(Debug)]
 pub struct SentryOnGoActiveEvent {
     pub index: u16,
@@ -9608,7 +9305,6 @@ impl FromRawGameEvent for SentryOnGoActiveEvent {
         Ok(SentryOnGoActiveEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct DuckXpLevelUpEvent {
     pub level: u16,
@@ -9631,7 +9327,6 @@ impl FromRawGameEvent for DuckXpLevelUpEvent {
         Ok(DuckXpLevelUpEvent { level })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVStatusEvent {
     pub clients: u32,
@@ -9680,7 +9375,6 @@ impl FromRawGameEvent for HLTVStatusEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVCameramanEvent {
     pub index: u16,
@@ -9703,7 +9397,6 @@ impl FromRawGameEvent for HLTVCameramanEvent {
         Ok(HLTVCameramanEvent { index })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVRankCameraEvent {
     pub index: u8,
@@ -9744,7 +9437,6 @@ impl FromRawGameEvent for HLTVRankCameraEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVRankEntityEvent {
     pub index: u16,
@@ -9785,7 +9477,6 @@ impl FromRawGameEvent for HLTVRankEntityEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVFixedEvent {
     pub pos_x: u32,
@@ -9866,11 +9557,10 @@ impl FromRawGameEvent for HLTVFixedEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVChaseEvent {
-    pub target1: u16,
-    pub target2: u16,
+    pub target_1: u16,
+    pub target_2: u16,
     pub distance: u16,
     pub theta: u16,
     pub phi: u16,
@@ -9916,21 +9606,21 @@ impl FromRawGameEvent for HLTVChaseEvent {
             ))?,
             "distance",
         )?;
-        let target2: u16 = u16::from_value(
+        let target_2: u16 = u16::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "target2",
+            "target_2",
         )?;
-        let target1: u16 = u16::from_value(
+        let target_1: u16 = u16::from_value(
             values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
                 GameEventError::IncorrectValueCount,
             ))?,
-            "target1",
+            "target_1",
         )?;
         Ok(HLTVChaseEvent {
-            target1,
-            target2,
+            target_1,
+            target_2,
             distance,
             theta,
             phi,
@@ -9939,7 +9629,6 @@ impl FromRawGameEvent for HLTVChaseEvent {
         })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVMessageEvent {
     pub text: String,
@@ -9962,7 +9651,6 @@ impl FromRawGameEvent for HLTVMessageEvent {
         Ok(HLTVMessageEvent { text })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVTitleEvent {
     pub text: String,
@@ -9985,7 +9673,6 @@ impl FromRawGameEvent for HLTVTitleEvent {
         Ok(HLTVTitleEvent { text })
     }
 }
-
 #[derive(Debug)]
 pub struct HLTVChatEvent {
     pub text: String,
@@ -10008,7 +9695,6 @@ impl FromRawGameEvent for HLTVChatEvent {
         Ok(HLTVChatEvent { text })
     }
 }
-
 #[derive(Debug)]
 pub struct ReplayStartRecordEvent {}
 impl FromRawGameEvent for ReplayStartRecordEvent {
@@ -10016,7 +9702,6 @@ impl FromRawGameEvent for ReplayStartRecordEvent {
         Ok(ReplayStartRecordEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ReplaySessionInfoEvent {
     pub sn: String,
@@ -10060,7 +9745,6 @@ impl FromRawGameEvent for ReplaySessionInfoEvent {
         Ok(ReplaySessionInfoEvent { sn, di, cb, st })
     }
 }
-
 #[derive(Debug)]
 pub struct ReplayEndRecordEvent {}
 impl FromRawGameEvent for ReplayEndRecordEvent {
@@ -10068,7 +9752,6 @@ impl FromRawGameEvent for ReplayEndRecordEvent {
         Ok(ReplayEndRecordEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ReplayReplaysAvailableEvent {}
 impl FromRawGameEvent for ReplayReplaysAvailableEvent {
@@ -10076,7 +9759,6 @@ impl FromRawGameEvent for ReplayReplaysAvailableEvent {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
-
 #[derive(Debug)]
 pub struct ReplayServerErrorEvent {
     pub error: String,
@@ -10099,7 +9781,6 @@ impl FromRawGameEvent for ReplayServerErrorEvent {
         Ok(ReplayServerErrorEvent { error })
     }
 }
-
 #[derive(Debug)]
 pub enum GameEvent {
     ServerSpawn(ServerSpawnEvent),
@@ -10420,7 +10101,6 @@ pub enum GameEvent {
     ReplayServerError(ReplayServerErrorEvent),
     Unknown(RawGameEvent),
 }
-
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum GameEventType {
     ServerSpawn = 0,
@@ -10739,10 +10419,8 @@ pub enum GameEventType {
     ReplayEndRecord = 313,
     ReplayReplaysAvailable = 314,
     ReplayServerError = 315,
-
     Unknown,
 }
-
 impl GameEventType {
     pub fn from_type_name(name: &str) -> Self {
         match name {
@@ -11066,7 +10744,6 @@ impl GameEventType {
         }
     }
 }
-
 impl GameEvent {
     pub fn from_raw_event(event: RawGameEvent) -> Result<Self> {
         Ok(match event.event_type {
@@ -12022,3 +11699,4 @@ impl GameEvent {
         })
     }
 }
+
