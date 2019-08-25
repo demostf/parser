@@ -4,6 +4,7 @@ use crate::{MalformedDemoError, ParseError, Result};
 
 pub use super::gameevent_gen::{GameEvent, GameEventType};
 use crate::demo::message::gameevent::GameEventTypeId;
+use std::cmp::Ordering;
 use std::fmt;
 
 #[derive(Debug)]
@@ -12,6 +13,26 @@ pub struct GameEventDefinition {
     pub event_type: GameEventType,
     pub name: String,
     pub entries: Vec<GameEventEntry>,
+}
+
+impl PartialEq<GameEventDefinition> for GameEventDefinition {
+    fn eq(&self, other: &Self) -> bool {
+        self.id.eq(&other.id)
+    }
+}
+
+impl Eq for GameEventDefinition {}
+
+impl PartialOrd for GameEventDefinition {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.id.partial_cmp(&other.id)
+    }
+}
+
+impl Ord for GameEventDefinition {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.id.cmp(&other.id)
+    }
 }
 
 #[derive(Debug)]

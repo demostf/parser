@@ -66,12 +66,18 @@ impl ParseBitSkip for GameEventMessage {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct GameEventTypeId(u16);
 
 impl BitRead<LittleEndian> for GameEventTypeId {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         Ok(GameEventTypeId(stream.read_int(9)?))
+    }
+}
+
+impl From<GameEventTypeId> for u16 {
+    fn from(id: GameEventTypeId) -> Self {
+        id.0
     }
 }
 
