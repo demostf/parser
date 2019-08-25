@@ -229,20 +229,17 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         });
 
         let name = Ident::new(&format!("{}Event", get_event_name(&event.name)), span);
-        let item_count = Literal::usize_unsuffixed(event.entries.len());
 
-        let entry_constructors = event.entries.iter().rev().map(|entry| {
+        let entry_constructors = event.entries.iter().map(|entry| {
             let name_str = get_entry_name(&entry.name);
             let name = Ident::new(&name_str, span);
             let ty = Ident::new(get_type_name(entry.kind), span);
 
             quote!(
-                let #name: #ty = #ty::from_value(
-                    values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                        GameEventError::IncorrectValueCount,
-                    ))?,
-                    #name_str,
-                )?;
+                let #name = match iter.next() {
+                    Some(value) => #ty::from_value(value, #name_str)?,
+                    None => #ty::default()
+                };
             )
         });
 
@@ -251,15 +248,9 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             quote!(#name,)
         });
 
-        let length_check = if event.entries.len() >  0 {
+        let iter = if event.entries.len() >  0 {
             quote!(
-                if values.len() < #item_count {
-                    return Err(MalformedDemoError::MalformedGameEvent(
-                        GameEventError::IncorrectValueCount,
-                    )
-                    .into());
-                }
-                values.truncate(#item_count);
+                let mut iter = values.into_iter();
             )
         } else {
             quote!()
@@ -278,9 +269,8 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             }
 
             impl FromRawGameEvent for #name {
-                fn from_raw_event(mut #param_name: Vec<GameEventValue>) -> Result<Self> {
-                    #length_check
-
+                fn from_raw_event(#param_name: Vec<GameEventValue>) -> Result<Self> {
+                    #iter
                     #(#entry_constructors)*
 
                     Ok(#name {

@@ -14,74 +14,48 @@ pub struct ServerSpawnEvent {
     pub password: bool,
 }
 impl FromRawGameEvent for ServerSpawnEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 10 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(10);
-        let password: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "password",
-        )?;
-        let dedicated: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "dedicated",
-        )?;
-        let os: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "os",
-        )?;
-        let max_players: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "max_players",
-        )?;
-        let map_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "map_name",
-        )?;
-        let game: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "game",
-        )?;
-        let port: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "port",
-        )?;
-        let ip: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ip",
-        )?;
-        let address: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "address",
-        )?;
-        let hostname: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "hostname",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let hostname = match iter.next() {
+            Some(value) => String::from_value(value, "hostname")?,
+            None => String::default(),
+        };
+        let address = match iter.next() {
+            Some(value) => String::from_value(value, "address")?,
+            None => String::default(),
+        };
+        let ip = match iter.next() {
+            Some(value) => u32::from_value(value, "ip")?,
+            None => u32::default(),
+        };
+        let port = match iter.next() {
+            Some(value) => u16::from_value(value, "port")?,
+            None => u16::default(),
+        };
+        let game = match iter.next() {
+            Some(value) => String::from_value(value, "game")?,
+            None => String::default(),
+        };
+        let map_name = match iter.next() {
+            Some(value) => String::from_value(value, "map_name")?,
+            None => String::default(),
+        };
+        let max_players = match iter.next() {
+            Some(value) => u32::from_value(value, "max_players")?,
+            None => u32::default(),
+        };
+        let os = match iter.next() {
+            Some(value) => String::from_value(value, "os")?,
+            None => String::default(),
+        };
+        let dedicated = match iter.next() {
+            Some(value) => bool::from_value(value, "dedicated")?,
+            None => bool::default(),
+        };
+        let password = match iter.next() {
+            Some(value) => bool::from_value(value, "password")?,
+            None => bool::default(),
+        };
         Ok(ServerSpawnEvent {
             hostname,
             address,
@@ -101,20 +75,12 @@ pub struct ServerShutdownEvent {
     pub reason: String,
 }
 impl FromRawGameEvent for ServerShutdownEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let reason: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "reason",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let reason = match iter.next() {
+            Some(value) => String::from_value(value, "reason")?,
+            None => String::default(),
+        };
         Ok(ServerShutdownEvent { reason })
     }
 }
@@ -124,26 +90,16 @@ pub struct ServerCvarEvent {
     pub cvar_value: String,
 }
 impl FromRawGameEvent for ServerCvarEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let cvar_value: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cvar_value",
-        )?;
-        let cvar_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cvar_name",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let cvar_name = match iter.next() {
+            Some(value) => String::from_value(value, "cvar_name")?,
+            None => String::default(),
+        };
+        let cvar_value = match iter.next() {
+            Some(value) => String::from_value(value, "cvar_value")?,
+            None => String::default(),
+        };
         Ok(ServerCvarEvent {
             cvar_name,
             cvar_value,
@@ -155,20 +111,12 @@ pub struct ServerMessageEvent {
     pub text: String,
 }
 impl FromRawGameEvent for ServerMessageEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
         Ok(ServerMessageEvent { text })
     }
 }
@@ -183,56 +131,36 @@ pub struct ServerAddBanEvent {
     pub kicked: bool,
 }
 impl FromRawGameEvent for ServerAddBanEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 7 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(7);
-        let kicked: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kicked",
-        )?;
-        let by: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "by",
-        )?;
-        let duration: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "duration",
-        )?;
-        let ip: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ip",
-        )?;
-        let network_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "network_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
-        let name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "name",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let name = match iter.next() {
+            Some(value) => String::from_value(value, "name")?,
+            None => String::default(),
+        };
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let network_id = match iter.next() {
+            Some(value) => String::from_value(value, "network_id")?,
+            None => String::default(),
+        };
+        let ip = match iter.next() {
+            Some(value) => String::from_value(value, "ip")?,
+            None => String::default(),
+        };
+        let duration = match iter.next() {
+            Some(value) => String::from_value(value, "duration")?,
+            None => String::default(),
+        };
+        let by = match iter.next() {
+            Some(value) => String::from_value(value, "by")?,
+            None => String::default(),
+        };
+        let kicked = match iter.next() {
+            Some(value) => bool::from_value(value, "kicked")?,
+            None => bool::default(),
+        };
         Ok(ServerAddBanEvent {
             name,
             user_id,
@@ -251,32 +179,20 @@ pub struct ServerRemoveBanEvent {
     pub by: String,
 }
 impl FromRawGameEvent for ServerRemoveBanEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let by: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "by",
-        )?;
-        let ip: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ip",
-        )?;
-        let network_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "network_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let network_id = match iter.next() {
+            Some(value) => String::from_value(value, "network_id")?,
+            None => String::default(),
+        };
+        let ip = match iter.next() {
+            Some(value) => String::from_value(value, "ip")?,
+            None => String::default(),
+        };
+        let by = match iter.next() {
+            Some(value) => String::from_value(value, "by")?,
+            None => String::default(),
+        };
         Ok(ServerRemoveBanEvent { network_id, ip, by })
     }
 }
@@ -290,50 +206,32 @@ pub struct PlayerConnectEvent {
     pub bot: u16,
 }
 impl FromRawGameEvent for PlayerConnectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 6 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(6);
-        let bot: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bot",
-        )?;
-        let address: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "address",
-        )?;
-        let network_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "network_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
-        let index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "name",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let name = match iter.next() {
+            Some(value) => String::from_value(value, "name")?,
+            None => String::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u8::from_value(value, "index")?,
+            None => u8::default(),
+        };
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let network_id = match iter.next() {
+            Some(value) => String::from_value(value, "network_id")?,
+            None => String::default(),
+        };
+        let address = match iter.next() {
+            Some(value) => String::from_value(value, "address")?,
+            None => String::default(),
+        };
+        let bot = match iter.next() {
+            Some(value) => u16::from_value(value, "bot")?,
+            None => u16::default(),
+        };
         Ok(PlayerConnectEvent {
             name,
             index,
@@ -353,44 +251,28 @@ pub struct PlayerConnectClientEvent {
     pub bot: u16,
 }
 impl FromRawGameEvent for PlayerConnectClientEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 5 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(5);
-        let bot: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bot",
-        )?;
-        let network_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "network_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
-        let index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "name",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let name = match iter.next() {
+            Some(value) => String::from_value(value, "name")?,
+            None => String::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u8::from_value(value, "index")?,
+            None => u8::default(),
+        };
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let network_id = match iter.next() {
+            Some(value) => String::from_value(value, "network_id")?,
+            None => String::default(),
+        };
+        let bot = match iter.next() {
+            Some(value) => u16::from_value(value, "bot")?,
+            None => u16::default(),
+        };
         Ok(PlayerConnectClientEvent {
             name,
             index,
@@ -409,44 +291,28 @@ pub struct PlayerInfoEvent {
     pub bot: bool,
 }
 impl FromRawGameEvent for PlayerInfoEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 5 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(5);
-        let bot: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bot",
-        )?;
-        let network_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "network_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
-        let index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "name",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let name = match iter.next() {
+            Some(value) => String::from_value(value, "name")?,
+            None => String::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u8::from_value(value, "index")?,
+            None => u8::default(),
+        };
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let network_id = match iter.next() {
+            Some(value) => String::from_value(value, "network_id")?,
+            None => String::default(),
+        };
+        let bot = match iter.next() {
+            Some(value) => bool::from_value(value, "bot")?,
+            None => bool::default(),
+        };
         Ok(PlayerInfoEvent {
             name,
             index,
@@ -465,44 +331,28 @@ pub struct PlayerDisconnectEvent {
     pub bot: u16,
 }
 impl FromRawGameEvent for PlayerDisconnectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 5 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(5);
-        let bot: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bot",
-        )?;
-        let network_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "network_id",
-        )?;
-        let name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "name",
-        )?;
-        let reason: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "reason",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let reason = match iter.next() {
+            Some(value) => String::from_value(value, "reason")?,
+            None => String::default(),
+        };
+        let name = match iter.next() {
+            Some(value) => String::from_value(value, "name")?,
+            None => String::default(),
+        };
+        let network_id = match iter.next() {
+            Some(value) => String::from_value(value, "network_id")?,
+            None => String::default(),
+        };
+        let bot = match iter.next() {
+            Some(value) => u16::from_value(value, "bot")?,
+            None => u16::default(),
+        };
         Ok(PlayerDisconnectEvent {
             user_id,
             reason,
@@ -517,20 +367,12 @@ pub struct PlayerActivateEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerActivateEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerActivateEvent { user_id })
     }
 }
@@ -540,26 +382,16 @@ pub struct PlayerSayEvent {
     pub text: String,
 }
 impl FromRawGameEvent for PlayerSayEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
         Ok(PlayerSayEvent { user_id, text })
     }
 }
@@ -568,20 +400,12 @@ pub struct ClientDisconnectEvent {
     pub message: String,
 }
 impl FromRawGameEvent for ClientDisconnectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let message: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "message",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let message = match iter.next() {
+            Some(value) => String::from_value(value, "message")?,
+            None => String::default(),
+        };
         Ok(ClientDisconnectEvent { message })
     }
 }
@@ -593,38 +417,24 @@ pub struct ClientBeginConnectEvent {
     pub source: String,
 }
 impl FromRawGameEvent for ClientBeginConnectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let source: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "source",
-        )?;
-        let port: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "port",
-        )?;
-        let ip: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ip",
-        )?;
-        let address: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "address",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let address = match iter.next() {
+            Some(value) => String::from_value(value, "address")?,
+            None => String::default(),
+        };
+        let ip = match iter.next() {
+            Some(value) => u32::from_value(value, "ip")?,
+            None => u32::default(),
+        };
+        let port = match iter.next() {
+            Some(value) => u16::from_value(value, "port")?,
+            None => u16::default(),
+        };
+        let source = match iter.next() {
+            Some(value) => String::from_value(value, "source")?,
+            None => String::default(),
+        };
         Ok(ClientBeginConnectEvent {
             address,
             ip,
@@ -640,32 +450,20 @@ pub struct ClientConnectedEvent {
     pub port: u16,
 }
 impl FromRawGameEvent for ClientConnectedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let port: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "port",
-        )?;
-        let ip: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ip",
-        )?;
-        let address: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "address",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let address = match iter.next() {
+            Some(value) => String::from_value(value, "address")?,
+            None => String::default(),
+        };
+        let ip = match iter.next() {
+            Some(value) => u32::from_value(value, "ip")?,
+            None => u32::default(),
+        };
+        let port = match iter.next() {
+            Some(value) => u16::from_value(value, "port")?,
+            None => u16::default(),
+        };
         Ok(ClientConnectedEvent { address, ip, port })
     }
 }
@@ -676,39 +474,27 @@ pub struct ClientFullConnectEvent {
     pub port: u16,
 }
 impl FromRawGameEvent for ClientFullConnectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let port: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "port",
-        )?;
-        let ip: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ip",
-        )?;
-        let address: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "address",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let address = match iter.next() {
+            Some(value) => String::from_value(value, "address")?,
+            None => String::default(),
+        };
+        let ip = match iter.next() {
+            Some(value) => u32::from_value(value, "ip")?,
+            None => u32::default(),
+        };
+        let port = match iter.next() {
+            Some(value) => u16::from_value(value, "port")?,
+            None => u16::default(),
+        };
         Ok(ClientFullConnectEvent { address, ip, port })
     }
 }
 #[derive(Debug)]
 pub struct HostQuitEvent {}
 impl FromRawGameEvent for HostQuitEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HostQuitEvent {})
     }
 }
@@ -718,26 +504,16 @@ pub struct TeamInfoEvent {
     pub team_name: String,
 }
 impl FromRawGameEvent for TeamInfoEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let team_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team_name",
-        )?;
-        let team_id: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team_id = match iter.next() {
+            Some(value) => u8::from_value(value, "team_id")?,
+            None => u8::default(),
+        };
+        let team_name = match iter.next() {
+            Some(value) => String::from_value(value, "team_name")?,
+            None => String::default(),
+        };
         Ok(TeamInfoEvent { team_id, team_name })
     }
 }
@@ -747,26 +523,16 @@ pub struct TeamScoreEvent {
     pub score: u16,
 }
 impl FromRawGameEvent for TeamScoreEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "score",
-        )?;
-        let team_id: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team_id = match iter.next() {
+            Some(value) => u8::from_value(value, "team_id")?,
+            None => u8::default(),
+        };
+        let score = match iter.next() {
+            Some(value) => u16::from_value(value, "score")?,
+            None => u16::default(),
+        };
         Ok(TeamScoreEvent { team_id, score })
     }
 }
@@ -777,32 +543,20 @@ pub struct TeamPlayBroadcastAudioEvent {
     pub additional_flags: u16,
 }
 impl FromRawGameEvent for TeamPlayBroadcastAudioEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let additional_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "additional_flags",
-        )?;
-        let sound: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "sound",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let sound = match iter.next() {
+            Some(value) => String::from_value(value, "sound")?,
+            None => String::default(),
+        };
+        let additional_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "additional_flags")?,
+            None => u16::default(),
+        };
         Ok(TeamPlayBroadcastAudioEvent {
             team,
             sound,
@@ -821,56 +575,36 @@ pub struct PlayerTeamEvent {
     pub name: String,
 }
 impl FromRawGameEvent for PlayerTeamEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 7 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(7);
-        let name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "name",
-        )?;
-        let silent: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "silent",
-        )?;
-        let auto_team: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "auto_team",
-        )?;
-        let disconnect: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "disconnect",
-        )?;
-        let old_team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "old_team",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let old_team = match iter.next() {
+            Some(value) => u8::from_value(value, "old_team")?,
+            None => u8::default(),
+        };
+        let disconnect = match iter.next() {
+            Some(value) => bool::from_value(value, "disconnect")?,
+            None => bool::default(),
+        };
+        let auto_team = match iter.next() {
+            Some(value) => bool::from_value(value, "auto_team")?,
+            None => bool::default(),
+        };
+        let silent = match iter.next() {
+            Some(value) => bool::from_value(value, "silent")?,
+            None => bool::default(),
+        };
+        let name = match iter.next() {
+            Some(value) => String::from_value(value, "name")?,
+            None => String::default(),
+        };
         Ok(PlayerTeamEvent {
             user_id,
             team,
@@ -888,26 +622,16 @@ pub struct PlayerClassEvent {
     pub class: String,
 }
 impl FromRawGameEvent for PlayerClassEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let class: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "class",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let class = match iter.next() {
+            Some(value) => String::from_value(value, "class")?,
+            None => String::default(),
+        };
         Ok(PlayerClassEvent { user_id, class })
     }
 }
@@ -939,158 +663,104 @@ pub struct PlayerDeathEvent {
     pub rocket_jump: bool,
 }
 impl FromRawGameEvent for PlayerDeathEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 24 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(24);
-        let rocket_jump: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "rocket_jump",
-        )?;
-        let duck_streak_victim: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "duck_streak_victim",
-        )?;
-        let duck_streak_assist: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "duck_streak_assist",
-        )?;
-        let duck_streak_total: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "duck_streak_total",
-        )?;
-        let ducks_streaked: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ducks_streaked",
-        )?;
-        let kill_streak_victim: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kill_streak_victim",
-        )?;
-        let kill_streak_assist: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kill_streak_assist",
-        )?;
-        let kill_streak_wep: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kill_streak_wep",
-        )?;
-        let kill_streak_total: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kill_streak_total",
-        )?;
-        let assister_fallback: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister_fallback",
-        )?;
-        let player_penetrate_count: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_penetrate_count",
-        )?;
-        let silent_kill: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "silent_kill",
-        )?;
-        let death_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "death_flags",
-        )?;
-        let stun_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "stun_flags",
-        )?;
-        let weapon_log_class_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_log_class_name",
-        )?;
-        let assister: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister",
-        )?;
-        let custom_kill: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "custom_kill",
-        )?;
-        let damage_bits: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage_bits",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let weapon: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
-        let inflictor_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "inflictor_ent_index",
-        )?;
-        let victim_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "victim_ent_index")?,
+            None => u32::default(),
+        };
+        let inflictor_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
+            None => u32::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let weapon = match iter.next() {
+            Some(value) => String::from_value(value, "weapon")?,
+            None => String::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let damage_bits = match iter.next() {
+            Some(value) => u32::from_value(value, "damage_bits")?,
+            None => u32::default(),
+        };
+        let custom_kill = match iter.next() {
+            Some(value) => u16::from_value(value, "custom_kill")?,
+            None => u16::default(),
+        };
+        let assister = match iter.next() {
+            Some(value) => u16::from_value(value, "assister")?,
+            None => u16::default(),
+        };
+        let weapon_log_class_name = match iter.next() {
+            Some(value) => String::from_value(value, "weapon_log_class_name")?,
+            None => String::default(),
+        };
+        let stun_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "stun_flags")?,
+            None => u16::default(),
+        };
+        let death_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "death_flags")?,
+            None => u16::default(),
+        };
+        let silent_kill = match iter.next() {
+            Some(value) => bool::from_value(value, "silent_kill")?,
+            None => bool::default(),
+        };
+        let player_penetrate_count = match iter.next() {
+            Some(value) => u16::from_value(value, "player_penetrate_count")?,
+            None => u16::default(),
+        };
+        let assister_fallback = match iter.next() {
+            Some(value) => String::from_value(value, "assister_fallback")?,
+            None => String::default(),
+        };
+        let kill_streak_total = match iter.next() {
+            Some(value) => u16::from_value(value, "kill_streak_total")?,
+            None => u16::default(),
+        };
+        let kill_streak_wep = match iter.next() {
+            Some(value) => u16::from_value(value, "kill_streak_wep")?,
+            None => u16::default(),
+        };
+        let kill_streak_assist = match iter.next() {
+            Some(value) => u16::from_value(value, "kill_streak_assist")?,
+            None => u16::default(),
+        };
+        let kill_streak_victim = match iter.next() {
+            Some(value) => u16::from_value(value, "kill_streak_victim")?,
+            None => u16::default(),
+        };
+        let ducks_streaked = match iter.next() {
+            Some(value) => u16::from_value(value, "ducks_streaked")?,
+            None => u16::default(),
+        };
+        let duck_streak_total = match iter.next() {
+            Some(value) => u16::from_value(value, "duck_streak_total")?,
+            None => u16::default(),
+        };
+        let duck_streak_assist = match iter.next() {
+            Some(value) => u16::from_value(value, "duck_streak_assist")?,
+            None => u16::default(),
+        };
+        let duck_streak_victim = match iter.next() {
+            Some(value) => u16::from_value(value, "duck_streak_victim")?,
+            None => u16::default(),
+        };
+        let rocket_jump = match iter.next() {
+            Some(value) => bool::from_value(value, "rocket_jump")?,
+            None => bool::default(),
+        };
         Ok(PlayerDeathEvent {
             user_id,
             victim_ent_index,
@@ -1134,80 +804,52 @@ pub struct PlayerHurtEvent {
     pub bonus_effect: u8,
 }
 impl FromRawGameEvent for PlayerHurtEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 11 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(11);
-        let bonus_effect: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bonus_effect",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let all_see_crit: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "all_see_crit",
-        )?;
-        let mini_crit: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "mini_crit",
-        )?;
-        let crit: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "crit",
-        )?;
-        let show_disguised_crit: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "show_disguised_crit",
-        )?;
-        let custom: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "custom",
-        )?;
-        let damage_amount: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage_amount",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
-        let health: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "health",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let health = match iter.next() {
+            Some(value) => u16::from_value(value, "health")?,
+            None => u16::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let damage_amount = match iter.next() {
+            Some(value) => u16::from_value(value, "damage_amount")?,
+            None => u16::default(),
+        };
+        let custom = match iter.next() {
+            Some(value) => u16::from_value(value, "custom")?,
+            None => u16::default(),
+        };
+        let show_disguised_crit = match iter.next() {
+            Some(value) => bool::from_value(value, "show_disguised_crit")?,
+            None => bool::default(),
+        };
+        let crit = match iter.next() {
+            Some(value) => bool::from_value(value, "crit")?,
+            None => bool::default(),
+        };
+        let mini_crit = match iter.next() {
+            Some(value) => bool::from_value(value, "mini_crit")?,
+            None => bool::default(),
+        };
+        let all_see_crit = match iter.next() {
+            Some(value) => bool::from_value(value, "all_see_crit")?,
+            None => bool::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let bonus_effect = match iter.next() {
+            Some(value) => u8::from_value(value, "bonus_effect")?,
+            None => u8::default(),
+        };
         Ok(PlayerHurtEvent {
             user_id,
             health,
@@ -1230,32 +872,20 @@ pub struct PlayerChatEvent {
     pub text: String,
 }
 impl FromRawGameEvent for PlayerChatEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
-        let team_only: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team_only",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team_only = match iter.next() {
+            Some(value) => bool::from_value(value, "team_only")?,
+            None => bool::default(),
+        };
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
         Ok(PlayerChatEvent {
             team_only,
             user_id,
@@ -1271,38 +901,24 @@ pub struct PlayerScoreEvent {
     pub score: u16,
 }
 impl FromRawGameEvent for PlayerScoreEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "score",
-        )?;
-        let deaths: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "deaths",
-        )?;
-        let kills: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kills",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let kills = match iter.next() {
+            Some(value) => u16::from_value(value, "kills")?,
+            None => u16::default(),
+        };
+        let deaths = match iter.next() {
+            Some(value) => u16::from_value(value, "deaths")?,
+            None => u16::default(),
+        };
+        let score = match iter.next() {
+            Some(value) => u16::from_value(value, "score")?,
+            None => u16::default(),
+        };
         Ok(PlayerScoreEvent {
             user_id,
             kills,
@@ -1318,32 +934,20 @@ pub struct PlayerSpawnEvent {
     pub class: u16,
 }
 impl FromRawGameEvent for PlayerSpawnEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let class: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "class",
-        )?;
-        let team: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u16::from_value(value, "team")?,
+            None => u16::default(),
+        };
+        let class = match iter.next() {
+            Some(value) => u16::from_value(value, "class")?,
+            None => u16::default(),
+        };
         Ok(PlayerSpawnEvent {
             user_id,
             team,
@@ -1358,32 +962,20 @@ pub struct PlayerShootEvent {
     pub mode: u8,
 }
 impl FromRawGameEvent for PlayerShootEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let mode: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "mode",
-        )?;
-        let weapon: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let weapon = match iter.next() {
+            Some(value) => u8::from_value(value, "weapon")?,
+            None => u8::default(),
+        };
+        let mode = match iter.next() {
+            Some(value) => u8::from_value(value, "mode")?,
+            None => u8::default(),
+        };
         Ok(PlayerShootEvent {
             user_id,
             weapon,
@@ -1397,26 +989,16 @@ pub struct PlayerUseEvent {
     pub entity: u16,
 }
 impl FromRawGameEvent for PlayerUseEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let entity: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "entity",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let entity = match iter.next() {
+            Some(value) => u16::from_value(value, "entity")?,
+            None => u16::default(),
+        };
         Ok(PlayerUseEvent { user_id, entity })
     }
 }
@@ -1427,32 +1009,20 @@ pub struct PlayerChangeNameEvent {
     pub new_name: String,
 }
 impl FromRawGameEvent for PlayerChangeNameEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let new_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "new_name",
-        )?;
-        let old_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "old_name",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let old_name = match iter.next() {
+            Some(value) => String::from_value(value, "old_name")?,
+            None => String::default(),
+        };
+        let new_name = match iter.next() {
+            Some(value) => String::from_value(value, "new_name")?,
+            None => String::default(),
+        };
         Ok(PlayerChangeNameEvent {
             user_id,
             old_name,
@@ -1465,20 +1035,12 @@ pub struct PlayerHintMessageEvent {
     pub hint_message: String,
 }
 impl FromRawGameEvent for PlayerHintMessageEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let hint_message: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "hint_message",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let hint_message = match iter.next() {
+            Some(value) => String::from_value(value, "hint_message")?,
+            None => String::default(),
+        };
         Ok(PlayerHintMessageEvent { hint_message })
     }
 }
@@ -1487,27 +1049,19 @@ pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
 }
 impl FromRawGameEvent for BasePlayerTeleportedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "ent_index")?,
+            None => u16::default(),
+        };
         Ok(BasePlayerTeleportedEvent { ent_index })
     }
 }
 #[derive(Debug)]
 pub struct GameInitEvent {}
 impl FromRawGameEvent for GameInitEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameInitEvent {})
     }
 }
@@ -1516,20 +1070,12 @@ pub struct GameNewMapEvent {
     pub map_name: String,
 }
 impl FromRawGameEvent for GameNewMapEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let map_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "map_name",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let map_name = match iter.next() {
+            Some(value) => String::from_value(value, "map_name")?,
+            None => String::default(),
+        };
         Ok(GameNewMapEvent { map_name })
     }
 }
@@ -1541,38 +1087,24 @@ pub struct GameStartEvent {
     pub objective: String,
 }
 impl FromRawGameEvent for GameStartEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let objective: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "objective",
-        )?;
-        let frag_limit: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "frag_limit",
-        )?;
-        let time_limit: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time_limit",
-        )?;
-        let rounds_limit: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "rounds_limit",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let rounds_limit = match iter.next() {
+            Some(value) => u32::from_value(value, "rounds_limit")?,
+            None => u32::default(),
+        };
+        let time_limit = match iter.next() {
+            Some(value) => u32::from_value(value, "time_limit")?,
+            None => u32::default(),
+        };
+        let frag_limit = match iter.next() {
+            Some(value) => u32::from_value(value, "frag_limit")?,
+            None => u32::default(),
+        };
+        let objective = match iter.next() {
+            Some(value) => String::from_value(value, "objective")?,
+            None => String::default(),
+        };
         Ok(GameStartEvent {
             rounds_limit,
             time_limit,
@@ -1586,20 +1118,12 @@ pub struct GameEndEvent {
     pub winner: u8,
 }
 impl FromRawGameEvent for GameEndEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let winner: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "winner",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let winner = match iter.next() {
+            Some(value) => u8::from_value(value, "winner")?,
+            None => u8::default(),
+        };
         Ok(GameEndEvent { winner })
     }
 }
@@ -1610,32 +1134,20 @@ pub struct RoundStartEvent {
     pub objective: String,
 }
 impl FromRawGameEvent for RoundStartEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let objective: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "objective",
-        )?;
-        let frag_limit: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "frag_limit",
-        )?;
-        let time_limit: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time_limit",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let time_limit = match iter.next() {
+            Some(value) => u32::from_value(value, "time_limit")?,
+            None => u32::default(),
+        };
+        let frag_limit = match iter.next() {
+            Some(value) => u32::from_value(value, "frag_limit")?,
+            None => u32::default(),
+        };
+        let objective = match iter.next() {
+            Some(value) => String::from_value(value, "objective")?,
+            None => String::default(),
+        };
         Ok(RoundStartEvent {
             time_limit,
             frag_limit,
@@ -1650,32 +1162,20 @@ pub struct RoundEndEvent {
     pub message: String,
 }
 impl FromRawGameEvent for RoundEndEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let message: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "message",
-        )?;
-        let reason: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "reason",
-        )?;
-        let winner: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "winner",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let winner = match iter.next() {
+            Some(value) => u8::from_value(value, "winner")?,
+            None => u8::default(),
+        };
+        let reason = match iter.next() {
+            Some(value) => u8::from_value(value, "reason")?,
+            None => u8::default(),
+        };
+        let message = match iter.next() {
+            Some(value) => String::from_value(value, "message")?,
+            None => String::default(),
+        };
         Ok(RoundEndEvent {
             winner,
             reason,
@@ -1689,26 +1189,16 @@ pub struct GameMessageEvent {
     pub text: String,
 }
 impl FromRawGameEvent for GameMessageEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
-        let target: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let target = match iter.next() {
+            Some(value) => u8::from_value(value, "target")?,
+            None => u8::default(),
+        };
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
         Ok(GameMessageEvent { target, text })
     }
 }
@@ -1719,32 +1209,20 @@ pub struct BreakBreakableEvent {
     pub material: u8,
 }
 impl FromRawGameEvent for BreakBreakableEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let material: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "material",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
-        let ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index")?,
+            None => u32::default(),
+        };
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let material = match iter.next() {
+            Some(value) => u8::from_value(value, "material")?,
+            None => u8::default(),
+        };
         Ok(BreakBreakableEvent {
             ent_index,
             user_id,
@@ -1758,26 +1236,16 @@ pub struct BreakPropEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for BreakPropEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
-        let ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index")?,
+            None => u32::default(),
+        };
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(BreakPropEvent { ent_index, user_id })
     }
 }
@@ -1789,38 +1257,24 @@ pub struct EntityKilledEvent {
     pub damage_bits: u32,
 }
 impl FromRawGameEvent for EntityKilledEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let damage_bits: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage_bits",
-        )?;
-        let ent_index_inflictor: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index_inflictor",
-        )?;
-        let ent_index_attacker: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index_attacker",
-        )?;
-        let ent_index_killed: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index_killed",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index_killed = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index_killed")?,
+            None => u32::default(),
+        };
+        let ent_index_attacker = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index_attacker")?,
+            None => u32::default(),
+        };
+        let ent_index_inflictor = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index_inflictor")?,
+            None => u32::default(),
+        };
+        let damage_bits = match iter.next() {
+            Some(value) => u32::from_value(value, "damage_bits")?,
+            None => u32::default(),
+        };
         Ok(EntityKilledEvent {
             ent_index_killed,
             ent_index_attacker,
@@ -1837,38 +1291,24 @@ pub struct BonusUpdatedEvent {
     pub num_gold: u16,
 }
 impl FromRawGameEvent for BonusUpdatedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let num_gold: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "num_gold",
-        )?;
-        let num_silver: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "num_silver",
-        )?;
-        let num_bronze: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "num_bronze",
-        )?;
-        let num_advanced: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "num_advanced",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let num_advanced = match iter.next() {
+            Some(value) => u16::from_value(value, "num_advanced")?,
+            None => u16::default(),
+        };
+        let num_bronze = match iter.next() {
+            Some(value) => u16::from_value(value, "num_bronze")?,
+            None => u16::default(),
+        };
+        let num_silver = match iter.next() {
+            Some(value) => u16::from_value(value, "num_silver")?,
+            None => u16::default(),
+        };
+        let num_gold = match iter.next() {
+            Some(value) => u16::from_value(value, "num_gold")?,
+            None => u16::default(),
+        };
         Ok(BonusUpdatedEvent {
             num_advanced,
             num_bronze,
@@ -1884,32 +1324,20 @@ pub struct AchievementEventEvent {
     pub max_val: u16,
 }
 impl FromRawGameEvent for AchievementEventEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let max_val: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "max_val",
-        )?;
-        let cur_val: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cur_val",
-        )?;
-        let achievement_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "achievement_name",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let achievement_name = match iter.next() {
+            Some(value) => String::from_value(value, "achievement_name")?,
+            None => String::default(),
+        };
+        let cur_val = match iter.next() {
+            Some(value) => u16::from_value(value, "cur_val")?,
+            None => u16::default(),
+        };
+        let max_val = match iter.next() {
+            Some(value) => u16::from_value(value, "max_val")?,
+            None => u16::default(),
+        };
         Ok(AchievementEventEvent {
             achievement_name,
             cur_val,
@@ -1924,32 +1352,20 @@ pub struct AchievementIncrementEvent {
     pub max_val: u16,
 }
 impl FromRawGameEvent for AchievementIncrementEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let max_val: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "max_val",
-        )?;
-        let cur_val: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cur_val",
-        )?;
-        let achievement_id: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "achievement_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let achievement_id = match iter.next() {
+            Some(value) => u32::from_value(value, "achievement_id")?,
+            None => u32::default(),
+        };
+        let cur_val = match iter.next() {
+            Some(value) => u16::from_value(value, "cur_val")?,
+            None => u16::default(),
+        };
+        let max_val = match iter.next() {
+            Some(value) => u16::from_value(value, "max_val")?,
+            None => u16::default(),
+        };
         Ok(AchievementIncrementEvent {
             achievement_id,
             cur_val,
@@ -1962,20 +1378,12 @@ pub struct PhysgunPickupEvent {
     pub ent_index: u32,
 }
 impl FromRawGameEvent for PhysgunPickupEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index")?,
+            None => u32::default(),
+        };
         Ok(PhysgunPickupEvent { ent_index })
     }
 }
@@ -1984,34 +1392,26 @@ pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
 }
 impl FromRawGameEvent for FlareIgniteNpcEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index")?,
+            None => u32::default(),
+        };
         Ok(FlareIgniteNpcEvent { ent_index })
     }
 }
 #[derive(Debug)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl FromRawGameEvent for HelicopterGrenadePuntMissEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
 #[derive(Debug)]
 pub struct UserDataDownloadedEvent {}
 impl FromRawGameEvent for UserDataDownloadedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(UserDataDownloadedEvent {})
     }
 }
@@ -2020,20 +1420,12 @@ pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
 }
 impl FromRawGameEvent for RagdollDissolvedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index")?,
+            None => u32::default(),
+        };
         Ok(RagdollDissolvedEvent { ent_index })
     }
 }
@@ -2044,32 +1436,20 @@ pub struct HLTVChangedModeEvent {
     pub obs_target: u16,
 }
 impl FromRawGameEvent for HLTVChangedModeEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let obs_target: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "obs_target",
-        )?;
-        let new_mode: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "new_mode",
-        )?;
-        let old_mode: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "old_mode",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let old_mode = match iter.next() {
+            Some(value) => u16::from_value(value, "old_mode")?,
+            None => u16::default(),
+        };
+        let new_mode = match iter.next() {
+            Some(value) => u16::from_value(value, "new_mode")?,
+            None => u16::default(),
+        };
+        let obs_target = match iter.next() {
+            Some(value) => u16::from_value(value, "obs_target")?,
+            None => u16::default(),
+        };
         Ok(HLTVChangedModeEvent {
             old_mode,
             new_mode,
@@ -2084,32 +1464,20 @@ pub struct HLTVChangedTargetEvent {
     pub obs_target: u16,
 }
 impl FromRawGameEvent for HLTVChangedTargetEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let obs_target: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "obs_target",
-        )?;
-        let old_target: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "old_target",
-        )?;
-        let mode: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "mode",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let mode = match iter.next() {
+            Some(value) => u16::from_value(value, "mode")?,
+            None => u16::default(),
+        };
+        let old_target = match iter.next() {
+            Some(value) => u16::from_value(value, "old_target")?,
+            None => u16::default(),
+        };
+        let obs_target = match iter.next() {
+            Some(value) => u16::from_value(value, "obs_target")?,
+            None => u16::default(),
+        };
         Ok(HLTVChangedTargetEvent {
             mode,
             old_target,
@@ -2120,7 +1488,7 @@ impl FromRawGameEvent for HLTVChangedTargetEvent {
 #[derive(Debug)]
 pub struct VoteEndedEvent {}
 impl FromRawGameEvent for VoteEndedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(VoteEndedEvent {})
     }
 }
@@ -2132,38 +1500,24 @@ pub struct VoteStartedEvent {
     pub initiator: u32,
 }
 impl FromRawGameEvent for VoteStartedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let initiator: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "initiator",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let param_1: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "param_1",
-        )?;
-        let issue: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "issue",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let issue = match iter.next() {
+            Some(value) => String::from_value(value, "issue")?,
+            None => String::default(),
+        };
+        let param_1 = match iter.next() {
+            Some(value) => String::from_value(value, "param_1")?,
+            None => String::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let initiator = match iter.next() {
+            Some(value) => u32::from_value(value, "initiator")?,
+            None => u32::default(),
+        };
         Ok(VoteStartedEvent {
             issue,
             param_1,
@@ -2182,50 +1536,32 @@ pub struct VoteChangedEvent {
     pub potential_votes: u8,
 }
 impl FromRawGameEvent for VoteChangedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 6 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(6);
-        let potential_votes: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "potential_votes",
-        )?;
-        let vote_option_5: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "vote_option_5",
-        )?;
-        let vote_option_4: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "vote_option_4",
-        )?;
-        let vote_option_3: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "vote_option_3",
-        )?;
-        let vote_option_2: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "vote_option_2",
-        )?;
-        let vote_option_1: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "vote_option_1",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let vote_option_1 = match iter.next() {
+            Some(value) => u8::from_value(value, "vote_option_1")?,
+            None => u8::default(),
+        };
+        let vote_option_2 = match iter.next() {
+            Some(value) => u8::from_value(value, "vote_option_2")?,
+            None => u8::default(),
+        };
+        let vote_option_3 = match iter.next() {
+            Some(value) => u8::from_value(value, "vote_option_3")?,
+            None => u8::default(),
+        };
+        let vote_option_4 = match iter.next() {
+            Some(value) => u8::from_value(value, "vote_option_4")?,
+            None => u8::default(),
+        };
+        let vote_option_5 = match iter.next() {
+            Some(value) => u8::from_value(value, "vote_option_5")?,
+            None => u8::default(),
+        };
+        let potential_votes = match iter.next() {
+            Some(value) => u8::from_value(value, "potential_votes")?,
+            None => u8::default(),
+        };
         Ok(VoteChangedEvent {
             vote_option_1,
             vote_option_2,
@@ -2243,32 +1579,20 @@ pub struct VotePassedEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for VotePassedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let param_1: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "param_1",
-        )?;
-        let details: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "details",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let details = match iter.next() {
+            Some(value) => String::from_value(value, "details")?,
+            None => String::default(),
+        };
+        let param_1 = match iter.next() {
+            Some(value) => String::from_value(value, "param_1")?,
+            None => String::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
         Ok(VotePassedEvent {
             details,
             param_1,
@@ -2281,20 +1605,12 @@ pub struct VoteFailedEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for VoteFailedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
         Ok(VoteFailedEvent { team })
     }
 }
@@ -2305,32 +1621,20 @@ pub struct VoteCastEvent {
     pub entity_id: u32,
 }
 impl FromRawGameEvent for VoteCastEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let entity_id: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "entity_id",
-        )?;
-        let team: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let vote_option: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "vote_option",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let vote_option = match iter.next() {
+            Some(value) => u8::from_value(value, "vote_option")?,
+            None => u8::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u16::from_value(value, "team")?,
+            None => u16::default(),
+        };
+        let entity_id = match iter.next() {
+            Some(value) => u32::from_value(value, "entity_id")?,
+            None => u32::default(),
+        };
         Ok(VoteCastEvent {
             vote_option,
             team,
@@ -2348,50 +1652,32 @@ pub struct VoteOptionsEvent {
     pub option_5: String,
 }
 impl FromRawGameEvent for VoteOptionsEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 6 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(6);
-        let option_5: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "option_5",
-        )?;
-        let option_4: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "option_4",
-        )?;
-        let option_3: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "option_3",
-        )?;
-        let option_2: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "option_2",
-        )?;
-        let option_1: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "option_1",
-        )?;
-        let count: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "count",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let count = match iter.next() {
+            Some(value) => u8::from_value(value, "count")?,
+            None => u8::default(),
+        };
+        let option_1 = match iter.next() {
+            Some(value) => String::from_value(value, "option_1")?,
+            None => String::default(),
+        };
+        let option_2 = match iter.next() {
+            Some(value) => String::from_value(value, "option_2")?,
+            None => String::default(),
+        };
+        let option_3 = match iter.next() {
+            Some(value) => String::from_value(value, "option_3")?,
+            None => String::default(),
+        };
+        let option_4 = match iter.next() {
+            Some(value) => String::from_value(value, "option_4")?,
+            None => String::default(),
+        };
+        let option_5 = match iter.next() {
+            Some(value) => String::from_value(value, "option_5")?,
+            None => String::default(),
+        };
         Ok(VoteOptionsEvent {
             count,
             option_1,
@@ -2405,21 +1691,21 @@ impl FromRawGameEvent for VoteOptionsEvent {
 #[derive(Debug)]
 pub struct ReplaySavedEvent {}
 impl FromRawGameEvent for ReplaySavedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplaySavedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct EnteredPerformanceModeEvent {}
 impl FromRawGameEvent for EnteredPerformanceModeEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
 #[derive(Debug)]
 pub struct BrowseReplaysEvent {}
 impl FromRawGameEvent for BrowseReplaysEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(BrowseReplaysEvent {})
     }
 }
@@ -2430,32 +1716,20 @@ pub struct ReplayYoutubeStatsEvent {
     pub favorited: u32,
 }
 impl FromRawGameEvent for ReplayYoutubeStatsEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let favorited: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "favorited",
-        )?;
-        let likes: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "likes",
-        )?;
-        let views: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "views",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let views = match iter.next() {
+            Some(value) => u32::from_value(value, "views")?,
+            None => u32::default(),
+        };
+        let likes = match iter.next() {
+            Some(value) => u32::from_value(value, "likes")?,
+            None => u32::default(),
+        };
+        let favorited = match iter.next() {
+            Some(value) => u32::from_value(value, "favorited")?,
+            None => u32::default(),
+        };
         Ok(ReplayYoutubeStatsEvent {
             views,
             likes,
@@ -2466,35 +1740,35 @@ impl FromRawGameEvent for ReplayYoutubeStatsEvent {
 #[derive(Debug)]
 pub struct InventoryUpdatedEvent {}
 impl FromRawGameEvent for InventoryUpdatedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(InventoryUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct CartUpdatedEvent {}
 impl FromRawGameEvent for CartUpdatedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(CartUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct GcConnectedEvent {}
 impl FromRawGameEvent for GcConnectedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GcConnectedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ItemSchemaInitializedEvent {}
 impl FromRawGameEvent for ItemSchemaInitializedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
@@ -2503,20 +1777,12 @@ pub struct IntroFinishEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for IntroFinishEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(IntroFinishEvent { player })
     }
 }
@@ -2525,20 +1791,12 @@ pub struct IntroNextCameraEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for IntroNextCameraEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(IntroNextCameraEvent { player })
     }
 }
@@ -2549,32 +1807,20 @@ pub struct MmLobbyChatEvent {
     pub kind: u16,
 }
 impl FromRawGameEvent for MmLobbyChatEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let kind: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kind",
-        )?;
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
-        let steam_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "steam_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let steam_id = match iter.next() {
+            Some(value) => String::from_value(value, "steam_id")?,
+            None => String::default(),
+        };
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
+        let kind = match iter.next() {
+            Some(value) => u16::from_value(value, "kind")?,
+            None => u16::default(),
+        };
         Ok(MmLobbyChatEvent {
             steam_id,
             text,
@@ -2587,20 +1833,12 @@ pub struct MmLobbyMemberJoinEvent {
     pub steam_id: String,
 }
 impl FromRawGameEvent for MmLobbyMemberJoinEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let steam_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "steam_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let steam_id = match iter.next() {
+            Some(value) => String::from_value(value, "steam_id")?,
+            None => String::default(),
+        };
         Ok(MmLobbyMemberJoinEvent { steam_id })
     }
 }
@@ -2610,26 +1848,16 @@ pub struct MmLobbyMemberLeaveEvent {
     pub flags: u32,
 }
 impl FromRawGameEvent for MmLobbyMemberLeaveEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let flags: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "flags",
-        )?;
-        let steam_id: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "steam_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let steam_id = match iter.next() {
+            Some(value) => String::from_value(value, "steam_id")?,
+            None => String::default(),
+        };
+        let flags = match iter.next() {
+            Some(value) => u32::from_value(value, "flags")?,
+            None => u32::default(),
+        };
         Ok(MmLobbyMemberLeaveEvent { steam_id, flags })
     }
 }
@@ -2639,26 +1867,16 @@ pub struct PlayerChangeClassEvent {
     pub class: u16,
 }
 impl FromRawGameEvent for PlayerChangeClassEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let class: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "class",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let class = match iter.next() {
+            Some(value) => u16::from_value(value, "class")?,
+            None => u16::default(),
+        };
         Ok(PlayerChangeClassEvent { user_id, class })
     }
 }
@@ -2667,20 +1885,12 @@ pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
 }
 impl FromRawGameEvent for TfMapTimeRemainingEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let seconds: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "seconds",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let seconds = match iter.next() {
+            Some(value) => u32::from_value(value, "seconds")?,
+            None => u32::default(),
+        };
         Ok(TfMapTimeRemainingEvent { seconds })
     }
 }
@@ -2689,20 +1899,12 @@ pub struct TfGameOverEvent {
     pub reason: String,
 }
 impl FromRawGameEvent for TfGameOverEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let reason: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "reason",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let reason = match iter.next() {
+            Some(value) => String::from_value(value, "reason")?,
+            None => String::default(),
+        };
         Ok(TfGameOverEvent { reason })
     }
 }
@@ -2712,26 +1914,16 @@ pub struct CtfFlagCapturedEvent {
     pub capping_team_score: u16,
 }
 impl FromRawGameEvent for CtfFlagCapturedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let capping_team_score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "capping_team_score",
-        )?;
-        let capping_team: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "capping_team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let capping_team = match iter.next() {
+            Some(value) => u16::from_value(value, "capping_team")?,
+            None => u16::default(),
+        };
+        let capping_team_score = match iter.next() {
+            Some(value) => u16::from_value(value, "capping_team_score")?,
+            None => u16::default(),
+        };
         Ok(CtfFlagCapturedEvent {
             capping_team,
             capping_team_score,
@@ -2741,7 +1933,7 @@ impl FromRawGameEvent for CtfFlagCapturedEvent {
 #[derive(Debug)]
 pub struct ControlPointInitializedEvent {}
 impl FromRawGameEvent for ControlPointInitializedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ControlPointInitializedEvent {})
     }
 }
@@ -2750,20 +1942,12 @@ pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ControlPointUpdateImagesEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(ControlPointUpdateImagesEvent { index })
     }
 }
@@ -2772,20 +1956,12 @@ pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ControlPointUpdateLayoutEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(ControlPointUpdateLayoutEvent { index })
     }
 }
@@ -2794,20 +1970,12 @@ pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ControlPointUpdateCappingEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(ControlPointUpdateCappingEvent { index })
     }
 }
@@ -2816,20 +1984,12 @@ pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ControlPointUpdateOwnerEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(ControlPointUpdateOwnerEvent { index })
     }
 }
@@ -2839,26 +1999,16 @@ pub struct ControlPointStartTouchEvent {
     pub area: u16,
 }
 impl FromRawGameEvent for ControlPointStartTouchEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let area: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "area",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let area = match iter.next() {
+            Some(value) => u16::from_value(value, "area")?,
+            None => u16::default(),
+        };
         Ok(ControlPointStartTouchEvent { player, area })
     }
 }
@@ -2868,26 +2018,16 @@ pub struct ControlPointEndTouchEvent {
     pub area: u16,
 }
 impl FromRawGameEvent for ControlPointEndTouchEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let area: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "area",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let area = match iter.next() {
+            Some(value) => u16::from_value(value, "area")?,
+            None => u16::default(),
+        };
         Ok(ControlPointEndTouchEvent { player, area })
     }
 }
@@ -2896,20 +2036,12 @@ pub struct ControlPointPulseElementEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for ControlPointPulseElementEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(ControlPointPulseElementEvent { player })
     }
 }
@@ -2919,26 +2051,16 @@ pub struct ControlPointFakeCaptureEvent {
     pub int_data: u16,
 }
 impl FromRawGameEvent for ControlPointFakeCaptureEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let int_data: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "int_data",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let int_data = match iter.next() {
+            Some(value) => u16::from_value(value, "int_data")?,
+            None => u16::default(),
+        };
         Ok(ControlPointFakeCaptureEvent { player, int_data })
     }
 }
@@ -2948,26 +2070,16 @@ pub struct ControlPointFakeCaptureMultiplierEvent {
     pub int_data: u16,
 }
 impl FromRawGameEvent for ControlPointFakeCaptureMultiplierEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let int_data: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "int_data",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let int_data = match iter.next() {
+            Some(value) => u16::from_value(value, "int_data")?,
+            None => u16::default(),
+        };
         Ok(ControlPointFakeCaptureMultiplierEvent { player, int_data })
     }
 }
@@ -2976,20 +2088,12 @@ pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
 }
 impl FromRawGameEvent for TeamPlayRoundSelectedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let round: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "round",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let round = match iter.next() {
+            Some(value) => String::from_value(value, "round")?,
+            None => String::default(),
+        };
         Ok(TeamPlayRoundSelectedEvent { round })
     }
 }
@@ -2998,62 +2102,54 @@ pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
 }
 impl FromRawGameEvent for TeamPlayRoundStartEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let full_reset: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "full_reset",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let full_reset = match iter.next() {
+            Some(value) => bool::from_value(value, "full_reset")?,
+            None => bool::default(),
+        };
         Ok(TeamPlayRoundStartEvent { full_reset })
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayRoundActiveEvent {}
 impl FromRawGameEvent for TeamPlayRoundActiveEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl FromRawGameEvent for TeamPlayWaitingBeginsEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl FromRawGameEvent for TeamPlayWaitingEndsEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl FromRawGameEvent for TeamPlayWaitingAboutToEndEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayRestartRoundEvent {}
 impl FromRawGameEvent for TeamPlayRestartRoundEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayReadyRestartEvent {}
 impl FromRawGameEvent for TeamPlayReadyRestartEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
@@ -3062,20 +2158,12 @@ pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
 }
 impl FromRawGameEvent for TeamPlayRoundRestartSecondsEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let seconds: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "seconds",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let seconds = match iter.next() {
+            Some(value) => u16::from_value(value, "seconds")?,
+            None => u16::default(),
+        };
         Ok(TeamPlayRoundRestartSecondsEvent { seconds })
     }
 }
@@ -3084,20 +2172,12 @@ pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayTeamReadyEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayTeamReadyEvent { team })
     }
 }
@@ -3112,56 +2192,36 @@ pub struct TeamPlayRoundWinEvent {
     pub was_sudden_death: u8,
 }
 impl FromRawGameEvent for TeamPlayRoundWinEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 7 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(7);
-        let was_sudden_death: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "was_sudden_death",
-        )?;
-        let losing_team_num_caps: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "losing_team_num_caps",
-        )?;
-        let round_time: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "round_time",
-        )?;
-        let full_round: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "full_round",
-        )?;
-        let flag_cap_limit: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "flag_cap_limit",
-        )?;
-        let win_reason: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "win_reason",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let win_reason = match iter.next() {
+            Some(value) => u8::from_value(value, "win_reason")?,
+            None => u8::default(),
+        };
+        let flag_cap_limit = match iter.next() {
+            Some(value) => u16::from_value(value, "flag_cap_limit")?,
+            None => u16::default(),
+        };
+        let full_round = match iter.next() {
+            Some(value) => u16::from_value(value, "full_round")?,
+            None => u16::default(),
+        };
+        let round_time = match iter.next() {
+            Some(value) => f32::from_value(value, "round_time")?,
+            None => f32::default(),
+        };
+        let losing_team_num_caps = match iter.next() {
+            Some(value) => u16::from_value(value, "losing_team_num_caps")?,
+            None => u16::default(),
+        };
+        let was_sudden_death = match iter.next() {
+            Some(value) => u8::from_value(value, "was_sudden_death")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayRoundWinEvent {
             team,
             win_reason,
@@ -3176,7 +2236,7 @@ impl FromRawGameEvent for TeamPlayRoundWinEvent {
 #[derive(Debug)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl FromRawGameEvent for TeamPlayUpdateTimerEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
@@ -3185,48 +2245,40 @@ pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
 }
 impl FromRawGameEvent for TeamPlayRoundStalemateEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let reason: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "reason",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let reason = match iter.next() {
+            Some(value) => u8::from_value(value, "reason")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayRoundStalemateEvent { reason })
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl FromRawGameEvent for TeamPlayOvertimeBeginEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl FromRawGameEvent for TeamPlayOvertimeEndEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl FromRawGameEvent for TeamPlaySuddenDeathBeginEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl FromRawGameEvent for TeamPlaySuddenDeathEndEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
@@ -3235,20 +2287,12 @@ pub struct TeamPlayGameOverEvent {
     pub reason: String,
 }
 impl FromRawGameEvent for TeamPlayGameOverEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let reason: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "reason",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let reason = match iter.next() {
+            Some(value) => String::from_value(value, "reason")?,
+            None => String::default(),
+        };
         Ok(TeamPlayGameOverEvent { reason })
     }
 }
@@ -3257,20 +2301,12 @@ pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
 }
 impl FromRawGameEvent for TeamPlayMapTimeRemainingEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let seconds: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "seconds",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let seconds = match iter.next() {
+            Some(value) => u16::from_value(value, "seconds")?,
+            None => u16::default(),
+        };
         Ok(TeamPlayMapTimeRemainingEvent { seconds })
     }
 }
@@ -3279,20 +2315,12 @@ pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
 }
 impl FromRawGameEvent for TeamPlayTimerFlashEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let time_remaining: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time_remaining",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let time_remaining = match iter.next() {
+            Some(value) => u16::from_value(value, "time_remaining")?,
+            None => u16::default(),
+        };
         Ok(TeamPlayTimerFlashEvent { time_remaining })
     }
 }
@@ -3302,26 +2330,16 @@ pub struct TeamPlayTimerTimeAddedEvent {
     pub seconds_added: u16,
 }
 impl FromRawGameEvent for TeamPlayTimerTimeAddedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let seconds_added: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "seconds_added",
-        )?;
-        let timer: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "timer",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let timer = match iter.next() {
+            Some(value) => u16::from_value(value, "timer")?,
+            None => u16::default(),
+        };
+        let seconds_added = match iter.next() {
+            Some(value) => u16::from_value(value, "seconds_added")?,
+            None => u16::default(),
+        };
         Ok(TeamPlayTimerTimeAddedEvent {
             timer,
             seconds_added,
@@ -3338,50 +2356,32 @@ pub struct TeamPlayPointStartCaptureEvent {
     pub cap_time: f32,
 }
 impl FromRawGameEvent for TeamPlayPointStartCaptureEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 6 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(6);
-        let cap_time: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cap_time",
-        )?;
-        let cappers: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cappers",
-        )?;
-        let cap_team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cap_team",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let cp_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp_name",
-        )?;
-        let cp: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let cp = match iter.next() {
+            Some(value) => u8::from_value(value, "cp")?,
+            None => u8::default(),
+        };
+        let cp_name = match iter.next() {
+            Some(value) => String::from_value(value, "cp_name")?,
+            None => String::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let cap_team = match iter.next() {
+            Some(value) => u8::from_value(value, "cap_team")?,
+            None => u8::default(),
+        };
+        let cappers = match iter.next() {
+            Some(value) => String::from_value(value, "cappers")?,
+            None => String::default(),
+        };
+        let cap_time = match iter.next() {
+            Some(value) => f32::from_value(value, "cap_time")?,
+            None => f32::default(),
+        };
         Ok(TeamPlayPointStartCaptureEvent {
             cp,
             cp_name,
@@ -3400,38 +2400,24 @@ pub struct TeamPlayPointCapturedEvent {
     pub cappers: String,
 }
 impl FromRawGameEvent for TeamPlayPointCapturedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let cappers: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cappers",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let cp_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp_name",
-        )?;
-        let cp: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let cp = match iter.next() {
+            Some(value) => u8::from_value(value, "cp")?,
+            None => u8::default(),
+        };
+        let cp_name = match iter.next() {
+            Some(value) => String::from_value(value, "cp_name")?,
+            None => String::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let cappers = match iter.next() {
+            Some(value) => String::from_value(value, "cappers")?,
+            None => String::default(),
+        };
         Ok(TeamPlayPointCapturedEvent {
             cp,
             cp_name,
@@ -3447,32 +2433,20 @@ pub struct TeamPlayPointLockedEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayPointLockedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let cp_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp_name",
-        )?;
-        let cp: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let cp = match iter.next() {
+            Some(value) => u8::from_value(value, "cp")?,
+            None => u8::default(),
+        };
+        let cp_name = match iter.next() {
+            Some(value) => String::from_value(value, "cp_name")?,
+            None => String::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayPointLockedEvent { cp, cp_name, team })
     }
 }
@@ -3483,32 +2457,20 @@ pub struct TeamPlayPointUnlockedEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayPointUnlockedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let cp_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp_name",
-        )?;
-        let cp: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let cp = match iter.next() {
+            Some(value) => u8::from_value(value, "cp")?,
+            None => u8::default(),
+        };
+        let cp_name = match iter.next() {
+            Some(value) => String::from_value(value, "cp_name")?,
+            None => String::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayPointUnlockedEvent { cp, cp_name, team })
     }
 }
@@ -3519,32 +2481,20 @@ pub struct TeamPlayCaptureBrokenEvent {
     pub time_remaining: f32,
 }
 impl FromRawGameEvent for TeamPlayCaptureBrokenEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let time_remaining: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time_remaining",
-        )?;
-        let cp_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp_name",
-        )?;
-        let cp: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let cp = match iter.next() {
+            Some(value) => u8::from_value(value, "cp")?,
+            None => u8::default(),
+        };
+        let cp_name = match iter.next() {
+            Some(value) => String::from_value(value, "cp_name")?,
+            None => String::default(),
+        };
+        let time_remaining = match iter.next() {
+            Some(value) => f32::from_value(value, "time_remaining")?,
+            None => f32::default(),
+        };
         Ok(TeamPlayCaptureBrokenEvent {
             cp,
             cp_name,
@@ -3559,32 +2509,20 @@ pub struct TeamPlayCaptureBlockedEvent {
     pub blocker: u8,
 }
 impl FromRawGameEvent for TeamPlayCaptureBlockedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let blocker: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "blocker",
-        )?;
-        let cp_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp_name",
-        )?;
-        let cp: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cp",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let cp = match iter.next() {
+            Some(value) => u8::from_value(value, "cp")?,
+            None => u8::default(),
+        };
+        let cp_name = match iter.next() {
+            Some(value) => String::from_value(value, "cp_name")?,
+            None => String::default(),
+        };
+        let blocker = match iter.next() {
+            Some(value) => u8::from_value(value, "blocker")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayCaptureBlockedEvent {
             cp,
             cp_name,
@@ -3601,44 +2539,28 @@ pub struct TeamPlayFlagEventEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayFlagEventEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 5 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(5);
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let home: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "home",
-        )?;
-        let event_type: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "event_type",
-        )?;
-        let carrier: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "carrier",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let carrier = match iter.next() {
+            Some(value) => u16::from_value(value, "carrier")?,
+            None => u16::default(),
+        };
+        let event_type = match iter.next() {
+            Some(value) => u16::from_value(value, "event_type")?,
+            None => u16::default(),
+        };
+        let home = match iter.next() {
+            Some(value) => u8::from_value(value, "home")?,
+            None => u8::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayFlagEventEvent {
             player,
             carrier,
@@ -3671,128 +2593,84 @@ pub struct TeamPlayWinPanelEvent {
     pub kill_stream_player_1_count: u16,
 }
 impl FromRawGameEvent for TeamPlayWinPanelEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 19 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(19);
-        let kill_stream_player_1_count: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kill_stream_player_1_count",
-        )?;
-        let kill_stream_player_1: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kill_stream_player_1",
-        )?;
-        let player_3_points: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_3_points",
-        )?;
-        let player_3: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_3",
-        )?;
-        let player_2_points: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_2_points",
-        )?;
-        let player_2: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_2",
-        )?;
-        let player_1_points: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_1_points",
-        )?;
-        let player_1: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_1",
-        )?;
-        let rounds_remaining: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "rounds_remaining",
-        )?;
-        let round_complete: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "round_complete",
-        )?;
-        let red_score_prev: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "red_score_prev",
-        )?;
-        let blue_score_prev: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "blue_score_prev",
-        )?;
-        let red_score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "red_score",
-        )?;
-        let blue_score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "blue_score",
-        )?;
-        let flag_cap_limit: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "flag_cap_limit",
-        )?;
-        let cappers: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cappers",
-        )?;
-        let win_reason: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "win_reason",
-        )?;
-        let winning_team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "winning_team",
-        )?;
-        let panel_style: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "panel_style",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let panel_style = match iter.next() {
+            Some(value) => u8::from_value(value, "panel_style")?,
+            None => u8::default(),
+        };
+        let winning_team = match iter.next() {
+            Some(value) => u8::from_value(value, "winning_team")?,
+            None => u8::default(),
+        };
+        let win_reason = match iter.next() {
+            Some(value) => u8::from_value(value, "win_reason")?,
+            None => u8::default(),
+        };
+        let cappers = match iter.next() {
+            Some(value) => String::from_value(value, "cappers")?,
+            None => String::default(),
+        };
+        let flag_cap_limit = match iter.next() {
+            Some(value) => u16::from_value(value, "flag_cap_limit")?,
+            None => u16::default(),
+        };
+        let blue_score = match iter.next() {
+            Some(value) => u16::from_value(value, "blue_score")?,
+            None => u16::default(),
+        };
+        let red_score = match iter.next() {
+            Some(value) => u16::from_value(value, "red_score")?,
+            None => u16::default(),
+        };
+        let blue_score_prev = match iter.next() {
+            Some(value) => u16::from_value(value, "blue_score_prev")?,
+            None => u16::default(),
+        };
+        let red_score_prev = match iter.next() {
+            Some(value) => u16::from_value(value, "red_score_prev")?,
+            None => u16::default(),
+        };
+        let round_complete = match iter.next() {
+            Some(value) => u16::from_value(value, "round_complete")?,
+            None => u16::default(),
+        };
+        let rounds_remaining = match iter.next() {
+            Some(value) => u16::from_value(value, "rounds_remaining")?,
+            None => u16::default(),
+        };
+        let player_1 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_1")?,
+            None => u16::default(),
+        };
+        let player_1_points = match iter.next() {
+            Some(value) => u16::from_value(value, "player_1_points")?,
+            None => u16::default(),
+        };
+        let player_2 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_2")?,
+            None => u16::default(),
+        };
+        let player_2_points = match iter.next() {
+            Some(value) => u16::from_value(value, "player_2_points")?,
+            None => u16::default(),
+        };
+        let player_3 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_3")?,
+            None => u16::default(),
+        };
+        let player_3_points = match iter.next() {
+            Some(value) => u16::from_value(value, "player_3_points")?,
+            None => u16::default(),
+        };
+        let kill_stream_player_1 = match iter.next() {
+            Some(value) => u16::from_value(value, "kill_stream_player_1")?,
+            None => u16::default(),
+        };
+        let kill_stream_player_1_count = match iter.next() {
+            Some(value) => u16::from_value(value, "kill_stream_player_1_count")?,
+            None => u16::default(),
+        };
         Ok(TeamPlayWinPanelEvent {
             panel_style,
             winning_team,
@@ -3822,33 +2700,23 @@ pub struct TeamPlayTeamBalancedPlayerEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for TeamPlayTeamBalancedPlayerEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayTeamBalancedPlayerEvent { player, team })
     }
 }
 #[derive(Debug)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl FromRawGameEvent for TeamPlaySetupFinishedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
@@ -3857,20 +2725,12 @@ pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
 }
 impl FromRawGameEvent for TeamPlayAlertEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let alert_type: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "alert_type",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let alert_type = match iter.next() {
+            Some(value) => u16::from_value(value, "alert_type")?,
+            None => u16::default(),
+        };
         Ok(TeamPlayAlertEvent { alert_type })
     }
 }
@@ -3881,32 +2741,20 @@ pub struct TrainingCompleteEvent {
     pub text: String,
 }
 impl FromRawGameEvent for TrainingCompleteEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
-        let map: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "map",
-        )?;
-        let next_map: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "next_map",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let next_map = match iter.next() {
+            Some(value) => String::from_value(value, "next_map")?,
+            None => String::default(),
+        };
+        let map = match iter.next() {
+            Some(value) => String::from_value(value, "map")?,
+            None => String::default(),
+        };
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
         Ok(TrainingCompleteEvent {
             next_map,
             map,
@@ -3919,41 +2767,33 @@ pub struct ShowFreezePanelEvent {
     pub killer: u16,
 }
 impl FromRawGameEvent for ShowFreezePanelEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let killer: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "killer",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let killer = match iter.next() {
+            Some(value) => u16::from_value(value, "killer")?,
+            None => u16::default(),
+        };
         Ok(ShowFreezePanelEvent { killer })
     }
 }
 #[derive(Debug)]
 pub struct HideFreezePanelEvent {}
 impl FromRawGameEvent for HideFreezePanelEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(HideFreezePanelEvent {})
     }
 }
 #[derive(Debug)]
 pub struct FreezeCamStartedEvent {}
 impl FromRawGameEvent for FreezeCamStartedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(FreezeCamStartedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl FromRawGameEvent for LocalPlayerChangeTeamEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
@@ -3962,34 +2802,26 @@ pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
 }
 impl FromRawGameEvent for LocalPlayerScoreChangedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "score",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let score = match iter.next() {
+            Some(value) => u16::from_value(value, "score")?,
+            None => u16::default(),
+        };
         Ok(LocalPlayerScoreChangedEvent { score })
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerChangeClassEvent {}
 impl FromRawGameEvent for LocalPlayerChangeClassEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerRespawnEvent {}
 impl FromRawGameEvent for LocalPlayerRespawnEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
@@ -4000,32 +2832,20 @@ pub struct BuildingInfoChangedEvent {
     pub remove: u8,
 }
 impl FromRawGameEvent for BuildingInfoChangedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let remove: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "remove",
-        )?;
-        let object_mode: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object_mode",
-        )?;
-        let building_type: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "building_type",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let building_type = match iter.next() {
+            Some(value) => u8::from_value(value, "building_type")?,
+            None => u8::default(),
+        };
+        let object_mode = match iter.next() {
+            Some(value) => u8::from_value(value, "object_mode")?,
+            None => u8::default(),
+        };
+        let remove = match iter.next() {
+            Some(value) => u8::from_value(value, "remove")?,
+            None => u8::default(),
+        };
         Ok(BuildingInfoChangedEvent {
             building_type,
             object_mode,
@@ -4038,20 +2858,12 @@ pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
 }
 impl FromRawGameEvent for LocalPlayerChangeDisguiseEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let disguised: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "disguised",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let disguised = match iter.next() {
+            Some(value) => bool::from_value(value, "disguised")?,
+            None => bool::default(),
+        };
         Ok(LocalPlayerChangeDisguiseEvent { disguised })
     }
 }
@@ -4061,26 +2873,16 @@ pub struct PlayerAccountChangedEvent {
     pub new_value: u16,
 }
 impl FromRawGameEvent for PlayerAccountChangedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let new_value: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "new_value",
-        )?;
-        let old_value: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "old_value",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let old_value = match iter.next() {
+            Some(value) => u16::from_value(value, "old_value")?,
+            None => u16::default(),
+        };
+        let new_value = match iter.next() {
+            Some(value) => u16::from_value(value, "new_value")?,
+            None => u16::default(),
+        };
         Ok(PlayerAccountChangedEvent {
             old_value,
             new_value,
@@ -4090,7 +2892,7 @@ impl FromRawGameEvent for PlayerAccountChangedEvent {
 #[derive(Debug)]
 pub struct SpyPdaResetEvent {}
 impl FromRawGameEvent for SpyPdaResetEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(SpyPdaResetEvent {})
     }
 }
@@ -4100,26 +2902,16 @@ pub struct FlagStatusUpdateEvent {
     pub ent_index: u32,
 }
 impl FromRawGameEvent for FlagStatusUpdateEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "ent_index")?,
+            None => u32::default(),
+        };
         Ok(FlagStatusUpdateEvent { user_id, ent_index })
     }
 }
@@ -4128,27 +2920,19 @@ pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
 }
 impl FromRawGameEvent for PlayerStatsUpdatedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let force_upload: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "force_upload",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let force_upload = match iter.next() {
+            Some(value) => bool::from_value(value, "force_upload")?,
+            None => bool::default(),
+        };
         Ok(PlayerStatsUpdatedEvent { force_upload })
     }
 }
 #[derive(Debug)]
 pub struct PlayingCommentaryEvent {}
 impl FromRawGameEvent for PlayingCommentaryEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayingCommentaryEvent {})
     }
 }
@@ -4158,26 +2942,16 @@ pub struct PlayerChargeDeployedEvent {
     pub target_id: u16,
 }
 impl FromRawGameEvent for PlayerChargeDeployedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let target_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let target_id = match iter.next() {
+            Some(value) => u16::from_value(value, "target_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerChargeDeployedEvent { user_id, target_id })
     }
 }
@@ -4188,32 +2962,20 @@ pub struct PlayerBuiltObjectEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PlayerBuiltObjectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let object: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let object = match iter.next() {
+            Some(value) => u16::from_value(value, "object")?,
+            None => u16::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(PlayerBuiltObjectEvent {
             user_id,
             object,
@@ -4229,38 +2991,24 @@ pub struct PlayerUpgradedObjectEvent {
     pub is_builder: bool,
 }
 impl FromRawGameEvent for PlayerUpgradedObjectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let is_builder: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "is_builder",
-        )?;
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let object: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let object = match iter.next() {
+            Some(value) => u16::from_value(value, "object")?,
+            None => u16::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
+        let is_builder = match iter.next() {
+            Some(value) => bool::from_value(value, "is_builder")?,
+            None => bool::default(),
+        };
         Ok(PlayerUpgradedObjectEvent {
             user_id,
             object,
@@ -4276,32 +3024,20 @@ pub struct PlayerCarryObjectEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PlayerCarryObjectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let object: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let object = match iter.next() {
+            Some(value) => u16::from_value(value, "object")?,
+            None => u16::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(PlayerCarryObjectEvent {
             user_id,
             object,
@@ -4316,32 +3052,20 @@ pub struct PlayerDropObjectEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PlayerDropObjectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let object: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let object = match iter.next() {
+            Some(value) => u16::from_value(value, "object")?,
+            None => u16::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(PlayerDropObjectEvent {
             user_id,
             object,
@@ -4356,32 +3080,20 @@ pub struct ObjectRemovedEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ObjectRemovedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let object_type: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object_type",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let object_type = match iter.next() {
+            Some(value) => u16::from_value(value, "object_type")?,
+            None => u16::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(ObjectRemovedEvent {
             user_id,
             object_type,
@@ -4401,62 +3113,40 @@ pub struct ObjectDestroyedEvent {
     pub was_building: bool,
 }
 impl FromRawGameEvent for ObjectDestroyedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 8 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(8);
-        let was_building: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "was_building",
-        )?;
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let object_type: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object_type",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let weapon: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon",
-        )?;
-        let assister: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let assister = match iter.next() {
+            Some(value) => u16::from_value(value, "assister")?,
+            None => u16::default(),
+        };
+        let weapon = match iter.next() {
+            Some(value) => String::from_value(value, "weapon")?,
+            None => String::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let object_type = match iter.next() {
+            Some(value) => u16::from_value(value, "object_type")?,
+            None => u16::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
+        let was_building = match iter.next() {
+            Some(value) => bool::from_value(value, "was_building")?,
+            None => bool::default(),
+        };
         Ok(ObjectDestroyedEvent {
             user_id,
             attacker,
@@ -4476,32 +3166,20 @@ pub struct ObjectDetonatedEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ObjectDetonatedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
-        let object_type: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object_type",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let object_type = match iter.next() {
+            Some(value) => u16::from_value(value, "object_type")?,
+            None => u16::default(),
+        };
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(ObjectDetonatedEvent {
             user_id,
             object_type,
@@ -4515,26 +3193,16 @@ pub struct AchievementEarnedEvent {
     pub achievement: u16,
 }
 impl FromRawGameEvent for AchievementEarnedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let achievement: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "achievement",
-        )?;
-        let player: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
+        let achievement = match iter.next() {
+            Some(value) => u16::from_value(value, "achievement")?,
+            None => u16::default(),
+        };
         Ok(AchievementEarnedEvent {
             player,
             achievement,
@@ -4544,7 +3212,7 @@ impl FromRawGameEvent for AchievementEarnedEvent {
 #[derive(Debug)]
 pub struct SpecTargetUpdatedEvent {}
 impl FromRawGameEvent for SpecTargetUpdatedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
@@ -4556,38 +3224,24 @@ pub struct TournamentStateUpdateEvent {
     pub new_name: String,
 }
 impl FromRawGameEvent for TournamentStateUpdateEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let new_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "new_name",
-        )?;
-        let ready_state: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ready_state",
-        )?;
-        let name_change: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "name_change",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let name_change = match iter.next() {
+            Some(value) => bool::from_value(value, "name_change")?,
+            None => bool::default(),
+        };
+        let ready_state = match iter.next() {
+            Some(value) => u16::from_value(value, "ready_state")?,
+            None => u16::default(),
+        };
+        let new_name = match iter.next() {
+            Some(value) => String::from_value(value, "new_name")?,
+            None => String::default(),
+        };
         Ok(TournamentStateUpdateEvent {
             user_id,
             name_change,
@@ -4599,7 +3253,7 @@ impl FromRawGameEvent for TournamentStateUpdateEvent {
 #[derive(Debug)]
 pub struct TournamentEnableCountdownEvent {}
 impl FromRawGameEvent for TournamentEnableCountdownEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
@@ -4608,27 +3262,19 @@ pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerCalledForMedicEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerCalledForMedicEvent { user_id })
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl FromRawGameEvent for LocalPlayerBecameObserverEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
@@ -4639,32 +3285,20 @@ pub struct PlayerIgnitedInvEvent {
     pub medic_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerIgnitedInvEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let medic_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "medic_ent_index",
-        )?;
-        let victim_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let pyro_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "pyro_ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let pyro_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "pyro_ent_index")?,
+            None => u8::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "victim_ent_index")?,
+            None => u8::default(),
+        };
+        let medic_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "medic_ent_index")?,
+            None => u8::default(),
+        };
         Ok(PlayerIgnitedInvEvent {
             pyro_ent_index,
             victim_ent_index,
@@ -4679,32 +3313,20 @@ pub struct PlayerIgnitedEvent {
     pub weapon_id: u8,
 }
 impl FromRawGameEvent for PlayerIgnitedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let weapon_id: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let victim_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let pyro_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "pyro_ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let pyro_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "pyro_ent_index")?,
+            None => u8::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "victim_ent_index")?,
+            None => u8::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u8::from_value(value, "weapon_id")?,
+            None => u8::default(),
+        };
         Ok(PlayerIgnitedEvent {
             pyro_ent_index,
             victim_ent_index,
@@ -4718,26 +3340,16 @@ pub struct PlayerExtinguishedEvent {
     pub healer: u8,
 }
 impl FromRawGameEvent for PlayerExtinguishedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let healer: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "healer",
-        )?;
-        let victim: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let victim = match iter.next() {
+            Some(value) => u8::from_value(value, "victim")?,
+            None => u8::default(),
+        };
+        let healer = match iter.next() {
+            Some(value) => u8::from_value(value, "healer")?,
+            None => u8::default(),
+        };
         Ok(PlayerExtinguishedEvent { victim, healer })
     }
 }
@@ -4748,32 +3360,20 @@ pub struct PlayerTeleportedEvent {
     pub dist: f32,
 }
 impl FromRawGameEvent for PlayerTeleportedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let dist: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "dist",
-        )?;
-        let builder_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "builder_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let builder_id = match iter.next() {
+            Some(value) => u16::from_value(value, "builder_id")?,
+            None => u16::default(),
+        };
+        let dist = match iter.next() {
+            Some(value) => f32::from_value(value, "dist")?,
+            None => f32::default(),
+        };
         Ok(PlayerTeleportedEvent {
             user_id,
             builder_id,
@@ -4786,34 +3386,26 @@ pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerHealedMedicCallEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerHealedMedicCallEvent { user_id })
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerWindDownEvent {}
 impl FromRawGameEvent for LocalPlayerWindDownEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
@@ -4823,26 +3415,16 @@ pub struct PlayerInvulnedEvent {
     pub medic_user_id: u16,
 }
 impl FromRawGameEvent for PlayerInvulnedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let medic_user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "medic_user_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let medic_user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "medic_user_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerInvulnedEvent {
             user_id,
             medic_user_id,
@@ -4856,32 +3438,20 @@ pub struct EscortSpeedEvent {
     pub players: u8,
 }
 impl FromRawGameEvent for EscortSpeedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let players: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "players",
-        )?;
-        let speed: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "speed",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let speed = match iter.next() {
+            Some(value) => u8::from_value(value, "speed")?,
+            None => u8::default(),
+        };
+        let players = match iter.next() {
+            Some(value) => u8::from_value(value, "players")?,
+            None => u8::default(),
+        };
         Ok(EscortSpeedEvent {
             team,
             speed,
@@ -4896,32 +3466,20 @@ pub struct EscortProgressEvent {
     pub reset: bool,
 }
 impl FromRawGameEvent for EscortProgressEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let reset: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "reset",
-        )?;
-        let progress: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "progress",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let progress = match iter.next() {
+            Some(value) => f32::from_value(value, "progress")?,
+            None => f32::default(),
+        };
+        let reset = match iter.next() {
+            Some(value) => bool::from_value(value, "reset")?,
+            None => bool::default(),
+        };
         Ok(EscortProgressEvent {
             team,
             progress,
@@ -4935,40 +3493,30 @@ pub struct EscortRecedeEvent {
     pub recede_time: f32,
 }
 impl FromRawGameEvent for EscortRecedeEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let recede_time: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "recede_time",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let recede_time = match iter.next() {
+            Some(value) => f32::from_value(value, "recede_time")?,
+            None => f32::default(),
+        };
         Ok(EscortRecedeEvent { team, recede_time })
     }
 }
 #[derive(Debug)]
 pub struct GameUIActivatedEvent {}
 impl FromRawGameEvent for GameUIActivatedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameUIActivatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct GameUIHiddenEvent {}
 impl FromRawGameEvent for GameUIHiddenEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(GameUIHiddenEvent {})
     }
 }
@@ -4978,26 +3526,16 @@ pub struct PlayerEscortScoreEvent {
     pub points: u8,
 }
 impl FromRawGameEvent for PlayerEscortScoreEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let points: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "points",
-        )?;
-        let player: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
+        let points = match iter.next() {
+            Some(value) => u8::from_value(value, "points")?,
+            None => u8::default(),
+        };
         Ok(PlayerEscortScoreEvent { player, points })
     }
 }
@@ -5007,26 +3545,16 @@ pub struct PlayerHealOnHitEvent {
     pub ent_index: u8,
 }
 impl FromRawGameEvent for PlayerHealOnHitEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
-        let amount: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "amount",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
+        let ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "ent_index")?,
+            None => u8::default(),
+        };
         Ok(PlayerHealOnHitEvent { amount, ent_index })
     }
 }
@@ -5036,26 +3564,16 @@ pub struct PlayerStealSandvichEvent {
     pub target: u16,
 }
 impl FromRawGameEvent for PlayerStealSandvichEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let target: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target",
-        )?;
-        let owner: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "owner",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let owner = match iter.next() {
+            Some(value) => u16::from_value(value, "owner")?,
+            None => u16::default(),
+        };
+        let target = match iter.next() {
+            Some(value) => u16::from_value(value, "target")?,
+            None => u16::default(),
+        };
         Ok(PlayerStealSandvichEvent { owner, target })
     }
 }
@@ -5064,20 +3582,12 @@ pub struct ShowClassLayoutEvent {
     pub show: bool,
 }
 impl FromRawGameEvent for ShowClassLayoutEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let show: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "show",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let show = match iter.next() {
+            Some(value) => bool::from_value(value, "show")?,
+            None => bool::default(),
+        };
         Ok(ShowClassLayoutEvent { show })
     }
 }
@@ -5086,20 +3596,12 @@ pub struct ShowVsPanelEvent {
     pub show: bool,
 }
 impl FromRawGameEvent for ShowVsPanelEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let show: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "show",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let show = match iter.next() {
+            Some(value) => bool::from_value(value, "show")?,
+            None => bool::default(),
+        };
         Ok(ShowVsPanelEvent { show })
     }
 }
@@ -5109,26 +3611,16 @@ pub struct PlayerDamagedEvent {
     pub kind: u32,
 }
 impl FromRawGameEvent for PlayerDamagedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let kind: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kind",
-        )?;
-        let amount: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "amount",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
+        let kind = match iter.next() {
+            Some(value) => u32::from_value(value, "kind")?,
+            None => u32::default(),
+        };
         Ok(PlayerDamagedEvent { amount, kind })
     }
 }
@@ -5138,26 +3630,16 @@ pub struct ArenaPlayerNotificationEvent {
     pub message: u8,
 }
 impl FromRawGameEvent for ArenaPlayerNotificationEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let message: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "message",
-        )?;
-        let player: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
+        let message = match iter.next() {
+            Some(value) => u8::from_value(value, "message")?,
+            None => u8::default(),
+        };
         Ok(ArenaPlayerNotificationEvent { player, message })
     }
 }
@@ -5167,33 +3649,23 @@ pub struct ArenaMatchMaxStreakEvent {
     pub streak: u8,
 }
 impl FromRawGameEvent for ArenaMatchMaxStreakEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let streak: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "streak",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let streak = match iter.next() {
+            Some(value) => u8::from_value(value, "streak")?,
+            None => u8::default(),
+        };
         Ok(ArenaMatchMaxStreakEvent { team, streak })
     }
 }
 #[derive(Debug)]
 pub struct ArenaRoundStartEvent {}
 impl FromRawGameEvent for ArenaRoundStartEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ArenaRoundStartEvent {})
     }
 }
@@ -5241,254 +3713,168 @@ pub struct ArenaWinPanelEvent {
     pub player_6_kills: u16,
 }
 impl FromRawGameEvent for ArenaWinPanelEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 40 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(40);
-        let player_6_kills: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_6_kills",
-        )?;
-        let player_6_lifetime: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_6_lifetime",
-        )?;
-        let player_6_healing: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_6_healing",
-        )?;
-        let player_6_damage: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_6_damage",
-        )?;
-        let player_6: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_6",
-        )?;
-        let player_5_kills: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_5_kills",
-        )?;
-        let player_5_lifetime: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_5_lifetime",
-        )?;
-        let player_5_healing: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_5_healing",
-        )?;
-        let player_5_damage: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_5_damage",
-        )?;
-        let player_5: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_5",
-        )?;
-        let player_4_kills: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_4_kills",
-        )?;
-        let player_4_lifetime: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_4_lifetime",
-        )?;
-        let player_4_healing: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_4_healing",
-        )?;
-        let player_4_damage: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_4_damage",
-        )?;
-        let player_4: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_4",
-        )?;
-        let player_3_kills: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_3_kills",
-        )?;
-        let player_3_lifetime: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_3_lifetime",
-        )?;
-        let player_3_healing: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_3_healing",
-        )?;
-        let player_3_damage: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_3_damage",
-        )?;
-        let player_3: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_3",
-        )?;
-        let player_2_kills: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_2_kills",
-        )?;
-        let player_2_lifetime: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_2_lifetime",
-        )?;
-        let player_2_healing: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_2_healing",
-        )?;
-        let player_2_damage: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_2_damage",
-        )?;
-        let player_2: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_2",
-        )?;
-        let player_1_kills: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_1_kills",
-        )?;
-        let player_1_lifetime: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_1_lifetime",
-        )?;
-        let player_1_healing: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_1_healing",
-        )?;
-        let player_1_damage: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_1_damage",
-        )?;
-        let player_1: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_1",
-        )?;
-        let round_complete: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "round_complete",
-        )?;
-        let red_score_prev: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "red_score_prev",
-        )?;
-        let blue_score_prev: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "blue_score_prev",
-        )?;
-        let red_score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "red_score",
-        )?;
-        let blue_score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "blue_score",
-        )?;
-        let flag_cap_limit: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "flag_cap_limit",
-        )?;
-        let cappers: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cappers",
-        )?;
-        let win_reason: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "win_reason",
-        )?;
-        let winning_team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "winning_team",
-        )?;
-        let panel_style: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "panel_style",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let panel_style = match iter.next() {
+            Some(value) => u8::from_value(value, "panel_style")?,
+            None => u8::default(),
+        };
+        let winning_team = match iter.next() {
+            Some(value) => u8::from_value(value, "winning_team")?,
+            None => u8::default(),
+        };
+        let win_reason = match iter.next() {
+            Some(value) => u8::from_value(value, "win_reason")?,
+            None => u8::default(),
+        };
+        let cappers = match iter.next() {
+            Some(value) => String::from_value(value, "cappers")?,
+            None => String::default(),
+        };
+        let flag_cap_limit = match iter.next() {
+            Some(value) => u16::from_value(value, "flag_cap_limit")?,
+            None => u16::default(),
+        };
+        let blue_score = match iter.next() {
+            Some(value) => u16::from_value(value, "blue_score")?,
+            None => u16::default(),
+        };
+        let red_score = match iter.next() {
+            Some(value) => u16::from_value(value, "red_score")?,
+            None => u16::default(),
+        };
+        let blue_score_prev = match iter.next() {
+            Some(value) => u16::from_value(value, "blue_score_prev")?,
+            None => u16::default(),
+        };
+        let red_score_prev = match iter.next() {
+            Some(value) => u16::from_value(value, "red_score_prev")?,
+            None => u16::default(),
+        };
+        let round_complete = match iter.next() {
+            Some(value) => u16::from_value(value, "round_complete")?,
+            None => u16::default(),
+        };
+        let player_1 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_1")?,
+            None => u16::default(),
+        };
+        let player_1_damage = match iter.next() {
+            Some(value) => u16::from_value(value, "player_1_damage")?,
+            None => u16::default(),
+        };
+        let player_1_healing = match iter.next() {
+            Some(value) => u16::from_value(value, "player_1_healing")?,
+            None => u16::default(),
+        };
+        let player_1_lifetime = match iter.next() {
+            Some(value) => u16::from_value(value, "player_1_lifetime")?,
+            None => u16::default(),
+        };
+        let player_1_kills = match iter.next() {
+            Some(value) => u16::from_value(value, "player_1_kills")?,
+            None => u16::default(),
+        };
+        let player_2 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_2")?,
+            None => u16::default(),
+        };
+        let player_2_damage = match iter.next() {
+            Some(value) => u16::from_value(value, "player_2_damage")?,
+            None => u16::default(),
+        };
+        let player_2_healing = match iter.next() {
+            Some(value) => u16::from_value(value, "player_2_healing")?,
+            None => u16::default(),
+        };
+        let player_2_lifetime = match iter.next() {
+            Some(value) => u16::from_value(value, "player_2_lifetime")?,
+            None => u16::default(),
+        };
+        let player_2_kills = match iter.next() {
+            Some(value) => u16::from_value(value, "player_2_kills")?,
+            None => u16::default(),
+        };
+        let player_3 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_3")?,
+            None => u16::default(),
+        };
+        let player_3_damage = match iter.next() {
+            Some(value) => u16::from_value(value, "player_3_damage")?,
+            None => u16::default(),
+        };
+        let player_3_healing = match iter.next() {
+            Some(value) => u16::from_value(value, "player_3_healing")?,
+            None => u16::default(),
+        };
+        let player_3_lifetime = match iter.next() {
+            Some(value) => u16::from_value(value, "player_3_lifetime")?,
+            None => u16::default(),
+        };
+        let player_3_kills = match iter.next() {
+            Some(value) => u16::from_value(value, "player_3_kills")?,
+            None => u16::default(),
+        };
+        let player_4 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_4")?,
+            None => u16::default(),
+        };
+        let player_4_damage = match iter.next() {
+            Some(value) => u16::from_value(value, "player_4_damage")?,
+            None => u16::default(),
+        };
+        let player_4_healing = match iter.next() {
+            Some(value) => u16::from_value(value, "player_4_healing")?,
+            None => u16::default(),
+        };
+        let player_4_lifetime = match iter.next() {
+            Some(value) => u16::from_value(value, "player_4_lifetime")?,
+            None => u16::default(),
+        };
+        let player_4_kills = match iter.next() {
+            Some(value) => u16::from_value(value, "player_4_kills")?,
+            None => u16::default(),
+        };
+        let player_5 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_5")?,
+            None => u16::default(),
+        };
+        let player_5_damage = match iter.next() {
+            Some(value) => u16::from_value(value, "player_5_damage")?,
+            None => u16::default(),
+        };
+        let player_5_healing = match iter.next() {
+            Some(value) => u16::from_value(value, "player_5_healing")?,
+            None => u16::default(),
+        };
+        let player_5_lifetime = match iter.next() {
+            Some(value) => u16::from_value(value, "player_5_lifetime")?,
+            None => u16::default(),
+        };
+        let player_5_kills = match iter.next() {
+            Some(value) => u16::from_value(value, "player_5_kills")?,
+            None => u16::default(),
+        };
+        let player_6 = match iter.next() {
+            Some(value) => u16::from_value(value, "player_6")?,
+            None => u16::default(),
+        };
+        let player_6_damage = match iter.next() {
+            Some(value) => u16::from_value(value, "player_6_damage")?,
+            None => u16::default(),
+        };
+        let player_6_healing = match iter.next() {
+            Some(value) => u16::from_value(value, "player_6_healing")?,
+            None => u16::default(),
+        };
+        let player_6_lifetime = match iter.next() {
+            Some(value) => u16::from_value(value, "player_6_lifetime")?,
+            None => u16::default(),
+        };
+        let player_6_kills = match iter.next() {
+            Some(value) => u16::from_value(value, "player_6_kills")?,
+            None => u16::default(),
+        };
         Ok(ArenaWinPanelEvent {
             panel_style,
             winning_team,
@@ -5540,32 +3926,20 @@ pub struct PveWinPanelEvent {
     pub win_reason: u8,
 }
 impl FromRawGameEvent for PveWinPanelEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let win_reason: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "win_reason",
-        )?;
-        let winning_team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "winning_team",
-        )?;
-        let panel_style: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "panel_style",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let panel_style = match iter.next() {
+            Some(value) => u8::from_value(value, "panel_style")?,
+            None => u8::default(),
+        };
+        let winning_team = match iter.next() {
+            Some(value) => u8::from_value(value, "winning_team")?,
+            None => u8::default(),
+        };
+        let win_reason = match iter.next() {
+            Some(value) => u8::from_value(value, "win_reason")?,
+            None => u8::default(),
+        };
         Ok(PveWinPanelEvent {
             panel_style,
             winning_team,
@@ -5578,20 +3952,12 @@ pub struct AirDashEvent {
     pub player: u8,
 }
 impl FromRawGameEvent for AirDashEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
         Ok(AirDashEvent { player })
     }
 }
@@ -5600,20 +3966,12 @@ pub struct LandedEvent {
     pub player: u8,
 }
 impl FromRawGameEvent for LandedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
         Ok(LandedEvent { player })
     }
 }
@@ -5622,20 +3980,12 @@ pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
 }
 impl FromRawGameEvent for PlayerDamageDodgedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let damage: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let damage = match iter.next() {
+            Some(value) => u16::from_value(value, "damage")?,
+            None => u16::default(),
+        };
         Ok(PlayerDamageDodgedEvent { damage })
     }
 }
@@ -5647,38 +3997,24 @@ pub struct PlayerStunnedEvent {
     pub big_stun: bool,
 }
 impl FromRawGameEvent for PlayerStunnedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let big_stun: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "big_stun",
-        )?;
-        let victim_capping: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_capping",
-        )?;
-        let victim: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim",
-        )?;
-        let stunner: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "stunner",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let stunner = match iter.next() {
+            Some(value) => u16::from_value(value, "stunner")?,
+            None => u16::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u16::from_value(value, "victim")?,
+            None => u16::default(),
+        };
+        let victim_capping = match iter.next() {
+            Some(value) => bool::from_value(value, "victim_capping")?,
+            None => bool::default(),
+        };
+        let big_stun = match iter.next() {
+            Some(value) => bool::from_value(value, "big_stun")?,
+            None => bool::default(),
+        };
         Ok(PlayerStunnedEvent {
             stunner,
             victim,
@@ -5693,26 +4029,16 @@ pub struct ScoutGrandSlamEvent {
     pub target_id: u16,
 }
 impl FromRawGameEvent for ScoutGrandSlamEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let target_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target_id",
-        )?;
-        let scout_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "scout_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let scout_id = match iter.next() {
+            Some(value) => u16::from_value(value, "scout_id")?,
+            None => u16::default(),
+        };
+        let target_id = match iter.next() {
+            Some(value) => u16::from_value(value, "target_id")?,
+            None => u16::default(),
+        };
         Ok(ScoutGrandSlamEvent {
             scout_id,
             target_id,
@@ -5727,38 +4053,24 @@ pub struct ScoutSlamdollLandedEvent {
     pub z: f32,
 }
 impl FromRawGameEvent for ScoutSlamdollLandedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let z: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "z",
-        )?;
-        let y: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "y",
-        )?;
-        let x: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "x",
-        )?;
-        let target_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let target_index = match iter.next() {
+            Some(value) => u16::from_value(value, "target_index")?,
+            None => u16::default(),
+        };
+        let x = match iter.next() {
+            Some(value) => f32::from_value(value, "x")?,
+            None => f32::default(),
+        };
+        let y = match iter.next() {
+            Some(value) => f32::from_value(value, "y")?,
+            None => f32::default(),
+        };
+        let z = match iter.next() {
+            Some(value) => f32::from_value(value, "z")?,
+            None => f32::default(),
+        };
         Ok(ScoutSlamdollLandedEvent {
             target_index,
             x,
@@ -5782,80 +4094,52 @@ pub struct ArrowImpactEvent {
     pub is_crit: bool,
 }
 impl FromRawGameEvent for ArrowImpactEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 11 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(11);
-        let is_crit: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "is_crit",
-        )?;
-        let projectile_type: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "projectile_type",
-        )?;
-        let bone_angles_z: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bone_angles_z",
-        )?;
-        let bone_angles_y: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bone_angles_y",
-        )?;
-        let bone_angles_x: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bone_angles_x",
-        )?;
-        let bone_position_z: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bone_position_z",
-        )?;
-        let bone_position_y: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bone_position_y",
-        )?;
-        let bone_position_x: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bone_position_x",
-        )?;
-        let bone_index_attached: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "bone_index_attached",
-        )?;
-        let shooter: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "shooter",
-        )?;
-        let attached_entity: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attached_entity",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let attached_entity = match iter.next() {
+            Some(value) => u16::from_value(value, "attached_entity")?,
+            None => u16::default(),
+        };
+        let shooter = match iter.next() {
+            Some(value) => u16::from_value(value, "shooter")?,
+            None => u16::default(),
+        };
+        let bone_index_attached = match iter.next() {
+            Some(value) => u16::from_value(value, "bone_index_attached")?,
+            None => u16::default(),
+        };
+        let bone_position_x = match iter.next() {
+            Some(value) => f32::from_value(value, "bone_position_x")?,
+            None => f32::default(),
+        };
+        let bone_position_y = match iter.next() {
+            Some(value) => f32::from_value(value, "bone_position_y")?,
+            None => f32::default(),
+        };
+        let bone_position_z = match iter.next() {
+            Some(value) => f32::from_value(value, "bone_position_z")?,
+            None => f32::default(),
+        };
+        let bone_angles_x = match iter.next() {
+            Some(value) => f32::from_value(value, "bone_angles_x")?,
+            None => f32::default(),
+        };
+        let bone_angles_y = match iter.next() {
+            Some(value) => f32::from_value(value, "bone_angles_y")?,
+            None => f32::default(),
+        };
+        let bone_angles_z = match iter.next() {
+            Some(value) => f32::from_value(value, "bone_angles_z")?,
+            None => f32::default(),
+        };
+        let projectile_type = match iter.next() {
+            Some(value) => u16::from_value(value, "projectile_type")?,
+            None => u16::default(),
+        };
+        let is_crit = match iter.next() {
+            Some(value) => bool::from_value(value, "is_crit")?,
+            None => bool::default(),
+        };
         Ok(ArrowImpactEvent {
             attached_entity,
             shooter,
@@ -5877,26 +4161,16 @@ pub struct PlayerJaratedEvent {
     pub victim_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerJaratedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let victim_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let thrower_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "thrower_ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let thrower_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "thrower_ent_index")?,
+            None => u8::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "victim_ent_index")?,
+            None => u8::default(),
+        };
         Ok(PlayerJaratedEvent {
             thrower_ent_index,
             victim_ent_index,
@@ -5909,26 +4183,16 @@ pub struct PlayerJaratedFadeEvent {
     pub victim_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerJaratedFadeEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let victim_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let thrower_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "thrower_ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let thrower_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "thrower_ent_index")?,
+            None => u8::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "victim_ent_index")?,
+            None => u8::default(),
+        };
         Ok(PlayerJaratedFadeEvent {
             thrower_ent_index,
             victim_ent_index,
@@ -5941,26 +4205,16 @@ pub struct PlayerShieldBlockedEvent {
     pub blocker_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerShieldBlockedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let blocker_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "blocker_ent_index",
-        )?;
-        let attacker_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker_ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let attacker_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "attacker_ent_index")?,
+            None => u8::default(),
+        };
+        let blocker_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "blocker_ent_index")?,
+            None => u8::default(),
+        };
         Ok(PlayerShieldBlockedEvent {
             attacker_ent_index,
             blocker_ent_index,
@@ -5972,20 +4226,12 @@ pub struct PlayerPinnedEvent {
     pub pinned: u8,
 }
 impl FromRawGameEvent for PlayerPinnedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let pinned: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "pinned",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let pinned = match iter.next() {
+            Some(value) => u8::from_value(value, "pinned")?,
+            None => u8::default(),
+        };
         Ok(PlayerPinnedEvent { pinned })
     }
 }
@@ -5994,20 +4240,12 @@ pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
 }
 impl FromRawGameEvent for PlayerHealedByMedicEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let medic: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "medic",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let medic = match iter.next() {
+            Some(value) => u8::from_value(value, "medic")?,
+            None => u8::default(),
+        };
         Ok(PlayerHealedByMedicEvent { medic })
     }
 }
@@ -6019,38 +4257,24 @@ pub struct PlayerSappedObjectEvent {
     pub sapper_id: u16,
 }
 impl FromRawGameEvent for PlayerSappedObjectEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let sapper_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "sapper_id",
-        )?;
-        let object: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object",
-        )?;
-        let owner_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "owner_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let owner_id = match iter.next() {
+            Some(value) => u16::from_value(value, "owner_id")?,
+            None => u16::default(),
+        };
+        let object = match iter.next() {
+            Some(value) => u8::from_value(value, "object")?,
+            None => u8::default(),
+        };
+        let sapper_id = match iter.next() {
+            Some(value) => u16::from_value(value, "sapper_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerSappedObjectEvent {
             user_id,
             owner_id,
@@ -6067,38 +4291,24 @@ pub struct ItemFoundEvent {
     pub item_def: u32,
 }
 impl FromRawGameEvent for ItemFoundEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let item_def: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "item_def",
-        )?;
-        let method: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "method",
-        )?;
-        let quality: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "quality",
-        )?;
-        let player: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
+        let quality = match iter.next() {
+            Some(value) => u8::from_value(value, "quality")?,
+            None => u8::default(),
+        };
+        let method = match iter.next() {
+            Some(value) => u8::from_value(value, "method")?,
+            None => u8::default(),
+        };
+        let item_def = match iter.next() {
+            Some(value) => u32::from_value(value, "item_def")?,
+            None => u32::default(),
+        };
         Ok(ItemFoundEvent {
             player,
             quality,
@@ -6125,98 +4335,64 @@ pub struct ShowAnnotationEvent {
     pub show_effect: bool,
 }
 impl FromRawGameEvent for ShowAnnotationEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 14 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(14);
-        let show_effect: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "show_effect",
-        )?;
-        let play_sound: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "play_sound",
-        )?;
-        let show_distance: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "show_distance",
-        )?;
-        let follow_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "follow_ent_index",
-        )?;
-        let visibility_bit_field: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "visibility_bit_field",
-        )?;
-        let lifetime: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "lifetime",
-        )?;
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
-        let id: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "id",
-        )?;
-        let world_normal_z: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "world_normal_z",
-        )?;
-        let world_normal_y: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "world_normal_y",
-        )?;
-        let world_normal_x: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "world_normal_x",
-        )?;
-        let world_pos_z: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "world_pos_z",
-        )?;
-        let world_pos_y: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "world_pos_y",
-        )?;
-        let world_pos_x: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "world_pos_x",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let world_pos_x = match iter.next() {
+            Some(value) => f32::from_value(value, "world_pos_x")?,
+            None => f32::default(),
+        };
+        let world_pos_y = match iter.next() {
+            Some(value) => f32::from_value(value, "world_pos_y")?,
+            None => f32::default(),
+        };
+        let world_pos_z = match iter.next() {
+            Some(value) => f32::from_value(value, "world_pos_z")?,
+            None => f32::default(),
+        };
+        let world_normal_x = match iter.next() {
+            Some(value) => f32::from_value(value, "world_normal_x")?,
+            None => f32::default(),
+        };
+        let world_normal_y = match iter.next() {
+            Some(value) => f32::from_value(value, "world_normal_y")?,
+            None => f32::default(),
+        };
+        let world_normal_z = match iter.next() {
+            Some(value) => f32::from_value(value, "world_normal_z")?,
+            None => f32::default(),
+        };
+        let id = match iter.next() {
+            Some(value) => u32::from_value(value, "id")?,
+            None => u32::default(),
+        };
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
+        let lifetime = match iter.next() {
+            Some(value) => f32::from_value(value, "lifetime")?,
+            None => f32::default(),
+        };
+        let visibility_bit_field = match iter.next() {
+            Some(value) => u32::from_value(value, "visibility_bit_field")?,
+            None => u32::default(),
+        };
+        let follow_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "follow_ent_index")?,
+            None => u32::default(),
+        };
+        let show_distance = match iter.next() {
+            Some(value) => bool::from_value(value, "show_distance")?,
+            None => bool::default(),
+        };
+        let play_sound = match iter.next() {
+            Some(value) => String::from_value(value, "play_sound")?,
+            None => String::default(),
+        };
+        let show_effect = match iter.next() {
+            Some(value) => bool::from_value(value, "show_effect")?,
+            None => bool::default(),
+        };
         Ok(ShowAnnotationEvent {
             world_pos_x,
             world_pos_y,
@@ -6240,20 +4416,12 @@ pub struct HideAnnotationEvent {
     pub id: u32,
 }
 impl FromRawGameEvent for HideAnnotationEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let id: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let id = match iter.next() {
+            Some(value) => u32::from_value(value, "id")?,
+            None => u32::default(),
+        };
         Ok(HideAnnotationEvent { id })
     }
 }
@@ -6262,20 +4430,12 @@ pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PostInventoryApplicationEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(PostInventoryApplicationEvent { user_id })
     }
 }
@@ -6285,26 +4445,16 @@ pub struct ControlPointUnlockUpdatedEvent {
     pub time: f32,
 }
 impl FromRawGameEvent for ControlPointUnlockUpdatedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let time: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time",
-        )?;
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
+        let time = match iter.next() {
+            Some(value) => f32::from_value(value, "time")?,
+            None => f32::default(),
+        };
         Ok(ControlPointUnlockUpdatedEvent { index, time })
     }
 }
@@ -6314,26 +4464,16 @@ pub struct DeployBuffBannerEvent {
     pub buff_owner: u16,
 }
 impl FromRawGameEvent for DeployBuffBannerEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let buff_owner: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "buff_owner",
-        )?;
-        let buff_type: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "buff_type",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let buff_type = match iter.next() {
+            Some(value) => u8::from_value(value, "buff_type")?,
+            None => u8::default(),
+        };
+        let buff_owner = match iter.next() {
+            Some(value) => u16::from_value(value, "buff_owner")?,
+            None => u16::default(),
+        };
         Ok(DeployBuffBannerEvent {
             buff_type,
             buff_owner,
@@ -6347,32 +4487,20 @@ pub struct PlayerBuffEvent {
     pub buff_type: u8,
 }
 impl FromRawGameEvent for PlayerBuffEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let buff_type: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "buff_type",
-        )?;
-        let buff_owner: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "buff_owner",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let buff_owner = match iter.next() {
+            Some(value) => u16::from_value(value, "buff_owner")?,
+            None => u16::default(),
+        };
+        let buff_type = match iter.next() {
+            Some(value) => u8::from_value(value, "buff_type")?,
+            None => u8::default(),
+        };
         Ok(PlayerBuffEvent {
             user_id,
             buff_owner,
@@ -6388,38 +4516,24 @@ pub struct MedicDeathEvent {
     pub charged: bool,
 }
 impl FromRawGameEvent for MedicDeathEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let charged: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "charged",
-        )?;
-        let healing: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "healing",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let healing = match iter.next() {
+            Some(value) => u16::from_value(value, "healing")?,
+            None => u16::default(),
+        };
+        let charged = match iter.next() {
+            Some(value) => bool::from_value(value, "charged")?,
+            None => bool::default(),
+        };
         Ok(MedicDeathEvent {
             user_id,
             attacker,
@@ -6431,14 +4545,14 @@ impl FromRawGameEvent for MedicDeathEvent {
 #[derive(Debug)]
 pub struct OvertimeNagEvent {}
 impl FromRawGameEvent for OvertimeNagEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(OvertimeNagEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamsChangedEvent {}
 impl FromRawGameEvent for TeamsChangedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(TeamsChangedEvent {})
     }
 }
@@ -6447,20 +4561,12 @@ pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for HalloweenPumpkinGrabEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(HalloweenPumpkinGrabEvent { user_id })
     }
 }
@@ -6470,26 +4576,16 @@ pub struct RocketJumpEvent {
     pub play_sound: bool,
 }
 impl FromRawGameEvent for RocketJumpEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let play_sound: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "play_sound",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let play_sound = match iter.next() {
+            Some(value) => bool::from_value(value, "play_sound")?,
+            None => bool::default(),
+        };
         Ok(RocketJumpEvent {
             user_id,
             play_sound,
@@ -6501,20 +4597,12 @@ pub struct RocketJumpLandedEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for RocketJumpLandedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(RocketJumpLandedEvent { user_id })
     }
 }
@@ -6524,26 +4612,16 @@ pub struct StickyJumpEvent {
     pub play_sound: bool,
 }
 impl FromRawGameEvent for StickyJumpEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let play_sound: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "play_sound",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let play_sound = match iter.next() {
+            Some(value) => bool::from_value(value, "play_sound")?,
+            None => bool::default(),
+        };
         Ok(StickyJumpEvent {
             user_id,
             play_sound,
@@ -6555,20 +4633,12 @@ pub struct StickyJumpLandedEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for StickyJumpLandedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(StickyJumpLandedEvent { user_id })
     }
 }
@@ -6578,26 +4648,16 @@ pub struct MedicDefendedEvent {
     pub medic: u16,
 }
 impl FromRawGameEvent for MedicDefendedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let medic: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "medic",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let medic = match iter.next() {
+            Some(value) => u16::from_value(value, "medic")?,
+            None => u16::default(),
+        };
         Ok(MedicDefendedEvent { user_id, medic })
     }
 }
@@ -6606,20 +4666,12 @@ pub struct LocalPlayerHealedEvent {
     pub amount: u16,
 }
 impl FromRawGameEvent for LocalPlayerHealedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let amount: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "amount",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
         Ok(LocalPlayerHealedEvent { amount })
     }
 }
@@ -6628,20 +4680,12 @@ pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerDestroyedPipeBombEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerDestroyedPipeBombEvent { user_id })
     }
 }
@@ -6653,38 +4697,24 @@ pub struct ObjectDeflectedEvent {
     pub object_ent_index: u16,
 }
 impl FromRawGameEvent for ObjectDeflectedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let object_ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object_ent_index",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let owner_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "owner_id",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let owner_id = match iter.next() {
+            Some(value) => u16::from_value(value, "owner_id")?,
+            None => u16::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let object_ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "object_ent_index")?,
+            None => u16::default(),
+        };
         Ok(ObjectDeflectedEvent {
             user_id,
             owner_id,
@@ -6698,34 +4728,26 @@ pub struct PlayerMvpEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for PlayerMvpEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(PlayerMvpEvent { player })
     }
 }
 #[derive(Debug)]
 pub struct RaidSpawnMobEvent {}
 impl FromRawGameEvent for RaidSpawnMobEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RaidSpawnMobEvent {})
     }
 }
 #[derive(Debug)]
 pub struct RaidSpawnSquadEvent {}
 impl FromRawGameEvent for RaidSpawnSquadEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RaidSpawnSquadEvent {})
     }
 }
@@ -6735,26 +4757,16 @@ pub struct NavBlockedEvent {
     pub blocked: bool,
 }
 impl FromRawGameEvent for NavBlockedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let blocked: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "blocked",
-        )?;
-        let area: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "area",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let area = match iter.next() {
+            Some(value) => u32::from_value(value, "area")?,
+            None => u32::default(),
+        };
+        let blocked = match iter.next() {
+            Some(value) => bool::from_value(value, "blocked")?,
+            None => bool::default(),
+        };
         Ok(NavBlockedEvent { area, blocked })
     }
 }
@@ -6763,20 +4775,12 @@ pub struct PathTrackPassedEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PathTrackPassedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(PathTrackPassedEvent { index })
     }
 }
@@ -6786,33 +4790,23 @@ pub struct NumCappersChangedEvent {
     pub count: u8,
 }
 impl FromRawGameEvent for NumCappersChangedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let count: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "count",
-        )?;
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
+        let count = match iter.next() {
+            Some(value) => u8::from_value(value, "count")?,
+            None => u8::default(),
+        };
         Ok(NumCappersChangedEvent { index, count })
     }
 }
 #[derive(Debug)]
 pub struct PlayerRegenerateEvent {}
 impl FromRawGameEvent for PlayerRegenerateEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayerRegenerateEvent {})
     }
 }
@@ -6822,47 +4816,37 @@ pub struct UpdateStatusItemEvent {
     pub object: u8,
 }
 impl FromRawGameEvent for UpdateStatusItemEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let object: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "object",
-        )?;
-        let index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u8::from_value(value, "index")?,
+            None => u8::default(),
+        };
+        let object = match iter.next() {
+            Some(value) => u8::from_value(value, "object")?,
+            None => u8::default(),
+        };
         Ok(UpdateStatusItemEvent { index, object })
     }
 }
 #[derive(Debug)]
 pub struct StatsResetRoundEvent {}
 impl FromRawGameEvent for StatsResetRoundEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(StatsResetRoundEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl FromRawGameEvent for ScoreStatsAccumulatedUpdateEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl FromRawGameEvent for ScoreStatsAccumulatedResetEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
@@ -6871,20 +4855,12 @@ pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
 }
 impl FromRawGameEvent for AchievementEarnedLocalEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let achievement: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "achievement",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let achievement = match iter.next() {
+            Some(value) => u16::from_value(value, "achievement")?,
+            None => u16::default(),
+        };
         Ok(AchievementEarnedLocalEvent { achievement })
     }
 }
@@ -6895,32 +4871,20 @@ pub struct PlayerHealedEvent {
     pub amount: u16,
 }
 impl FromRawGameEvent for PlayerHealedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let amount: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "amount",
-        )?;
-        let healer: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "healer",
-        )?;
-        let patient: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "patient",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let patient = match iter.next() {
+            Some(value) => u16::from_value(value, "patient")?,
+            None => u16::default(),
+        };
+        let healer = match iter.next() {
+            Some(value) => u16::from_value(value, "healer")?,
+            None => u16::default(),
+        };
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
         Ok(PlayerHealedEvent {
             patient,
             healer,
@@ -6935,32 +4899,20 @@ pub struct BuildingHealedEvent {
     pub amount: u16,
 }
 impl FromRawGameEvent for BuildingHealedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let amount: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "amount",
-        )?;
-        let healer: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "healer",
-        )?;
-        let building: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "building",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let building = match iter.next() {
+            Some(value) => u16::from_value(value, "building")?,
+            None => u16::default(),
+        };
+        let healer = match iter.next() {
+            Some(value) => u16::from_value(value, "healer")?,
+            None => u16::default(),
+        };
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
         Ok(BuildingHealedEvent {
             building,
             healer,
@@ -6974,26 +4926,16 @@ pub struct ItemPickupEvent {
     pub item: String,
 }
 impl FromRawGameEvent for ItemPickupEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let item: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "item",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let item = match iter.next() {
+            Some(value) => String::from_value(value, "item")?,
+            None => String::default(),
+        };
         Ok(ItemPickupEvent { user_id, item })
     }
 }
@@ -7007,50 +4949,32 @@ pub struct DuelStatusEvent {
     pub target_score: u16,
 }
 impl FromRawGameEvent for DuelStatusEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 6 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(6);
-        let target_score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target_score",
-        )?;
-        let initiator_score: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "initiator_score",
-        )?;
-        let target: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target",
-        )?;
-        let initiator: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "initiator",
-        )?;
-        let score_type: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "score_type",
-        )?;
-        let killer: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "killer",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let killer = match iter.next() {
+            Some(value) => u16::from_value(value, "killer")?,
+            None => u16::default(),
+        };
+        let score_type = match iter.next() {
+            Some(value) => u16::from_value(value, "score_type")?,
+            None => u16::default(),
+        };
+        let initiator = match iter.next() {
+            Some(value) => u16::from_value(value, "initiator")?,
+            None => u16::default(),
+        };
+        let target = match iter.next() {
+            Some(value) => u16::from_value(value, "target")?,
+            None => u16::default(),
+        };
+        let initiator_score = match iter.next() {
+            Some(value) => u16::from_value(value, "initiator_score")?,
+            None => u16::default(),
+        };
+        let target_score = match iter.next() {
+            Some(value) => u16::from_value(value, "target_score")?,
+            None => u16::default(),
+        };
         Ok(DuelStatusEvent {
             killer,
             score_type,
@@ -7079,98 +5003,64 @@ pub struct FishNoticeEvent {
     pub assister_fallback: String,
 }
 impl FromRawGameEvent for FishNoticeEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 14 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(14);
-        let assister_fallback: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister_fallback",
-        )?;
-        let silent_kill: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "silent_kill",
-        )?;
-        let death_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "death_flags",
-        )?;
-        let stun_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "stun_flags",
-        )?;
-        let weapon_log_class_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_log_class_name",
-        )?;
-        let assister: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister",
-        )?;
-        let custom_kill: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "custom_kill",
-        )?;
-        let damage_bits: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage_bits",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let weapon: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
-        let inflictor_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "inflictor_ent_index",
-        )?;
-        let victim_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "victim_ent_index")?,
+            None => u32::default(),
+        };
+        let inflictor_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
+            None => u32::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let weapon = match iter.next() {
+            Some(value) => String::from_value(value, "weapon")?,
+            None => String::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let damage_bits = match iter.next() {
+            Some(value) => u32::from_value(value, "damage_bits")?,
+            None => u32::default(),
+        };
+        let custom_kill = match iter.next() {
+            Some(value) => u16::from_value(value, "custom_kill")?,
+            None => u16::default(),
+        };
+        let assister = match iter.next() {
+            Some(value) => u16::from_value(value, "assister")?,
+            None => u16::default(),
+        };
+        let weapon_log_class_name = match iter.next() {
+            Some(value) => String::from_value(value, "weapon_log_class_name")?,
+            None => String::default(),
+        };
+        let stun_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "stun_flags")?,
+            None => u16::default(),
+        };
+        let death_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "death_flags")?,
+            None => u16::default(),
+        };
+        let silent_kill = match iter.next() {
+            Some(value) => bool::from_value(value, "silent_kill")?,
+            None => bool::default(),
+        };
+        let assister_fallback = match iter.next() {
+            Some(value) => String::from_value(value, "assister_fallback")?,
+            None => String::default(),
+        };
         Ok(FishNoticeEvent {
             user_id,
             victim_ent_index,
@@ -7207,98 +5097,64 @@ pub struct FishNoticeArmEvent {
     pub assister_fallback: String,
 }
 impl FromRawGameEvent for FishNoticeArmEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 14 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(14);
-        let assister_fallback: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister_fallback",
-        )?;
-        let silent_kill: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "silent_kill",
-        )?;
-        let death_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "death_flags",
-        )?;
-        let stun_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "stun_flags",
-        )?;
-        let weapon_log_class_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_log_class_name",
-        )?;
-        let assister: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister",
-        )?;
-        let custom_kill: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "custom_kill",
-        )?;
-        let damage_bits: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage_bits",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let weapon: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
-        let inflictor_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "inflictor_ent_index",
-        )?;
-        let victim_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "victim_ent_index")?,
+            None => u32::default(),
+        };
+        let inflictor_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
+            None => u32::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let weapon = match iter.next() {
+            Some(value) => String::from_value(value, "weapon")?,
+            None => String::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let damage_bits = match iter.next() {
+            Some(value) => u32::from_value(value, "damage_bits")?,
+            None => u32::default(),
+        };
+        let custom_kill = match iter.next() {
+            Some(value) => u16::from_value(value, "custom_kill")?,
+            None => u16::default(),
+        };
+        let assister = match iter.next() {
+            Some(value) => u16::from_value(value, "assister")?,
+            None => u16::default(),
+        };
+        let weapon_log_class_name = match iter.next() {
+            Some(value) => String::from_value(value, "weapon_log_class_name")?,
+            None => String::default(),
+        };
+        let stun_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "stun_flags")?,
+            None => u16::default(),
+        };
+        let death_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "death_flags")?,
+            None => u16::default(),
+        };
+        let silent_kill = match iter.next() {
+            Some(value) => bool::from_value(value, "silent_kill")?,
+            None => bool::default(),
+        };
+        let assister_fallback = match iter.next() {
+            Some(value) => String::from_value(value, "assister_fallback")?,
+            None => String::default(),
+        };
         Ok(FishNoticeArmEvent {
             user_id,
             victim_ent_index,
@@ -7336,104 +5192,68 @@ pub struct ThrowableHitEvent {
     pub total_hits: u16,
 }
 impl FromRawGameEvent for ThrowableHitEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 15 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(15);
-        let total_hits: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "total_hits",
-        )?;
-        let assister_fallback: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister_fallback",
-        )?;
-        let silent_kill: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "silent_kill",
-        )?;
-        let death_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "death_flags",
-        )?;
-        let stun_flags: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "stun_flags",
-        )?;
-        let weapon_log_class_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_log_class_name",
-        )?;
-        let assister: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "assister",
-        )?;
-        let custom_kill: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "custom_kill",
-        )?;
-        let damage_bits: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage_bits",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let weapon: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
-        let inflictor_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "inflictor_ent_index",
-        )?;
-        let victim_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "victim_ent_index")?,
+            None => u32::default(),
+        };
+        let inflictor_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
+            None => u32::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let weapon = match iter.next() {
+            Some(value) => String::from_value(value, "weapon")?,
+            None => String::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let damage_bits = match iter.next() {
+            Some(value) => u32::from_value(value, "damage_bits")?,
+            None => u32::default(),
+        };
+        let custom_kill = match iter.next() {
+            Some(value) => u16::from_value(value, "custom_kill")?,
+            None => u16::default(),
+        };
+        let assister = match iter.next() {
+            Some(value) => u16::from_value(value, "assister")?,
+            None => u16::default(),
+        };
+        let weapon_log_class_name = match iter.next() {
+            Some(value) => String::from_value(value, "weapon_log_class_name")?,
+            None => String::default(),
+        };
+        let stun_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "stun_flags")?,
+            None => u16::default(),
+        };
+        let death_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "death_flags")?,
+            None => u16::default(),
+        };
+        let silent_kill = match iter.next() {
+            Some(value) => bool::from_value(value, "silent_kill")?,
+            None => bool::default(),
+        };
+        let assister_fallback = match iter.next() {
+            Some(value) => String::from_value(value, "assister_fallback")?,
+            None => String::default(),
+        };
+        let total_hits = match iter.next() {
+            Some(value) => u16::from_value(value, "total_hits")?,
+            None => u16::default(),
+        };
         Ok(ThrowableHitEvent {
             user_id,
             victim_ent_index,
@@ -7456,14 +5276,14 @@ impl FromRawGameEvent for ThrowableHitEvent {
 #[derive(Debug)]
 pub struct PumpkinLordSummonedEvent {}
 impl FromRawGameEvent for PumpkinLordSummonedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct PumpkinLordKilledEvent {}
 impl FromRawGameEvent for PumpkinLordKilledEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PumpkinLordKilledEvent {})
     }
 }
@@ -7472,20 +5292,12 @@ pub struct MerasmusSummonedEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for MerasmusSummonedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
         Ok(MerasmusSummonedEvent { level })
     }
 }
@@ -7494,20 +5306,12 @@ pub struct MerasmusKilledEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for MerasmusKilledEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
         Ok(MerasmusKilledEvent { level })
     }
 }
@@ -7517,26 +5321,16 @@ pub struct MerasmusEscapeWarningEvent {
     pub time_remaining: u8,
 }
 impl FromRawGameEvent for MerasmusEscapeWarningEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let time_remaining: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time_remaining",
-        )?;
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
+        let time_remaining = match iter.next() {
+            Some(value) => u8::from_value(value, "time_remaining")?,
+            None => u8::default(),
+        };
         Ok(MerasmusEscapeWarningEvent {
             level,
             time_remaining,
@@ -7548,20 +5342,12 @@ pub struct MerasmusEscapedEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for MerasmusEscapedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
         Ok(MerasmusEscapedEvent { level })
     }
 }
@@ -7570,20 +5356,12 @@ pub struct EyeballBossSummonedEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for EyeballBossSummonedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
         Ok(EyeballBossSummonedEvent { level })
     }
 }
@@ -7593,26 +5371,16 @@ pub struct EyeballBossStunnedEvent {
     pub player_ent_index: u8,
 }
 impl FromRawGameEvent for EyeballBossStunnedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let player_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_ent_index",
-        )?;
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
+        let player_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "player_ent_index")?,
+            None => u8::default(),
+        };
         Ok(EyeballBossStunnedEvent {
             level,
             player_ent_index,
@@ -7624,20 +5392,12 @@ pub struct EyeballBossKilledEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for EyeballBossKilledEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
         Ok(EyeballBossKilledEvent { level })
     }
 }
@@ -7647,26 +5407,16 @@ pub struct EyeballBossKillerEvent {
     pub player_ent_index: u8,
 }
 impl FromRawGameEvent for EyeballBossKillerEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let player_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_ent_index",
-        )?;
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
+        let player_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "player_ent_index")?,
+            None => u8::default(),
+        };
         Ok(EyeballBossKillerEvent {
             level,
             player_ent_index,
@@ -7679,26 +5429,16 @@ pub struct EyeballBossEscapeImminentEvent {
     pub time_remaining: u8,
 }
 impl FromRawGameEvent for EyeballBossEscapeImminentEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let time_remaining: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time_remaining",
-        )?;
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
+        let time_remaining = match iter.next() {
+            Some(value) => u8::from_value(value, "time_remaining")?,
+            None => u8::default(),
+        };
         Ok(EyeballBossEscapeImminentEvent {
             level,
             time_remaining,
@@ -7710,20 +5450,12 @@ pub struct EyeballBossEscapedEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for EyeballBossEscapedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
         Ok(EyeballBossEscapedEvent { level })
     }
 }
@@ -7737,50 +5469,32 @@ pub struct NpcHurtEvent {
     pub crit: bool,
 }
 impl FromRawGameEvent for NpcHurtEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 6 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(6);
-        let crit: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "crit",
-        )?;
-        let damage_amount: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage_amount",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let attacker_player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker_player",
-        )?;
-        let health: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "health",
-        )?;
-        let ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "ent_index")?,
+            None => u16::default(),
+        };
+        let health = match iter.next() {
+            Some(value) => u16::from_value(value, "health")?,
+            None => u16::default(),
+        };
+        let attacker_player = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker_player")?,
+            None => u16::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let damage_amount = match iter.next() {
+            Some(value) => u16::from_value(value, "damage_amount")?,
+            None => u16::default(),
+        };
+        let crit = match iter.next() {
+            Some(value) => bool::from_value(value, "crit")?,
+            None => bool::default(),
+        };
         Ok(NpcHurtEvent {
             ent_index,
             health,
@@ -7797,26 +5511,16 @@ pub struct ControlPointTimerUpdatedEvent {
     pub time: f32,
 }
 impl FromRawGameEvent for ControlPointTimerUpdatedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let time: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time",
-        )?;
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
+        let time = match iter.next() {
+            Some(value) => f32::from_value(value, "time")?,
+            None => f32::default(),
+        };
         Ok(ControlPointTimerUpdatedEvent { index, time })
     }
 }
@@ -7825,20 +5529,12 @@ pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
 }
 impl FromRawGameEvent for PlayerHighFiveStartEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "ent_index")?,
+            None => u8::default(),
+        };
         Ok(PlayerHighFiveStartEvent { ent_index })
     }
 }
@@ -7847,20 +5543,12 @@ pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
 }
 impl FromRawGameEvent for PlayerHighFiveCancelEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "ent_index")?,
+            None => u8::default(),
+        };
         Ok(PlayerHighFiveCancelEvent { ent_index })
     }
 }
@@ -7870,26 +5558,16 @@ pub struct PlayerHighFiveSuccessEvent {
     pub partner_ent_index: u8,
 }
 impl FromRawGameEvent for PlayerHighFiveSuccessEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let partner_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "partner_ent_index",
-        )?;
-        let initiator_ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "initiator_ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let initiator_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "initiator_ent_index")?,
+            None => u8::default(),
+        };
+        let partner_ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "partner_ent_index")?,
+            None => u8::default(),
+        };
         Ok(PlayerHighFiveSuccessEvent {
             initiator_ent_index,
             partner_ent_index,
@@ -7903,32 +5581,20 @@ pub struct PlayerBonusPointsEvent {
     pub source_ent_index: u16,
 }
 impl FromRawGameEvent for PlayerBonusPointsEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let source_ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "source_ent_index",
-        )?;
-        let player_ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player_ent_index",
-        )?;
-        let points: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "points",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let points = match iter.next() {
+            Some(value) => u16::from_value(value, "points")?,
+            None => u16::default(),
+        };
+        let player_ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "player_ent_index")?,
+            None => u16::default(),
+        };
+        let source_ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "source_ent_index")?,
+            None => u16::default(),
+        };
         Ok(PlayerBonusPointsEvent {
             points,
             player_ent_index,
@@ -7939,7 +5605,7 @@ impl FromRawGameEvent for PlayerBonusPointsEvent {
 #[derive(Debug)]
 pub struct PlayerUpgradedEvent {}
 impl FromRawGameEvent for PlayerUpgradedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PlayerUpgradedEvent {})
     }
 }
@@ -7949,26 +5615,16 @@ pub struct PlayerBuybackEvent {
     pub cost: u16,
 }
 impl FromRawGameEvent for PlayerBuybackEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let cost: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cost",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let cost = match iter.next() {
+            Some(value) => u16::from_value(value, "cost")?,
+            None => u16::default(),
+        };
         Ok(PlayerBuybackEvent { player, cost })
     }
 }
@@ -7979,32 +5635,20 @@ pub struct PlayerUsedPowerUpBottleEvent {
     pub time: f32,
 }
 impl FromRawGameEvent for PlayerUsedPowerUpBottleEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let time: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time",
-        )?;
-        let kind: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kind",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let kind = match iter.next() {
+            Some(value) => u16::from_value(value, "kind")?,
+            None => u16::default(),
+        };
+        let time = match iter.next() {
+            Some(value) => f32::from_value(value, "time")?,
+            None => f32::default(),
+        };
         Ok(PlayerUsedPowerUpBottleEvent { player, kind, time })
     }
 }
@@ -8013,20 +5657,12 @@ pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for ChristmasGiftGrabEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(ChristmasGiftGrabEvent { user_id })
     }
 }
@@ -8037,32 +5673,20 @@ pub struct PlayerKilledAchievementZoneEvent {
     pub zone_id: u16,
 }
 impl FromRawGameEvent for PlayerKilledAchievementZoneEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let zone_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "zone_id",
-        )?;
-        let victim: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u16::from_value(value, "victim")?,
+            None => u16::default(),
+        };
+        let zone_id = match iter.next() {
+            Some(value) => u16::from_value(value, "zone_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerKilledAchievementZoneEvent {
             attacker,
             victim,
@@ -8073,14 +5697,14 @@ impl FromRawGameEvent for PlayerKilledAchievementZoneEvent {
 #[derive(Debug)]
 pub struct PartyUpdatedEvent {}
 impl FromRawGameEvent for PartyUpdatedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PartyUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LobbyUpdatedEvent {}
 impl FromRawGameEvent for LobbyUpdatedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(LobbyUpdatedEvent {})
     }
 }
@@ -8090,33 +5714,23 @@ pub struct MvmMissionUpdateEvent {
     pub count: u16,
 }
 impl FromRawGameEvent for MvmMissionUpdateEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let count: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "count",
-        )?;
-        let class: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "class",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let class = match iter.next() {
+            Some(value) => u16::from_value(value, "class")?,
+            None => u16::default(),
+        };
+        let count = match iter.next() {
+            Some(value) => u16::from_value(value, "count")?,
+            None => u16::default(),
+        };
         Ok(MvmMissionUpdateEvent { class, count })
     }
 }
 #[derive(Debug)]
 pub struct RecalculateHolidaysEvent {}
 impl FromRawGameEvent for RecalculateHolidaysEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RecalculateHolidaysEvent {})
     }
 }
@@ -8125,20 +5739,12 @@ pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
 }
 impl FromRawGameEvent for PlayerCurrencyChangedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let currency: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "currency",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let currency = match iter.next() {
+            Some(value) => u16::from_value(value, "currency")?,
+            None => u16::default(),
+        };
         Ok(PlayerCurrencyChangedEvent { currency })
     }
 }
@@ -8147,20 +5753,12 @@ pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
 }
 impl FromRawGameEvent for DoomsdayRocketOpenEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
         Ok(DoomsdayRocketOpenEvent { team })
     }
 }
@@ -8169,41 +5767,33 @@ pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for RemoveNemesisRelationshipsEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(RemoveNemesisRelationshipsEvent { player })
     }
 }
 #[derive(Debug)]
 pub struct MvmCreditBonusWaveEvent {}
 impl FromRawGameEvent for MvmCreditBonusWaveEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MvmCreditBonusAllEvent {}
 impl FromRawGameEvent for MvmCreditBonusAllEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl FromRawGameEvent for MvmCreditBonusAllAdvancedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
@@ -8212,27 +5802,19 @@ pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmQuickSentryUpgradeEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(MvmQuickSentryUpgradeEvent { player })
     }
 }
 #[derive(Debug)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl FromRawGameEvent for MvmTankDestroyedByPlayersEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
@@ -8241,20 +5823,12 @@ pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmKillRobotDeliveringBombEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(MvmKillRobotDeliveringBombEvent { player })
     }
 }
@@ -8264,26 +5838,16 @@ pub struct MvmPickupCurrencyEvent {
     pub currency: u16,
 }
 impl FromRawGameEvent for MvmPickupCurrencyEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let currency: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "currency",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let currency = match iter.next() {
+            Some(value) => u16::from_value(value, "currency")?,
+            None => u16::default(),
+        };
         Ok(MvmPickupCurrencyEvent { player, currency })
     }
 }
@@ -8292,20 +5856,12 @@ pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for MvmBombCarrierKilledEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
         Ok(MvmBombCarrierKilledEvent { level })
     }
 }
@@ -8317,38 +5873,24 @@ pub struct MvmSentryBusterDetonateEvent {
     pub det_z: f32,
 }
 impl FromRawGameEvent for MvmSentryBusterDetonateEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let det_z: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "det_z",
-        )?;
-        let det_y: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "det_y",
-        )?;
-        let det_x: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "det_x",
-        )?;
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let det_x = match iter.next() {
+            Some(value) => f32::from_value(value, "det_x")?,
+            None => f32::default(),
+        };
+        let det_y = match iter.next() {
+            Some(value) => f32::from_value(value, "det_y")?,
+            None => f32::default(),
+        };
+        let det_z = match iter.next() {
+            Some(value) => f32::from_value(value, "det_z")?,
+            None => f32::default(),
+        };
         Ok(MvmSentryBusterDetonateEvent {
             player,
             det_x,
@@ -8362,20 +5904,12 @@ pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmScoutMarkedForDeathEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(MvmScoutMarkedForDeathEvent { player })
     }
 }
@@ -8384,20 +5918,12 @@ pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmMedicPowerUpSharedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(MvmMedicPowerUpSharedEvent { player })
     }
 }
@@ -8408,32 +5934,20 @@ pub struct MvmBeginWaveEvent {
     pub advanced: u16,
 }
 impl FromRawGameEvent for MvmBeginWaveEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let advanced: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "advanced",
-        )?;
-        let max_waves: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "max_waves",
-        )?;
-        let wave_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "wave_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let wave_index = match iter.next() {
+            Some(value) => u16::from_value(value, "wave_index")?,
+            None => u16::default(),
+        };
+        let max_waves = match iter.next() {
+            Some(value) => u16::from_value(value, "max_waves")?,
+            None => u16::default(),
+        };
+        let advanced = match iter.next() {
+            Some(value) => u16::from_value(value, "advanced")?,
+            None => u16::default(),
+        };
         Ok(MvmBeginWaveEvent {
             wave_index,
             max_waves,
@@ -8446,20 +5960,12 @@ pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
 }
 impl FromRawGameEvent for MvmWaveCompleteEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let advanced: bool = bool::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "advanced",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let advanced = match iter.next() {
+            Some(value) => bool::from_value(value, "advanced")?,
+            None => bool::default(),
+        };
         Ok(MvmWaveCompleteEvent { advanced })
     }
 }
@@ -8468,20 +5974,12 @@ pub struct MvmMissionCompleteEvent {
     pub mission: String,
 }
 impl FromRawGameEvent for MvmMissionCompleteEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let mission: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "mission",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let mission = match iter.next() {
+            Some(value) => String::from_value(value, "mission")?,
+            None => String::default(),
+        };
         Ok(MvmMissionCompleteEvent { mission })
     }
 }
@@ -8490,27 +5988,19 @@ pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmBombResetByPlayerEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(MvmBombResetByPlayerEvent { player })
     }
 }
 #[derive(Debug)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl FromRawGameEvent for MvmBombAlarmTriggeredEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
@@ -8519,34 +6009,26 @@ pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
 }
 impl FromRawGameEvent for MvmBombDeployResetByPlayerEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let player: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "player",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
         Ok(MvmBombDeployResetByPlayerEvent { player })
     }
 }
 #[derive(Debug)]
 pub struct MvmWaveFailedEvent {}
 impl FromRawGameEvent for MvmWaveFailedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmWaveFailedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MvmResetStatsEvent {}
 impl FromRawGameEvent for MvmResetStatsEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmResetStatsEvent {})
     }
 }
@@ -8555,20 +6037,12 @@ pub struct DamageResistedEvent {
     pub ent_index: u8,
 }
 impl FromRawGameEvent for DamageResistedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u8::from_value(value, "ent_index")?,
+            None => u8::default(),
+        };
         Ok(DamageResistedEvent { ent_index })
     }
 }
@@ -8578,26 +6052,16 @@ pub struct RevivePlayerNotifyEvent {
     pub marker_ent_index: u16,
 }
 impl FromRawGameEvent for RevivePlayerNotifyEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let marker_ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "marker_ent_index",
-        )?;
-        let ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "ent_index")?,
+            None => u16::default(),
+        };
+        let marker_ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "marker_ent_index")?,
+            None => u16::default(),
+        };
         Ok(RevivePlayerNotifyEvent {
             ent_index,
             marker_ent_index,
@@ -8609,20 +6073,12 @@ pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
 }
 impl FromRawGameEvent for RevivePlayerStoppedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "ent_index")?,
+            None => u16::default(),
+        };
         Ok(RevivePlayerStoppedEvent { ent_index })
     }
 }
@@ -8631,20 +6087,12 @@ pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
 }
 impl FromRawGameEvent for RevivePlayerCompleteEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "ent_index")?,
+            None => u16::default(),
+        };
         Ok(RevivePlayerCompleteEvent { ent_index })
     }
 }
@@ -8653,20 +6101,12 @@ pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
 }
 impl FromRawGameEvent for PlayerTurnedToGhostEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
         Ok(PlayerTurnedToGhostEvent { user_id })
     }
 }
@@ -8676,26 +6116,16 @@ pub struct MedigunShieldBlockedDamageEvent {
     pub damage: f32,
 }
 impl FromRawGameEvent for MedigunShieldBlockedDamageEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let damage: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let damage = match iter.next() {
+            Some(value) => f32::from_value(value, "damage")?,
+            None => f32::default(),
+        };
         Ok(MedigunShieldBlockedDamageEvent { user_id, damage })
     }
 }
@@ -8704,20 +6134,12 @@ pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for MvmAdvWaveCompleteNoGatesEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(MvmAdvWaveCompleteNoGatesEvent { index })
     }
 }
@@ -8727,47 +6149,37 @@ pub struct MvmSniperHeadshotCurrencyEvent {
     pub currency: u16,
 }
 impl FromRawGameEvent for MvmSniperHeadshotCurrencyEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let currency: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "currency",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let currency = match iter.next() {
+            Some(value) => u16::from_value(value, "currency")?,
+            None => u16::default(),
+        };
         Ok(MvmSniperHeadshotCurrencyEvent { user_id, currency })
     }
 }
 #[derive(Debug)]
 pub struct MvmMannhattanPitEvent {}
 impl FromRawGameEvent for MvmMannhattanPitEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmMannhattanPitEvent {})
     }
 }
 #[derive(Debug)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FromRawGameEvent for FlagCarriedInDetectionZoneEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl FromRawGameEvent for MvmAdvWaveKilledStunRadioEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
@@ -8777,26 +6189,16 @@ pub struct PlayerDirectHitStunEvent {
     pub victim: u16,
 }
 impl FromRawGameEvent for PlayerDirectHitStunEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let victim: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u16::from_value(value, "victim")?,
+            None => u16::default(),
+        };
         Ok(PlayerDirectHitStunEvent { attacker, victim })
     }
 }
@@ -8805,20 +6207,12 @@ pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
 }
 impl FromRawGameEvent for MvmSentryBusterKilledEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let sentry_buster: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "sentry_buster",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let sentry_buster = match iter.next() {
+            Some(value) => u16::from_value(value, "sentry_buster")?,
+            None => u16::default(),
+        };
         Ok(MvmSentryBusterKilledEvent { sentry_buster })
     }
 }
@@ -8827,20 +6221,12 @@ pub struct UpgradesFileChangedEvent {
     pub path: String,
 }
 impl FromRawGameEvent for UpgradesFileChangedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let path: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "path",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let path = match iter.next() {
+            Some(value) => String::from_value(value, "path")?,
+            None => String::default(),
+        };
         Ok(UpgradesFileChangedEvent { path })
     }
 }
@@ -8851,32 +6237,20 @@ pub struct RdTeamPointsChangedEvent {
     pub method: u8,
 }
 impl FromRawGameEvent for RdTeamPointsChangedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let method: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "method",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
-        let points: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "points",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let points = match iter.next() {
+            Some(value) => u16::from_value(value, "points")?,
+            None => u16::default(),
+        };
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let method = match iter.next() {
+            Some(value) => u8::from_value(value, "method")?,
+            None => u8::default(),
+        };
         Ok(RdTeamPointsChangedEvent {
             points,
             team,
@@ -8887,7 +6261,7 @@ impl FromRawGameEvent for RdTeamPointsChangedEvent {
 #[derive(Debug)]
 pub struct RdRulesStateChangedEvent {}
 impl FromRawGameEvent for RdRulesStateChangedEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(RdRulesStateChangedEvent {})
     }
 }
@@ -8904,68 +6278,44 @@ pub struct RdRobotKilledEvent {
     pub weapon_log_class_name: String,
 }
 impl FromRawGameEvent for RdRobotKilledEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 9 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(9);
-        let weapon_log_class_name: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_log_class_name",
-        )?;
-        let custom_kill: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "custom_kill",
-        )?;
-        let damage_bits: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "damage_bits",
-        )?;
-        let weapon_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon_id",
-        )?;
-        let weapon: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "weapon",
-        )?;
-        let attacker: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "attacker",
-        )?;
-        let inflictor_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "inflictor_ent_index",
-        )?;
-        let victim_ent_index: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "victim_ent_index",
-        )?;
-        let user_id: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "user_id",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "victim_ent_index")?,
+            None => u32::default(),
+        };
+        let inflictor_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
+            None => u32::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let weapon = match iter.next() {
+            Some(value) => String::from_value(value, "weapon")?,
+            None => String::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let damage_bits = match iter.next() {
+            Some(value) => u32::from_value(value, "damage_bits")?,
+            None => u32::default(),
+        };
+        let custom_kill = match iter.next() {
+            Some(value) => u16::from_value(value, "custom_kill")?,
+            None => u16::default(),
+        };
+        let weapon_log_class_name = match iter.next() {
+            Some(value) => String::from_value(value, "weapon_log_class_name")?,
+            None => String::default(),
+        };
         Ok(RdRobotKilledEvent {
             user_id,
             victim_ent_index,
@@ -8987,38 +6337,24 @@ pub struct RdRobotImpactEvent {
     pub impulse_z: f32,
 }
 impl FromRawGameEvent for RdRobotImpactEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let impulse_z: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "impulse_z",
-        )?;
-        let impulse_y: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "impulse_y",
-        )?;
-        let impulse_x: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "impulse_x",
-        )?;
-        let ent_index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "ent_index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let ent_index = match iter.next() {
+            Some(value) => u16::from_value(value, "ent_index")?,
+            None => u16::default(),
+        };
+        let impulse_x = match iter.next() {
+            Some(value) => f32::from_value(value, "impulse_x")?,
+            None => f32::default(),
+        };
+        let impulse_y = match iter.next() {
+            Some(value) => f32::from_value(value, "impulse_y")?,
+            None => f32::default(),
+        };
+        let impulse_z = match iter.next() {
+            Some(value) => f32::from_value(value, "impulse_z")?,
+            None => f32::default(),
+        };
         Ok(RdRobotImpactEvent {
             ent_index,
             impulse_x,
@@ -9032,20 +6368,12 @@ pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
 }
 impl FromRawGameEvent for TeamPlayPreRoundTimeLeftEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let time: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "time",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let time = match iter.next() {
+            Some(value) => u16::from_value(value, "time")?,
+            None => u16::default(),
+        };
         Ok(TeamPlayPreRoundTimeLeftEvent { time })
     }
 }
@@ -9054,20 +6382,12 @@ pub struct ParachuteDeployEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ParachuteDeployEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(ParachuteDeployEvent { index })
     }
 }
@@ -9076,20 +6396,12 @@ pub struct ParachuteHolsterEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for ParachuteHolsterEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(ParachuteHolsterEvent { index })
     }
 }
@@ -9098,20 +6410,12 @@ pub struct KillRefillsMeterEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for KillRefillsMeterEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(KillRefillsMeterEvent { index })
     }
 }
@@ -9123,38 +6427,24 @@ pub struct RpsTauntEventEvent {
     pub loser_rps: u8,
 }
 impl FromRawGameEvent for RpsTauntEventEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let loser_rps: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "loser_rps",
-        )?;
-        let loser: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "loser",
-        )?;
-        let winner_rps: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "winner_rps",
-        )?;
-        let winner: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "winner",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let winner = match iter.next() {
+            Some(value) => u16::from_value(value, "winner")?,
+            None => u16::default(),
+        };
+        let winner_rps = match iter.next() {
+            Some(value) => u8::from_value(value, "winner_rps")?,
+            None => u8::default(),
+        };
+        let loser = match iter.next() {
+            Some(value) => u16::from_value(value, "loser")?,
+            None => u16::default(),
+        };
+        let loser_rps = match iter.next() {
+            Some(value) => u8::from_value(value, "loser_rps")?,
+            None => u8::default(),
+        };
         Ok(RpsTauntEventEvent {
             winner,
             winner_rps,
@@ -9168,20 +6458,12 @@ pub struct CongaKillEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for CongaKillEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(CongaKillEvent { index })
     }
 }
@@ -9190,27 +6472,19 @@ pub struct PlayerInitialSpawnEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for PlayerInitialSpawnEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(PlayerInitialSpawnEvent { index })
     }
 }
 #[derive(Debug)]
 pub struct CompetitiveVictoryEvent {}
 impl FromRawGameEvent for CompetitiveVictoryEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(CompetitiveVictoryEvent {})
     }
 }
@@ -9221,32 +6495,20 @@ pub struct CompetitiveSkillRatingUpdateEvent {
     pub delta: u16,
 }
 impl FromRawGameEvent for CompetitiveSkillRatingUpdateEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let delta: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "delta",
-        )?;
-        let rating: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "rating",
-        )?;
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
+        let rating = match iter.next() {
+            Some(value) => u16::from_value(value, "rating")?,
+            None => u16::default(),
+        };
+        let delta = match iter.next() {
+            Some(value) => u16::from_value(value, "delta")?,
+            None => u16::default(),
+        };
         Ok(CompetitiveSkillRatingUpdateEvent {
             index,
             rating,
@@ -9260,26 +6522,16 @@ pub struct MiniGameWinEvent {
     pub kind: u8,
 }
 impl FromRawGameEvent for MiniGameWinEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 2 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(2);
-        let kind: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "kind",
-        )?;
-        let team: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "team",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let team = match iter.next() {
+            Some(value) => u8::from_value(value, "team")?,
+            None => u8::default(),
+        };
+        let kind = match iter.next() {
+            Some(value) => u8::from_value(value, "kind")?,
+            None => u8::default(),
+        };
         Ok(MiniGameWinEvent { team, kind })
     }
 }
@@ -9288,20 +6540,12 @@ pub struct SentryOnGoActiveEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for SentryOnGoActiveEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(SentryOnGoActiveEvent { index })
     }
 }
@@ -9310,20 +6554,12 @@ pub struct DuckXpLevelUpEvent {
     pub level: u16,
 }
 impl FromRawGameEvent for DuckXpLevelUpEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let level: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "level",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level = match iter.next() {
+            Some(value) => u16::from_value(value, "level")?,
+            None => u16::default(),
+        };
         Ok(DuckXpLevelUpEvent { level })
     }
 }
@@ -9335,38 +6571,24 @@ pub struct HLTVStatusEvent {
     pub master: String,
 }
 impl FromRawGameEvent for HLTVStatusEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let master: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "master",
-        )?;
-        let proxies: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "proxies",
-        )?;
-        let slots: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "slots",
-        )?;
-        let clients: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "clients",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let clients = match iter.next() {
+            Some(value) => u32::from_value(value, "clients")?,
+            None => u32::default(),
+        };
+        let slots = match iter.next() {
+            Some(value) => u32::from_value(value, "slots")?,
+            None => u32::default(),
+        };
+        let proxies = match iter.next() {
+            Some(value) => u16::from_value(value, "proxies")?,
+            None => u16::default(),
+        };
+        let master = match iter.next() {
+            Some(value) => String::from_value(value, "master")?,
+            None => String::default(),
+        };
         Ok(HLTVStatusEvent {
             clients,
             slots,
@@ -9380,20 +6602,12 @@ pub struct HLTVCameramanEvent {
     pub index: u16,
 }
 impl FromRawGameEvent for HLTVCameramanEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
         Ok(HLTVCameramanEvent { index })
     }
 }
@@ -9404,32 +6618,20 @@ pub struct HLTVRankCameraEvent {
     pub target: u16,
 }
 impl FromRawGameEvent for HLTVRankCameraEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let target: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target",
-        )?;
-        let rank: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "rank",
-        )?;
-        let index: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u8::from_value(value, "index")?,
+            None => u8::default(),
+        };
+        let rank = match iter.next() {
+            Some(value) => f32::from_value(value, "rank")?,
+            None => f32::default(),
+        };
+        let target = match iter.next() {
+            Some(value) => u16::from_value(value, "target")?,
+            None => u16::default(),
+        };
         Ok(HLTVRankCameraEvent {
             index,
             rank,
@@ -9444,32 +6646,20 @@ pub struct HLTVRankEntityEvent {
     pub target: u16,
 }
 impl FromRawGameEvent for HLTVRankEntityEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 3 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(3);
-        let target: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target",
-        )?;
-        let rank: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "rank",
-        )?;
-        let index: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "index",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let index = match iter.next() {
+            Some(value) => u16::from_value(value, "index")?,
+            None => u16::default(),
+        };
+        let rank = match iter.next() {
+            Some(value) => f32::from_value(value, "rank")?,
+            None => f32::default(),
+        };
+        let target = match iter.next() {
+            Some(value) => u16::from_value(value, "target")?,
+            None => u16::default(),
+        };
         Ok(HLTVRankEntityEvent {
             index,
             rank,
@@ -9489,62 +6679,40 @@ pub struct HLTVFixedEvent {
     pub target: u16,
 }
 impl FromRawGameEvent for HLTVFixedEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 8 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(8);
-        let target: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target",
-        )?;
-        let fov: f32 = f32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "fov",
-        )?;
-        let offset: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "offset",
-        )?;
-        let phi: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "phi",
-        )?;
-        let theta: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "theta",
-        )?;
-        let pos_z: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "pos_z",
-        )?;
-        let pos_y: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "pos_y",
-        )?;
-        let pos_x: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "pos_x",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let pos_x = match iter.next() {
+            Some(value) => u32::from_value(value, "pos_x")?,
+            None => u32::default(),
+        };
+        let pos_y = match iter.next() {
+            Some(value) => u32::from_value(value, "pos_y")?,
+            None => u32::default(),
+        };
+        let pos_z = match iter.next() {
+            Some(value) => u32::from_value(value, "pos_z")?,
+            None => u32::default(),
+        };
+        let theta = match iter.next() {
+            Some(value) => u16::from_value(value, "theta")?,
+            None => u16::default(),
+        };
+        let phi = match iter.next() {
+            Some(value) => u16::from_value(value, "phi")?,
+            None => u16::default(),
+        };
+        let offset = match iter.next() {
+            Some(value) => u16::from_value(value, "offset")?,
+            None => u16::default(),
+        };
+        let fov = match iter.next() {
+            Some(value) => f32::from_value(value, "fov")?,
+            None => f32::default(),
+        };
+        let target = match iter.next() {
+            Some(value) => u16::from_value(value, "target")?,
+            None => u16::default(),
+        };
         Ok(HLTVFixedEvent {
             pos_x,
             pos_y,
@@ -9568,56 +6736,36 @@ pub struct HLTVChaseEvent {
     pub in_eye: u8,
 }
 impl FromRawGameEvent for HLTVChaseEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 7 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(7);
-        let in_eye: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "in_eye",
-        )?;
-        let inertia: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "inertia",
-        )?;
-        let phi: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "phi",
-        )?;
-        let theta: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "theta",
-        )?;
-        let distance: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "distance",
-        )?;
-        let target_2: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target_2",
-        )?;
-        let target_1: u16 = u16::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "target_1",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let target_1 = match iter.next() {
+            Some(value) => u16::from_value(value, "target_1")?,
+            None => u16::default(),
+        };
+        let target_2 = match iter.next() {
+            Some(value) => u16::from_value(value, "target_2")?,
+            None => u16::default(),
+        };
+        let distance = match iter.next() {
+            Some(value) => u16::from_value(value, "distance")?,
+            None => u16::default(),
+        };
+        let theta = match iter.next() {
+            Some(value) => u16::from_value(value, "theta")?,
+            None => u16::default(),
+        };
+        let phi = match iter.next() {
+            Some(value) => u16::from_value(value, "phi")?,
+            None => u16::default(),
+        };
+        let inertia = match iter.next() {
+            Some(value) => u8::from_value(value, "inertia")?,
+            None => u8::default(),
+        };
+        let in_eye = match iter.next() {
+            Some(value) => u8::from_value(value, "in_eye")?,
+            None => u8::default(),
+        };
         Ok(HLTVChaseEvent {
             target_1,
             target_2,
@@ -9634,20 +6782,12 @@ pub struct HLTVMessageEvent {
     pub text: String,
 }
 impl FromRawGameEvent for HLTVMessageEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
         Ok(HLTVMessageEvent { text })
     }
 }
@@ -9656,20 +6796,12 @@ pub struct HLTVTitleEvent {
     pub text: String,
 }
 impl FromRawGameEvent for HLTVTitleEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
         Ok(HLTVTitleEvent { text })
     }
 }
@@ -9678,27 +6810,19 @@ pub struct HLTVChatEvent {
     pub text: String,
 }
 impl FromRawGameEvent for HLTVChatEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let text: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "text",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
         Ok(HLTVChatEvent { text })
     }
 }
 #[derive(Debug)]
 pub struct ReplayStartRecordEvent {}
 impl FromRawGameEvent for ReplayStartRecordEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayStartRecordEvent {})
     }
 }
@@ -9710,52 +6834,38 @@ pub struct ReplaySessionInfoEvent {
     pub st: u32,
 }
 impl FromRawGameEvent for ReplaySessionInfoEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 4 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(4);
-        let st: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "st",
-        )?;
-        let cb: u32 = u32::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "cb",
-        )?;
-        let di: u8 = u8::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "di",
-        )?;
-        let sn: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "sn",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let sn = match iter.next() {
+            Some(value) => String::from_value(value, "sn")?,
+            None => String::default(),
+        };
+        let di = match iter.next() {
+            Some(value) => u8::from_value(value, "di")?,
+            None => u8::default(),
+        };
+        let cb = match iter.next() {
+            Some(value) => u32::from_value(value, "cb")?,
+            None => u32::default(),
+        };
+        let st = match iter.next() {
+            Some(value) => u32::from_value(value, "st")?,
+            None => u32::default(),
+        };
         Ok(ReplaySessionInfoEvent { sn, di, cb, st })
     }
 }
 #[derive(Debug)]
 pub struct ReplayEndRecordEvent {}
 impl FromRawGameEvent for ReplayEndRecordEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayEndRecordEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ReplayReplaysAvailableEvent {}
 impl FromRawGameEvent for ReplayReplaysAvailableEvent {
-    fn from_raw_event(mut _values: Vec<GameEventValue>) -> Result<Self> {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
@@ -9764,20 +6874,12 @@ pub struct ReplayServerErrorEvent {
     pub error: String,
 }
 impl FromRawGameEvent for ReplayServerErrorEvent {
-    fn from_raw_event(mut values: Vec<GameEventValue>) -> Result<Self> {
-        if values.len() < 1 {
-            return Err(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            )
-            .into());
-        }
-        values.truncate(1);
-        let error: String = String::from_value(
-            values.pop().ok_or(MalformedDemoError::MalformedGameEvent(
-                GameEventError::IncorrectValueCount,
-            ))?,
-            "error",
-        )?;
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let error = match iter.next() {
+            Some(value) => String::from_value(value, "error")?,
+            None => String::default(),
+        };
         Ok(ReplayServerErrorEvent { error })
     }
 }
