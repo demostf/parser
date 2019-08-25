@@ -62,6 +62,11 @@ fn snapshot_test_malformed_cvar() {
 }
 
 #[test]
+fn snapshot_test_decal() {
+    snapshot_test("data/decal.dem", "data/decal.json");
+}
+
+#[test]
 fn message_type_test_comp() {
     dump_message_types("data/comp.dem", "data/comp_message_types.json");
 }
