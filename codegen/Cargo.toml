@@ -1,0 +1,19 @@
+[package]
+name = "tf-demo-parser-gen"
+version = "0.1.0"
+authors = ["Robin Appelman <robin@icewind.nl>"]
+edition = "2018"
+
+[[bin]]
+name = "generate"
+path = "src/main.rs"
+
+[dependencies]
+tf-demo-parser = { version = "0.1", path = "../" }
+quote = "1.0"
+Inflector = { version = "0.11", default-features = false }
+better-panic = "0.1"
+proc-macro2 = "1.0"
+tempfile = "3.0"
+toolchain_find = "0.1"
+lazy_static = "1.3"
