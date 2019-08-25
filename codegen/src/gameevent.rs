@@ -111,6 +111,10 @@ fn get_entry_name(name: &str) -> String {
             ("ineye", "in_eye"),
             ("maxplayers", "max_players"),
             ("levelname", "level_name"),
+            ("isstrange", "is_strange"),
+            ("isunusual", "is_unusual"),
+            ("defindex", "definition_index"),
+            ("matchgroup", "match_group")
         );
     }
 
@@ -196,6 +200,10 @@ fn get_event_name(name: &str) -> String {
             ("Powerup", "PowerUp"),
             ("Hltv", "HLTV"),
             ("Changelevel", "ChangeLevel"),
+            ("Rocketpack", "RocketPack"),
+            ("Deadringer", "DeadRinger"),
+            ("Mainmenu", "MainMenu"),
+            ("Mmstats", "MMStats"),
         );
     }
 

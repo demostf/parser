@@ -71,6 +71,20 @@ impl FromRawGameEvent for ServerSpawnEvent {
     }
 }
 #[derive(Debug)]
+pub struct ServerChangeLevelFailedEvent {
+    pub level_name: String,
+}
+impl FromRawGameEvent for ServerChangeLevelFailedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let level_name = match iter.next() {
+            Some(value) => String::from_value(value, "level_name")?,
+            None => String::default(),
+        };
+        Ok(ServerChangeLevelFailedEvent { level_name })
+    }
+}
+#[derive(Debug)]
 pub struct ServerShutdownEvent {
     pub reason: String,
 }
@@ -661,6 +675,8 @@ pub struct PlayerDeathEvent {
     pub duck_streak_assist: u16,
     pub duck_streak_victim: u16,
     pub rocket_jump: bool,
+    pub weapon_def_index: u32,
+    pub crit_type: u16,
 }
 impl FromRawGameEvent for PlayerDeathEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
@@ -761,6 +777,14 @@ impl FromRawGameEvent for PlayerDeathEvent {
             Some(value) => bool::from_value(value, "rocket_jump")?,
             None => bool::default(),
         };
+        let weapon_def_index = match iter.next() {
+            Some(value) => u32::from_value(value, "weapon_def_index")?,
+            None => u32::default(),
+        };
+        let crit_type = match iter.next() {
+            Some(value) => u16::from_value(value, "crit_type")?,
+            None => u16::default(),
+        };
         Ok(PlayerDeathEvent {
             user_id,
             victim_ent_index,
@@ -786,6 +810,8 @@ impl FromRawGameEvent for PlayerDeathEvent {
             duck_streak_assist,
             duck_streak_victim,
             rocket_jump,
+            weapon_def_index,
+            crit_type,
         })
     }
 }
@@ -1759,10 +1785,10 @@ impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
     }
 }
 #[derive(Debug)]
-pub struct GcConnectedEvent {}
-impl FromRawGameEvent for GcConnectedEvent {
+pub struct EconInventoryConnectedEvent {}
+impl FromRawGameEvent for EconInventoryConnectedEvent {
     fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
-        Ok(GcConnectedEvent {})
+        Ok(EconInventoryConnectedEvent {})
     }
 }
 #[derive(Debug)]
@@ -1770,6 +1796,20 @@ pub struct ItemSchemaInitializedEvent {}
 impl FromRawGameEvent for ItemSchemaInitializedEvent {
     fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(ItemSchemaInitializedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct GcNewSessionEvent {}
+impl FromRawGameEvent for GcNewSessionEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(GcNewSessionEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct GcLostSessionEvent {}
+impl FromRawGameEvent for GcLostSessionEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(GcLostSessionEvent {})
     }
 }
 #[derive(Debug)]
@@ -1798,67 +1838,6 @@ impl FromRawGameEvent for IntroNextCameraEvent {
             None => u16::default(),
         };
         Ok(IntroNextCameraEvent { player })
-    }
-}
-#[derive(Debug)]
-pub struct MmLobbyChatEvent {
-    pub steam_id: String,
-    pub text: String,
-    pub kind: u16,
-}
-impl FromRawGameEvent for MmLobbyChatEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
-        let steam_id = match iter.next() {
-            Some(value) => String::from_value(value, "steam_id")?,
-            None => String::default(),
-        };
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        let kind = match iter.next() {
-            Some(value) => u16::from_value(value, "kind")?,
-            None => u16::default(),
-        };
-        Ok(MmLobbyChatEvent {
-            steam_id,
-            text,
-            kind,
-        })
-    }
-}
-#[derive(Debug)]
-pub struct MmLobbyMemberJoinEvent {
-    pub steam_id: String,
-}
-impl FromRawGameEvent for MmLobbyMemberJoinEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
-        let steam_id = match iter.next() {
-            Some(value) => String::from_value(value, "steam_id")?,
-            None => String::default(),
-        };
-        Ok(MmLobbyMemberJoinEvent { steam_id })
-    }
-}
-#[derive(Debug)]
-pub struct MmLobbyMemberLeaveEvent {
-    pub steam_id: String,
-    pub flags: u32,
-}
-impl FromRawGameEvent for MmLobbyMemberLeaveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
-        let steam_id = match iter.next() {
-            Some(value) => String::from_value(value, "steam_id")?,
-            None => String::default(),
-        };
-        let flags = match iter.next() {
-            Some(value) => u32::from_value(value, "flags")?,
-            None => u32::default(),
-        };
-        Ok(MmLobbyMemberLeaveEvent { steam_id, flags })
     }
 }
 #[derive(Debug)]
@@ -2507,6 +2486,7 @@ pub struct TeamPlayCaptureBlockedEvent {
     pub cp: u8,
     pub cp_name: String,
     pub blocker: u8,
+    pub victim: u8,
 }
 impl FromRawGameEvent for TeamPlayCaptureBlockedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
@@ -2523,10 +2503,15 @@ impl FromRawGameEvent for TeamPlayCaptureBlockedEvent {
             Some(value) => u8::from_value(value, "blocker")?,
             None => u8::default(),
         };
+        let victim = match iter.next() {
+            Some(value) => u8::from_value(value, "victim")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayCaptureBlockedEvent {
             cp,
             cp_name,
             blocker,
+            victim,
         })
     }
 }
@@ -2591,6 +2576,7 @@ pub struct TeamPlayWinPanelEvent {
     pub player_3_points: u16,
     pub kill_stream_player_1: u16,
     pub kill_stream_player_1_count: u16,
+    pub game_over: u8,
 }
 impl FromRawGameEvent for TeamPlayWinPanelEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
@@ -2671,6 +2657,10 @@ impl FromRawGameEvent for TeamPlayWinPanelEvent {
             Some(value) => u16::from_value(value, "kill_stream_player_1_count")?,
             None => u16::default(),
         };
+        let game_over = match iter.next() {
+            Some(value) => u8::from_value(value, "game_over")?,
+            None => u8::default(),
+        };
         Ok(TeamPlayWinPanelEvent {
             panel_style,
             winning_team,
@@ -2691,6 +2681,7 @@ impl FromRawGameEvent for TeamPlayWinPanelEvent {
             player_3_points,
             kill_stream_player_1,
             kill_stream_player_1_count,
+            game_over,
         })
     }
 }
@@ -3272,6 +3263,20 @@ impl FromRawGameEvent for PlayerCalledForMedicEvent {
     }
 }
 #[derive(Debug)]
+pub struct PlayerAskedForBallEvent {
+    pub user_id: u16,
+}
+impl FromRawGameEvent for PlayerAskedForBallEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        Ok(PlayerAskedForBallEvent { user_id })
+    }
+}
+#[derive(Debug)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl FromRawGameEvent for LocalPlayerBecameObserverEvent {
     fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
@@ -3338,6 +3343,7 @@ impl FromRawGameEvent for PlayerIgnitedEvent {
 pub struct PlayerExtinguishedEvent {
     pub victim: u8,
     pub healer: u8,
+    pub item_definition_index: u16,
 }
 impl FromRawGameEvent for PlayerExtinguishedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
@@ -3350,7 +3356,15 @@ impl FromRawGameEvent for PlayerExtinguishedEvent {
             Some(value) => u8::from_value(value, "healer")?,
             None => u8::default(),
         };
-        Ok(PlayerExtinguishedEvent { victim, healer })
+        let item_definition_index = match iter.next() {
+            Some(value) => u16::from_value(value, "item_definition_index")?,
+            None => u16::default(),
+        };
+        Ok(PlayerExtinguishedEvent {
+            victim,
+            healer,
+            item_definition_index,
+        })
     }
 }
 #[derive(Debug)]
@@ -3543,6 +3557,7 @@ impl FromRawGameEvent for PlayerEscortScoreEvent {
 pub struct PlayerHealOnHitEvent {
     pub amount: u16,
     pub ent_index: u8,
+    pub weapon_def_index: u32,
 }
 impl FromRawGameEvent for PlayerHealOnHitEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
@@ -3555,7 +3570,15 @@ impl FromRawGameEvent for PlayerHealOnHitEvent {
             Some(value) => u8::from_value(value, "ent_index")?,
             None => u8::default(),
         };
-        Ok(PlayerHealOnHitEvent { amount, ent_index })
+        let weapon_def_index = match iter.next() {
+            Some(value) => u32::from_value(value, "weapon_def_index")?,
+            None => u32::default(),
+        };
+        Ok(PlayerHealOnHitEvent {
+            amount,
+            ent_index,
+            weapon_def_index,
+        })
     }
 }
 #[derive(Debug)]
@@ -4289,6 +4312,9 @@ pub struct ItemFoundEvent {
     pub quality: u8,
     pub method: u8,
     pub item_def: u32,
+    pub is_strange: u8,
+    pub is_unusual: u8,
+    pub wear: f32,
 }
 impl FromRawGameEvent for ItemFoundEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
@@ -4309,11 +4335,26 @@ impl FromRawGameEvent for ItemFoundEvent {
             Some(value) => u32::from_value(value, "item_def")?,
             None => u32::default(),
         };
+        let is_strange = match iter.next() {
+            Some(value) => u8::from_value(value, "is_strange")?,
+            None => u8::default(),
+        };
+        let is_unusual = match iter.next() {
+            Some(value) => u8::from_value(value, "is_unusual")?,
+            None => u8::default(),
+        };
+        let wear = match iter.next() {
+            Some(value) => f32::from_value(value, "wear")?,
+            None => f32::default(),
+        };
         Ok(ItemFoundEvent {
             player,
             quality,
             method,
             item_def,
+            is_strange,
+            is_unusual,
+            wear,
         })
     }
 }
@@ -4640,6 +4681,42 @@ impl FromRawGameEvent for StickyJumpLandedEvent {
             None => u16::default(),
         };
         Ok(StickyJumpLandedEvent { user_id })
+    }
+}
+#[derive(Debug)]
+pub struct RocketPackLaunchEvent {
+    pub user_id: u16,
+    pub play_sound: bool,
+}
+impl FromRawGameEvent for RocketPackLaunchEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let play_sound = match iter.next() {
+            Some(value) => bool::from_value(value, "play_sound")?,
+            None => bool::default(),
+        };
+        Ok(RocketPackLaunchEvent {
+            user_id,
+            play_sound,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct RocketPackLandedEvent {
+    pub user_id: u16,
+}
+impl FromRawGameEvent for RocketPackLandedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        Ok(RocketPackLandedEvent { user_id })
     }
 }
 #[derive(Debug)]
@@ -5174,6 +5251,100 @@ impl FromRawGameEvent for FishNoticeArmEvent {
     }
 }
 #[derive(Debug)]
+pub struct SlapNoticeEvent {
+    pub user_id: u16,
+    pub victim_ent_index: u32,
+    pub inflictor_ent_index: u32,
+    pub attacker: u16,
+    pub weapon: String,
+    pub weapon_id: u16,
+    pub damage_bits: u32,
+    pub custom_kill: u16,
+    pub assister: u16,
+    pub weapon_log_class_name: String,
+    pub stun_flags: u16,
+    pub death_flags: u16,
+    pub silent_kill: bool,
+    pub assister_fallback: String,
+}
+impl FromRawGameEvent for SlapNoticeEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "user_id")?,
+            None => u16::default(),
+        };
+        let victim_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "victim_ent_index")?,
+            None => u32::default(),
+        };
+        let inflictor_ent_index = match iter.next() {
+            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
+            None => u32::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        let weapon = match iter.next() {
+            Some(value) => String::from_value(value, "weapon")?,
+            None => String::default(),
+        };
+        let weapon_id = match iter.next() {
+            Some(value) => u16::from_value(value, "weapon_id")?,
+            None => u16::default(),
+        };
+        let damage_bits = match iter.next() {
+            Some(value) => u32::from_value(value, "damage_bits")?,
+            None => u32::default(),
+        };
+        let custom_kill = match iter.next() {
+            Some(value) => u16::from_value(value, "custom_kill")?,
+            None => u16::default(),
+        };
+        let assister = match iter.next() {
+            Some(value) => u16::from_value(value, "assister")?,
+            None => u16::default(),
+        };
+        let weapon_log_class_name = match iter.next() {
+            Some(value) => String::from_value(value, "weapon_log_class_name")?,
+            None => String::default(),
+        };
+        let stun_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "stun_flags")?,
+            None => u16::default(),
+        };
+        let death_flags = match iter.next() {
+            Some(value) => u16::from_value(value, "death_flags")?,
+            None => u16::default(),
+        };
+        let silent_kill = match iter.next() {
+            Some(value) => bool::from_value(value, "silent_kill")?,
+            None => bool::default(),
+        };
+        let assister_fallback = match iter.next() {
+            Some(value) => String::from_value(value, "assister_fallback")?,
+            None => String::default(),
+        };
+        Ok(SlapNoticeEvent {
+            user_id,
+            victim_ent_index,
+            inflictor_ent_index,
+            attacker,
+            weapon,
+            weapon_id,
+            damage_bits,
+            custom_kill,
+            assister,
+            weapon_log_class_name,
+            stun_flags,
+            death_flags,
+            silent_kill,
+            assister_fallback,
+        })
+    }
+}
+#[derive(Debug)]
 pub struct ThrowableHitEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -5467,6 +5638,7 @@ pub struct NpcHurtEvent {
     pub weapon_id: u16,
     pub damage_amount: u16,
     pub crit: bool,
+    pub boss: u16,
 }
 impl FromRawGameEvent for NpcHurtEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
@@ -5495,6 +5667,10 @@ impl FromRawGameEvent for NpcHurtEvent {
             Some(value) => bool::from_value(value, "crit")?,
             None => bool::default(),
         };
+        let boss = match iter.next() {
+            Some(value) => u16::from_value(value, "boss")?,
+            None => u16::default(),
+        };
         Ok(NpcHurtEvent {
             ent_index,
             health,
@@ -5502,6 +5678,7 @@ impl FromRawGameEvent for NpcHurtEvent {
             weapon_id,
             damage_amount,
             crit,
+            boss,
         })
     }
 }
@@ -5699,6 +5876,104 @@ pub struct PartyUpdatedEvent {}
 impl FromRawGameEvent for PartyUpdatedEvent {
     fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
         Ok(PartyUpdatedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct PartyPrefChangedEvent {}
+impl FromRawGameEvent for PartyPrefChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(PartyPrefChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct PartyCriteriaChangedEvent {}
+impl FromRawGameEvent for PartyCriteriaChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(PartyCriteriaChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct PartyInvitesChangedEvent {}
+impl FromRawGameEvent for PartyInvitesChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(PartyInvitesChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct PartyQueueStateChangedEvent {
+    pub match_group: u16,
+}
+impl FromRawGameEvent for PartyQueueStateChangedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let match_group = match iter.next() {
+            Some(value) => u16::from_value(value, "match_group")?,
+            None => u16::default(),
+        };
+        Ok(PartyQueueStateChangedEvent { match_group })
+    }
+}
+#[derive(Debug)]
+pub struct PartyChatEvent {
+    pub steam_id: String,
+    pub text: String,
+    pub kind: u16,
+}
+impl FromRawGameEvent for PartyChatEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let steam_id = match iter.next() {
+            Some(value) => String::from_value(value, "steam_id")?,
+            None => String::default(),
+        };
+        let text = match iter.next() {
+            Some(value) => String::from_value(value, "text")?,
+            None => String::default(),
+        };
+        let kind = match iter.next() {
+            Some(value) => u16::from_value(value, "kind")?,
+            None => u16::default(),
+        };
+        Ok(PartyChatEvent {
+            steam_id,
+            text,
+            kind,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct PartyMemberJoinEvent {
+    pub steam_id: String,
+}
+impl FromRawGameEvent for PartyMemberJoinEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let steam_id = match iter.next() {
+            Some(value) => String::from_value(value, "steam_id")?,
+            None => String::default(),
+        };
+        Ok(PartyMemberJoinEvent { steam_id })
+    }
+}
+#[derive(Debug)]
+pub struct PartyMemberLeaveEvent {
+    pub steam_id: String,
+}
+impl FromRawGameEvent for PartyMemberLeaveEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let steam_id = match iter.next() {
+            Some(value) => String::from_value(value, "steam_id")?,
+            None => String::default(),
+        };
+        Ok(PartyMemberLeaveEvent { steam_id })
+    }
+}
+#[derive(Debug)]
+pub struct MatchInvitesUpdatedEvent {}
+impl FromRawGameEvent for MatchInvitesUpdatedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(MatchInvitesUpdatedEvent {})
     }
 }
 #[derive(Debug)]
@@ -6489,30 +6764,48 @@ impl FromRawGameEvent for CompetitiveVictoryEvent {
     }
 }
 #[derive(Debug)]
-pub struct CompetitiveSkillRatingUpdateEvent {
+pub struct CompetitiveStatsUpdateEvent {
     pub index: u16,
-    pub rating: u16,
-    pub delta: u16,
+    pub kills_rank: u8,
+    pub score_rank: u8,
+    pub damage_rank: u8,
+    pub healing_rank: u8,
+    pub support_rank: u8,
 }
-impl FromRawGameEvent for CompetitiveSkillRatingUpdateEvent {
+impl FromRawGameEvent for CompetitiveStatsUpdateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
         let index = match iter.next() {
             Some(value) => u16::from_value(value, "index")?,
             None => u16::default(),
         };
-        let rating = match iter.next() {
-            Some(value) => u16::from_value(value, "rating")?,
-            None => u16::default(),
+        let kills_rank = match iter.next() {
+            Some(value) => u8::from_value(value, "kills_rank")?,
+            None => u8::default(),
         };
-        let delta = match iter.next() {
-            Some(value) => u16::from_value(value, "delta")?,
-            None => u16::default(),
+        let score_rank = match iter.next() {
+            Some(value) => u8::from_value(value, "score_rank")?,
+            None => u8::default(),
         };
-        Ok(CompetitiveSkillRatingUpdateEvent {
+        let damage_rank = match iter.next() {
+            Some(value) => u8::from_value(value, "damage_rank")?,
+            None => u8::default(),
+        };
+        let healing_rank = match iter.next() {
+            Some(value) => u8::from_value(value, "healing_rank")?,
+            None => u8::default(),
+        };
+        let support_rank = match iter.next() {
+            Some(value) => u8::from_value(value, "support_rank")?,
+            None => u8::default(),
+        };
+        Ok(CompetitiveStatsUpdateEvent {
             index,
-            rating,
-            delta,
+            kills_rank,
+            score_rank,
+            damage_rank,
+            healing_rank,
+            support_rank,
         })
     }
 }
@@ -6561,6 +6854,1250 @@ impl FromRawGameEvent for DuckXpLevelUpEvent {
             None => u16::default(),
         };
         Ok(DuckXpLevelUpEvent { level })
+    }
+}
+#[derive(Debug)]
+pub struct QuestLogOpenedEvent {}
+impl FromRawGameEvent for QuestLogOpenedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(QuestLogOpenedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct SchemaUpdatedEvent {}
+impl FromRawGameEvent for SchemaUpdatedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(SchemaUpdatedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct LocalPlayerPickupWeaponEvent {}
+impl FromRawGameEvent for LocalPlayerPickupWeaponEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(LocalPlayerPickupWeaponEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct RdPlayerScorePointsEvent {
+    pub player: u16,
+    pub method: u16,
+    pub amount: u16,
+}
+impl FromRawGameEvent for RdPlayerScorePointsEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let method = match iter.next() {
+            Some(value) => u16::from_value(value, "method")?,
+            None => u16::default(),
+        };
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
+        Ok(RdPlayerScorePointsEvent {
+            player,
+            method,
+            amount,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct DemomanDetStickiesEvent {
+    pub player: u16,
+}
+impl FromRawGameEvent for DemomanDetStickiesEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        Ok(DemomanDetStickiesEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct QuestObjectiveCompletedEvent {
+    pub quest_item_id_low: u32,
+    pub quest_item_id_hi: u32,
+    pub quest_objective_id: u32,
+    pub scorer_user_id: u16,
+}
+impl FromRawGameEvent for QuestObjectiveCompletedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let quest_item_id_low = match iter.next() {
+            Some(value) => u32::from_value(value, "quest_item_id_low")?,
+            None => u32::default(),
+        };
+        let quest_item_id_hi = match iter.next() {
+            Some(value) => u32::from_value(value, "quest_item_id_hi")?,
+            None => u32::default(),
+        };
+        let quest_objective_id = match iter.next() {
+            Some(value) => u32::from_value(value, "quest_objective_id")?,
+            None => u32::default(),
+        };
+        let scorer_user_id = match iter.next() {
+            Some(value) => u16::from_value(value, "scorer_user_id")?,
+            None => u16::default(),
+        };
+        Ok(QuestObjectiveCompletedEvent {
+            quest_item_id_low,
+            quest_item_id_hi,
+            quest_objective_id,
+            scorer_user_id,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct PlayerScoreChangedEvent {
+    pub player: u8,
+    pub delta: u16,
+}
+impl FromRawGameEvent for PlayerScoreChangedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
+        let delta = match iter.next() {
+            Some(value) => u16::from_value(value, "delta")?,
+            None => u16::default(),
+        };
+        Ok(PlayerScoreChangedEvent { player, delta })
+    }
+}
+#[derive(Debug)]
+pub struct KilledCappingPlayerEvent {
+    pub cp: u8,
+    pub killer: u8,
+    pub victim: u8,
+    pub assister: u8,
+}
+impl FromRawGameEvent for KilledCappingPlayerEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let cp = match iter.next() {
+            Some(value) => u8::from_value(value, "cp")?,
+            None => u8::default(),
+        };
+        let killer = match iter.next() {
+            Some(value) => u8::from_value(value, "killer")?,
+            None => u8::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u8::from_value(value, "victim")?,
+            None => u8::default(),
+        };
+        let assister = match iter.next() {
+            Some(value) => u8::from_value(value, "assister")?,
+            None => u8::default(),
+        };
+        Ok(KilledCappingPlayerEvent {
+            cp,
+            killer,
+            victim,
+            assister,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct EnvironmentalDeathEvent {
+    pub killer: u8,
+    pub victim: u8,
+}
+impl FromRawGameEvent for EnvironmentalDeathEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let killer = match iter.next() {
+            Some(value) => u8::from_value(value, "killer")?,
+            None => u8::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u8::from_value(value, "victim")?,
+            None => u8::default(),
+        };
+        Ok(EnvironmentalDeathEvent { killer, victim })
+    }
+}
+#[derive(Debug)]
+pub struct ProjectileDirectHitEvent {
+    pub attacker: u8,
+    pub victim: u8,
+    pub weapon_def_index: u32,
+}
+impl FromRawGameEvent for ProjectileDirectHitEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let attacker = match iter.next() {
+            Some(value) => u8::from_value(value, "attacker")?,
+            None => u8::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u8::from_value(value, "victim")?,
+            None => u8::default(),
+        };
+        let weapon_def_index = match iter.next() {
+            Some(value) => u32::from_value(value, "weapon_def_index")?,
+            None => u32::default(),
+        };
+        Ok(ProjectileDirectHitEvent {
+            attacker,
+            victim,
+            weapon_def_index,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct PassGetEvent {
+    pub owner: u16,
+}
+impl FromRawGameEvent for PassGetEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let owner = match iter.next() {
+            Some(value) => u16::from_value(value, "owner")?,
+            None => u16::default(),
+        };
+        Ok(PassGetEvent { owner })
+    }
+}
+#[derive(Debug)]
+pub struct PassScoreEvent {
+    pub scorer: u16,
+    pub assister: u16,
+    pub points: u8,
+}
+impl FromRawGameEvent for PassScoreEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let scorer = match iter.next() {
+            Some(value) => u16::from_value(value, "scorer")?,
+            None => u16::default(),
+        };
+        let assister = match iter.next() {
+            Some(value) => u16::from_value(value, "assister")?,
+            None => u16::default(),
+        };
+        let points = match iter.next() {
+            Some(value) => u8::from_value(value, "points")?,
+            None => u8::default(),
+        };
+        Ok(PassScoreEvent {
+            scorer,
+            assister,
+            points,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct PassFreeEvent {
+    pub owner: u16,
+    pub attacker: u16,
+}
+impl FromRawGameEvent for PassFreeEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let owner = match iter.next() {
+            Some(value) => u16::from_value(value, "owner")?,
+            None => u16::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        Ok(PassFreeEvent { owner, attacker })
+    }
+}
+#[derive(Debug)]
+pub struct PassPassCaughtEvent {
+    pub passer: u16,
+    pub catcher: u16,
+    pub dist: f32,
+    pub duration: f32,
+}
+impl FromRawGameEvent for PassPassCaughtEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let passer = match iter.next() {
+            Some(value) => u16::from_value(value, "passer")?,
+            None => u16::default(),
+        };
+        let catcher = match iter.next() {
+            Some(value) => u16::from_value(value, "catcher")?,
+            None => u16::default(),
+        };
+        let dist = match iter.next() {
+            Some(value) => f32::from_value(value, "dist")?,
+            None => f32::default(),
+        };
+        let duration = match iter.next() {
+            Some(value) => f32::from_value(value, "duration")?,
+            None => f32::default(),
+        };
+        Ok(PassPassCaughtEvent {
+            passer,
+            catcher,
+            dist,
+            duration,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct PassBallStolenEvent {
+    pub victim: u16,
+    pub attacker: u16,
+}
+impl FromRawGameEvent for PassBallStolenEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let victim = match iter.next() {
+            Some(value) => u16::from_value(value, "victim")?,
+            None => u16::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u16::from_value(value, "attacker")?,
+            None => u16::default(),
+        };
+        Ok(PassBallStolenEvent { victim, attacker })
+    }
+}
+#[derive(Debug)]
+pub struct PassBallBlockedEvent {
+    pub owner: u16,
+    pub blocker: u16,
+}
+impl FromRawGameEvent for PassBallBlockedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let owner = match iter.next() {
+            Some(value) => u16::from_value(value, "owner")?,
+            None => u16::default(),
+        };
+        let blocker = match iter.next() {
+            Some(value) => u16::from_value(value, "blocker")?,
+            None => u16::default(),
+        };
+        Ok(PassBallBlockedEvent { owner, blocker })
+    }
+}
+#[derive(Debug)]
+pub struct DamagePreventedEvent {
+    pub preventor: u16,
+    pub victim: u16,
+    pub amount: u16,
+    pub condition: u16,
+}
+impl FromRawGameEvent for DamagePreventedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let preventor = match iter.next() {
+            Some(value) => u16::from_value(value, "preventor")?,
+            None => u16::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u16::from_value(value, "victim")?,
+            None => u16::default(),
+        };
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
+        let condition = match iter.next() {
+            Some(value) => u16::from_value(value, "condition")?,
+            None => u16::default(),
+        };
+        Ok(DamagePreventedEvent {
+            preventor,
+            victim,
+            amount,
+            condition,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct HalloweenBossKilledEvent {
+    pub boss: u16,
+    pub killer: u16,
+}
+impl FromRawGameEvent for HalloweenBossKilledEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let boss = match iter.next() {
+            Some(value) => u16::from_value(value, "boss")?,
+            None => u16::default(),
+        };
+        let killer = match iter.next() {
+            Some(value) => u16::from_value(value, "killer")?,
+            None => u16::default(),
+        };
+        Ok(HalloweenBossKilledEvent { boss, killer })
+    }
+}
+#[derive(Debug)]
+pub struct EscapedLootIslandEvent {
+    pub player: u16,
+}
+impl FromRawGameEvent for EscapedLootIslandEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        Ok(EscapedLootIslandEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct TaggedPlayerAsItEvent {
+    pub player: u16,
+}
+impl FromRawGameEvent for TaggedPlayerAsItEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        Ok(TaggedPlayerAsItEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct MerasmusStunnedEvent {
+    pub player: u16,
+}
+impl FromRawGameEvent for MerasmusStunnedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        Ok(MerasmusStunnedEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct MerasmusPropFoundEvent {
+    pub player: u16,
+}
+impl FromRawGameEvent for MerasmusPropFoundEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        Ok(MerasmusPropFoundEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct HalloweenSkeletonKilledEvent {
+    pub player: u16,
+}
+impl FromRawGameEvent for HalloweenSkeletonKilledEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        Ok(HalloweenSkeletonKilledEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct EscapeHellEvent {
+    pub player: u16,
+}
+impl FromRawGameEvent for EscapeHellEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        Ok(EscapeHellEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct CrossSpectralBridgeEvent {
+    pub player: u16,
+}
+impl FromRawGameEvent for CrossSpectralBridgeEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        Ok(CrossSpectralBridgeEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct MiniGameWonEvent {
+    pub player: u16,
+    pub game: u16,
+}
+impl FromRawGameEvent for MiniGameWonEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u16::from_value(value, "player")?,
+            None => u16::default(),
+        };
+        let game = match iter.next() {
+            Some(value) => u16::from_value(value, "game")?,
+            None => u16::default(),
+        };
+        Ok(MiniGameWonEvent { player, game })
+    }
+}
+#[derive(Debug)]
+pub struct RespawnGhostEvent {
+    pub reviver: u16,
+    pub ghost: u16,
+}
+impl FromRawGameEvent for RespawnGhostEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let reviver = match iter.next() {
+            Some(value) => u16::from_value(value, "reviver")?,
+            None => u16::default(),
+        };
+        let ghost = match iter.next() {
+            Some(value) => u16::from_value(value, "ghost")?,
+            None => u16::default(),
+        };
+        Ok(RespawnGhostEvent { reviver, ghost })
+    }
+}
+#[derive(Debug)]
+pub struct KillInHellEvent {
+    pub killer: u16,
+    pub victim: u16,
+}
+impl FromRawGameEvent for KillInHellEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let killer = match iter.next() {
+            Some(value) => u16::from_value(value, "killer")?,
+            None => u16::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u16::from_value(value, "victim")?,
+            None => u16::default(),
+        };
+        Ok(KillInHellEvent { killer, victim })
+    }
+}
+#[derive(Debug)]
+pub struct HalloweenDuckCollectedEvent {
+    pub collector: u16,
+}
+impl FromRawGameEvent for HalloweenDuckCollectedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let collector = match iter.next() {
+            Some(value) => u16::from_value(value, "collector")?,
+            None => u16::default(),
+        };
+        Ok(HalloweenDuckCollectedEvent { collector })
+    }
+}
+#[derive(Debug)]
+pub struct SpecialScoreEvent {
+    pub player: u8,
+}
+impl FromRawGameEvent for SpecialScoreEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
+        Ok(SpecialScoreEvent { player })
+    }
+}
+#[derive(Debug)]
+pub struct TeamLeaderKilledEvent {
+    pub killer: u8,
+    pub victim: u8,
+}
+impl FromRawGameEvent for TeamLeaderKilledEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let killer = match iter.next() {
+            Some(value) => u8::from_value(value, "killer")?,
+            None => u8::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u8::from_value(value, "victim")?,
+            None => u8::default(),
+        };
+        Ok(TeamLeaderKilledEvent { killer, victim })
+    }
+}
+#[derive(Debug)]
+pub struct HalloweenSoulCollectedEvent {
+    pub intended_target: u8,
+    pub collecting_player: u8,
+    pub soul_count: u8,
+}
+impl FromRawGameEvent for HalloweenSoulCollectedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let intended_target = match iter.next() {
+            Some(value) => u8::from_value(value, "intended_target")?,
+            None => u8::default(),
+        };
+        let collecting_player = match iter.next() {
+            Some(value) => u8::from_value(value, "collecting_player")?,
+            None => u8::default(),
+        };
+        let soul_count = match iter.next() {
+            Some(value) => u8::from_value(value, "soul_count")?,
+            None => u8::default(),
+        };
+        Ok(HalloweenSoulCollectedEvent {
+            intended_target,
+            collecting_player,
+            soul_count,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct RecalculateTruceEvent {}
+impl FromRawGameEvent for RecalculateTruceEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(RecalculateTruceEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct DeadRingerCheatDeathEvent {
+    pub spy: u8,
+    pub attacker: u8,
+}
+impl FromRawGameEvent for DeadRingerCheatDeathEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let spy = match iter.next() {
+            Some(value) => u8::from_value(value, "spy")?,
+            None => u8::default(),
+        };
+        let attacker = match iter.next() {
+            Some(value) => u8::from_value(value, "attacker")?,
+            None => u8::default(),
+        };
+        Ok(DeadRingerCheatDeathEvent { spy, attacker })
+    }
+}
+#[derive(Debug)]
+pub struct CrossbowHealEvent {
+    pub healer: u8,
+    pub target: u8,
+    pub amount: u16,
+}
+impl FromRawGameEvent for CrossbowHealEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let healer = match iter.next() {
+            Some(value) => u8::from_value(value, "healer")?,
+            None => u8::default(),
+        };
+        let target = match iter.next() {
+            Some(value) => u8::from_value(value, "target")?,
+            None => u8::default(),
+        };
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
+        Ok(CrossbowHealEvent {
+            healer,
+            target,
+            amount,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct DamageMitigatedEvent {
+    pub mitigator: u8,
+    pub damaged: u8,
+    pub amount: u16,
+    pub item_definition_index: u16,
+}
+impl FromRawGameEvent for DamageMitigatedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let mitigator = match iter.next() {
+            Some(value) => u8::from_value(value, "mitigator")?,
+            None => u8::default(),
+        };
+        let damaged = match iter.next() {
+            Some(value) => u8::from_value(value, "damaged")?,
+            None => u8::default(),
+        };
+        let amount = match iter.next() {
+            Some(value) => u16::from_value(value, "amount")?,
+            None => u16::default(),
+        };
+        let item_definition_index = match iter.next() {
+            Some(value) => u16::from_value(value, "item_definition_index")?,
+            None => u16::default(),
+        };
+        Ok(DamageMitigatedEvent {
+            mitigator,
+            damaged,
+            amount,
+            item_definition_index,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct PayloadPushedEvent {
+    pub pusher: u8,
+    pub distance: u16,
+}
+impl FromRawGameEvent for PayloadPushedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let pusher = match iter.next() {
+            Some(value) => u8::from_value(value, "pusher")?,
+            None => u8::default(),
+        };
+        let distance = match iter.next() {
+            Some(value) => u16::from_value(value, "distance")?,
+            None => u16::default(),
+        };
+        Ok(PayloadPushedEvent { pusher, distance })
+    }
+}
+#[derive(Debug)]
+pub struct PlayerAbandonedMatchEvent {
+    pub game_over: bool,
+}
+impl FromRawGameEvent for PlayerAbandonedMatchEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let game_over = match iter.next() {
+            Some(value) => bool::from_value(value, "game_over")?,
+            None => bool::default(),
+        };
+        Ok(PlayerAbandonedMatchEvent { game_over })
+    }
+}
+#[derive(Debug)]
+pub struct ClDrawlineEvent {
+    pub player: u8,
+    pub panel: u8,
+    pub line: u8,
+    pub x: f32,
+    pub y: f32,
+}
+impl FromRawGameEvent for ClDrawlineEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let player = match iter.next() {
+            Some(value) => u8::from_value(value, "player")?,
+            None => u8::default(),
+        };
+        let panel = match iter.next() {
+            Some(value) => u8::from_value(value, "panel")?,
+            None => u8::default(),
+        };
+        let line = match iter.next() {
+            Some(value) => u8::from_value(value, "line")?,
+            None => u8::default(),
+        };
+        let x = match iter.next() {
+            Some(value) => f32::from_value(value, "x")?,
+            None => f32::default(),
+        };
+        let y = match iter.next() {
+            Some(value) => f32::from_value(value, "y")?,
+            None => f32::default(),
+        };
+        Ok(ClDrawlineEvent {
+            player,
+            panel,
+            line,
+            x,
+            y,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct RestartTimerTimeEvent {
+    pub time: u8,
+}
+impl FromRawGameEvent for RestartTimerTimeEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let time = match iter.next() {
+            Some(value) => u8::from_value(value, "time")?,
+            None => u8::default(),
+        };
+        Ok(RestartTimerTimeEvent { time })
+    }
+}
+#[derive(Debug)]
+pub struct WinLimitChangedEvent {}
+impl FromRawGameEvent for WinLimitChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(WinLimitChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct WinPanelShowScoresEvent {}
+impl FromRawGameEvent for WinPanelShowScoresEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(WinPanelShowScoresEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct TopStreamsRequestFinishedEvent {}
+impl FromRawGameEvent for TopStreamsRequestFinishedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(TopStreamsRequestFinishedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct CompetitiveStateChangedEvent {}
+impl FromRawGameEvent for CompetitiveStateChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(CompetitiveStateChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct GlobalWarDataUpdatedEvent {}
+impl FromRawGameEvent for GlobalWarDataUpdatedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(GlobalWarDataUpdatedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct StopWatchChangedEvent {}
+impl FromRawGameEvent for StopWatchChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(StopWatchChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct DsStopEvent {}
+impl FromRawGameEvent for DsStopEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(DsStopEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct DsScreenshotEvent {
+    pub delay: f32,
+}
+impl FromRawGameEvent for DsScreenshotEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let delay = match iter.next() {
+            Some(value) => f32::from_value(value, "delay")?,
+            None => f32::default(),
+        };
+        Ok(DsScreenshotEvent { delay })
+    }
+}
+#[derive(Debug)]
+pub struct ShowMatchSummaryEvent {}
+impl FromRawGameEvent for ShowMatchSummaryEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(ShowMatchSummaryEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct ExperienceChangedEvent {}
+impl FromRawGameEvent for ExperienceChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(ExperienceChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct BeginXpLerpEvent {}
+impl FromRawGameEvent for BeginXpLerpEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(BeginXpLerpEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct MatchmakerStatsUpdatedEvent {}
+impl FromRawGameEvent for MatchmakerStatsUpdatedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(MatchmakerStatsUpdatedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct RematchVotePeriodOverEvent {
+    pub success: bool,
+}
+impl FromRawGameEvent for RematchVotePeriodOverEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let success = match iter.next() {
+            Some(value) => bool::from_value(value, "success")?,
+            None => bool::default(),
+        };
+        Ok(RematchVotePeriodOverEvent { success })
+    }
+}
+#[derive(Debug)]
+pub struct RematchFailedToCreateEvent {}
+impl FromRawGameEvent for RematchFailedToCreateEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(RematchFailedToCreateEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct PlayerRematchChangeEvent {}
+impl FromRawGameEvent for PlayerRematchChangeEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(PlayerRematchChangeEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct PingUpdatedEvent {}
+impl FromRawGameEvent for PingUpdatedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(PingUpdatedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct MMStatsUpdatedEvent {}
+impl FromRawGameEvent for MMStatsUpdatedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(MMStatsUpdatedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct PlayerNextMapVoteChangeEvent {
+    pub map_index: u8,
+    pub vote: u8,
+}
+impl FromRawGameEvent for PlayerNextMapVoteChangeEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let map_index = match iter.next() {
+            Some(value) => u8::from_value(value, "map_index")?,
+            None => u8::default(),
+        };
+        let vote = match iter.next() {
+            Some(value) => u8::from_value(value, "vote")?,
+            None => u8::default(),
+        };
+        Ok(PlayerNextMapVoteChangeEvent { map_index, vote })
+    }
+}
+#[derive(Debug)]
+pub struct VoteMapsChangedEvent {}
+impl FromRawGameEvent for VoteMapsChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(VoteMapsChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct ProtoDefChangedEvent {
+    pub kind: u8,
+    pub definition_index: u32,
+    pub created: bool,
+    pub deleted: bool,
+    pub erase_history: bool,
+}
+impl FromRawGameEvent for ProtoDefChangedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let kind = match iter.next() {
+            Some(value) => u8::from_value(value, "kind")?,
+            None => u8::default(),
+        };
+        let definition_index = match iter.next() {
+            Some(value) => u32::from_value(value, "definition_index")?,
+            None => u32::default(),
+        };
+        let created = match iter.next() {
+            Some(value) => bool::from_value(value, "created")?,
+            None => bool::default(),
+        };
+        let deleted = match iter.next() {
+            Some(value) => bool::from_value(value, "deleted")?,
+            None => bool::default(),
+        };
+        let erase_history = match iter.next() {
+            Some(value) => bool::from_value(value, "erase_history")?,
+            None => bool::default(),
+        };
+        Ok(ProtoDefChangedEvent {
+            kind,
+            definition_index,
+            created,
+            deleted,
+            erase_history,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct PlayerDominationEvent {
+    pub dominator: u16,
+    pub dominated: u16,
+    pub dominations: u16,
+}
+impl FromRawGameEvent for PlayerDominationEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let dominator = match iter.next() {
+            Some(value) => u16::from_value(value, "dominator")?,
+            None => u16::default(),
+        };
+        let dominated = match iter.next() {
+            Some(value) => u16::from_value(value, "dominated")?,
+            None => u16::default(),
+        };
+        let dominations = match iter.next() {
+            Some(value) => u16::from_value(value, "dominations")?,
+            None => u16::default(),
+        };
+        Ok(PlayerDominationEvent {
+            dominator,
+            dominated,
+            dominations,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct PlayerRocketPackPushedEvent {
+    pub pusher: u16,
+    pub pushed: u16,
+}
+impl FromRawGameEvent for PlayerRocketPackPushedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let pusher = match iter.next() {
+            Some(value) => u16::from_value(value, "pusher")?,
+            None => u16::default(),
+        };
+        let pushed = match iter.next() {
+            Some(value) => u16::from_value(value, "pushed")?,
+            None => u16::default(),
+        };
+        Ok(PlayerRocketPackPushedEvent { pusher, pushed })
+    }
+}
+#[derive(Debug)]
+pub struct QuestRequestEvent {
+    pub request: u32,
+    pub msg: String,
+}
+impl FromRawGameEvent for QuestRequestEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let request = match iter.next() {
+            Some(value) => u32::from_value(value, "request")?,
+            None => u32::default(),
+        };
+        let msg = match iter.next() {
+            Some(value) => String::from_value(value, "msg")?,
+            None => String::default(),
+        };
+        Ok(QuestRequestEvent { request, msg })
+    }
+}
+#[derive(Debug)]
+pub struct QuestResponseEvent {
+    pub request: u32,
+    pub success: bool,
+    pub msg: String,
+}
+impl FromRawGameEvent for QuestResponseEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let request = match iter.next() {
+            Some(value) => u32::from_value(value, "request")?,
+            None => u32::default(),
+        };
+        let success = match iter.next() {
+            Some(value) => bool::from_value(value, "success")?,
+            None => bool::default(),
+        };
+        let msg = match iter.next() {
+            Some(value) => String::from_value(value, "msg")?,
+            None => String::default(),
+        };
+        Ok(QuestResponseEvent {
+            request,
+            success,
+            msg,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct QuestProgressEvent {
+    pub owner: u16,
+    pub scorer: u16,
+    pub kind: u8,
+    pub completed: bool,
+    pub quest_definition_index: u32,
+}
+impl FromRawGameEvent for QuestProgressEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let owner = match iter.next() {
+            Some(value) => u16::from_value(value, "owner")?,
+            None => u16::default(),
+        };
+        let scorer = match iter.next() {
+            Some(value) => u16::from_value(value, "scorer")?,
+            None => u16::default(),
+        };
+        let kind = match iter.next() {
+            Some(value) => u8::from_value(value, "kind")?,
+            None => u8::default(),
+        };
+        let completed = match iter.next() {
+            Some(value) => bool::from_value(value, "completed")?,
+            None => bool::default(),
+        };
+        let quest_definition_index = match iter.next() {
+            Some(value) => u32::from_value(value, "quest_definition_index")?,
+            None => u32::default(),
+        };
+        Ok(QuestProgressEvent {
+            owner,
+            scorer,
+            kind,
+            completed,
+            quest_definition_index,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct ProjectileRemovedEvent {
+    pub attacker: u8,
+    pub weapon_def_index: u32,
+    pub num_hit: u8,
+    pub num_direct_hit: u8,
+}
+impl FromRawGameEvent for ProjectileRemovedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let attacker = match iter.next() {
+            Some(value) => u8::from_value(value, "attacker")?,
+            None => u8::default(),
+        };
+        let weapon_def_index = match iter.next() {
+            Some(value) => u32::from_value(value, "weapon_def_index")?,
+            None => u32::default(),
+        };
+        let num_hit = match iter.next() {
+            Some(value) => u8::from_value(value, "num_hit")?,
+            None => u8::default(),
+        };
+        let num_direct_hit = match iter.next() {
+            Some(value) => u8::from_value(value, "num_direct_hit")?,
+            None => u8::default(),
+        };
+        Ok(ProjectileRemovedEvent {
+            attacker,
+            weapon_def_index,
+            num_hit,
+            num_direct_hit,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct QuestMapDataChangedEvent {}
+impl FromRawGameEvent for QuestMapDataChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(QuestMapDataChangedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct GasDousedPlayerIgnitedEvent {
+    pub igniter: u16,
+    pub douser: u16,
+    pub victim: u16,
+}
+impl FromRawGameEvent for GasDousedPlayerIgnitedEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let igniter = match iter.next() {
+            Some(value) => u16::from_value(value, "igniter")?,
+            None => u16::default(),
+        };
+        let douser = match iter.next() {
+            Some(value) => u16::from_value(value, "douser")?,
+            None => u16::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u16::from_value(value, "victim")?,
+            None => u16::default(),
+        };
+        Ok(GasDousedPlayerIgnitedEvent {
+            igniter,
+            douser,
+            victim,
+        })
+    }
+}
+#[derive(Debug)]
+pub struct QuestTurnInStateEvent {
+    pub state: u16,
+}
+impl FromRawGameEvent for QuestTurnInStateEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let state = match iter.next() {
+            Some(value) => u16::from_value(value, "state")?,
+            None => u16::default(),
+        };
+        Ok(QuestTurnInStateEvent { state })
+    }
+}
+#[derive(Debug)]
+pub struct ItemsAcknowledgedEvent {}
+impl FromRawGameEvent for ItemsAcknowledgedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(ItemsAcknowledgedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct CapperKilledEvent {
+    pub blocker: u16,
+    pub victim: u16,
+}
+impl FromRawGameEvent for CapperKilledEvent {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        let mut iter = values.into_iter();
+        let blocker = match iter.next() {
+            Some(value) => u16::from_value(value, "blocker")?,
+            None => u16::default(),
+        };
+        let victim = match iter.next() {
+            Some(value) => u16::from_value(value, "victim")?,
+            None => u16::default(),
+        };
+        Ok(CapperKilledEvent { blocker, victim })
+    }
+}
+#[derive(Debug)]
+pub struct MainMenuStabilizedEvent {}
+impl FromRawGameEvent for MainMenuStabilizedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(MainMenuStabilizedEvent {})
+    }
+}
+#[derive(Debug)]
+pub struct WorldStatusChangedEvent {}
+impl FromRawGameEvent for WorldStatusChangedEvent {
+    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(WorldStatusChangedEvent {})
     }
 }
 #[derive(Debug)]
@@ -6886,6 +8423,7 @@ impl FromRawGameEvent for ReplayServerErrorEvent {
 #[derive(Debug)]
 pub enum GameEvent {
     ServerSpawn(ServerSpawnEvent),
+    ServerChangeLevelFailed(ServerChangeLevelFailedEvent),
     ServerShutdown(ServerShutdownEvent),
     ServerCvar(ServerCvarEvent),
     ServerMessage(ServerMessageEvent),
@@ -6951,13 +8489,12 @@ pub enum GameEvent {
     InventoryUpdated(InventoryUpdatedEvent),
     CartUpdated(CartUpdatedEvent),
     StorePriceSheetUpdated(StorePriceSheetUpdatedEvent),
-    GcConnected(GcConnectedEvent),
+    EconInventoryConnected(EconInventoryConnectedEvent),
     ItemSchemaInitialized(ItemSchemaInitializedEvent),
+    GcNewSession(GcNewSessionEvent),
+    GcLostSession(GcLostSessionEvent),
     IntroFinish(IntroFinishEvent),
     IntroNextCamera(IntroNextCameraEvent),
-    MmLobbyChat(MmLobbyChatEvent),
-    MmLobbyMemberJoin(MmLobbyMemberJoinEvent),
-    MmLobbyMemberLeave(MmLobbyMemberLeaveEvent),
     PlayerChangeClass(PlayerChangeClassEvent),
     TfMapTimeRemaining(TfMapTimeRemainingEvent),
     TfGameOver(TfGameOverEvent),
@@ -7032,6 +8569,7 @@ pub enum GameEvent {
     TournamentStateUpdate(TournamentStateUpdateEvent),
     TournamentEnableCountdown(TournamentEnableCountdownEvent),
     PlayerCalledForMedic(PlayerCalledForMedicEvent),
+    PlayerAskedForBall(PlayerAskedForBallEvent),
     LocalPlayerBecameObserver(LocalPlayerBecameObserverEvent),
     PlayerIgnitedInv(PlayerIgnitedInvEvent),
     PlayerIgnited(PlayerIgnitedEvent),
@@ -7085,6 +8623,8 @@ pub enum GameEvent {
     RocketJumpLanded(RocketJumpLandedEvent),
     StickyJump(StickyJumpEvent),
     StickyJumpLanded(StickyJumpLandedEvent),
+    RocketPackLaunch(RocketPackLaunchEvent),
+    RocketPackLanded(RocketPackLandedEvent),
     MedicDefended(MedicDefendedEvent),
     LocalPlayerHealed(LocalPlayerHealedEvent),
     PlayerDestroyedPipeBomb(PlayerDestroyedPipeBombEvent),
@@ -7107,6 +8647,7 @@ pub enum GameEvent {
     DuelStatus(DuelStatusEvent),
     FishNotice(FishNoticeEvent),
     FishNoticeArm(FishNoticeArmEvent),
+    SlapNotice(SlapNoticeEvent),
     ThrowableHit(ThrowableHitEvent),
     PumpkinLordSummoned(PumpkinLordSummonedEvent),
     PumpkinLordKilled(PumpkinLordKilledEvent),
@@ -7132,6 +8673,14 @@ pub enum GameEvent {
     ChristmasGiftGrab(ChristmasGiftGrabEvent),
     PlayerKilledAchievementZone(PlayerKilledAchievementZoneEvent),
     PartyUpdated(PartyUpdatedEvent),
+    PartyPrefChanged(PartyPrefChangedEvent),
+    PartyCriteriaChanged(PartyCriteriaChangedEvent),
+    PartyInvitesChanged(PartyInvitesChangedEvent),
+    PartyQueueStateChanged(PartyQueueStateChangedEvent),
+    PartyChat(PartyChatEvent),
+    PartyMemberJoin(PartyMemberJoinEvent),
+    PartyMemberLeave(PartyMemberLeaveEvent),
+    MatchInvitesUpdated(MatchInvitesUpdatedEvent),
     LobbyUpdated(LobbyUpdatedEvent),
     MvmMissionUpdate(MvmMissionUpdateEvent),
     RecalculateHolidays(RecalculateHolidaysEvent),
@@ -7183,10 +8732,83 @@ pub enum GameEvent {
     CongaKill(CongaKillEvent),
     PlayerInitialSpawn(PlayerInitialSpawnEvent),
     CompetitiveVictory(CompetitiveVictoryEvent),
-    CompetitiveSkillRatingUpdate(CompetitiveSkillRatingUpdateEvent),
+    CompetitiveStatsUpdate(CompetitiveStatsUpdateEvent),
     MiniGameWin(MiniGameWinEvent),
     SentryOnGoActive(SentryOnGoActiveEvent),
     DuckXpLevelUp(DuckXpLevelUpEvent),
+    QuestLogOpened(QuestLogOpenedEvent),
+    SchemaUpdated(SchemaUpdatedEvent),
+    LocalPlayerPickupWeapon(LocalPlayerPickupWeaponEvent),
+    RdPlayerScorePoints(RdPlayerScorePointsEvent),
+    DemomanDetStickies(DemomanDetStickiesEvent),
+    QuestObjectiveCompleted(QuestObjectiveCompletedEvent),
+    PlayerScoreChanged(PlayerScoreChangedEvent),
+    KilledCappingPlayer(KilledCappingPlayerEvent),
+    EnvironmentalDeath(EnvironmentalDeathEvent),
+    ProjectileDirectHit(ProjectileDirectHitEvent),
+    PassGet(PassGetEvent),
+    PassScore(PassScoreEvent),
+    PassFree(PassFreeEvent),
+    PassPassCaught(PassPassCaughtEvent),
+    PassBallStolen(PassBallStolenEvent),
+    PassBallBlocked(PassBallBlockedEvent),
+    DamagePrevented(DamagePreventedEvent),
+    HalloweenBossKilled(HalloweenBossKilledEvent),
+    EscapedLootIsland(EscapedLootIslandEvent),
+    TaggedPlayerAsIt(TaggedPlayerAsItEvent),
+    MerasmusStunned(MerasmusStunnedEvent),
+    MerasmusPropFound(MerasmusPropFoundEvent),
+    HalloweenSkeletonKilled(HalloweenSkeletonKilledEvent),
+    EscapeHell(EscapeHellEvent),
+    CrossSpectralBridge(CrossSpectralBridgeEvent),
+    MiniGameWon(MiniGameWonEvent),
+    RespawnGhost(RespawnGhostEvent),
+    KillInHell(KillInHellEvent),
+    HalloweenDuckCollected(HalloweenDuckCollectedEvent),
+    SpecialScore(SpecialScoreEvent),
+    TeamLeaderKilled(TeamLeaderKilledEvent),
+    HalloweenSoulCollected(HalloweenSoulCollectedEvent),
+    RecalculateTruce(RecalculateTruceEvent),
+    DeadRingerCheatDeath(DeadRingerCheatDeathEvent),
+    CrossbowHeal(CrossbowHealEvent),
+    DamageMitigated(DamageMitigatedEvent),
+    PayloadPushed(PayloadPushedEvent),
+    PlayerAbandonedMatch(PlayerAbandonedMatchEvent),
+    ClDrawline(ClDrawlineEvent),
+    RestartTimerTime(RestartTimerTimeEvent),
+    WinLimitChanged(WinLimitChangedEvent),
+    WinPanelShowScores(WinPanelShowScoresEvent),
+    TopStreamsRequestFinished(TopStreamsRequestFinishedEvent),
+    CompetitiveStateChanged(CompetitiveStateChangedEvent),
+    GlobalWarDataUpdated(GlobalWarDataUpdatedEvent),
+    StopWatchChanged(StopWatchChangedEvent),
+    DsStop(DsStopEvent),
+    DsScreenshot(DsScreenshotEvent),
+    ShowMatchSummary(ShowMatchSummaryEvent),
+    ExperienceChanged(ExperienceChangedEvent),
+    BeginXpLerp(BeginXpLerpEvent),
+    MatchmakerStatsUpdated(MatchmakerStatsUpdatedEvent),
+    RematchVotePeriodOver(RematchVotePeriodOverEvent),
+    RematchFailedToCreate(RematchFailedToCreateEvent),
+    PlayerRematchChange(PlayerRematchChangeEvent),
+    PingUpdated(PingUpdatedEvent),
+    MMStatsUpdated(MMStatsUpdatedEvent),
+    PlayerNextMapVoteChange(PlayerNextMapVoteChangeEvent),
+    VoteMapsChanged(VoteMapsChangedEvent),
+    ProtoDefChanged(ProtoDefChangedEvent),
+    PlayerDomination(PlayerDominationEvent),
+    PlayerRocketPackPushed(PlayerRocketPackPushedEvent),
+    QuestRequest(QuestRequestEvent),
+    QuestResponse(QuestResponseEvent),
+    QuestProgress(QuestProgressEvent),
+    ProjectileRemoved(ProjectileRemovedEvent),
+    QuestMapDataChanged(QuestMapDataChangedEvent),
+    GasDousedPlayerIgnited(GasDousedPlayerIgnitedEvent),
+    QuestTurnInState(QuestTurnInStateEvent),
+    ItemsAcknowledged(ItemsAcknowledgedEvent),
+    CapperKilled(CapperKilledEvent),
+    MainMenuStabilized(MainMenuStabilizedEvent),
+    WorldStatusChanged(WorldStatusChangedEvent),
     HLTVStatus(HLTVStatusEvent),
     HLTVCameraman(HLTVCameramanEvent),
     HLTVRankCamera(HLTVRankCameraEvent),
@@ -7206,78 +8828,78 @@ pub enum GameEvent {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum GameEventType {
     ServerSpawn = 0,
-    ServerShutdown = 1,
-    ServerCvar = 2,
-    ServerMessage = 3,
-    ServerAddBan = 4,
-    ServerRemoveBan = 5,
-    PlayerConnect = 6,
-    PlayerConnectClient = 7,
-    PlayerInfo = 8,
-    PlayerDisconnect = 9,
-    PlayerActivate = 10,
-    PlayerSay = 11,
-    ClientDisconnect = 12,
-    ClientBeginConnect = 13,
-    ClientConnected = 14,
-    ClientFullConnect = 15,
-    HostQuit = 16,
-    TeamInfo = 17,
-    TeamScore = 18,
-    TeamPlayBroadcastAudio = 19,
-    PlayerTeam = 20,
-    PlayerClass = 21,
-    PlayerDeath = 22,
-    PlayerHurt = 23,
-    PlayerChat = 24,
-    PlayerScore = 25,
-    PlayerSpawn = 26,
-    PlayerShoot = 27,
-    PlayerUse = 28,
-    PlayerChangeName = 29,
-    PlayerHintMessage = 30,
-    BasePlayerTeleported = 31,
-    GameInit = 32,
-    GameNewMap = 33,
-    GameStart = 34,
-    GameEnd = 35,
-    RoundStart = 36,
-    RoundEnd = 37,
-    GameMessage = 38,
-    BreakBreakable = 39,
-    BreakProp = 40,
-    EntityKilled = 41,
-    BonusUpdated = 42,
-    AchievementEvent = 43,
-    AchievementIncrement = 44,
-    PhysgunPickup = 45,
-    FlareIgniteNpc = 46,
-    HelicopterGrenadePuntMiss = 47,
-    UserDataDownloaded = 48,
-    RagdollDissolved = 49,
-    HLTVChangedMode = 50,
-    HLTVChangedTarget = 51,
-    VoteEnded = 52,
-    VoteStarted = 53,
-    VoteChanged = 54,
-    VotePassed = 55,
-    VoteFailed = 56,
-    VoteCast = 57,
-    VoteOptions = 58,
-    ReplaySaved = 59,
-    EnteredPerformanceMode = 60,
-    BrowseReplays = 61,
-    ReplayYoutubeStats = 62,
-    InventoryUpdated = 63,
-    CartUpdated = 64,
-    StorePriceSheetUpdated = 65,
-    GcConnected = 66,
-    ItemSchemaInitialized = 67,
-    IntroFinish = 68,
-    IntroNextCamera = 69,
-    MmLobbyChat = 70,
-    MmLobbyMemberJoin = 71,
-    MmLobbyMemberLeave = 72,
+    ServerChangeLevelFailed = 1,
+    ServerShutdown = 2,
+    ServerCvar = 3,
+    ServerMessage = 4,
+    ServerAddBan = 5,
+    ServerRemoveBan = 6,
+    PlayerConnect = 7,
+    PlayerConnectClient = 8,
+    PlayerInfo = 9,
+    PlayerDisconnect = 10,
+    PlayerActivate = 11,
+    PlayerSay = 12,
+    ClientDisconnect = 13,
+    ClientBeginConnect = 14,
+    ClientConnected = 15,
+    ClientFullConnect = 16,
+    HostQuit = 17,
+    TeamInfo = 18,
+    TeamScore = 19,
+    TeamPlayBroadcastAudio = 20,
+    PlayerTeam = 21,
+    PlayerClass = 22,
+    PlayerDeath = 23,
+    PlayerHurt = 24,
+    PlayerChat = 25,
+    PlayerScore = 26,
+    PlayerSpawn = 27,
+    PlayerShoot = 28,
+    PlayerUse = 29,
+    PlayerChangeName = 30,
+    PlayerHintMessage = 31,
+    BasePlayerTeleported = 32,
+    GameInit = 33,
+    GameNewMap = 34,
+    GameStart = 35,
+    GameEnd = 36,
+    RoundStart = 37,
+    RoundEnd = 38,
+    GameMessage = 39,
+    BreakBreakable = 40,
+    BreakProp = 41,
+    EntityKilled = 42,
+    BonusUpdated = 43,
+    AchievementEvent = 44,
+    AchievementIncrement = 45,
+    PhysgunPickup = 46,
+    FlareIgniteNpc = 47,
+    HelicopterGrenadePuntMiss = 48,
+    UserDataDownloaded = 49,
+    RagdollDissolved = 50,
+    HLTVChangedMode = 51,
+    HLTVChangedTarget = 52,
+    VoteEnded = 53,
+    VoteStarted = 54,
+    VoteChanged = 55,
+    VotePassed = 56,
+    VoteFailed = 57,
+    VoteCast = 58,
+    VoteOptions = 59,
+    ReplaySaved = 60,
+    EnteredPerformanceMode = 61,
+    BrowseReplays = 62,
+    ReplayYoutubeStats = 63,
+    InventoryUpdated = 64,
+    CartUpdated = 65,
+    StorePriceSheetUpdated = 66,
+    EconInventoryConnected = 67,
+    ItemSchemaInitialized = 68,
+    GcNewSession = 69,
+    GcLostSession = 70,
+    IntroFinish = 71,
+    IntroNextCamera = 72,
     PlayerChangeClass = 73,
     TfMapTimeRemaining = 74,
     TfGameOver = 75,
@@ -7352,181 +8974,267 @@ pub enum GameEventType {
     TournamentStateUpdate = 144,
     TournamentEnableCountdown = 145,
     PlayerCalledForMedic = 146,
-    LocalPlayerBecameObserver = 147,
-    PlayerIgnitedInv = 148,
-    PlayerIgnited = 149,
-    PlayerExtinguished = 150,
-    PlayerTeleported = 151,
-    PlayerHealedMedicCall = 152,
-    LocalPlayerChargeReady = 153,
-    LocalPlayerWindDown = 154,
-    PlayerInvulned = 155,
-    EscortSpeed = 156,
-    EscortProgress = 157,
-    EscortRecede = 158,
-    GameUIActivated = 159,
-    GameUIHidden = 160,
-    PlayerEscortScore = 161,
-    PlayerHealOnHit = 162,
-    PlayerStealSandvich = 163,
-    ShowClassLayout = 164,
-    ShowVsPanel = 165,
-    PlayerDamaged = 166,
-    ArenaPlayerNotification = 167,
-    ArenaMatchMaxStreak = 168,
-    ArenaRoundStart = 169,
-    ArenaWinPanel = 170,
-    PveWinPanel = 171,
-    AirDash = 172,
-    Landed = 173,
-    PlayerDamageDodged = 174,
-    PlayerStunned = 175,
-    ScoutGrandSlam = 176,
-    ScoutSlamdollLanded = 177,
-    ArrowImpact = 178,
-    PlayerJarated = 179,
-    PlayerJaratedFade = 180,
-    PlayerShieldBlocked = 181,
-    PlayerPinned = 182,
-    PlayerHealedByMedic = 183,
-    PlayerSappedObject = 184,
-    ItemFound = 185,
-    ShowAnnotation = 186,
-    HideAnnotation = 187,
-    PostInventoryApplication = 188,
-    ControlPointUnlockUpdated = 189,
-    DeployBuffBanner = 190,
-    PlayerBuff = 191,
-    MedicDeath = 192,
-    OvertimeNag = 193,
-    TeamsChanged = 194,
-    HalloweenPumpkinGrab = 195,
-    RocketJump = 196,
-    RocketJumpLanded = 197,
-    StickyJump = 198,
-    StickyJumpLanded = 199,
-    MedicDefended = 200,
-    LocalPlayerHealed = 201,
-    PlayerDestroyedPipeBomb = 202,
-    ObjectDeflected = 203,
-    PlayerMvp = 204,
-    RaidSpawnMob = 205,
-    RaidSpawnSquad = 206,
-    NavBlocked = 207,
-    PathTrackPassed = 208,
-    NumCappersChanged = 209,
-    PlayerRegenerate = 210,
-    UpdateStatusItem = 211,
-    StatsResetRound = 212,
-    ScoreStatsAccumulatedUpdate = 213,
-    ScoreStatsAccumulatedReset = 214,
-    AchievementEarnedLocal = 215,
-    PlayerHealed = 216,
-    BuildingHealed = 217,
-    ItemPickup = 218,
-    DuelStatus = 219,
-    FishNotice = 220,
-    FishNoticeArm = 221,
-    ThrowableHit = 222,
-    PumpkinLordSummoned = 223,
-    PumpkinLordKilled = 224,
-    MerasmusSummoned = 225,
-    MerasmusKilled = 226,
-    MerasmusEscapeWarning = 227,
-    MerasmusEscaped = 228,
-    EyeballBossSummoned = 229,
-    EyeballBossStunned = 230,
-    EyeballBossKilled = 231,
-    EyeballBossKiller = 232,
-    EyeballBossEscapeImminent = 233,
-    EyeballBossEscaped = 234,
-    NpcHurt = 235,
-    ControlPointTimerUpdated = 236,
-    PlayerHighFiveStart = 237,
-    PlayerHighFiveCancel = 238,
-    PlayerHighFiveSuccess = 239,
-    PlayerBonusPoints = 240,
-    PlayerUpgraded = 241,
-    PlayerBuyback = 242,
-    PlayerUsedPowerUpBottle = 243,
-    ChristmasGiftGrab = 244,
-    PlayerKilledAchievementZone = 245,
-    PartyUpdated = 246,
-    LobbyUpdated = 247,
-    MvmMissionUpdate = 248,
-    RecalculateHolidays = 249,
-    PlayerCurrencyChanged = 250,
-    DoomsdayRocketOpen = 251,
-    RemoveNemesisRelationships = 252,
-    MvmCreditBonusWave = 253,
-    MvmCreditBonusAll = 254,
-    MvmCreditBonusAllAdvanced = 255,
-    MvmQuickSentryUpgrade = 256,
-    MvmTankDestroyedByPlayers = 257,
-    MvmKillRobotDeliveringBomb = 258,
-    MvmPickupCurrency = 259,
-    MvmBombCarrierKilled = 260,
-    MvmSentryBusterDetonate = 261,
-    MvmScoutMarkedForDeath = 262,
-    MvmMedicPowerUpShared = 263,
-    MvmBeginWave = 264,
-    MvmWaveComplete = 265,
-    MvmMissionComplete = 266,
-    MvmBombResetByPlayer = 267,
-    MvmBombAlarmTriggered = 268,
-    MvmBombDeployResetByPlayer = 269,
-    MvmWaveFailed = 270,
-    MvmResetStats = 271,
-    DamageResisted = 272,
-    RevivePlayerNotify = 273,
-    RevivePlayerStopped = 274,
-    RevivePlayerComplete = 275,
-    PlayerTurnedToGhost = 276,
-    MedigunShieldBlockedDamage = 277,
-    MvmAdvWaveCompleteNoGates = 278,
-    MvmSniperHeadshotCurrency = 279,
-    MvmMannhattanPit = 280,
-    FlagCarriedInDetectionZone = 281,
-    MvmAdvWaveKilledStunRadio = 282,
-    PlayerDirectHitStun = 283,
-    MvmSentryBusterKilled = 284,
-    UpgradesFileChanged = 285,
-    RdTeamPointsChanged = 286,
-    RdRulesStateChanged = 287,
-    RdRobotKilled = 288,
-    RdRobotImpact = 289,
-    TeamPlayPreRoundTimeLeft = 290,
-    ParachuteDeploy = 291,
-    ParachuteHolster = 292,
-    KillRefillsMeter = 293,
-    RpsTauntEvent = 294,
-    CongaKill = 295,
-    PlayerInitialSpawn = 296,
-    CompetitiveVictory = 297,
-    CompetitiveSkillRatingUpdate = 298,
-    MiniGameWin = 299,
-    SentryOnGoActive = 300,
-    DuckXpLevelUp = 301,
-    HLTVStatus = 302,
-    HLTVCameraman = 303,
-    HLTVRankCamera = 304,
-    HLTVRankEntity = 305,
-    HLTVFixed = 306,
-    HLTVChase = 307,
-    HLTVMessage = 308,
-    HLTVTitle = 309,
-    HLTVChat = 310,
-    ReplayStartRecord = 311,
-    ReplaySessionInfo = 312,
-    ReplayEndRecord = 313,
-    ReplayReplaysAvailable = 314,
-    ReplayServerError = 315,
+    PlayerAskedForBall = 147,
+    LocalPlayerBecameObserver = 148,
+    PlayerIgnitedInv = 149,
+    PlayerIgnited = 150,
+    PlayerExtinguished = 151,
+    PlayerTeleported = 152,
+    PlayerHealedMedicCall = 153,
+    LocalPlayerChargeReady = 154,
+    LocalPlayerWindDown = 155,
+    PlayerInvulned = 156,
+    EscortSpeed = 157,
+    EscortProgress = 158,
+    EscortRecede = 159,
+    GameUIActivated = 160,
+    GameUIHidden = 161,
+    PlayerEscortScore = 162,
+    PlayerHealOnHit = 163,
+    PlayerStealSandvich = 164,
+    ShowClassLayout = 165,
+    ShowVsPanel = 166,
+    PlayerDamaged = 167,
+    ArenaPlayerNotification = 168,
+    ArenaMatchMaxStreak = 169,
+    ArenaRoundStart = 170,
+    ArenaWinPanel = 171,
+    PveWinPanel = 172,
+    AirDash = 173,
+    Landed = 174,
+    PlayerDamageDodged = 175,
+    PlayerStunned = 176,
+    ScoutGrandSlam = 177,
+    ScoutSlamdollLanded = 178,
+    ArrowImpact = 179,
+    PlayerJarated = 180,
+    PlayerJaratedFade = 181,
+    PlayerShieldBlocked = 182,
+    PlayerPinned = 183,
+    PlayerHealedByMedic = 184,
+    PlayerSappedObject = 185,
+    ItemFound = 186,
+    ShowAnnotation = 187,
+    HideAnnotation = 188,
+    PostInventoryApplication = 189,
+    ControlPointUnlockUpdated = 190,
+    DeployBuffBanner = 191,
+    PlayerBuff = 192,
+    MedicDeath = 193,
+    OvertimeNag = 194,
+    TeamsChanged = 195,
+    HalloweenPumpkinGrab = 196,
+    RocketJump = 197,
+    RocketJumpLanded = 198,
+    StickyJump = 199,
+    StickyJumpLanded = 200,
+    RocketPackLaunch = 201,
+    RocketPackLanded = 202,
+    MedicDefended = 203,
+    LocalPlayerHealed = 204,
+    PlayerDestroyedPipeBomb = 205,
+    ObjectDeflected = 206,
+    PlayerMvp = 207,
+    RaidSpawnMob = 208,
+    RaidSpawnSquad = 209,
+    NavBlocked = 210,
+    PathTrackPassed = 211,
+    NumCappersChanged = 212,
+    PlayerRegenerate = 213,
+    UpdateStatusItem = 214,
+    StatsResetRound = 215,
+    ScoreStatsAccumulatedUpdate = 216,
+    ScoreStatsAccumulatedReset = 217,
+    AchievementEarnedLocal = 218,
+    PlayerHealed = 219,
+    BuildingHealed = 220,
+    ItemPickup = 221,
+    DuelStatus = 222,
+    FishNotice = 223,
+    FishNoticeArm = 224,
+    SlapNotice = 225,
+    ThrowableHit = 226,
+    PumpkinLordSummoned = 227,
+    PumpkinLordKilled = 228,
+    MerasmusSummoned = 229,
+    MerasmusKilled = 230,
+    MerasmusEscapeWarning = 231,
+    MerasmusEscaped = 232,
+    EyeballBossSummoned = 233,
+    EyeballBossStunned = 234,
+    EyeballBossKilled = 235,
+    EyeballBossKiller = 236,
+    EyeballBossEscapeImminent = 237,
+    EyeballBossEscaped = 238,
+    NpcHurt = 239,
+    ControlPointTimerUpdated = 240,
+    PlayerHighFiveStart = 241,
+    PlayerHighFiveCancel = 242,
+    PlayerHighFiveSuccess = 243,
+    PlayerBonusPoints = 244,
+    PlayerUpgraded = 245,
+    PlayerBuyback = 246,
+    PlayerUsedPowerUpBottle = 247,
+    ChristmasGiftGrab = 248,
+    PlayerKilledAchievementZone = 249,
+    PartyUpdated = 250,
+    PartyPrefChanged = 251,
+    PartyCriteriaChanged = 252,
+    PartyInvitesChanged = 253,
+    PartyQueueStateChanged = 254,
+    PartyChat = 255,
+    PartyMemberJoin = 256,
+    PartyMemberLeave = 257,
+    MatchInvitesUpdated = 258,
+    LobbyUpdated = 259,
+    MvmMissionUpdate = 260,
+    RecalculateHolidays = 261,
+    PlayerCurrencyChanged = 262,
+    DoomsdayRocketOpen = 263,
+    RemoveNemesisRelationships = 264,
+    MvmCreditBonusWave = 265,
+    MvmCreditBonusAll = 266,
+    MvmCreditBonusAllAdvanced = 267,
+    MvmQuickSentryUpgrade = 268,
+    MvmTankDestroyedByPlayers = 269,
+    MvmKillRobotDeliveringBomb = 270,
+    MvmPickupCurrency = 271,
+    MvmBombCarrierKilled = 272,
+    MvmSentryBusterDetonate = 273,
+    MvmScoutMarkedForDeath = 274,
+    MvmMedicPowerUpShared = 275,
+    MvmBeginWave = 276,
+    MvmWaveComplete = 277,
+    MvmMissionComplete = 278,
+    MvmBombResetByPlayer = 279,
+    MvmBombAlarmTriggered = 280,
+    MvmBombDeployResetByPlayer = 281,
+    MvmWaveFailed = 282,
+    MvmResetStats = 283,
+    DamageResisted = 284,
+    RevivePlayerNotify = 285,
+    RevivePlayerStopped = 286,
+    RevivePlayerComplete = 287,
+    PlayerTurnedToGhost = 288,
+    MedigunShieldBlockedDamage = 289,
+    MvmAdvWaveCompleteNoGates = 290,
+    MvmSniperHeadshotCurrency = 291,
+    MvmMannhattanPit = 292,
+    FlagCarriedInDetectionZone = 293,
+    MvmAdvWaveKilledStunRadio = 294,
+    PlayerDirectHitStun = 295,
+    MvmSentryBusterKilled = 296,
+    UpgradesFileChanged = 297,
+    RdTeamPointsChanged = 298,
+    RdRulesStateChanged = 299,
+    RdRobotKilled = 300,
+    RdRobotImpact = 301,
+    TeamPlayPreRoundTimeLeft = 302,
+    ParachuteDeploy = 303,
+    ParachuteHolster = 304,
+    KillRefillsMeter = 305,
+    RpsTauntEvent = 306,
+    CongaKill = 307,
+    PlayerInitialSpawn = 308,
+    CompetitiveVictory = 309,
+    CompetitiveStatsUpdate = 310,
+    MiniGameWin = 311,
+    SentryOnGoActive = 312,
+    DuckXpLevelUp = 313,
+    QuestLogOpened = 314,
+    SchemaUpdated = 315,
+    LocalPlayerPickupWeapon = 316,
+    RdPlayerScorePoints = 317,
+    DemomanDetStickies = 318,
+    QuestObjectiveCompleted = 319,
+    PlayerScoreChanged = 320,
+    KilledCappingPlayer = 321,
+    EnvironmentalDeath = 322,
+    ProjectileDirectHit = 323,
+    PassGet = 324,
+    PassScore = 325,
+    PassFree = 326,
+    PassPassCaught = 327,
+    PassBallStolen = 328,
+    PassBallBlocked = 329,
+    DamagePrevented = 330,
+    HalloweenBossKilled = 331,
+    EscapedLootIsland = 332,
+    TaggedPlayerAsIt = 333,
+    MerasmusStunned = 334,
+    MerasmusPropFound = 335,
+    HalloweenSkeletonKilled = 336,
+    EscapeHell = 337,
+    CrossSpectralBridge = 338,
+    MiniGameWon = 339,
+    RespawnGhost = 340,
+    KillInHell = 341,
+    HalloweenDuckCollected = 342,
+    SpecialScore = 343,
+    TeamLeaderKilled = 344,
+    HalloweenSoulCollected = 345,
+    RecalculateTruce = 346,
+    DeadRingerCheatDeath = 347,
+    CrossbowHeal = 348,
+    DamageMitigated = 349,
+    PayloadPushed = 350,
+    PlayerAbandonedMatch = 351,
+    ClDrawline = 352,
+    RestartTimerTime = 353,
+    WinLimitChanged = 354,
+    WinPanelShowScores = 355,
+    TopStreamsRequestFinished = 356,
+    CompetitiveStateChanged = 357,
+    GlobalWarDataUpdated = 358,
+    StopWatchChanged = 359,
+    DsStop = 360,
+    DsScreenshot = 361,
+    ShowMatchSummary = 362,
+    ExperienceChanged = 363,
+    BeginXpLerp = 364,
+    MatchmakerStatsUpdated = 365,
+    RematchVotePeriodOver = 366,
+    RematchFailedToCreate = 367,
+    PlayerRematchChange = 368,
+    PingUpdated = 369,
+    MMStatsUpdated = 370,
+    PlayerNextMapVoteChange = 371,
+    VoteMapsChanged = 372,
+    ProtoDefChanged = 373,
+    PlayerDomination = 374,
+    PlayerRocketPackPushed = 375,
+    QuestRequest = 376,
+    QuestResponse = 377,
+    QuestProgress = 378,
+    ProjectileRemoved = 379,
+    QuestMapDataChanged = 380,
+    GasDousedPlayerIgnited = 381,
+    QuestTurnInState = 382,
+    ItemsAcknowledged = 383,
+    CapperKilled = 384,
+    MainMenuStabilized = 385,
+    WorldStatusChanged = 386,
+    HLTVStatus = 387,
+    HLTVCameraman = 388,
+    HLTVRankCamera = 389,
+    HLTVRankEntity = 390,
+    HLTVFixed = 391,
+    HLTVChase = 392,
+    HLTVMessage = 393,
+    HLTVTitle = 394,
+    HLTVChat = 395,
+    ReplayStartRecord = 396,
+    ReplaySessionInfo = 397,
+    ReplayEndRecord = 398,
+    ReplayReplaysAvailable = 399,
+    ReplayServerError = 400,
     Unknown,
 }
 impl GameEventType {
     pub fn from_type_name(name: &str) -> Self {
         match name {
             "server_spawn" => GameEventType::ServerSpawn,
+            "server_changelevel_failed" => GameEventType::ServerChangeLevelFailed,
             "server_shutdown" => GameEventType::ServerShutdown,
             "server_cvar" => GameEventType::ServerCvar,
             "server_message" => GameEventType::ServerMessage,
@@ -7592,13 +9300,12 @@ impl GameEventType {
             "inventory_updated" => GameEventType::InventoryUpdated,
             "cart_updated" => GameEventType::CartUpdated,
             "store_pricesheet_updated" => GameEventType::StorePriceSheetUpdated,
-            "gc_connected" => GameEventType::GcConnected,
+            "econ_inventory_connected" => GameEventType::EconInventoryConnected,
             "item_schema_initialized" => GameEventType::ItemSchemaInitialized,
+            "gc_new_session" => GameEventType::GcNewSession,
+            "gc_lost_session" => GameEventType::GcLostSession,
             "intro_finish" => GameEventType::IntroFinish,
             "intro_nextcamera" => GameEventType::IntroNextCamera,
-            "mm_lobby_chat" => GameEventType::MmLobbyChat,
-            "mm_lobby_member_join" => GameEventType::MmLobbyMemberJoin,
-            "mm_lobby_member_leave" => GameEventType::MmLobbyMemberLeave,
             "player_changeclass" => GameEventType::PlayerChangeClass,
             "tf_map_time_remaining" => GameEventType::TfMapTimeRemaining,
             "tf_game_over" => GameEventType::TfGameOver,
@@ -7673,6 +9380,7 @@ impl GameEventType {
             "tournament_stateupdate" => GameEventType::TournamentStateUpdate,
             "tournament_enablecountdown" => GameEventType::TournamentEnableCountdown,
             "player_calledformedic" => GameEventType::PlayerCalledForMedic,
+            "player_askedforball" => GameEventType::PlayerAskedForBall,
             "localplayer_becameobserver" => GameEventType::LocalPlayerBecameObserver,
             "player_ignited_inv" => GameEventType::PlayerIgnitedInv,
             "player_ignited" => GameEventType::PlayerIgnited,
@@ -7726,6 +9434,8 @@ impl GameEventType {
             "rocket_jump_landed" => GameEventType::RocketJumpLanded,
             "sticky_jump" => GameEventType::StickyJump,
             "sticky_jump_landed" => GameEventType::StickyJumpLanded,
+            "rocketpack_launch" => GameEventType::RocketPackLaunch,
+            "rocketpack_landed" => GameEventType::RocketPackLanded,
             "medic_defended" => GameEventType::MedicDefended,
             "localplayer_healed" => GameEventType::LocalPlayerHealed,
             "player_destroyed_pipebomb" => GameEventType::PlayerDestroyedPipeBomb,
@@ -7748,6 +9458,7 @@ impl GameEventType {
             "duel_status" => GameEventType::DuelStatus,
             "fish_notice" => GameEventType::FishNotice,
             "fish_notice__arm" => GameEventType::FishNoticeArm,
+            "slap_notice" => GameEventType::SlapNotice,
             "throwable_hit" => GameEventType::ThrowableHit,
             "pumpkin_lord_summoned" => GameEventType::PumpkinLordSummoned,
             "pumpkin_lord_killed" => GameEventType::PumpkinLordKilled,
@@ -7773,6 +9484,14 @@ impl GameEventType {
             "christmas_gift_grab" => GameEventType::ChristmasGiftGrab,
             "player_killed_achievement_zone" => GameEventType::PlayerKilledAchievementZone,
             "party_updated" => GameEventType::PartyUpdated,
+            "party_pref_changed" => GameEventType::PartyPrefChanged,
+            "party_criteria_changed" => GameEventType::PartyCriteriaChanged,
+            "party_invites_changed" => GameEventType::PartyInvitesChanged,
+            "party_queue_state_changed" => GameEventType::PartyQueueStateChanged,
+            "party_chat" => GameEventType::PartyChat,
+            "party_member_join" => GameEventType::PartyMemberJoin,
+            "party_member_leave" => GameEventType::PartyMemberLeave,
+            "match_invites_updated" => GameEventType::MatchInvitesUpdated,
             "lobby_updated" => GameEventType::LobbyUpdated,
             "mvm_mission_update" => GameEventType::MvmMissionUpdate,
             "recalculate_holidays" => GameEventType::RecalculateHolidays,
@@ -7824,10 +9543,83 @@ impl GameEventType {
             "conga_kill" => GameEventType::CongaKill,
             "player_initial_spawn" => GameEventType::PlayerInitialSpawn,
             "competitive_victory" => GameEventType::CompetitiveVictory,
-            "competitive_skillrating_update" => GameEventType::CompetitiveSkillRatingUpdate,
+            "competitive_stats_update" => GameEventType::CompetitiveStatsUpdate,
             "minigame_win" => GameEventType::MiniGameWin,
             "sentry_on_go_active" => GameEventType::SentryOnGoActive,
             "duck_xp_level_up" => GameEventType::DuckXpLevelUp,
+            "questlog_opened" => GameEventType::QuestLogOpened,
+            "schema_updated" => GameEventType::SchemaUpdated,
+            "localplayer_pickup_weapon" => GameEventType::LocalPlayerPickupWeapon,
+            "rd_player_score_points" => GameEventType::RdPlayerScorePoints,
+            "demoman_det_stickies" => GameEventType::DemomanDetStickies,
+            "quest_objective_completed" => GameEventType::QuestObjectiveCompleted,
+            "player_score_changed" => GameEventType::PlayerScoreChanged,
+            "killed_capping_player" => GameEventType::KilledCappingPlayer,
+            "environmental_death" => GameEventType::EnvironmentalDeath,
+            "projectile_direct_hit" => GameEventType::ProjectileDirectHit,
+            "pass_get" => GameEventType::PassGet,
+            "pass_score" => GameEventType::PassScore,
+            "pass_free" => GameEventType::PassFree,
+            "pass_pass_caught" => GameEventType::PassPassCaught,
+            "pass_ball_stolen" => GameEventType::PassBallStolen,
+            "pass_ball_blocked" => GameEventType::PassBallBlocked,
+            "damage_prevented" => GameEventType::DamagePrevented,
+            "halloween_boss_killed" => GameEventType::HalloweenBossKilled,
+            "escaped_loot_island" => GameEventType::EscapedLootIsland,
+            "tagged_player_as_it" => GameEventType::TaggedPlayerAsIt,
+            "merasmus_stunned" => GameEventType::MerasmusStunned,
+            "merasmus_prop_found" => GameEventType::MerasmusPropFound,
+            "halloween_skeleton_killed" => GameEventType::HalloweenSkeletonKilled,
+            "escape_hell" => GameEventType::EscapeHell,
+            "cross_spectral_bridge" => GameEventType::CrossSpectralBridge,
+            "minigame_won" => GameEventType::MiniGameWon,
+            "respawn_ghost" => GameEventType::RespawnGhost,
+            "kill_in_hell" => GameEventType::KillInHell,
+            "halloween_duck_collected" => GameEventType::HalloweenDuckCollected,
+            "special_score" => GameEventType::SpecialScore,
+            "team_leader_killed" => GameEventType::TeamLeaderKilled,
+            "halloween_soul_collected" => GameEventType::HalloweenSoulCollected,
+            "recalculate_truce" => GameEventType::RecalculateTruce,
+            "deadringer_cheat_death" => GameEventType::DeadRingerCheatDeath,
+            "crossbow_heal" => GameEventType::CrossbowHeal,
+            "damage_mitigated" => GameEventType::DamageMitigated,
+            "payload_pushed" => GameEventType::PayloadPushed,
+            "player_abandoned_match" => GameEventType::PlayerAbandonedMatch,
+            "cl_drawline" => GameEventType::ClDrawline,
+            "restart_timer_time" => GameEventType::RestartTimerTime,
+            "winlimit_changed" => GameEventType::WinLimitChanged,
+            "winpanel_show_scores" => GameEventType::WinPanelShowScores,
+            "top_streams_request_finished" => GameEventType::TopStreamsRequestFinished,
+            "competitive_state_changed" => GameEventType::CompetitiveStateChanged,
+            "global_war_data_updated" => GameEventType::GlobalWarDataUpdated,
+            "stop_watch_changed" => GameEventType::StopWatchChanged,
+            "ds_stop" => GameEventType::DsStop,
+            "ds_screenshot" => GameEventType::DsScreenshot,
+            "show_match_summary" => GameEventType::ShowMatchSummary,
+            "experience_changed" => GameEventType::ExperienceChanged,
+            "begin_xp_lerp" => GameEventType::BeginXpLerp,
+            "matchmaker_stats_updated" => GameEventType::MatchmakerStatsUpdated,
+            "rematch_vote_period_over" => GameEventType::RematchVotePeriodOver,
+            "rematch_failed_to_create" => GameEventType::RematchFailedToCreate,
+            "player_rematch_change" => GameEventType::PlayerRematchChange,
+            "ping_updated" => GameEventType::PingUpdated,
+            "mmstats_updated" => GameEventType::MMStatsUpdated,
+            "player_next_map_vote_change" => GameEventType::PlayerNextMapVoteChange,
+            "vote_maps_changed" => GameEventType::VoteMapsChanged,
+            "proto_def_changed" => GameEventType::ProtoDefChanged,
+            "player_domination" => GameEventType::PlayerDomination,
+            "player_rocketpack_pushed" => GameEventType::PlayerRocketPackPushed,
+            "quest_request" => GameEventType::QuestRequest,
+            "quest_response" => GameEventType::QuestResponse,
+            "quest_progress" => GameEventType::QuestProgress,
+            "projectile_removed" => GameEventType::ProjectileRemoved,
+            "quest_map_data_changed" => GameEventType::QuestMapDataChanged,
+            "gas_doused_player_ignited" => GameEventType::GasDousedPlayerIgnited,
+            "quest_turn_in_state" => GameEventType::QuestTurnInState,
+            "items_acknowledged" => GameEventType::ItemsAcknowledged,
+            "capper_killed" => GameEventType::CapperKilled,
+            "mainmenu_stabilized" => GameEventType::MainMenuStabilized,
+            "world_status_changed" => GameEventType::WorldStatusChanged,
             "hltv_status" => GameEventType::HLTVStatus,
             "hltv_cameraman" => GameEventType::HLTVCameraman,
             "hltv_rank_camera" => GameEventType::HLTVRankCamera,
@@ -7852,6 +9644,9 @@ impl GameEvent {
             GameEventType::ServerSpawn => {
                 GameEvent::ServerSpawn(ServerSpawnEvent::from_raw_event(event.values)?)
             }
+            GameEventType::ServerChangeLevelFailed => GameEvent::ServerChangeLevelFailed(
+                ServerChangeLevelFailedEvent::from_raw_event(event.values)?,
+            ),
             GameEventType::ServerShutdown => {
                 GameEvent::ServerShutdown(ServerShutdownEvent::from_raw_event(event.values)?)
             }
@@ -8047,27 +9842,24 @@ impl GameEvent {
             GameEventType::StorePriceSheetUpdated => GameEvent::StorePriceSheetUpdated(
                 StorePriceSheetUpdatedEvent::from_raw_event(event.values)?,
             ),
-            GameEventType::GcConnected => {
-                GameEvent::GcConnected(GcConnectedEvent::from_raw_event(event.values)?)
-            }
+            GameEventType::EconInventoryConnected => GameEvent::EconInventoryConnected(
+                EconInventoryConnectedEvent::from_raw_event(event.values)?,
+            ),
             GameEventType::ItemSchemaInitialized => GameEvent::ItemSchemaInitialized(
                 ItemSchemaInitializedEvent::from_raw_event(event.values)?,
             ),
+            GameEventType::GcNewSession => {
+                GameEvent::GcNewSession(GcNewSessionEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::GcLostSession => {
+                GameEvent::GcLostSession(GcLostSessionEvent::from_raw_event(event.values)?)
+            }
             GameEventType::IntroFinish => {
                 GameEvent::IntroFinish(IntroFinishEvent::from_raw_event(event.values)?)
             }
             GameEventType::IntroNextCamera => {
                 GameEvent::IntroNextCamera(IntroNextCameraEvent::from_raw_event(event.values)?)
             }
-            GameEventType::MmLobbyChat => {
-                GameEvent::MmLobbyChat(MmLobbyChatEvent::from_raw_event(event.values)?)
-            }
-            GameEventType::MmLobbyMemberJoin => {
-                GameEvent::MmLobbyMemberJoin(MmLobbyMemberJoinEvent::from_raw_event(event.values)?)
-            }
-            GameEventType::MmLobbyMemberLeave => GameEvent::MmLobbyMemberLeave(
-                MmLobbyMemberLeaveEvent::from_raw_event(event.values)?,
-            ),
             GameEventType::PlayerChangeClass => {
                 GameEvent::PlayerChangeClass(PlayerChangeClassEvent::from_raw_event(event.values)?)
             }
@@ -8292,6 +10084,9 @@ impl GameEvent {
             GameEventType::PlayerCalledForMedic => GameEvent::PlayerCalledForMedic(
                 PlayerCalledForMedicEvent::from_raw_event(event.values)?,
             ),
+            GameEventType::PlayerAskedForBall => GameEvent::PlayerAskedForBall(
+                PlayerAskedForBallEvent::from_raw_event(event.values)?,
+            ),
             GameEventType::LocalPlayerBecameObserver => GameEvent::LocalPlayerBecameObserver(
                 LocalPlayerBecameObserverEvent::from_raw_event(event.values)?,
             ),
@@ -8449,6 +10244,12 @@ impl GameEvent {
             GameEventType::StickyJumpLanded => {
                 GameEvent::StickyJumpLanded(StickyJumpLandedEvent::from_raw_event(event.values)?)
             }
+            GameEventType::RocketPackLaunch => {
+                GameEvent::RocketPackLaunch(RocketPackLaunchEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::RocketPackLanded => {
+                GameEvent::RocketPackLanded(RocketPackLandedEvent::from_raw_event(event.values)?)
+            }
             GameEventType::MedicDefended => {
                 GameEvent::MedicDefended(MedicDefendedEvent::from_raw_event(event.values)?)
             }
@@ -8514,6 +10315,9 @@ impl GameEvent {
             }
             GameEventType::FishNoticeArm => {
                 GameEvent::FishNoticeArm(FishNoticeArmEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::SlapNotice => {
+                GameEvent::SlapNotice(SlapNoticeEvent::from_raw_event(event.values)?)
             }
             GameEventType::ThrowableHit => {
                 GameEvent::ThrowableHit(ThrowableHitEvent::from_raw_event(event.values)?)
@@ -8590,6 +10394,30 @@ impl GameEvent {
             GameEventType::PartyUpdated => {
                 GameEvent::PartyUpdated(PartyUpdatedEvent::from_raw_event(event.values)?)
             }
+            GameEventType::PartyPrefChanged => {
+                GameEvent::PartyPrefChanged(PartyPrefChangedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PartyCriteriaChanged => GameEvent::PartyCriteriaChanged(
+                PartyCriteriaChangedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::PartyInvitesChanged => GameEvent::PartyInvitesChanged(
+                PartyInvitesChangedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::PartyQueueStateChanged => GameEvent::PartyQueueStateChanged(
+                PartyQueueStateChangedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::PartyChat => {
+                GameEvent::PartyChat(PartyChatEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PartyMemberJoin => {
+                GameEvent::PartyMemberJoin(PartyMemberJoinEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PartyMemberLeave => {
+                GameEvent::PartyMemberLeave(PartyMemberLeaveEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::MatchInvitesUpdated => GameEvent::MatchInvitesUpdated(
+                MatchInvitesUpdatedEvent::from_raw_event(event.values)?,
+            ),
             GameEventType::LobbyUpdated => {
                 GameEvent::LobbyUpdated(LobbyUpdatedEvent::from_raw_event(event.values)?)
             }
@@ -8743,8 +10571,8 @@ impl GameEvent {
             GameEventType::CompetitiveVictory => GameEvent::CompetitiveVictory(
                 CompetitiveVictoryEvent::from_raw_event(event.values)?,
             ),
-            GameEventType::CompetitiveSkillRatingUpdate => GameEvent::CompetitiveSkillRatingUpdate(
-                CompetitiveSkillRatingUpdateEvent::from_raw_event(event.values)?,
+            GameEventType::CompetitiveStatsUpdate => GameEvent::CompetitiveStatsUpdate(
+                CompetitiveStatsUpdateEvent::from_raw_event(event.values)?,
             ),
             GameEventType::MiniGameWin => {
                 GameEvent::MiniGameWin(MiniGameWinEvent::from_raw_event(event.values)?)
@@ -8755,6 +10583,223 @@ impl GameEvent {
             GameEventType::DuckXpLevelUp => {
                 GameEvent::DuckXpLevelUp(DuckXpLevelUpEvent::from_raw_event(event.values)?)
             }
+            GameEventType::QuestLogOpened => {
+                GameEvent::QuestLogOpened(QuestLogOpenedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::SchemaUpdated => {
+                GameEvent::SchemaUpdated(SchemaUpdatedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::LocalPlayerPickupWeapon => GameEvent::LocalPlayerPickupWeapon(
+                LocalPlayerPickupWeaponEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::RdPlayerScorePoints => GameEvent::RdPlayerScorePoints(
+                RdPlayerScorePointsEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::DemomanDetStickies => GameEvent::DemomanDetStickies(
+                DemomanDetStickiesEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::QuestObjectiveCompleted => GameEvent::QuestObjectiveCompleted(
+                QuestObjectiveCompletedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::PlayerScoreChanged => GameEvent::PlayerScoreChanged(
+                PlayerScoreChangedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::KilledCappingPlayer => GameEvent::KilledCappingPlayer(
+                KilledCappingPlayerEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::EnvironmentalDeath => GameEvent::EnvironmentalDeath(
+                EnvironmentalDeathEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::ProjectileDirectHit => GameEvent::ProjectileDirectHit(
+                ProjectileDirectHitEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::PassGet => {
+                GameEvent::PassGet(PassGetEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PassScore => {
+                GameEvent::PassScore(PassScoreEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PassFree => {
+                GameEvent::PassFree(PassFreeEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PassPassCaught => {
+                GameEvent::PassPassCaught(PassPassCaughtEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PassBallStolen => {
+                GameEvent::PassBallStolen(PassBallStolenEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PassBallBlocked => {
+                GameEvent::PassBallBlocked(PassBallBlockedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::DamagePrevented => {
+                GameEvent::DamagePrevented(DamagePreventedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::HalloweenBossKilled => GameEvent::HalloweenBossKilled(
+                HalloweenBossKilledEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::EscapedLootIsland => {
+                GameEvent::EscapedLootIsland(EscapedLootIslandEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::TaggedPlayerAsIt => {
+                GameEvent::TaggedPlayerAsIt(TaggedPlayerAsItEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::MerasmusStunned => {
+                GameEvent::MerasmusStunned(MerasmusStunnedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::MerasmusPropFound => {
+                GameEvent::MerasmusPropFound(MerasmusPropFoundEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::HalloweenSkeletonKilled => GameEvent::HalloweenSkeletonKilled(
+                HalloweenSkeletonKilledEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::EscapeHell => {
+                GameEvent::EscapeHell(EscapeHellEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::CrossSpectralBridge => GameEvent::CrossSpectralBridge(
+                CrossSpectralBridgeEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::MiniGameWon => {
+                GameEvent::MiniGameWon(MiniGameWonEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::RespawnGhost => {
+                GameEvent::RespawnGhost(RespawnGhostEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::KillInHell => {
+                GameEvent::KillInHell(KillInHellEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::HalloweenDuckCollected => GameEvent::HalloweenDuckCollected(
+                HalloweenDuckCollectedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::SpecialScore => {
+                GameEvent::SpecialScore(SpecialScoreEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::TeamLeaderKilled => {
+                GameEvent::TeamLeaderKilled(TeamLeaderKilledEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::HalloweenSoulCollected => GameEvent::HalloweenSoulCollected(
+                HalloweenSoulCollectedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::RecalculateTruce => {
+                GameEvent::RecalculateTruce(RecalculateTruceEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::DeadRingerCheatDeath => GameEvent::DeadRingerCheatDeath(
+                DeadRingerCheatDeathEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::CrossbowHeal => {
+                GameEvent::CrossbowHeal(CrossbowHealEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::DamageMitigated => {
+                GameEvent::DamageMitigated(DamageMitigatedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PayloadPushed => {
+                GameEvent::PayloadPushed(PayloadPushedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PlayerAbandonedMatch => GameEvent::PlayerAbandonedMatch(
+                PlayerAbandonedMatchEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::ClDrawline => {
+                GameEvent::ClDrawline(ClDrawlineEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::RestartTimerTime => {
+                GameEvent::RestartTimerTime(RestartTimerTimeEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::WinLimitChanged => {
+                GameEvent::WinLimitChanged(WinLimitChangedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::WinPanelShowScores => GameEvent::WinPanelShowScores(
+                WinPanelShowScoresEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::TopStreamsRequestFinished => GameEvent::TopStreamsRequestFinished(
+                TopStreamsRequestFinishedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::CompetitiveStateChanged => GameEvent::CompetitiveStateChanged(
+                CompetitiveStateChangedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::GlobalWarDataUpdated => GameEvent::GlobalWarDataUpdated(
+                GlobalWarDataUpdatedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::StopWatchChanged => {
+                GameEvent::StopWatchChanged(StopWatchChangedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::DsStop => GameEvent::DsStop(DsStopEvent::from_raw_event(event.values)?),
+            GameEventType::DsScreenshot => {
+                GameEvent::DsScreenshot(DsScreenshotEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::ShowMatchSummary => {
+                GameEvent::ShowMatchSummary(ShowMatchSummaryEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::ExperienceChanged => {
+                GameEvent::ExperienceChanged(ExperienceChangedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::BeginXpLerp => {
+                GameEvent::BeginXpLerp(BeginXpLerpEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::MatchmakerStatsUpdated => GameEvent::MatchmakerStatsUpdated(
+                MatchmakerStatsUpdatedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::RematchVotePeriodOver => GameEvent::RematchVotePeriodOver(
+                RematchVotePeriodOverEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::RematchFailedToCreate => GameEvent::RematchFailedToCreate(
+                RematchFailedToCreateEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::PlayerRematchChange => GameEvent::PlayerRematchChange(
+                PlayerRematchChangeEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::PingUpdated => {
+                GameEvent::PingUpdated(PingUpdatedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::MMStatsUpdated => {
+                GameEvent::MMStatsUpdated(MMStatsUpdatedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PlayerNextMapVoteChange => GameEvent::PlayerNextMapVoteChange(
+                PlayerNextMapVoteChangeEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::VoteMapsChanged => {
+                GameEvent::VoteMapsChanged(VoteMapsChangedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::ProtoDefChanged => {
+                GameEvent::ProtoDefChanged(ProtoDefChangedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PlayerDomination => {
+                GameEvent::PlayerDomination(PlayerDominationEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::PlayerRocketPackPushed => GameEvent::PlayerRocketPackPushed(
+                PlayerRocketPackPushedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::QuestRequest => {
+                GameEvent::QuestRequest(QuestRequestEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::QuestResponse => {
+                GameEvent::QuestResponse(QuestResponseEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::QuestProgress => {
+                GameEvent::QuestProgress(QuestProgressEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::ProjectileRemoved => {
+                GameEvent::ProjectileRemoved(ProjectileRemovedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::QuestMapDataChanged => GameEvent::QuestMapDataChanged(
+                QuestMapDataChangedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::GasDousedPlayerIgnited => GameEvent::GasDousedPlayerIgnited(
+                GasDousedPlayerIgnitedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::QuestTurnInState => {
+                GameEvent::QuestTurnInState(QuestTurnInStateEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::ItemsAcknowledged => {
+                GameEvent::ItemsAcknowledged(ItemsAcknowledgedEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::CapperKilled => {
+                GameEvent::CapperKilled(CapperKilledEvent::from_raw_event(event.values)?)
+            }
+            GameEventType::MainMenuStabilized => GameEvent::MainMenuStabilized(
+                MainMenuStabilizedEvent::from_raw_event(event.values)?,
+            ),
+            GameEventType::WorldStatusChanged => GameEvent::WorldStatusChanged(
+                WorldStatusChangedEvent::from_raw_event(event.values)?,
+            ),
             GameEventType::HLTVStatus => {
                 GameEvent::HLTVStatus(HLTVStatusEvent::from_raw_event(event.values)?)
             }
