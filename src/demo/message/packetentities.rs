@@ -5,13 +5,23 @@ use crate::demo::packet::datatable::ServerClass;
 use crate::demo::parser::ParseBitSkip;
 use crate::demo::sendprop::SendProp;
 use crate::{Parse, ParseError, ParserState, Result, Stream};
+use std::num::ParseIntError;
+use std::str::FromStr;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct EntityId(u32);
 
-impl EntityId {
-    pub fn new(num: u32) -> Self {
+impl From<u32> for EntityId {
+    fn from(num: u32) -> Self {
         EntityId(num)
+    }
+}
+
+impl FromStr for EntityId {
+    type Err = ParseIntError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        u32::from_str(s).map(EntityId::from)
     }
 }
 

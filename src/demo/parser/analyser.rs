@@ -89,6 +89,12 @@ impl Class {
 #[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash)]
 pub struct UserId(u8);
 
+impl From<u32> for UserId {
+    fn from(int: u32) -> Self {
+        UserId((int & 255) as u8)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Spawn {
     pub user: UserId,
@@ -267,7 +273,7 @@ impl Analyser {
 
     fn parse_user_info(&mut self, text: &String, mut data: Stream) -> ReadResult<()> {
         let name: String = data.read_sized(32).unwrap_or("Malformed Name".into());
-        let user_id = UserId((data.read::<u32>()? & 255) as u8);
+        let user_id = data.read::<u32>()?.into();
         let steam_id: String = data.read()?;
 
         match text.parse() {
@@ -278,7 +284,7 @@ impl Analyser {
                         steam_id,
                         user_id,
                         name,
-                        entity_id: EntityId::new(entity_id),
+                        entity_id,
                     },
                 );
             }
@@ -290,14 +296,25 @@ impl Analyser {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct UserState {
     pub classes: HashMap<Class, u8>,
     pub name: String,
-    #[serde(rename = "userId")]
     pub user_id: UserId,
-    #[serde(rename = "steamId")]
     pub steam_id: String,
     pub team: Team,
+}
+
+impl From<UserInfo> for UserState {
+    fn from(user: UserInfo) -> Self {
+        UserState {
+            classes: HashMap::new(),
+            team: Team::Other,
+            name: user.name,
+            user_id: user.user_id,
+            steam_id: user.steam_id,
+        }
+    }
 }
 
 impl UserState {
@@ -305,41 +322,33 @@ impl UserState {
         users: HashMap<UserId, UserInfo>,
         spawns: Vec<Spawn>,
     ) -> HashMap<UserId, Self> {
-        let mut teams: HashMap<UserId, Team> = HashMap::with_capacity(users.len());
-        let mut classes: HashMap<UserId, HashMap<Class, u8>> = HashMap::with_capacity(9);
+        let mut user_states: HashMap<_, _> = users
+            .into_iter()
+            .map(|(_, user)| (user.user_id, UserState::from(user)))
+            .collect();
+
         for spawn in spawns {
-            teams.insert(spawn.user, spawn.team);
-            let user_classes = classes.entry(spawn.user).or_default();
-            let class_spawns = user_classes.entry(spawn.class).or_default();
-            *class_spawns += 1;
+            if let Some(user) = user_states.get_mut(&spawn.user) {
+                user.handle_spawn(&spawn);
+            }
         }
 
-        users
-            .into_iter()
-            .map(|(_, user)| {
-                (
-                    user.user_id,
-                    UserState {
-                        classes: classes.remove(&user.user_id).unwrap_or(HashMap::new()),
-                        team: teams.remove(&user.user_id).unwrap_or(Team::Other),
-                        name: user.name,
-                        user_id: user.user_id,
-                        steam_id: user.steam_id,
-                    },
-                )
-            })
-            .collect()
+        user_states
+    }
+
+    fn handle_spawn(&mut self, spawn: &Spawn) {
+        self.team = spawn.team;
+        *self.classes.entry(spawn.class).or_default() += 1;
     }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct MatchState {
     pub chat: Vec<ChatMassage>,
     pub users: HashMap<UserId, UserState>,
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
-    #[serde(rename = "startTick")]
     pub start_tick: u32,
-    #[serde(rename = "intervalPerTick")]
     pub interval_per_tick: f32,
 }
