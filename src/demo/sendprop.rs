@@ -488,7 +488,7 @@ impl From<Vec<SendPropValue>> for SendPropValue {
 
 #[derive(Debug, Clone)]
 pub struct SendProp {
-    pub definition: SendPropDefinition,
+    pub definition: Rc<SendPropDefinition>,
     pub value: SendPropValue,
 }
 

@@ -60,7 +60,7 @@ impl From<String> for SendTableName {
 #[derive(Debug)]
 pub struct ParseSendTable {
     pub name: SendTableName,
-    pub props: Vec<SendPropDefinition>,
+    pub props: Vec<Rc<SendPropDefinition>>,
     pub needs_decoder: bool,
 }
 
@@ -86,9 +86,9 @@ impl Parse for ParseSendTable {
                     return Err(MalformedSendPropDefinitionError::UntypedArray.into());
                 }
                 array_element_prop = None;
-                props.push(prop.with_array_property(array_element));
+                props.push(Rc::new(prop.with_array_property(array_element)));
             } else {
-                props.push(prop);
+                props.push(Rc::new(prop));
             }
         }
 
@@ -101,7 +101,7 @@ impl Parse for ParseSendTable {
 }
 
 impl ParseSendTable {
-    pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Vec<SendPropDefinition> {
+    pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Vec<Rc<SendPropDefinition>> {
         let mut flat = Vec::with_capacity(32);
         self.get_all_props(tables, &self.get_excludes(tables), &mut flat);
 
@@ -116,7 +116,7 @@ impl ParseSendTable {
             }
         }
 
-        flat.into_iter().map(|prop| prop.clone()).collect()
+        flat.into_iter().map(|prop| Rc::clone(&prop)).collect()
     }
 
     fn get_excludes<'a>(&'a self, tables: &'a [ParseSendTable]) -> Vec<Exclude<'a>> {
@@ -137,11 +137,11 @@ impl ParseSendTable {
     }
 
     // TODO: below is a direct port from the js which is a direct port from C++ and not very optimal
-    fn get_all_props<'a>(
-        &'a self,
-        tables: &'a [ParseSendTable],
+    fn get_all_props(
+        &self,
+        tables: &[ParseSendTable],
         excludes: &[Exclude],
-        props: &mut Vec<&'a SendPropDefinition>,
+        props: &mut Vec<Rc<SendPropDefinition>>,
     ) {
         let mut local_props = Vec::new();
 
@@ -149,12 +149,12 @@ impl ParseSendTable {
         props.extend_from_slice(&local_props);
     }
 
-    fn get_all_props_iterator_props<'a>(
-        &'a self,
-        tables: &'a [ParseSendTable],
+    fn get_all_props_iterator_props(
+        &self,
+        tables: &[ParseSendTable],
         excludes: &[Exclude],
-        local_props: &mut Vec<&'a SendPropDefinition>,
-        props: &mut Vec<&'a SendPropDefinition>,
+        local_props: &mut Vec<Rc<SendPropDefinition>>,
+        props: &mut Vec<Rc<SendPropDefinition>>,
     ) {
         self.props
             .iter()
@@ -168,7 +168,7 @@ impl ParseSendTable {
                         table.get_all_props(tables, excludes, props);
                     }
                 } else {
-                    local_props.push(prop);
+                    local_props.push(Rc::clone(prop));
                 }
             })
     }
@@ -189,9 +189,9 @@ impl<'a> Exclude<'a> {
 #[derive(Debug)]
 pub struct SendTable {
     pub name: SendTableName,
-    pub props: Vec<SendPropDefinition>,
+    pub props: Vec<Rc<SendPropDefinition>>,
     pub needs_decoder: bool,
-    pub flattened_props: Vec<SendPropDefinition>,
+    pub flattened_props: Vec<Rc<SendPropDefinition>>,
 }
 
 #[derive(Debug)]

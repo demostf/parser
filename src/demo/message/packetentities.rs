@@ -8,6 +8,7 @@ use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
 use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::collections::HashMap;
 use std::fmt;
+use std::hint::unreachable_unchecked;
 use std::num::ParseIntError;
 use std::rc::Rc;
 use std::str::FromStr;
@@ -69,7 +70,7 @@ impl PacketEntity {
     fn get_prop_by_definition(&mut self, definition: &SendPropDefinition) -> Option<&mut SendProp> {
         self.props
             .iter_mut()
-            .find(|prop| prop.definition.eq(definition))
+            .find(|prop| prop.definition.as_ref().eq(definition))
     }
 
     pub fn apply_update(&mut self, props: Vec<SendProp>) {
@@ -90,7 +91,7 @@ fn read_bit_var<T: BitReadSized<LittleEndian>>(stream: &mut Stream) -> ReadResul
         1 => 8,
         2 => 12,
         3 => 32,
-        _ => unreachable!(),
+        _ => unsafe { unreachable_unchecked() },
     };
     stream.read_sized(bits)
 }
@@ -247,7 +248,7 @@ impl PacketEntitiesMessage {
                 Some(definition) => {
                     let value = SendPropValue::parse(stream, definition)?;
                     props.push(SendProp {
-                        definition: definition.clone(),
+                        definition: Rc::clone(definition),
                         value,
                     });
                 }
