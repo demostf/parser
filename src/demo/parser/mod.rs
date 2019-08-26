@@ -3,6 +3,8 @@ use bitstream_reader::{BitRead, BitSkip, FromUtf8Error, LittleEndian, ReadError}
 pub use self::messagetypeanalyser::MessageTypeAnalyser;
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};
 use crate::demo::header::Header;
+use crate::demo::message::packetentities::EntityId;
+use crate::demo::packet::datatable::SendTableName;
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 pub use crate::demo::parser::analyser::MatchState;
@@ -78,6 +80,18 @@ pub enum MalformedDemoError {
         name: &'static str,
         found_type: GameEventValueType,
     },
+    #[error(display = "An entity with an unknown server class({}) was read", _0)]
+    UnknownServerClass(usize),
+    #[error(display = "Unknown send table: {}", _0)]
+    UnknownSendTable(SendTableName),
+    #[error(
+        display = "Property index out of bounds, got {} but only {} props exist",
+        _0,
+        _1
+    )]
+    PropIndexOutOfBounds { index: i32, prop_count: usize },
+    #[error(display = "An attempt was made to update an unknown entity: {}", _0)]
+    UnknownEntity(EntityId),
 }
 
 #[derive(Debug, Error)]

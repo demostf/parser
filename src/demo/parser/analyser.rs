@@ -233,10 +233,6 @@ impl Analyser {
         Self::default()
     }
 
-    pub fn get_message_types(&self) -> Vec<MessageType> {
-        vec![MessageType::GameEvent, MessageType::UserMessage]
-    }
-
     fn handle_user_message(&mut self, message: UserMessage, tick: u32) {
         if let UserMessage::SayText2(text_message) = message {
             if text_message.kind == ChatMessageKind::NameChange {
@@ -271,7 +267,7 @@ impl Analyser {
         }
     }
 
-    fn parse_user_info(&mut self, text: &String, mut data: Stream) -> ReadResult<()> {
+    fn parse_user_info(&mut self, text: &str, mut data: Stream) -> ReadResult<()> {
         let name: String = data.read_sized(32).unwrap_or("Malformed Name".into());
         let user_id = data.read::<u32>()?.into();
         let steam_id: String = data.read()?;

@@ -13,8 +13,14 @@ use std::convert::TryInto;
 use std::fmt;
 use std::rc::Rc;
 
-#[derive(PartialEq, Eq, Hash, Debug)]
+#[derive(BitRead, PartialEq, Eq, Hash, Debug)]
 pub struct SendPropName(Rc<String>);
+
+impl PartialEq<&str> for SendPropName {
+    fn eq(&self, other: &&str) -> bool {
+        self.0.as_str() == *other
+    }
+}
 
 impl Clone for SendPropName {
     fn clone(&self) -> Self {
@@ -34,13 +40,7 @@ impl From<String> for SendPropName {
     }
 }
 
-impl BitRead<LittleEndian> for SendPropName {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
-        String::read(stream).map(SendPropName::from)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct SendPropDefinition {
     pub prop_type: SendPropType,
     pub name: SendPropName,
@@ -52,6 +52,76 @@ pub struct SendPropDefinition {
     pub bit_count: Option<u32>,
     pub element_count: Option<u16>,
     pub array_property: Option<Box<SendPropDefinition>>,
+}
+
+impl PartialEq for SendPropDefinition {
+    fn eq(&self, other: &Self) -> bool {
+        self.owner_table == other.owner_table && self.name == other.name
+    }
+}
+
+impl fmt::Display for SendPropDefinition {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.prop_type {
+            SendPropType::Vector | SendPropType::VectorXY => write!(
+                f,
+                "{}::{}({})(flags: {}, low: {}, high: {}, bits: {})",
+                self.owner_table,
+                self.name,
+                self.prop_type,
+                self.flags,
+                self.low_value.unwrap_or_default(),
+                self.high_value.unwrap_or_default(),
+                self.bit_count.unwrap_or(96) / 3
+            ),
+            SendPropType::Float => write!(
+                f,
+                "{}::{}({})(flags: {}, low: {}, high: {}, bits: {})",
+                self.owner_table,
+                self.name,
+                self.prop_type,
+                self.flags,
+                self.low_value.unwrap_or_default(),
+                self.high_value.unwrap_or_default(),
+                self.bit_count.unwrap_or(32)
+            ),
+            SendPropType::Int => write!(
+                f,
+                "{}::{}({})(flags: {}, bits: {})",
+                self.owner_table,
+                self.name,
+                self.prop_type,
+                self.flags,
+                self.bit_count.unwrap_or(32)
+            ),
+            SendPropType::String => {
+                write!(f, "{}::{}({})", self.owner_table, self.name, self.prop_type)
+            }
+            SendPropType::Array => match &self.array_property {
+                Some(array_prop) => write!(
+                    f,
+                    "{}::{}([{}({})] * {})",
+                    self.owner_table,
+                    self.name,
+                    array_prop.prop_type,
+                    array_prop.flags,
+                    self.element_count.unwrap_or_default(),
+                ),
+                None => write!(f, "{}(Malformed array)", self.name),
+            },
+            SendPropType::DataTable => match &self.table_name {
+                Some(sub_table) => write!(
+                    f,
+                    "{}::{}(DataTable = {})",
+                    self.owner_table, self.name, sub_table
+                ),
+                None => write!(f, "{}(Malformed DataTable)", self.name),
+            },
+            SendPropType::NumSendPropTypes => {
+                write!(f, "{}::{}(NumSendPropTypes)", self.owner_table, self.name)
+            }
+        }
+    }
 }
 
 impl SendPropDefinition {
@@ -70,7 +140,7 @@ impl SendPropDefinition {
         }
     }
 
-    /// Get the refered data table
+    /// Get the referred data table
     ///
     /// Note that this is not the owner table
     pub fn get_data_table<'a>(&self, tables: &'a [ParseSendTable]) -> Option<&'a ParseSendTable> {
@@ -156,6 +226,21 @@ pub enum SendPropType {
     NumSendPropTypes = 7,
 }
 
+impl fmt::Display for SendPropType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            SendPropType::Int => write!(f, "Int"),
+            SendPropType::Float => write!(f, "Float"),
+            SendPropType::Vector => write!(f, "Vector"),
+            SendPropType::VectorXY => write!(f, "VectorXY"),
+            SendPropType::String => write!(f, "String"),
+            SendPropType::Array => write!(f, "Array"),
+            SendPropType::DataTable => write!(f, "DataTable"),
+            SendPropType::NumSendPropTypes => write!(f, "NumSendPropTypes"),
+        }
+    }
+}
+
 #[derive(EnumFlags, Copy, Clone, PartialEq, Debug)]
 #[repr(u16)]
 pub enum SendPropFlag {
@@ -203,6 +288,18 @@ pub enum SendPropFlag {
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct SendPropFlags(BitFlags<SendPropFlag>);
 
+impl fmt::Display for SendPropFlags {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let debug = format!("{:?}", self.0);
+        let flags: String = debug
+            .chars()
+            .skip_while(|c| *c != '[')
+            .take_while(|c| *c != ')')
+            .collect();
+        write!(f, "{}", flags)
+    }
+}
+
 impl SendPropFlags {
     pub fn contains(self, other: SendPropFlag) -> bool {
         self.0.contains(other)
@@ -226,6 +323,25 @@ pub enum SendPropValue {
     Array(Vec<SendPropValue>),
 }
 
+impl fmt::Display for SendPropValue {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            SendPropValue::Vector(vector) => vector.fmt(f),
+            SendPropValue::VectorXY(vector) => vector.fmt(f),
+            SendPropValue::Integer(int) => int.fmt(f),
+            SendPropValue::Float(float) => float.fmt(f),
+            SendPropValue::String(string) => string.fmt(f),
+            SendPropValue::Array(array) => {
+                write!(f, "[")?;
+                for child in array {
+                    write!(f, "{}", child)?;
+                }
+                write!(f, "]")
+            }
+        }
+    }
+}
+
 impl SendPropValue {
     pub fn parse(stream: &mut Stream, definition: &SendPropDefinition) -> Result<Self> {
         match definition.prop_type {
@@ -247,12 +363,14 @@ impl SendPropValue {
                 .map_err(ParseError::from)
         } else {
             if definition.flags.contains(SendPropFlag::Unsigned) {
-                let unsigned: u32 = stream.read()?;
-                unsigned
-                    .try_into()
-                    .map_err(|_| MalformedSendPropDefinitionError::OutOfRange.into())
+                let unsigned: u32 =
+                    stream.read_sized(definition.bit_count.unwrap_or(32) as usize)?;
+                const MAX: u32 = std::i32::MAX as u32;
+                Ok((unsigned & MAX) as i32)
             } else {
-                stream.read().map_err(ParseError::from)
+                stream
+                    .read_int(definition.bit_count.unwrap_or(32) as usize)
+                    .map_err(ParseError::from)
             }
         }
     }
@@ -265,20 +383,18 @@ impl SendPropValue {
             definition
                 .element_count
                 .ok_or(MalformedSendPropDefinitionError::UnsizedArray)?,
-        );
+        ) + 1;
 
         let count = stream.read_int(num_bits as usize)?;
         let mut values = Vec::with_capacity(count);
 
+        let child_definition = definition
+            .array_property
+            .as_ref()
+            .ok_or(MalformedSendPropDefinitionError::UntypedArray)?;
+
         for _ in 0..count {
-            let value = Self::parse(
-                stream,
-                definition
-                    .array_property
-                    .as_ref()
-                    .ok_or(MalformedSendPropDefinitionError::UntypedArray)?,
-            )?;
-            values.push(value);
+            values.push(Self::parse(stream, child_definition)?);
         }
 
         Ok(values)
@@ -370,10 +486,20 @@ impl From<Vec<SendPropValue>> for SendPropValue {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SendProp {
-    definition: SendPropDefinition,
-    value: SendPropValue,
+    pub definition: SendPropDefinition,
+    pub value: SendPropValue,
+}
+
+impl fmt::Display for SendProp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}::{} = {}",
+            self.definition.owner_table, self.definition.name, self.value
+        )
+    }
 }
 
 pub fn read_var_int(stream: &mut Stream, signed: bool) -> ReadResult<i32> {
@@ -381,7 +507,7 @@ pub fn read_var_int(stream: &mut Stream, signed: bool) -> ReadResult<i32> {
 
     for i in (0..35).step_by(7) {
         let byte: u8 = stream.read()?;
-        result |= ((byte & 0x7F) << i) as i32;
+        result |= ((byte & 0x7F) as i32) << i;
 
         if (byte >> 7) == 0 {
             break;

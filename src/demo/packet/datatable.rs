@@ -4,19 +4,39 @@ use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropName, SendPropType};
 use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use serde::{Deserialize, Serialize};
+use std::borrow::Borrow;
 use std::cell::{Cell, RefCell};
 use std::fmt;
+use std::num::ParseIntError;
 use std::ops::Deref;
 use std::rc::Rc;
+use std::str::FromStr;
 
-#[derive(BitRead, Debug)]
-pub struct ServerClass {
-    pub id: u16,
-    pub name: String,
-    pub data_table: String,
+#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct ClassId(u16);
+
+impl FromStr for ClassId {
+    type Err = ParseIntError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        u16::from_str(s).map(|num| ClassId(num))
+    }
 }
 
-#[derive(PartialEq, Eq, Hash, Debug, Serialize, Deserialize)]
+impl From<u16> for ClassId {
+    fn from(int: u16) -> Self {
+        ClassId(int)
+    }
+}
+
+#[derive(BitRead, Debug, Clone)]
+pub struct ServerClass {
+    pub id: ClassId,
+    pub name: String,
+    pub data_table: SendTableName,
+}
+
+#[derive(BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize)]
 pub struct SendTableName(Rc<String>);
 
 impl Clone for SendTableName {
@@ -34,12 +54,6 @@ impl fmt::Display for SendTableName {
 impl From<String> for SendTableName {
     fn from(value: String) -> Self {
         Self(Rc::new(value))
-    }
-}
-
-impl BitRead<LittleEndian> for SendTableName {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
-        String::read(stream).map(SendTableName::from)
     }
 }
 
@@ -184,7 +198,7 @@ pub struct SendTable {
 pub struct DataTablePacket {
     pub tick: u32,
     pub tables: Vec<SendTable>,
-    pub server_classes: Vec<ServerClass>,
+    pub server_classes: Vec<Rc<ServerClass>>,
 }
 
 impl Parse for DataTablePacket {

@@ -4,6 +4,7 @@ use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 use crate::ParserState;
+use std::rc::Rc;
 
 pub trait MessageHandler {
     type Output;
@@ -95,7 +96,11 @@ impl<T: MessageHandler> DemoHandler<T> {
         }
     }
 
-    fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
+    fn handle_data_table(
+        &mut self,
+        send_tables: Vec<SendTable>,
+        server_classes: Vec<Rc<ServerClass>>,
+    ) {
         self.state_handler
             .handle_data_table(send_tables, server_classes);
     }
