@@ -9,28 +9,17 @@ use super::vector::{Vector, VectorXY};
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
 use crate::demo::parser::MalformedSendPropDefinitionError;
+use parse_display::Display;
 use std::convert::TryInto;
 use std::fmt;
 use std::rc::Rc;
 
-#[derive(BitRead, PartialEq, Eq, Hash, Debug)]
+#[derive(BitRead, PartialEq, Eq, Hash, Debug, Display, Clone)]
 pub struct SendPropName(Rc<String>);
 
 impl PartialEq<&str> for SendPropName {
     fn eq(&self, other: &&str) -> bool {
         self.0.as_str() == *other
-    }
-}
-
-impl Clone for SendPropName {
-    fn clone(&self) -> Self {
-        SendPropName(Rc::clone(&self.0))
-    }
-}
-
-impl fmt::Display for SendPropName {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
     }
 }
 
@@ -213,7 +202,7 @@ impl SendPropDefinition {
     }
 }
 
-#[derive(BitRead, Copy, Clone, PartialEq, Debug)]
+#[derive(BitRead, Copy, Clone, PartialEq, Debug, Display)]
 #[discriminant_bits = 5]
 pub enum SendPropType {
     Int = 0,
@@ -224,21 +213,6 @@ pub enum SendPropType {
     Array = 5,
     DataTable = 6,
     NumSendPropTypes = 7,
-}
-
-impl fmt::Display for SendPropType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            SendPropType::Int => write!(f, "Int"),
-            SendPropType::Float => write!(f, "Float"),
-            SendPropType::Vector => write!(f, "Vector"),
-            SendPropType::VectorXY => write!(f, "VectorXY"),
-            SendPropType::String => write!(f, "String"),
-            SendPropType::Array => write!(f, "Array"),
-            SendPropType::DataTable => write!(f, "DataTable"),
-            SendPropType::NumSendPropTypes => write!(f, "NumSendPropTypes"),
-        }
-    }
 }
 
 #[derive(EnumFlags, Copy, Clone, PartialEq, Debug)]
@@ -486,20 +460,11 @@ impl From<Vec<SendPropValue>> for SendPropValue {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Display)]
+#[display("{definition.owner_table}::{definition.name} = {value}")]
 pub struct SendProp {
     pub definition: Rc<SendPropDefinition>,
     pub value: SendPropValue,
-}
-
-impl fmt::Display for SendProp {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}::{} = {}",
-            self.definition.owner_table, self.definition.name, self.value
-        )
-    }
 }
 
 pub fn read_var_int(stream: &mut Stream, signed: bool) -> ReadResult<i32> {

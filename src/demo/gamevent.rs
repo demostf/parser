@@ -4,6 +4,7 @@ use crate::{MalformedDemoError, ParseError, Result};
 
 pub use super::gameevent_gen::{GameEvent, GameEventType};
 use crate::demo::message::gameevent::GameEventTypeId;
+use parse_display::Display;
 use std::cmp::Ordering;
 use std::fmt;
 
@@ -41,7 +42,7 @@ pub struct GameEventEntry {
     pub kind: GameEventValueType,
 }
 
-#[derive(BitRead, Debug, Clone, Copy, PartialEq)]
+#[derive(BitRead, Debug, Clone, Copy, PartialEq, Display)]
 #[discriminant_bits = 3]
 pub enum GameEventValueType {
     None = 0,
@@ -52,21 +53,6 @@ pub enum GameEventValueType {
     Byte = 5,
     Boolean = 6,
     Local = 7,
-}
-
-impl fmt::Display for GameEventValueType {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            GameEventValueType::None => write!(f, "None"),
-            GameEventValueType::String => write!(f, "String"),
-            GameEventValueType::Float => write!(f, "Float"),
-            GameEventValueType::Long => write!(f, "Long"),
-            GameEventValueType::Short => write!(f, "Short"),
-            GameEventValueType::Byte => write!(f, "Byte"),
-            GameEventValueType::Boolean => write!(f, "Boolean"),
-            GameEventValueType::Local => write!(f, "Local"),
-        }
-    }
 }
 
 #[derive(Debug, Clone)]

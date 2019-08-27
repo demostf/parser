@@ -6,6 +6,7 @@ use crate::demo::packet::datatable::{SendTable, SendTableName, ServerClass};
 use crate::demo::parser::ParseBitSkip;
 use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
 use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use parse_display::Display;
 use std::collections::HashMap;
 use std::fmt;
 use std::hint::unreachable_unchecked;
@@ -13,14 +14,8 @@ use std::num::ParseIntError;
 use std::rc::Rc;
 use std::str::FromStr;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display)]
 pub struct EntityId(u32);
-
-impl fmt::Display for EntityId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        self.0.fmt(f)
-    }
-}
 
 impl From<u32> for EntityId {
     fn from(num: u32) -> Self {

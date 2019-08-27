@@ -3,6 +3,7 @@ use bitstream_reader::{BitRead, LittleEndian};
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropName, SendPropType};
 use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use parse_display::Display;
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
 use std::cell::{Cell, RefCell};
@@ -36,20 +37,8 @@ pub struct ServerClass {
     pub data_table: SendTableName,
 }
 
-#[derive(BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize)]
+#[derive(BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
 pub struct SendTableName(Rc<String>);
-
-impl Clone for SendTableName {
-    fn clone(&self) -> Self {
-        SendTableName(Rc::clone(&self.0))
-    }
-}
-
-impl fmt::Display for SendTableName {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
 
 impl From<String> for SendTableName {
     fn from(value: String) -> Self {
