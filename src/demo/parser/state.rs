@@ -32,6 +32,7 @@ pub struct ParserState {
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub demo_meta: DemoMeta,
     analyser_handles: fn(message_type: MessageType) -> bool,
+    handle_entities: bool,
 }
 
 pub struct StaticBaseline {
@@ -62,6 +63,7 @@ impl ParserState {
             instance_baselines: [HashMap::new(), HashMap::new()],
             demo_meta: DemoMeta::default(),
             analyser_handles,
+            handle_entities: analyser_handles(MessageType::PacketEntities),
         }
     }
 
@@ -99,7 +101,11 @@ impl ParserState {
     }
 
     pub fn should_parse_message(&self, message_type: MessageType) -> bool {
-        Self::does_handle(message_type) || (self.analyser_handles)(message_type)
+        if message_type == MessageType::PacketEntities {
+            (self.analyser_handles)(message_type)
+        } else {
+            Self::does_handle(message_type) || (self.analyser_handles)(message_type)
+        }
     }
 }
 
@@ -111,7 +117,7 @@ impl MessageHandler for ParserState {
             MessageType::ServerInfo
             | MessageType::GameEventList
             | MessageType::CreateStringTable
-            | MessageType::PacketEntities // TODO entity tracking is only needed when the analyser uses entities
+            | MessageType::PacketEntities
             | MessageType::UpdateStringTable => true,
             _ => false,
         }
