@@ -15,7 +15,9 @@ use std::num::ParseIntError;
 use std::rc::Rc;
 use std::str::FromStr;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display)]
+#[derive(
+    Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display, Ord, PartialOrd,
+)]
 pub struct EntityId(u32);
 
 impl From<u32> for EntityId {

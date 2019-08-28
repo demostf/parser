@@ -35,8 +35,8 @@ impl Parse for GameEventMessage {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let length: u16 = stream.read_sized(11)?;
         let mut data = stream.read_bits(length as usize)?;
-        let event_type = data.read()?;
-        let raw_event = match state.event_definitions.get(&event_type) {
+        let event_type: GameEventTypeId = data.read()?;
+        let raw_event = match state.event_definitions.get(usize::from(event_type)) {
             Some(definition) => {
                 let mut values: Vec<GameEventValue> = Vec::with_capacity(definition.entries.len());
                 for entry in &definition.entries {
@@ -66,24 +66,18 @@ impl ParseBitSkip for GameEventMessage {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-pub struct GameEventTypeId(u16);
+#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct GameEventTypeId(#[size = 9] u16);
 
-impl BitRead<LittleEndian> for GameEventTypeId {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
-        Ok(GameEventTypeId(stream.read_int(9)?))
-    }
-}
-
-impl From<GameEventTypeId> for u16 {
+impl From<GameEventTypeId> for usize {
     fn from(id: GameEventTypeId) -> Self {
-        id.0
+        id.0 as usize
     }
 }
 
 #[derive(Debug)]
 pub struct GameEventListMessage {
-    pub event_list: HashMap<GameEventTypeId, GameEventDefinition>,
+    pub event_list: Vec<GameEventDefinition>,
 }
 
 impl BitRead<LittleEndian> for GameEventDefinition {
@@ -116,8 +110,7 @@ impl BitRead<LittleEndian> for GameEventListMessage {
         let count: u16 = stream.read_sized(9)?;
         let length: u32 = stream.read_sized(20)?;
         let mut data = stream.read_bits(length as usize)?;
-        let event_list_vec: Vec<GameEventDefinition> = data.read_sized(count as usize)?;
-        let event_list = HashMap::from_iter(event_list_vec.into_iter().map(|def| (def.id, def)));
+        let event_list: Vec<GameEventDefinition> = data.read_sized(count as usize)?;
 
         Ok(GameEventListMessage { event_list })
     }

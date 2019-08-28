@@ -24,7 +24,7 @@ pub struct DemoMeta {
 pub struct ParserState {
     pub static_baselines: HashMap<ClassId, StaticBaseline>,
     pub parsed_static_baselines: RefCell<HashMap<ClassId, Vec<SendProp>>>,
-    pub event_definitions: HashMap<GameEventTypeId, GameEventDefinition>,
+    pub event_definitions: Vec<GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
     pub entity_classes: HashMap<EntityId, Rc<ServerClass>>,
     pub send_tables: HashMap<SendTableName, SendTable>,
@@ -55,7 +55,7 @@ impl ParserState {
         ParserState {
             static_baselines: HashMap::new(),
             parsed_static_baselines: RefCell::new(HashMap::new()),
-            event_definitions: HashMap::new(),
+            event_definitions: Vec::new(),
             string_tables: Vec::new(),
             entity_classes: HashMap::new(),
             send_tables: HashMap::new(),

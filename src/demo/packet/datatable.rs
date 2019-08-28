@@ -13,7 +13,7 @@ use std::ops::Deref;
 use std::rc::Rc;
 use std::str::FromStr;
 
-#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct ClassId(u16);
 
 impl FromStr for ClassId {
