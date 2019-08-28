@@ -13,7 +13,7 @@ use std::ops::Deref;
 use std::rc::Rc;
 use std::str::FromStr;
 
-#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
+#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Display)]
 pub struct ClassId(u16);
 
 impl FromStr for ClassId {
@@ -27,6 +27,12 @@ impl FromStr for ClassId {
 impl From<u16> for ClassId {
     fn from(int: u16) -> Self {
         ClassId(int)
+    }
+}
+
+impl From<ClassId> for usize {
+    fn from(class: ClassId) -> Self {
+        class.0 as usize
     }
 }
 
@@ -196,7 +202,7 @@ pub struct SendTable {
 pub struct DataTablePacket {
     pub tick: u32,
     pub tables: Vec<SendTable>,
-    pub server_classes: Vec<Rc<ServerClass>>,
+    pub server_classes: Vec<ServerClass>,
 }
 
 impl Parse for DataTablePacket {

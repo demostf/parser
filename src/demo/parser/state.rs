@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use crate::demo::gamevent::GameEventDefinition;
 use crate::demo::message::gameevent::GameEventTypeId;
@@ -26,9 +26,9 @@ pub struct ParserState {
     pub parsed_static_baselines: RefCell<HashMap<ClassId, Vec<SendProp>>>,
     pub event_definitions: Vec<GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
-    pub entity_classes: HashMap<EntityId, Rc<ServerClass>>,
+    pub entity_classes: HashMap<EntityId, ClassId>,
     pub send_tables: HashMap<SendTableName, SendTable>,
-    pub server_classes: Vec<Rc<ServerClass>>,
+    pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub demo_meta: DemoMeta,
     analyser_handles: fn(message_type: MessageType) -> bool,
@@ -88,7 +88,7 @@ impl ParserState {
     pub fn handle_data_table(
         &mut self,
         send_tables: Vec<SendTable>,
-        server_classes: Vec<Rc<ServerClass>>,
+        server_classes: Vec<ServerClass>,
     ) {
         for table in send_tables {
             self.send_tables.insert(table.name.clone(), table);
@@ -154,7 +154,7 @@ impl ParserState {
                         self.entity_classes.remove(&entity.entity_index);
                     }
                     self.entity_classes
-                        .insert(entity.entity_index, Rc::clone(&entity.server_class));
+                        .insert(entity.entity_index, entity.server_class);
                 }
                 Some(Message::PacketEntities(ent_message))
             }

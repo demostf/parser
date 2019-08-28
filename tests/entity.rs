@@ -52,11 +52,11 @@ struct EntityDump {
 }
 
 impl EntityDump {
-    pub fn from_entity(entity: PacketEntity, tick: u32) -> Self {
+    pub fn from_entity(entity: PacketEntity, tick: u32, classes: &[ServerClass]) -> Self {
         let id = entity.entity_index;
         EntityDump {
             tick,
-            server_class: entity.server_class.name.clone(),
+            server_class: classes[usize::from(entity.server_class)].name.clone(),
             id: entity.entity_index,
             props: entity
                 .props
@@ -69,7 +69,7 @@ impl EntityDump {
 }
 
 struct EntityDumper {
-    entities: Vec<EntityDump>,
+    entities: Vec<(u32, PacketEntity)>,
 }
 
 impl EntityDumper {
@@ -96,7 +96,7 @@ impl MessageHandler for EntityDumper {
                 entity_message
                     .entities
                     .into_iter()
-                    .map(|entity| EntityDump::from_entity(entity, tick)),
+                    .map(|entity| (tick, entity)),
             ),
             _ => {}
         }
@@ -104,8 +104,11 @@ impl MessageHandler for EntityDumper {
 
     fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {}
 
-    fn get_output(self, _state: ParserState) -> Self::Output {
+    fn get_output(self, state: ParserState) -> Self::Output {
         self.entities
+            .into_iter()
+            .map(|(tick, entity)| EntityDump::from_entity(entity, tick, &state.server_classes))
+            .collect()
     }
 }
 

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::demo::message::stringtable::{log_base2, read_var_int};
-use crate::demo::packet::datatable::{SendTable, SendTableName, ServerClass};
+use crate::demo::packet::datatable::{ClassId, SendTable, SendTableName, ServerClass};
 use crate::demo::parser::ParseBitSkip;
 use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
 use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
@@ -46,7 +46,7 @@ pub enum PVS {
 
 #[derive(Debug)]
 pub struct PacketEntity {
-    pub server_class: Rc<ServerClass>,
+    pub server_class: ClassId,
     pub entity_index: EntityId,
     pub props: Vec<SendProp>,
     pub in_pvs: bool,
@@ -57,7 +57,7 @@ pub struct PacketEntity {
 
 impl fmt::Display for PacketEntity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}({}) {{\n", self.entity_index, self.server_class.name)?;
+        write!(f, "{}({}) {{\n", self.entity_index, self.server_class)?;
         for child in self.props.iter() {
             write!(f, "\t{}\n", child)?;
         }
@@ -116,21 +116,29 @@ fn get_entity_for_update(
     state: &ParserState,
     entity_index: EntityId,
     pvs: PVS,
-) -> Result<PacketEntity> {
-    let server_class = state
+) -> Result<(PacketEntity, &ServerClass)> {
+    let class_id = *state
         .entity_classes
         .get(&entity_index)
         .ok_or_else(|| MalformedDemoError::UnknownEntity(entity_index))?;
 
-    Ok(PacketEntity {
-        server_class: Rc::clone(server_class),
-        entity_index,
-        props: Vec::new(),
-        in_pvs: false,
-        pvs,
-        serial_number: 0,
-        delay: None,
-    })
+    let server_class = state
+        .server_classes
+        .get(usize::from(class_id))
+        .ok_or_else(|| MalformedDemoError::UnknownServerClass(class_id.into()))?;
+
+    Ok((
+        PacketEntity {
+            server_class: class_id,
+            entity_index,
+            props: Vec::new(),
+            in_pvs: false,
+            pvs,
+            serial_number: 0,
+            delay: None,
+        },
+        server_class,
+    ))
 }
 
 impl Parse for PacketEntitiesMessage {
@@ -155,23 +163,23 @@ impl Parse for PacketEntitiesMessage {
 
             let pvs = data.read()?;
             if pvs == PVS::Enter {
-                let mut entity =
+                let (mut entity, server_class) =
                     Self::read_enter(&mut data, entity_index, state, base_line as usize)?;
-                let send_table = get_send_table(state, &entity.server_class.data_table)?;
+                let send_table = get_send_table(state, &server_class.data_table)?;
                 let updated_props = Self::read_update(&mut data, send_table)?;
                 entity.apply_update(updated_props);
 
                 entities.push(entity);
             } else if pvs == PVS::Preserve {
-                let mut entity = get_entity_for_update(state, entity_index, pvs)?;
-                let send_table = get_send_table(state, &entity.server_class.data_table)?;
+                let (mut entity, server_class) = get_entity_for_update(state, entity_index, pvs)?;
+                let send_table = get_send_table(state, &server_class.data_table)?;
 
                 let updated_props = Self::read_update(&mut data, send_table)?;
                 entity.props = updated_props;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {
-                let entity = get_entity_for_update(state, entity_index, pvs)?;
+                let (entity, server_class) = get_entity_for_update(state, entity_index, pvs)?;
                 entities.push(entity);
             }
         }
@@ -194,12 +202,12 @@ impl Parse for PacketEntitiesMessage {
 }
 
 impl PacketEntitiesMessage {
-    fn read_enter(
+    fn read_enter<'a>(
         stream: &mut Stream,
         entity_index: EntityId,
-        state: &ParserState,
+        state: &'a ParserState,
         baseline_index: usize,
-    ) -> Result<PacketEntity> {
+    ) -> Result<(PacketEntity, &'a ServerClass)> {
         let bits = log_base2(state.server_classes.len()) + 1;
         let class_index = stream.read_sized::<u16>(bits as usize)? as usize;
         let server_class = state
@@ -223,15 +231,18 @@ impl PacketEntitiesMessage {
             },
         };
 
-        Ok(PacketEntity {
-            server_class: Rc::clone(server_class),
-            entity_index,
-            props,
-            in_pvs: true,
-            pvs: PVS::Enter,
-            serial_number: serial,
-            delay: None,
-        })
+        Ok((
+            PacketEntity {
+                server_class: server_class.id,
+                entity_index,
+                props,
+                in_pvs: true,
+                pvs: PVS::Enter,
+                serial_number: serial,
+                delay: None,
+            },
+            server_class,
+        ))
     }
 
     pub fn read_update(stream: &mut Stream, send_table: &SendTable) -> Result<Vec<SendProp>> {

@@ -97,11 +97,7 @@ impl<T: MessageHandler> DemoHandler<T> {
         }
     }
 
-    fn handle_data_table(
-        &mut self,
-        send_tables: Vec<SendTable>,
-        server_classes: Vec<Rc<ServerClass>>,
-    ) {
+    fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
         self.state_handler
             .handle_data_table(send_tables, server_classes);
     }
