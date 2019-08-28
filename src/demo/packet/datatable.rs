@@ -30,10 +30,19 @@ impl From<u16> for ClassId {
     }
 }
 
+#[derive(BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
+pub struct ServerClassName(Rc<String>);
+
+impl From<String> for ServerClassName {
+    fn from(value: String) -> Self {
+        Self(Rc::new(value))
+    }
+}
+
 #[derive(BitRead, Debug, Clone)]
 pub struct ServerClass {
     pub id: ClassId,
-    pub name: String,
+    pub name: ServerClassName,
     pub data_table: SendTableName,
 }
 

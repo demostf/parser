@@ -54,6 +54,7 @@ impl<T: MessageHandler> DemoHandler<T> {
                 }
             }
             Packet::Message(packet) | Packet::Sigon(packet) => {
+                //self.tick = packet.tick;
                 for message in packet.messages {
                     match message {
                         Message::NetTick(message) => self.tick = message.tick,
@@ -108,12 +109,13 @@ impl<T: MessageHandler> DemoHandler<T> {
     fn handle_message(&mut self, message: Message) {
         let message_type = message.get_message_type();
         if ParserState::does_handle(message_type) {
-            self.state_handler.handle_message(message, self.tick);
-            return;
-        }
-        if Analyser::does_handle(message_type) {
+            if let Some(message) = self.state_handler.handle_message(message, self.tick) {
+                if T::does_handle(message_type) {
+                    self.analyser.handle_message(message, self.tick);
+                }
+            }
+        } else if T::does_handle(message_type) {
             self.analyser.handle_message(message, self.tick);
-            return;
         }
     }
 

@@ -107,14 +107,11 @@ impl ParserState {
             Self::does_handle(message_type) || (self.analyser_handles)(message_type)
         }
     }
-}
 
-impl MessageHandler for ParserState {
-    type Output = Self;
-
-    fn does_handle(message_type: MessageType) -> bool {
+    pub fn does_handle(message_type: MessageType) -> bool {
         match message_type {
             MessageType::ServerInfo
+            | MessageType::NetTick
             | MessageType::GameEventList
             | MessageType::CreateStringTable
             | MessageType::PacketEntities
@@ -123,46 +120,49 @@ impl MessageHandler for ParserState {
         }
     }
 
-    fn handle_message(&mut self, message: Message, _tick: u32) {
+    pub fn handle_message(&mut self, message: Message, _tick: u32) -> Option<Message> {
         match message {
             Message::ServerInfo(message) => {
                 self.demo_meta.version = message.version;
                 self.demo_meta.game = message.game;
-                self.demo_meta.interval_per_tick = message.interval_per_tick
+                self.demo_meta.interval_per_tick = message.interval_per_tick;
+                None
             }
             Message::GameEventList(message) => {
                 self.event_definitions = message.event_list;
+                None
             }
-            Message::PacketEntities(message) => {
-                if message.updated_base_line {
-                    let old_index = message.base_line as usize;
+            Message::PacketEntities(ent_message) => {
+                if ent_message.updated_base_line {
+                    let old_index = ent_message.base_line as usize;
                     let new_index = 1 - old_index;
                     self.instance_baselines.swap(0, 1);
                     //self.instance_baselines[new_index] = self.instance_baselines[new_index].clone();
 
-                    for entity in message.entities.iter() {
+                    for entity in ent_message.entities.iter() {
                         self.instance_baselines[new_index]
                             .insert(entity.entity_index, entity.props.clone());
                     }
                 }
 
-                for removed in message.removed_entities.iter() {
+                for removed in ent_message.removed_entities.iter() {
                     self.entity_classes.remove(removed);
                 }
 
-                for entity in message.entities.iter() {
+                for entity in ent_message.entities.iter() {
                     if entity.pvs == PVS::Delete {
                         self.entity_classes.remove(&entity.entity_index);
                     }
                     self.entity_classes
                         .insert(entity.entity_index, Rc::clone(&entity.server_class));
                 }
+                Some(Message::PacketEntities(ent_message))
             }
-            _ => {}
+            _ => Some(message),
         }
     }
 
-    fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
+    pub fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
         match table.as_str() {
             "instancebaseline" => {
                 if let (Some(extra), Ok(class_id)) = (&entry.extra_data, entry.text().parse()) {
@@ -172,9 +172,5 @@ impl MessageHandler for ParserState {
             }
             _ => {}
         }
-    }
-
-    fn get_output(self, _state: ParserState) -> Self {
-        self
     }
 }

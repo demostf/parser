@@ -1,6 +1,7 @@
 use bitstream_reader::{BitRead, LittleEndian};
 use enumflags2::BitFlags;
 use enumflags2_derive::EnumFlags;
+use serde::{Deserialize, Serialize};
 
 use crate::{MalformedDemoError, Parse, ParseError, ReadResult, Result, Stream};
 
@@ -14,7 +15,9 @@ use std::convert::TryInto;
 use std::fmt;
 use std::rc::Rc;
 
-#[derive(BitRead, PartialEq, Eq, Hash, Debug, Display, Clone)]
+#[derive(
+    BitRead, PartialEq, Eq, Hash, Debug, Display, Clone, Serialize, Deserialize, Ord, PartialOrd,
+)]
 pub struct SendPropName(Rc<String>);
 
 impl PartialEq<&str> for SendPropName {
@@ -287,14 +290,64 @@ impl BitRead<LittleEndian> for SendPropFlags {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
 pub enum SendPropValue {
     Vector(Vector),
     VectorXY(VectorXY),
-    Integer(i32),
+    Integer(i64),
     Float(f32),
     String(String),
     Array(Vec<SendPropValue>),
+}
+
+impl PartialEq for SendPropValue {
+    fn eq(&self, other: &Self) -> bool {
+        // allow comparing some "compatible" types
+        match (self, other) {
+            (SendPropValue::Vector(value1), SendPropValue::Vector(value2)) => value1 == value2,
+            (SendPropValue::VectorXY(value1), SendPropValue::VectorXY(value2)) => value1 == value2,
+            (SendPropValue::Integer(value1), SendPropValue::Integer(value2)) => value1 == value2,
+            (SendPropValue::Float(value1), SendPropValue::Float(value2)) => value1 - value2 < 0.001,
+            (SendPropValue::String(value1), SendPropValue::String(value2)) => value1 == value2,
+            (SendPropValue::Array(value1), SendPropValue::Array(value2)) => value1 == value2,
+            (SendPropValue::Integer(value1), SendPropValue::Float(value2)) => {
+                *value1 as f64 == *value2 as f64
+            }
+            (SendPropValue::Float(value1), SendPropValue::Integer(value2)) => {
+                *value1 as f64 == *value2 as f64
+            }
+            (SendPropValue::Vector(value1), SendPropValue::VectorXY(value2)) => {
+                value1.x == value2.x && value1.y == value2.y && value1.z == 0.0
+            }
+            (SendPropValue::VectorXY(value1), SendPropValue::Vector(value2)) => {
+                value1.x == value2.x && value1.y == value2.y && value2.z == 0.0
+            }
+            (SendPropValue::Vector(value1), SendPropValue::Array(value2)) if value2.len() == 3 => {
+                SendPropValue::Float(value1.x) == value2[0]
+                    && SendPropValue::Float(value1.y) == value2[1]
+                    && SendPropValue::Float(value1.z) == value2[2]
+            }
+            (SendPropValue::Array(value1), SendPropValue::Vector(value2)) if value1.len() == 3 => {
+                SendPropValue::Float(value2.x) == value1[0]
+                    && SendPropValue::Float(value2.y) == value1[1]
+                    && SendPropValue::Float(value2.z) == value1[2]
+            }
+            (SendPropValue::VectorXY(value1), SendPropValue::Array(value2))
+                if value2.len() == 2 =>
+            {
+                SendPropValue::Float(value1.x) == value2[0]
+                    && SendPropValue::Float(value1.y) == value2[1]
+            }
+            (SendPropValue::Array(value1), SendPropValue::VectorXY(value2))
+                if value1.len() == 2 =>
+            {
+                SendPropValue::Float(value2.x) == value1[0]
+                    && SendPropValue::Float(value2.y) == value1[1]
+            }
+            _ => false,
+        }
+    }
 }
 
 impl fmt::Display for SendPropValue {
@@ -331,16 +384,17 @@ impl SendPropValue {
         }
     }
 
-    fn read_int(stream: &mut Stream, definition: &SendPropDefinition) -> Result<i32> {
+    fn read_int(stream: &mut Stream, definition: &SendPropDefinition) -> Result<i64> {
         if definition.flags.contains(SendPropFlag::NormalVarInt) {
             read_var_int(stream, !definition.flags.contains(SendPropFlag::Unsigned))
                 .map_err(ParseError::from)
+                .map(|int| int as i64)
         } else {
             if definition.flags.contains(SendPropFlag::Unsigned) {
                 let unsigned: u32 =
                     stream.read_sized(definition.bit_count.unwrap_or(32) as usize)?;
-                const MAX: u32 = std::i32::MAX as u32;
-                Ok((unsigned & MAX) as i32)
+                //const MAX: u32 = std::i32::MAX as u32;
+                Ok(unsigned as i64)
             } else {
                 stream
                     .read_int(definition.bit_count.unwrap_or(32) as usize)
@@ -418,7 +472,8 @@ impl SendPropValue {
                 .low_value
                 .ok_or(MalformedSendPropDefinitionError::UnsizedFloat)?;
             let raw: u32 = stream.read_int(bit_count as usize)?;
-            let percentage = (raw as f32) * get_frac_factor(bit_count as usize);
+            // is this -1 correct?, it is consistent with the js version but seems weird
+            let percentage = (raw as f32) / ((1 << bit_count) as f32 - 1.0);
             Ok(low + ((high - low) * percentage))
         }
     }
@@ -426,6 +481,12 @@ impl SendPropValue {
 
 impl From<i32> for SendPropValue {
     fn from(value: i32) -> Self {
+        SendPropValue::Integer(value as i64)
+    }
+}
+
+impl From<i64> for SendPropValue {
+    fn from(value: i64) -> Self {
         SendPropValue::Integer(value)
     }
 }

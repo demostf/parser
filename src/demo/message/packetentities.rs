@@ -1,5 +1,6 @@
 use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::demo::message::stringtable::{log_base2, read_var_int};
 use crate::demo::packet::datatable::{SendTable, SendTableName, ServerClass};
@@ -31,8 +32,9 @@ impl FromStr for EntityId {
     }
 }
 
-#[derive(BitRead, Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(BitRead, Clone, Copy, Debug, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
 #[discriminant_bits = 2]
+#[repr(u8)]
 pub enum PVS {
     Preserve = 0,
     Leave = 1,
