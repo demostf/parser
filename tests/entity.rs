@@ -47,7 +47,7 @@ struct EntityDump {
     tick: u32,
     server_class: ServerClassName,
     id: EntityId,
-    props: HashMap<SendPropName, SendPropValue>,
+    props: HashMap<String, SendPropValue>,
     pvs: PVSCompat,
 }
 
@@ -61,7 +61,12 @@ impl EntityDump {
             props: entity
                 .props
                 .into_iter()
-                .map(|prop| (prop.definition.name.clone(), prop.value))
+                .map(|prop| {
+                    (
+                        format!("{}.{}", prop.definition.owner_table, prop.definition.name),
+                        prop.value,
+                    )
+                })
                 .collect(),
             pvs: entity.pvs.into(),
         }
@@ -138,27 +143,26 @@ fn entity_test(input_file: &str, snapshot_file: &str) {
 
     assert_eq!(expected_ids, entity_ids);
 
-    for (i, (expected_entity, entity)) in expected.into_iter().zip(entities.into_iter()).enumerate()
-    {
+    for (expected_entity, entity) in expected.into_iter().zip(entities.into_iter()) {
         assert_eq!(
             expected_entity.tick, entity.tick,
             "Failed comparing entity {}",
-            i
+            entity.id
         );
         assert_eq!(
             expected_entity.id, entity.id,
             "Failed comparing entity {}",
-            i
+            entity.id
         );
         assert_eq!(
             expected_entity.server_class, entity.server_class,
             "Failed comparing entity {}",
-            i
+            entity.id
         );
         assert_eq!(
             expected_entity.pvs, entity.pvs,
             "Failed comparing entity {}",
-            i
+            entity.id
         );
         let mut prop_names: Vec<_> = entity.props.keys().collect();
         let mut expected_prop_names: Vec<_> = expected_entity.props.keys().collect();
@@ -168,7 +172,7 @@ fn entity_test(input_file: &str, snapshot_file: &str) {
         assert_eq!(
             expected_prop_names, prop_names,
             "Failed comparing entity {}",
-            i
+            entity.id
         );
 
         for prop_name in expected_prop_names {
@@ -176,12 +180,16 @@ fn entity_test(input_file: &str, snapshot_file: &str) {
                 expected_entity.props.get(prop_name),
                 entity.props.get(prop_name),
                 "Failed comparing entity {} prop {}",
-                i,
+                entity.id,
                 prop_name
             );
         }
 
-        assert_eq!(expected_entity, entity, "Failed comparing entity {}", i);
+        assert_eq!(
+            expected_entity, entity,
+            "Failed comparing entity {}",
+            entity.id
+        );
     }
 }
 
