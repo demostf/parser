@@ -23,11 +23,11 @@ pub struct ChatMassage {
 }
 
 impl ChatMassage {
-    pub fn from_message(message: SayText2Message, tick: u32) -> Self {
+    pub fn from_message(message: &SayText2Message, tick: u32) -> Self {
         ChatMassage {
             kind: message.kind,
-            from: message.from.unwrap_or_default(),
-            text: message.text,
+            from: message.from.clone().unwrap_or_default(),
+            text: message.text.clone(),
             tick,
         }
     }
@@ -104,7 +104,7 @@ pub struct Spawn {
 }
 
 impl Spawn {
-    pub fn from_event(event: PlayerSpawnEvent, tick: u32) -> Self {
+    pub fn from_event(event: &PlayerSpawnEvent, tick: u32) -> Self {
         Spawn {
             user: UserId((event.user_id & 255) as u8),
             class: Class::new(event.class),
@@ -132,7 +132,7 @@ pub struct Death {
 }
 
 impl Death {
-    pub fn from_event(event: PlayerDeathEvent, tick: u32) -> Self {
+    pub fn from_event(event: &PlayerDeathEvent, tick: u32) -> Self {
         let assister = if event.assister < (16 * 1024) {
             Some(UserId((event.assister & 255) as u8))
         } else {
@@ -142,7 +142,7 @@ impl Death {
             assister,
             tick,
             killer: UserId((event.attacker & 255) as u8),
-            weapon: event.weapon,
+            weapon: event.weapon.clone(),
             victim: UserId((event.user_id & 255) as u8),
         }
     }
@@ -156,7 +156,7 @@ pub struct Round {
 }
 
 impl Round {
-    pub fn from_event(event: TeamPlayRoundWinEvent, tick: u32) -> Self {
+    pub fn from_event(event: &TeamPlayRoundWinEvent, tick: u32) -> Self {
         Round {
             winner: Team::new(event.team as u16),
             length: event.round_time,
@@ -191,13 +191,13 @@ impl MessageHandler for Analyser {
         }
     }
 
-    fn handle_message(&mut self, message: Message, tick: u32) {
+    fn handle_message(&mut self, message: &Message, tick: u32) {
         if self.start_tick == 0 {
             self.start_tick = tick;
         }
         match message {
-            Message::GameEvent(message) => self.handle_event(message.event, tick),
-            Message::UserMessage(message) => self.handle_user_message(message, tick),
+            Message::GameEvent(message) => self.handle_event(&message.event, tick),
+            Message::UserMessage(message) => self.handle_user_message(&message, tick),
             _ => {}
         }
     }
@@ -233,11 +233,11 @@ impl Analyser {
         Self::default()
     }
 
-    fn handle_user_message(&mut self, message: UserMessage, tick: u32) {
+    fn handle_user_message(&mut self, message: &UserMessage, tick: u32) {
         if let UserMessage::SayText2(text_message) = message {
             if text_message.kind == ChatMessageKind::NameChange {
-                if let Some(from) = text_message.from {
-                    self.change_name(from, text_message.text);
+                if let Some(from) = text_message.from.clone() {
+                    self.change_name(from, text_message.text.clone());
                 }
             } else {
                 self.chat
@@ -252,7 +252,7 @@ impl Analyser {
         }
     }
 
-    fn handle_event(&mut self, event: GameEvent, tick: u32) {
+    fn handle_event(&mut self, event: &GameEvent, tick: u32) {
         const WIN_REASON_TIME_LIMIT: u8 = 6;
 
         match event {

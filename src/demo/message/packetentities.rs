@@ -44,7 +44,7 @@ pub enum PVS {
     Delete = 3,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PacketEntity {
     pub server_class: ClassId,
     pub entity_index: EntityId,

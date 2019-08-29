@@ -141,30 +141,17 @@ impl ParserState {
         }
     }
 
-    pub fn handle_message(&mut self, message: Message, _tick: u32) -> Option<Message> {
+    pub fn handle_message(&mut self, message: Message, _tick: u32) {
         match message {
             Message::ServerInfo(message) => {
                 self.demo_meta.version = message.version;
                 self.demo_meta.game = message.game;
                 self.demo_meta.interval_per_tick = message.interval_per_tick;
-                None
             }
             Message::GameEventList(message) => {
                 self.event_definitions = message.event_list;
-                None
             }
             Message::PacketEntities(ent_message) => {
-                if ent_message.updated_base_line {
-                    let old_index = ent_message.base_line as usize;
-                    let new_index = 1 - old_index;
-                    self.instance_baselines.swap(0, 1);
-
-                    for entity in ent_message.entities.iter() {
-                        self.instance_baselines[new_index]
-                            .insert(entity.entity_index, entity.props.clone());
-                    }
-                }
-
                 for removed in ent_message.removed_entities.iter() {
                     self.entity_classes.remove(removed);
                 }
@@ -176,9 +163,19 @@ impl ParserState {
                     self.entity_classes
                         .insert(entity.entity_index, entity.server_class);
                 }
-                Some(Message::PacketEntities(ent_message))
+
+                if ent_message.updated_base_line {
+                    let old_index = ent_message.base_line as usize;
+                    let new_index = 1 - old_index;
+                    self.instance_baselines.swap(0, 1);
+
+                    for entity in ent_message.entities {
+                        self.instance_baselines[new_index]
+                            .insert(entity.entity_index, entity.props);
+                    }
+                }
             }
-            _ => Some(message),
+            _ => {}
         }
     }
 

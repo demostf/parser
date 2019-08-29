@@ -107,7 +107,7 @@ impl ParseBitSkip for UserMessage {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub enum ChatMessageKind {
     #[serde(rename = "TF_Chat_All")]
     ChatAll,

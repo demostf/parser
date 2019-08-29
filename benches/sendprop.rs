@@ -26,10 +26,6 @@ impl MessageHandler for SendPropAnalyser {
         false
     }
 
-    fn handle_message(&mut self, message: Message, tick: u32) {}
-
-    fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {}
-
     fn get_output(self, state: ParserState) -> Self::Output {
         state
             .send_tables

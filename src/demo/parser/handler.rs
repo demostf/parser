@@ -11,7 +11,7 @@ pub trait MessageHandler {
 
     fn does_handle(message_type: MessageType) -> bool;
 
-    fn handle_message(&mut self, message: Message, tick: u32) {}
+    fn handle_message(&mut self, message: &Message, tick: u32) {}
 
     fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {}
 
@@ -107,15 +107,10 @@ impl<T: MessageHandler> DemoHandler<T> {
 
     fn handle_message(&mut self, message: Message) {
         let message_type = message.get_message_type();
-        if ParserState::does_handle(message_type) {
-            if let Some(message) = self.state_handler.handle_message(message, self.tick) {
-                if T::does_handle(message_type) {
-                    self.analyser.handle_message(message, self.tick);
-                }
-            }
-        } else if T::does_handle(message_type) {
-            self.analyser.handle_message(message, self.tick);
+        if T::does_handle(message_type) {
+            self.analyser.handle_message(&message, self.tick);
         }
+        self.state_handler.handle_message(message, self.tick);
     }
 
     pub fn get_output(self) -> T::Output {
