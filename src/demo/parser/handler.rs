@@ -11,9 +11,11 @@ pub trait MessageHandler {
 
     fn does_handle(message_type: MessageType) -> bool;
 
-    fn handle_message(&mut self, message: Message, tick: u32);
+    fn handle_message(&mut self, message: Message, tick: u32) {}
 
-    fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry);
+    fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {}
+
+    fn handle_data_tables(&mut self, tables: &[SendTable]) {}
 
     fn get_output(self, state: ParserState) -> Self::Output;
 }
@@ -98,6 +100,7 @@ impl<T: MessageHandler> DemoHandler<T> {
     }
 
     fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
+        self.analyser.handle_data_tables(&send_tables);
         self.state_handler
             .handle_data_table(send_tables, server_classes);
     }

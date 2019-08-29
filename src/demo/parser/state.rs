@@ -27,7 +27,7 @@ pub struct ParserState {
     pub event_definitions: Vec<GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
     pub entity_classes: HashMap<EntityId, ClassId>,
-    pub send_tables: HashMap<SendTableName, SendTable>,
+    pub send_tables: HashMap<ClassId, SendTable>,
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub demo_meta: DemoMeta,
@@ -90,10 +90,20 @@ impl ParserState {
         send_tables: Vec<SendTable>,
         server_classes: Vec<ServerClass>,
     ) {
-        for table in send_tables {
-            self.send_tables.insert(table.name.clone(), table);
+        let mut send_tables: HashMap<SendTableName, SendTable> = send_tables
+            .into_iter()
+            .map(|table| (table.name.clone(), table))
+            .collect();
+
+        self.server_classes = server_classes;
+
+        self.send_tables.reserve(self.server_classes.len());
+
+        for class in self.server_classes.iter() {
+            if let Some(table) = send_tables.remove(&class.data_table) {
+                self.send_tables.insert(class.id, table);
+            }
         }
-        self.server_classes = server_classes
     }
 
     pub fn handle_string_table_meta(&mut self, table: StringTableMeta) {

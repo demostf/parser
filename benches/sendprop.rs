@@ -34,7 +34,7 @@ impl MessageHandler for SendPropAnalyser {
         state
             .send_tables
             .into_iter()
-            .map(|(_k, v)| ParseSendTable {
+            .map(|(_, v)| ParseSendTable {
                 name: v.name,
                 props: v.props,
                 needs_decoder: v.needs_decoder,

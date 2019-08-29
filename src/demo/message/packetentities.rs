@@ -105,40 +105,32 @@ pub struct PacketEntitiesMessage {
     pub updated_base_line: bool,
 }
 
-fn get_send_table<'a>(state: &'a ParserState, table: &SendTableName) -> Result<&'a SendTable> {
+fn get_send_table(state: &ParserState, class: ClassId) -> Result<&SendTable> {
     state
         .send_tables
-        .get(table)
-        .ok_or_else(|| MalformedDemoError::UnknownSendTable(table.clone()).into())
+        .get(&class)
+        .ok_or_else(|| MalformedDemoError::UnknownServerClass(class).into())
 }
 
 fn get_entity_for_update(
     state: &ParserState,
     entity_index: EntityId,
     pvs: PVS,
-) -> Result<(PacketEntity, &ServerClass)> {
+) -> Result<PacketEntity> {
     let class_id = *state
         .entity_classes
         .get(&entity_index)
         .ok_or_else(|| MalformedDemoError::UnknownEntity(entity_index))?;
 
-    let server_class = state
-        .server_classes
-        .get(usize::from(class_id))
-        .ok_or_else(|| MalformedDemoError::UnknownServerClass(class_id.into()))?;
-
-    Ok((
-        PacketEntity {
-            server_class: class_id,
-            entity_index,
-            props: Vec::new(),
-            in_pvs: false,
-            pvs,
-            serial_number: 0,
-            delay: None,
-        },
-        server_class,
-    ))
+    Ok(PacketEntity {
+        server_class: class_id,
+        entity_index,
+        props: Vec::new(),
+        in_pvs: false,
+        pvs,
+        serial_number: 0,
+        delay: None,
+    })
 }
 
 impl Parse for PacketEntitiesMessage {
@@ -163,23 +155,23 @@ impl Parse for PacketEntitiesMessage {
 
             let pvs = data.read()?;
             if pvs == PVS::Enter {
-                let (mut entity, server_class) =
+                let mut entity =
                     Self::read_enter(&mut data, entity_index, state, base_line as usize)?;
-                let send_table = get_send_table(state, &server_class.data_table)?;
+                let send_table = get_send_table(state, entity.server_class)?;
                 let updated_props = Self::read_update(&mut data, send_table)?;
                 entity.apply_update(updated_props);
 
                 entities.push(entity);
             } else if pvs == PVS::Preserve {
-                let (mut entity, server_class) = get_entity_for_update(state, entity_index, pvs)?;
-                let send_table = get_send_table(state, &server_class.data_table)?;
+                let mut entity = get_entity_for_update(state, entity_index, pvs)?;
+                let send_table = get_send_table(state, entity.server_class)?;
 
                 let updated_props = Self::read_update(&mut data, send_table)?;
                 entity.props = updated_props;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {
-                let (entity, server_class) = get_entity_for_update(state, entity_index, pvs)?;
+                let entity = get_entity_for_update(state, entity_index, pvs)?;
                 entities.push(entity);
             }
         }
@@ -202,47 +194,38 @@ impl Parse for PacketEntitiesMessage {
 }
 
 impl PacketEntitiesMessage {
-    fn read_enter<'a>(
+    fn read_enter(
         stream: &mut Stream,
         entity_index: EntityId,
-        state: &'a ParserState,
+        state: &ParserState,
         baseline_index: usize,
-    ) -> Result<(PacketEntity, &'a ServerClass)> {
+    ) -> Result<PacketEntity> {
         let bits = log_base2(state.server_classes.len()) + 1;
-        let class_index = stream.read_sized::<u16>(bits as usize)? as usize;
-        let server_class = state
-            .server_classes
-            .get(class_index)
-            .ok_or_else(|| ParseError::from(MalformedDemoError::UnknownServerClass(class_index)))?;
+        let class_index: ClassId = stream.read_sized::<u16>(bits as usize)?.into();
 
         let serial = stream.read_sized(10)?;
         let send_table = state
             .send_tables
-            .get(&server_class.data_table)
-            .ok_or_else(|| MalformedDemoError::UnknownSendTable(server_class.data_table.clone()))?;
+            .get(&class_index)
+            .ok_or_else(|| MalformedDemoError::UnknownServerClass(class_index))?;
 
         let props = match state.instance_baselines[baseline_index].get(&entity_index) {
             Some(baseline) => baseline.clone(),
-            None => match state.static_baselines.get(&server_class.id) {
-                Some(static_baseline) => {
-                    state.get_static_baseline((class_index as u16).into(), send_table)?
-                }
+            None => match state.static_baselines.get(&class_index) {
+                Some(static_baseline) => state.get_static_baseline(class_index, send_table)?,
                 None => Vec::new(),
             },
         };
 
-        Ok((
-            PacketEntity {
-                server_class: server_class.id,
-                entity_index,
-                props,
-                in_pvs: true,
-                pvs: PVS::Enter,
-                serial_number: serial,
-                delay: None,
-            },
-            server_class,
-        ))
+        Ok(PacketEntity {
+            server_class: class_index,
+            entity_index,
+            props,
+            in_pvs: true,
+            pvs: PVS::Enter,
+            serial_number: serial,
+            delay: None,
+        })
     }
 
     pub fn read_update(stream: &mut Stream, send_table: &SendTable) -> Result<Vec<SendProp>> {

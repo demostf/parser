@@ -7,13 +7,21 @@ use std::fs;
 
 use std::collections::{HashMap, HashSet};
 use tf_demo_parser::demo::message::Message;
-use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName};
+use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTable, SendTableName};
 use tf_demo_parser::demo::packet::stringtable::StringTableEntry;
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::demo::sendprop::SendPropDefinition;
 use tf_demo_parser::{Demo, DemoParser, MatchState, MessageType, MessageTypeAnalyser, ParserState};
 
-pub struct SendPropAnalyser;
+pub struct SendPropAnalyser {
+    tables: Vec<ParseSendTable>,
+}
+
+impl SendPropAnalyser {
+    pub fn new() -> Self {
+        SendPropAnalyser { tables: Vec::new() }
+    }
+}
 
 impl MessageHandler for SendPropAnalyser {
     type Output = Vec<ParseSendTable>;
@@ -22,20 +30,19 @@ impl MessageHandler for SendPropAnalyser {
         false
     }
 
-    fn handle_message(&mut self, message: Message, tick: u32) {}
-
-    fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {}
-
-    fn get_output(self, state: ParserState) -> Self::Output {
-        state
-            .send_tables
-            .into_iter()
-            .map(|(_k, v)| ParseSendTable {
-                name: v.name,
-                props: v.props,
+    fn handle_data_tables(&mut self, tables: &[SendTable]) {
+        self.tables = tables
+            .iter()
+            .map(|v| ParseSendTable {
+                name: v.name.clone(),
+                props: v.props.clone(),
                 needs_decoder: v.needs_decoder,
             })
             .collect()
+    }
+
+    fn get_output(self, state: ParserState) -> Self::Output {
+        self.tables
     }
 }
 
@@ -43,7 +50,7 @@ fn flatten_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
     let (_, send_tables) =
-        DemoParser::parse_with_analyser(demo.get_stream(), SendPropAnalyser).unwrap();
+        DemoParser::parse_with_analyser(demo.get_stream(), SendPropAnalyser::new()).unwrap();
     let flat_props: HashMap<SendTableName, Vec<String>> = send_tables
         .iter()
         .map(|table| {
@@ -70,7 +77,6 @@ fn flatten_test(input_file: &str, snapshot_file: &str) {
 
     assert_eq!(expected_tables, actual_tables);
     for table in expected_tables {
-        dbg!(table);
         assert_eq!(expected[table], flat_props[table]);
     }
 }

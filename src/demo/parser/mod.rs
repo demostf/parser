@@ -4,7 +4,7 @@ pub use self::messagetypeanalyser::MessageTypeAnalyser;
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};
 use crate::demo::header::Header;
 use crate::demo::message::packetentities::EntityId;
-use crate::demo::packet::datatable::SendTableName;
+use crate::demo::packet::datatable::{ClassId, SendTableName};
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 pub use crate::demo::parser::analyser::MatchState;
@@ -81,7 +81,7 @@ pub enum MalformedDemoError {
         found_type: GameEventValueType,
     },
     #[error(display = "An entity with an unknown server class({}) was read", _0)]
-    UnknownServerClass(usize),
+    UnknownServerClass(ClassId),
     #[error(display = "Unknown send table: {}", _0)]
     UnknownSendTable(SendTableName),
     #[error(

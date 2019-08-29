@@ -52,7 +52,9 @@ pub struct ServerClass {
     pub data_table: SendTableName,
 }
 
-#[derive(BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
+#[derive(
+    BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display, PartialOrd, Ord,
+)]
 pub struct SendTableName(Rc<String>);
 
 impl From<String> for SendTableName {
@@ -190,7 +192,7 @@ impl<'a> Exclude<'a> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SendTable {
     pub name: SendTableName,
     pub props: Vec<Rc<SendPropDefinition>>,
