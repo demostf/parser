@@ -108,7 +108,7 @@ pub struct PacketEntitiesMessage {
 fn get_send_table(state: &ParserState, class: ClassId) -> Result<&SendTable> {
     state
         .send_tables
-        .get(&class)
+        .get(usize::from(class))
         .ok_or_else(|| MalformedDemoError::UnknownServerClass(class).into())
 }
 
@@ -206,7 +206,7 @@ impl PacketEntitiesMessage {
         let serial = stream.read_sized(10)?;
         let send_table = state
             .send_tables
-            .get(&class_index)
+            .get(usize::from(class_index))
             .ok_or_else(|| MalformedDemoError::UnknownServerClass(class_index))?;
 
         let props = match state.instance_baselines[baseline_index].get(&entity_index) {

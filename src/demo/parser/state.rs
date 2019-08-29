@@ -10,6 +10,7 @@ use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::analyser::Analyser;
 use crate::demo::parser::handler::MessageHandler;
 use crate::demo::sendprop::SendProp;
+use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -26,8 +27,8 @@ pub struct ParserState {
     pub parsed_static_baselines: RefCell<HashMap<ClassId, Vec<SendProp>>>,
     pub event_definitions: Vec<GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
-    pub entity_classes: HashMap<EntityId, ClassId>,
-    pub send_tables: HashMap<ClassId, SendTable>,
+    pub entity_classes: HashMap<EntityId, ClassId, NullHasherBuilder>,
+    pub send_tables: Vec<SendTable>, // indexed by ClassId
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
     pub demo_meta: DemoMeta,
@@ -57,8 +58,8 @@ impl ParserState {
             parsed_static_baselines: RefCell::new(HashMap::new()),
             event_definitions: Vec::new(),
             string_tables: Vec::new(),
-            entity_classes: HashMap::new(),
-            send_tables: HashMap::new(),
+            entity_classes: HashMap::with_hasher(NullHasherBuilder),
+            send_tables: Vec::new(),
             server_classes: Vec::new(),
             instance_baselines: [HashMap::new(), HashMap::new()],
             demo_meta: DemoMeta::default(),
@@ -99,9 +100,14 @@ impl ParserState {
 
         self.send_tables.reserve(self.server_classes.len());
 
+        let mut last: usize = 0;
+
         for class in self.server_classes.iter() {
+            assert_eq!(usize::from(class.id), last);
+            last += 1;
+
             if let Some(table) = send_tables.remove(&class.data_table) {
-                self.send_tables.insert(class.id, table);
+                self.send_tables.push(table);
             }
         }
     }

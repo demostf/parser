@@ -14,3 +14,4 @@ pub use crate::demo::{
 };
 
 pub mod demo;
+mod nullhasher;
