@@ -158,16 +158,14 @@ impl Parse for PacketEntitiesMessage {
                 let mut entity =
                     Self::read_enter(&mut data, entity_index, state, base_line as usize)?;
                 let send_table = get_send_table(state, entity.server_class)?;
-                let updated_props = Self::read_update(&mut data, send_table, &mut entity.props)?;
-                //entity.apply_update(updated_props);
+                Self::read_update(&mut data, send_table, &mut entity.props)?;
 
                 entities.push(entity);
             } else if pvs == PVS::Preserve {
                 let mut entity = get_entity_for_update(state, entity_index, pvs)?;
                 let send_table = get_send_table(state, entity.server_class)?;
 
-                let updated_props = Self::read_update(&mut data, send_table, &mut entity.props)?;
-                //                entity.props = updated_props;
+                Self::read_update(&mut data, send_table, &mut entity.props)?;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {

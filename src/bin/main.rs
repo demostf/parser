@@ -3,6 +3,11 @@ use std::fs;
 
 pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Result, Stream};
 
+extern crate jemallocator;
+
+#[global_allocator]
+static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
+
 fn main() -> std::result::Result<(), Box<ParseError>> {
     better_panic::install();
 
