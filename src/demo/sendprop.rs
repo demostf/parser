@@ -44,6 +44,7 @@ pub struct SendPropDefinition {
     pub bit_count: Option<u32>,
     pub element_count: Option<u16>,
     pub array_property: Option<Box<SendPropDefinition>>,
+    pub index: SendPropDefinitionIndex,
 }
 
 impl PartialEq for SendPropDefinition {
@@ -129,6 +130,7 @@ impl SendPropDefinition {
             element_count: self.element_count,
             array_property: Some(Box::new(array_property)),
             owner_table: self.owner_table,
+            index: self.index,
         }
     }
 
@@ -145,7 +147,11 @@ impl SendPropDefinition {
         }
     }
 
-    pub fn read(stream: &mut Stream, owner_table: SendTableName) -> ReadResult<Self> {
+    pub fn read(
+        stream: &mut Stream,
+        owner_table: SendTableName,
+        index: SendPropDefinitionIndex,
+    ) -> ReadResult<Self> {
         let prop_type = SendPropType::read(stream)?;
         let name = stream.read_string(None)?.into();
         let flags = SendPropFlags::read(stream)?;
@@ -189,6 +195,7 @@ impl SendPropDefinition {
             element_count,
             array_property: None,
             owner_table,
+            index,
         })
     }
 
@@ -518,6 +525,15 @@ impl From<String> for SendPropValue {
 impl From<Vec<SendPropValue>> for SendPropValue {
     fn from(value: Vec<SendPropValue>) -> Self {
         SendPropValue::Array(value)
+    }
+}
+
+#[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
+pub struct SendPropDefinitionIndex(usize, usize);
+
+impl SendPropDefinitionIndex {
+    pub fn new(table: usize, prop: usize) -> Self {
+        SendPropDefinitionIndex(table, prop)
     }
 }
 

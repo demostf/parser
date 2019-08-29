@@ -1,7 +1,9 @@
 use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::parser::MalformedSendPropDefinitionError;
-use crate::demo::sendprop::{SendPropDefinition, SendPropFlag, SendPropName, SendPropType};
+use crate::demo::sendprop::{
+    SendPropDefinition, SendPropDefinitionIndex, SendPropFlag, SendPropName, SendPropType,
+};
 use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::Display;
 use serde::{Deserialize, Serialize};
@@ -70,8 +72,8 @@ pub struct ParseSendTable {
     pub needs_decoder: bool,
 }
 
-impl Parse for ParseSendTable {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+impl ParseSendTable {
+    fn parse(stream: &mut Stream, _state: &ParserState, table_index: usize) -> Result<Self> {
         let needs_decoder = stream.read()?;
         let raw_name: String = stream.read()?;
         let name: SendTableName = raw_name.into();
@@ -80,8 +82,10 @@ impl Parse for ParseSendTable {
         let mut array_element_prop = None;
         let mut props = Vec::with_capacity(prop_count);
 
-        for _ in 0..prop_count {
-            let prop: SendPropDefinition = SendPropDefinition::read(stream, name.clone())?;
+        for prop_index in 0..prop_count {
+            let definition_index = SendPropDefinitionIndex::new(table_index, prop_index);
+            let prop: SendPropDefinition =
+                SendPropDefinition::read(stream, name.clone(), definition_index)?;
             if prop.flags.contains(SendPropFlag::InsideArray) {
                 if array_element_prop.is_some() || prop.flags.contains(SendPropFlag::ChangesOften) {
                     return Err(MalformedSendPropDefinitionError::ArrayChangesOften.into());
@@ -214,8 +218,10 @@ impl Parse for DataTablePacket {
         let mut packet_data = stream.read_bits(len * 8)?;
 
         let mut parse_tables = Vec::new();
+        let mut table_index = 0;
         while packet_data.read_bool()? {
-            let table = ParseSendTable::parse(&mut packet_data, state)?;
+            let table = ParseSendTable::parse(&mut packet_data, state, table_index)?;
+            table_index += 1;
             parse_tables.push(table);
         }
 
