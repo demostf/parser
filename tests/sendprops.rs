@@ -30,15 +30,8 @@ impl MessageHandler for SendPropAnalyser {
         false
     }
 
-    fn handle_data_tables(&mut self, tables: &[SendTable]) {
-        self.tables = tables
-            .iter()
-            .map(|v| ParseSendTable {
-                name: v.name.clone(),
-                props: v.props.clone(),
-                needs_decoder: v.needs_decoder,
-            })
-            .collect()
+    fn handle_data_tables(&mut self, tables: &[ParseSendTable]) {
+        self.tables = tables.to_vec()
     }
 
     fn get_output(self, state: ParserState) -> Self::Output {

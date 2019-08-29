@@ -65,7 +65,7 @@ impl From<String> for SendTableName {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ParseSendTable {
     pub name: SendTableName,
     pub props: Vec<Rc<SendPropDefinition>>,
@@ -207,7 +207,7 @@ pub struct SendTable {
 #[derive(Debug)]
 pub struct DataTablePacket {
     pub tick: u32,
-    pub tables: Vec<SendTable>,
+    pub tables: Vec<ParseSendTable>,
     pub server_classes: Vec<ServerClass>,
 }
 
@@ -217,29 +217,13 @@ impl Parse for DataTablePacket {
         let len = stream.read_int::<usize>(32)?;
         let mut packet_data = stream.read_bits(len * 8)?;
 
-        let mut parse_tables = Vec::new();
+        let mut tables = Vec::new();
         let mut table_index = 0;
         while packet_data.read_bool()? {
             let table = ParseSendTable::parse(&mut packet_data, state, table_index)?;
             table_index += 1;
-            parse_tables.push(table);
+            tables.push(table);
         }
-
-        let flat_props: Vec<_> = parse_tables
-            .iter()
-            .map(|table| table.flatten_props(&parse_tables))
-            .collect();
-
-        let tables = parse_tables
-            .into_iter()
-            .zip(flat_props.into_iter())
-            .map(|(parse_table, flat)| SendTable {
-                name: parse_table.name,
-                props: parse_table.props,
-                needs_decoder: parse_table.needs_decoder,
-                flattened_props: flat,
-            })
-            .collect();
 
         let server_class_count = packet_data.read_int(16)?;
         let server_classes = packet_data.read_sized(server_class_count)?;

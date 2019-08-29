@@ -5,7 +5,9 @@ use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::{EntityId, PacketEntitiesMessage, PVS};
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::message::{Message, MessageType};
-use crate::demo::packet::datatable::{ClassId, SendTable, SendTableName, ServerClass};
+use crate::demo::packet::datatable::{
+    ClassId, ParseSendTable, SendTable, SendTableName, ServerClass,
+};
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::analyser::Analyser;
 use crate::demo::parser::handler::MessageHandler;
@@ -93,26 +95,44 @@ impl ParserState {
 
     pub fn handle_data_table(
         &mut self,
-        send_tables: Vec<SendTable>,
+        parse_tables: Vec<ParseSendTable>,
         server_classes: Vec<ServerClass>,
     ) {
-        let mut send_tables: HashMap<SendTableName, SendTable> = send_tables
-            .into_iter()
-            .map(|table| (table.name.clone(), table))
-            .collect();
+        if self.handle_entities {
+            let flat_props: Vec<_> = parse_tables
+                .iter()
+                .map(|table| table.flatten_props(&parse_tables))
+                .collect();
 
-        self.server_classes = server_classes;
+            let send_tables: Vec<_> = parse_tables
+                .into_iter()
+                .zip(flat_props.into_iter())
+                .map(|(parse_table, flat)| SendTable {
+                    name: parse_table.name,
+                    props: parse_table.props,
+                    needs_decoder: parse_table.needs_decoder,
+                    flattened_props: flat,
+                })
+                .collect();
 
-        self.send_tables.reserve(self.server_classes.len());
+            let mut send_tables: HashMap<SendTableName, SendTable> = send_tables
+                .into_iter()
+                .map(|table| (table.name.clone(), table))
+                .collect();
 
-        let mut last: usize = 0;
+            self.server_classes = server_classes;
 
-        for class in self.server_classes.iter() {
-            assert_eq!(usize::from(class.id), last);
-            last += 1;
+            self.send_tables.reserve(self.server_classes.len());
 
-            if let Some(table) = send_tables.remove(&class.data_table) {
-                self.send_tables.push(table);
+            let mut last: usize = 0;
+
+            for class in self.server_classes.iter() {
+                assert_eq!(usize::from(class.id), last);
+                last += 1;
+
+                if let Some(table) = send_tables.remove(&class.data_table) {
+                    self.send_tables.push(table);
+                }
             }
         }
     }

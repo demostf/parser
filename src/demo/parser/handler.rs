@@ -1,5 +1,5 @@
 use crate::demo::message::{Message, MessageType};
-use crate::demo::packet::datatable::{SendTable, ServerClass};
+use crate::demo::packet::datatable::{ParseSendTable, SendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
@@ -15,7 +15,7 @@ pub trait MessageHandler {
 
     fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {}
 
-    fn handle_data_tables(&mut self, tables: &[SendTable]) {}
+    fn handle_data_tables(&mut self, tables: &[ParseSendTable]) {}
 
     fn get_output(self, state: ParserState) -> Self::Output;
 }
@@ -99,7 +99,11 @@ impl<T: MessageHandler> DemoHandler<T> {
         }
     }
 
-    fn handle_data_table(&mut self, send_tables: Vec<SendTable>, server_classes: Vec<ServerClass>) {
+    fn handle_data_table(
+        &mut self,
+        send_tables: Vec<ParseSendTable>,
+        server_classes: Vec<ServerClass>,
+    ) {
         self.analyser.handle_data_tables(&send_tables);
         self.state_handler
             .handle_data_table(send_tables, server_classes);
