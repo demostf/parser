@@ -47,7 +47,9 @@ impl StaticBaseline {
     }
 
     pub fn parse(&self, send_table: &SendTable) -> Result<Vec<SendProp>> {
-        PacketEntitiesMessage::read_update(&mut self.raw.clone(), send_table)
+        let mut props = Vec::with_capacity(8);
+        PacketEntitiesMessage::read_update(&mut self.raw.clone(), send_table, &mut props)?;
+        Ok(props)
     }
 }
 
@@ -84,7 +86,7 @@ impl ParserState {
                     let props = static_baseline.parse(send_table)?;
                     cached.entry(class_id).or_insert(props).clone()
                 }
-                None => Vec::new(),
+                None => Vec::with_capacity(8),
             },
         })
     }

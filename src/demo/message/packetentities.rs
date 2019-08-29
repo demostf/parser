@@ -125,7 +125,7 @@ fn get_entity_for_update(
     Ok(PacketEntity {
         server_class: class_id,
         entity_index,
-        props: Vec::new(),
+        props: Vec::with_capacity(8),
         in_pvs: false,
         pvs,
         serial_number: 0,
@@ -158,16 +158,16 @@ impl Parse for PacketEntitiesMessage {
                 let mut entity =
                     Self::read_enter(&mut data, entity_index, state, base_line as usize)?;
                 let send_table = get_send_table(state, entity.server_class)?;
-                let updated_props = Self::read_update(&mut data, send_table)?;
-                entity.apply_update(updated_props);
+                let updated_props = Self::read_update(&mut data, send_table, &mut entity.props)?;
+                //entity.apply_update(updated_props);
 
                 entities.push(entity);
             } else if pvs == PVS::Preserve {
                 let mut entity = get_entity_for_update(state, entity_index, pvs)?;
                 let send_table = get_send_table(state, entity.server_class)?;
 
-                let updated_props = Self::read_update(&mut data, send_table)?;
-                entity.props = updated_props;
+                let updated_props = Self::read_update(&mut data, send_table, &mut entity.props)?;
+                //                entity.props = updated_props;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {
@@ -213,7 +213,7 @@ impl PacketEntitiesMessage {
             Some(baseline) => baseline.clone(),
             None => match state.static_baselines.get(&class_index) {
                 Some(static_baseline) => state.get_static_baseline(class_index, send_table)?,
-                None => Vec::new(),
+                None => Vec::with_capacity(8),
             },
         };
 
@@ -228,10 +228,14 @@ impl PacketEntitiesMessage {
         })
     }
 
-    pub fn read_update(stream: &mut Stream, send_table: &SendTable) -> Result<Vec<SendProp>> {
+    pub fn read_update(
+        stream: &mut Stream,
+        send_table: &SendTable,
+        props: &mut Vec<SendProp>,
+    ) -> Result<()> {
         let mut index = -1;
         //let mut props: HashMap<i32, SendProp> = HashMap::new();
-        let mut props = Vec::with_capacity(8);
+        //let mut props = Vec::with_capacity(8);
 
         while stream.read()? {
             let diff: u32 = read_bit_var(stream)?;
@@ -254,7 +258,7 @@ impl PacketEntitiesMessage {
             }
         }
 
-        Ok(props)
+        Ok(())
         //Ok(props.into_iter().map(|(_, prop)| prop).collect())
     }
 }
