@@ -49,7 +49,7 @@ pub struct SendPropDefinition {
 
 impl PartialEq for SendPropDefinition {
     fn eq(&self, other: &Self) -> bool {
-        self.owner_table == other.owner_table && self.name == other.name
+        self.index == other.index
     }
 }
 
@@ -529,11 +529,12 @@ impl From<Vec<SendPropValue>> for SendPropValue {
 }
 
 #[derive(Debug, Clone, Ord, PartialOrd, Eq, PartialEq)]
-pub struct SendPropDefinitionIndex(usize, usize);
+pub struct SendPropDefinitionIndex(u32);
 
 impl SendPropDefinitionIndex {
     pub fn new(table: usize, prop: usize) -> Self {
-        SendPropDefinitionIndex(table, prop)
+        // there can be at most 1024 (10 bits) props per table
+        SendPropDefinitionIndex((table * 1024 + prop) as u32)
     }
 }
 

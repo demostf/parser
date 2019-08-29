@@ -69,7 +69,7 @@ impl PacketEntity {
     fn get_prop_by_definition(&mut self, definition: &SendPropDefinition) -> Option<&mut SendProp> {
         self.props
             .iter_mut()
-            .find(|prop| prop.definition.as_ref().eq(definition))
+            .find(|prop| prop.definition.index == definition.index)
     }
 
     pub fn apply_update(&mut self, props: Vec<SendProp>) {
