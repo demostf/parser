@@ -23,14 +23,14 @@ pub struct DemoMeta {
 }
 
 pub struct ParserState {
-    pub static_baselines: HashMap<ClassId, StaticBaseline>,
-    pub parsed_static_baselines: RefCell<HashMap<ClassId, Vec<SendProp>>>,
+    pub static_baselines: HashMap<ClassId, StaticBaseline, NullHasherBuilder>,
+    pub parsed_static_baselines: RefCell<HashMap<ClassId, Vec<SendProp>, NullHasherBuilder>>,
     pub event_definitions: Vec<GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
     pub entity_classes: HashMap<EntityId, ClassId, NullHasherBuilder>,
     pub send_tables: Vec<SendTable>, // indexed by ClassId
     pub server_classes: Vec<ServerClass>,
-    pub instance_baselines: [HashMap<EntityId, Vec<SendProp>>; 2],
+    pub instance_baselines: [HashMap<EntityId, Vec<SendProp>, NullHasherBuilder>; 2],
     pub demo_meta: DemoMeta,
     analyser_handles: fn(message_type: MessageType) -> bool,
     handle_entities: bool,
@@ -54,14 +54,17 @@ impl StaticBaseline {
 impl ParserState {
     pub fn new(analyser_handles: fn(message_type: MessageType) -> bool) -> Self {
         ParserState {
-            static_baselines: HashMap::new(),
-            parsed_static_baselines: RefCell::new(HashMap::new()),
+            static_baselines: HashMap::with_hasher(NullHasherBuilder),
+            parsed_static_baselines: RefCell::new(HashMap::with_hasher(NullHasherBuilder)),
             event_definitions: Vec::new(),
             string_tables: Vec::new(),
             entity_classes: HashMap::with_hasher(NullHasherBuilder),
             send_tables: Vec::new(),
             server_classes: Vec::new(),
-            instance_baselines: [HashMap::new(), HashMap::new()],
+            instance_baselines: [
+                HashMap::with_hasher(NullHasherBuilder),
+                HashMap::with_hasher(NullHasherBuilder),
+            ],
             demo_meta: DemoMeta::default(),
             analyser_handles,
             handle_entities: analyser_handles(MessageType::PacketEntities),

@@ -15,7 +15,12 @@ impl Hasher for NullHasher {
 
     #[inline]
     fn write(&mut self, _msg: &[u8]) {
-        panic!("can only hash u64 as u32");
+        panic!("can only hash u64,u32,u16");
+    }
+
+    #[inline]
+    fn write_u16(&mut self, data: u16) {
+        self.data = data as u64
     }
 
     #[inline]
