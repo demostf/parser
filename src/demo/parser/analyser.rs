@@ -204,14 +204,13 @@ impl MessageHandler for Analyser {
 
     fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
         match table.as_str() {
-            "userinfo" => match (&entry.text, &entry.extra_data) {
-                (Some(text), Some(data)) => {
+            "userinfo" => {
+                if let (Some(text), Some(data)) = (&entry.text, &entry.extra_data) {
                     if data.byte_len > 32 {
                         let _ = self.parse_user_info(text, data.data.clone());
                     }
                 }
-                _ => {}
-            },
+            }
             _ => {}
         }
     }

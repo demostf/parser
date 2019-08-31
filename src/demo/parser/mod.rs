@@ -183,11 +183,34 @@ impl DemoParser {
         Self::parse_with_analyser(stream, Analyser::new())
     }
 
+    pub fn parse_all(stream: Stream) -> Result<(Header, MatchState)> {
+        Self::parse_all_with_analyser(stream, Analyser::new())
+    }
+
     pub fn parse_with_analyser<T: MessageHandler>(
-        mut stream: Stream,
+        stream: Stream,
         analyser: T,
     ) -> Result<(Header, T::Output)> {
-        let mut handler = DemoHandler::with_analyser(analyser);
+        Self::parse(stream, analyser, false)
+    }
+
+    pub fn parse_all_with_analyser<T: MessageHandler>(
+        stream: Stream,
+        analyser: T,
+    ) -> Result<(Header, T::Output)> {
+        Self::parse(stream, analyser, true)
+    }
+
+    fn parse<T: MessageHandler>(
+        mut stream: Stream,
+        analyser: T,
+        all: bool,
+    ) -> Result<(Header, T::Output)> {
+        let mut handler = if all {
+            DemoHandler::parse_all_with_analyser(analyser)
+        } else {
+            DemoHandler::with_analyser(analyser)
+        };
         let header = Header::read(&mut stream)?;
         loop {
             let packet = Packet::parse(&mut stream, handler.get_parser_state())?;

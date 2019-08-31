@@ -35,7 +35,17 @@ impl DemoHandler<Analyser> {
 
 impl<T: MessageHandler> DemoHandler<T> {
     pub fn with_analyser(analyser: T) -> Self {
-        let state_handler = ParserState::new(T::does_handle);
+        let state_handler = ParserState::new(T::does_handle, false);
+
+        DemoHandler {
+            tick: 0,
+            string_table_names: Vec::new(),
+            analyser,
+            state_handler,
+        }
+    }
+    pub fn parse_all_with_analyser(analyser: T) -> Self {
+        let state_handler = ParserState::new(T::does_handle, true);
 
         DemoHandler {
             tick: 0,

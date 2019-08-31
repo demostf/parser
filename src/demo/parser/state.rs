@@ -36,6 +36,7 @@ pub struct ParserState {
     pub demo_meta: DemoMeta,
     analyser_handles: fn(message_type: MessageType) -> bool,
     handle_entities: bool,
+    parse_all: bool,
 }
 
 pub struct StaticBaseline {
@@ -56,7 +57,7 @@ impl StaticBaseline {
 }
 
 impl ParserState {
-    pub fn new(analyser_handles: fn(message_type: MessageType) -> bool) -> Self {
+    pub fn new(analyser_handles: fn(message_type: MessageType) -> bool, parse_all: bool) -> Self {
         ParserState {
             static_baselines: HashMap::with_hasher(NullHasherBuilder),
             parsed_static_baselines: RefCell::new(HashMap::with_hasher(NullHasherBuilder)),
@@ -71,7 +72,8 @@ impl ParserState {
             ],
             demo_meta: DemoMeta::default(),
             analyser_handles,
-            handle_entities: analyser_handles(MessageType::PacketEntities),
+            handle_entities: analyser_handles(MessageType::PacketEntities) || parse_all,
+            parse_all,
         }
     }
 
@@ -137,11 +139,12 @@ impl ParserState {
     }
 
     pub fn should_parse_message(&self, message_type: MessageType) -> bool {
-        if message_type == MessageType::PacketEntities {
-            (self.analyser_handles)(message_type)
-        } else {
-            Self::does_handle(message_type) || (self.analyser_handles)(message_type)
-        }
+        self.parse_all
+            || if message_type == MessageType::PacketEntities {
+                self.handle_entities
+            } else {
+                Self::does_handle(message_type) || (self.analyser_handles)(message_type)
+            }
     }
 
     pub fn does_handle(message_type: MessageType) -> bool {
