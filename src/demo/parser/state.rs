@@ -104,32 +104,27 @@ impl ParserState {
                 .map(|table| table.flatten_props(&parse_tables))
                 .collect();
 
-            let send_tables: Vec<_> = parse_tables
+            let mut send_tables: HashMap<SendTableName, SendTable> = parse_tables
                 .into_iter()
                 .zip(flat_props.into_iter())
-                .map(|(parse_table, flat)| SendTable {
-                    name: parse_table.name,
-                    props: parse_table.props,
-                    needs_decoder: parse_table.needs_decoder,
-                    flattened_props: flat,
+                .map(|(parse_table, flat)| {
+                    (
+                        parse_table.name.clone(),
+                        SendTable {
+                            name: parse_table.name,
+                            props: parse_table.props,
+                            needs_decoder: parse_table.needs_decoder,
+                            flattened_props: flat,
+                        },
+                    )
                 })
-                .collect();
-
-            let mut send_tables: HashMap<SendTableName, SendTable> = send_tables
-                .into_iter()
-                .map(|table| (table.name.clone(), table))
                 .collect();
 
             self.server_classes = server_classes;
 
             self.send_tables.reserve(self.server_classes.len());
 
-            let mut last: usize = 0;
-
             for class in self.server_classes.iter() {
-                assert_eq!(usize::from(class.id), last);
-                last += 1;
-
                 if let Some(table) = send_tables.remove(&class.data_table) {
                     self.send_tables.push(table);
                 }
