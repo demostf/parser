@@ -16,57 +16,17 @@ pub struct ServerSpawnEvent {
 impl FromRawGameEvent for ServerSpawnEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let hostname = match iter.next() {
-            Some(value) => String::from_value(value, "hostname")?,
-            None => String::default(),
-        };
-        let address = match iter.next() {
-            Some(value) => String::from_value(value, "address")?,
-            None => String::default(),
-        };
-        let ip = match iter.next() {
-            Some(value) => u32::from_value(value, "ip")?,
-            None => u32::default(),
-        };
-        let port = match iter.next() {
-            Some(value) => u16::from_value(value, "port")?,
-            None => u16::default(),
-        };
-        let game = match iter.next() {
-            Some(value) => String::from_value(value, "game")?,
-            None => String::default(),
-        };
-        let map_name = match iter.next() {
-            Some(value) => String::from_value(value, "map_name")?,
-            None => String::default(),
-        };
-        let max_players = match iter.next() {
-            Some(value) => u32::from_value(value, "max_players")?,
-            None => u32::default(),
-        };
-        let os = match iter.next() {
-            Some(value) => String::from_value(value, "os")?,
-            None => String::default(),
-        };
-        let dedicated = match iter.next() {
-            Some(value) => bool::from_value(value, "dedicated")?,
-            None => bool::default(),
-        };
-        let password = match iter.next() {
-            Some(value) => bool::from_value(value, "password")?,
-            None => bool::default(),
-        };
         Ok(ServerSpawnEvent {
-            hostname,
-            address,
-            ip,
-            port,
-            game,
-            map_name,
-            max_players,
-            os,
-            dedicated,
-            password,
+            hostname: String::from_value(iter.next(), "hostname")?,
+            address: String::from_value(iter.next(), "address")?,
+            ip: u32::from_value(iter.next(), "ip")?,
+            port: u16::from_value(iter.next(), "port")?,
+            game: String::from_value(iter.next(), "game")?,
+            map_name: String::from_value(iter.next(), "map_name")?,
+            max_players: u32::from_value(iter.next(), "max_players")?,
+            os: String::from_value(iter.next(), "os")?,
+            dedicated: bool::from_value(iter.next(), "dedicated")?,
+            password: bool::from_value(iter.next(), "password")?,
         })
     }
 }
@@ -77,11 +37,9 @@ pub struct ServerChangeLevelFailedEvent {
 impl FromRawGameEvent for ServerChangeLevelFailedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level_name = match iter.next() {
-            Some(value) => String::from_value(value, "level_name")?,
-            None => String::default(),
-        };
-        Ok(ServerChangeLevelFailedEvent { level_name })
+        Ok(ServerChangeLevelFailedEvent {
+            level_name: String::from_value(iter.next(), "level_name")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -91,11 +49,9 @@ pub struct ServerShutdownEvent {
 impl FromRawGameEvent for ServerShutdownEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let reason = match iter.next() {
-            Some(value) => String::from_value(value, "reason")?,
-            None => String::default(),
-        };
-        Ok(ServerShutdownEvent { reason })
+        Ok(ServerShutdownEvent {
+            reason: String::from_value(iter.next(), "reason")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -106,17 +62,9 @@ pub struct ServerCvarEvent {
 impl FromRawGameEvent for ServerCvarEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let cvar_name = match iter.next() {
-            Some(value) => String::from_value(value, "cvar_name")?,
-            None => String::default(),
-        };
-        let cvar_value = match iter.next() {
-            Some(value) => String::from_value(value, "cvar_value")?,
-            None => String::default(),
-        };
         Ok(ServerCvarEvent {
-            cvar_name,
-            cvar_value,
+            cvar_name: String::from_value(iter.next(), "cvar_name")?,
+            cvar_value: String::from_value(iter.next(), "cvar_value")?,
         })
     }
 }
@@ -127,11 +75,9 @@ pub struct ServerMessageEvent {
 impl FromRawGameEvent for ServerMessageEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        Ok(ServerMessageEvent { text })
+        Ok(ServerMessageEvent {
+            text: String::from_value(iter.next(), "text")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -147,42 +93,14 @@ pub struct ServerAddBanEvent {
 impl FromRawGameEvent for ServerAddBanEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let name = match iter.next() {
-            Some(value) => String::from_value(value, "name")?,
-            None => String::default(),
-        };
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let network_id = match iter.next() {
-            Some(value) => String::from_value(value, "network_id")?,
-            None => String::default(),
-        };
-        let ip = match iter.next() {
-            Some(value) => String::from_value(value, "ip")?,
-            None => String::default(),
-        };
-        let duration = match iter.next() {
-            Some(value) => String::from_value(value, "duration")?,
-            None => String::default(),
-        };
-        let by = match iter.next() {
-            Some(value) => String::from_value(value, "by")?,
-            None => String::default(),
-        };
-        let kicked = match iter.next() {
-            Some(value) => bool::from_value(value, "kicked")?,
-            None => bool::default(),
-        };
         Ok(ServerAddBanEvent {
-            name,
-            user_id,
-            network_id,
-            ip,
-            duration,
-            by,
-            kicked,
+            name: String::from_value(iter.next(), "name")?,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            network_id: String::from_value(iter.next(), "network_id")?,
+            ip: String::from_value(iter.next(), "ip")?,
+            duration: String::from_value(iter.next(), "duration")?,
+            by: String::from_value(iter.next(), "by")?,
+            kicked: bool::from_value(iter.next(), "kicked")?,
         })
     }
 }
@@ -195,19 +113,11 @@ pub struct ServerRemoveBanEvent {
 impl FromRawGameEvent for ServerRemoveBanEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let network_id = match iter.next() {
-            Some(value) => String::from_value(value, "network_id")?,
-            None => String::default(),
-        };
-        let ip = match iter.next() {
-            Some(value) => String::from_value(value, "ip")?,
-            None => String::default(),
-        };
-        let by = match iter.next() {
-            Some(value) => String::from_value(value, "by")?,
-            None => String::default(),
-        };
-        Ok(ServerRemoveBanEvent { network_id, ip, by })
+        Ok(ServerRemoveBanEvent {
+            network_id: String::from_value(iter.next(), "network_id")?,
+            ip: String::from_value(iter.next(), "ip")?,
+            by: String::from_value(iter.next(), "by")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -222,37 +132,13 @@ pub struct PlayerConnectEvent {
 impl FromRawGameEvent for PlayerConnectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let name = match iter.next() {
-            Some(value) => String::from_value(value, "name")?,
-            None => String::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u8::from_value(value, "index")?,
-            None => u8::default(),
-        };
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let network_id = match iter.next() {
-            Some(value) => String::from_value(value, "network_id")?,
-            None => String::default(),
-        };
-        let address = match iter.next() {
-            Some(value) => String::from_value(value, "address")?,
-            None => String::default(),
-        };
-        let bot = match iter.next() {
-            Some(value) => u16::from_value(value, "bot")?,
-            None => u16::default(),
-        };
         Ok(PlayerConnectEvent {
-            name,
-            index,
-            user_id,
-            network_id,
-            address,
-            bot,
+            name: String::from_value(iter.next(), "name")?,
+            index: u8::from_value(iter.next(), "index")?,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            network_id: String::from_value(iter.next(), "network_id")?,
+            address: String::from_value(iter.next(), "address")?,
+            bot: u16::from_value(iter.next(), "bot")?,
         })
     }
 }
@@ -267,32 +153,12 @@ pub struct PlayerConnectClientEvent {
 impl FromRawGameEvent for PlayerConnectClientEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let name = match iter.next() {
-            Some(value) => String::from_value(value, "name")?,
-            None => String::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u8::from_value(value, "index")?,
-            None => u8::default(),
-        };
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let network_id = match iter.next() {
-            Some(value) => String::from_value(value, "network_id")?,
-            None => String::default(),
-        };
-        let bot = match iter.next() {
-            Some(value) => u16::from_value(value, "bot")?,
-            None => u16::default(),
-        };
         Ok(PlayerConnectClientEvent {
-            name,
-            index,
-            user_id,
-            network_id,
-            bot,
+            name: String::from_value(iter.next(), "name")?,
+            index: u8::from_value(iter.next(), "index")?,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            network_id: String::from_value(iter.next(), "network_id")?,
+            bot: u16::from_value(iter.next(), "bot")?,
         })
     }
 }
@@ -307,32 +173,12 @@ pub struct PlayerInfoEvent {
 impl FromRawGameEvent for PlayerInfoEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let name = match iter.next() {
-            Some(value) => String::from_value(value, "name")?,
-            None => String::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u8::from_value(value, "index")?,
-            None => u8::default(),
-        };
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let network_id = match iter.next() {
-            Some(value) => String::from_value(value, "network_id")?,
-            None => String::default(),
-        };
-        let bot = match iter.next() {
-            Some(value) => bool::from_value(value, "bot")?,
-            None => bool::default(),
-        };
         Ok(PlayerInfoEvent {
-            name,
-            index,
-            user_id,
-            network_id,
-            bot,
+            name: String::from_value(iter.next(), "name")?,
+            index: u8::from_value(iter.next(), "index")?,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            network_id: String::from_value(iter.next(), "network_id")?,
+            bot: bool::from_value(iter.next(), "bot")?,
         })
     }
 }
@@ -347,32 +193,12 @@ pub struct PlayerDisconnectEvent {
 impl FromRawGameEvent for PlayerDisconnectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let reason = match iter.next() {
-            Some(value) => String::from_value(value, "reason")?,
-            None => String::default(),
-        };
-        let name = match iter.next() {
-            Some(value) => String::from_value(value, "name")?,
-            None => String::default(),
-        };
-        let network_id = match iter.next() {
-            Some(value) => String::from_value(value, "network_id")?,
-            None => String::default(),
-        };
-        let bot = match iter.next() {
-            Some(value) => u16::from_value(value, "bot")?,
-            None => u16::default(),
-        };
         Ok(PlayerDisconnectEvent {
-            user_id,
-            reason,
-            name,
-            network_id,
-            bot,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            reason: String::from_value(iter.next(), "reason")?,
+            name: String::from_value(iter.next(), "name")?,
+            network_id: String::from_value(iter.next(), "network_id")?,
+            bot: u16::from_value(iter.next(), "bot")?,
         })
     }
 }
@@ -383,11 +209,9 @@ pub struct PlayerActivateEvent {
 impl FromRawGameEvent for PlayerActivateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(PlayerActivateEvent { user_id })
+        Ok(PlayerActivateEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -398,15 +222,10 @@ pub struct PlayerSayEvent {
 impl FromRawGameEvent for PlayerSayEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        Ok(PlayerSayEvent { user_id, text })
+        Ok(PlayerSayEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            text: String::from_value(iter.next(), "text")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -416,11 +235,9 @@ pub struct ClientDisconnectEvent {
 impl FromRawGameEvent for ClientDisconnectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let message = match iter.next() {
-            Some(value) => String::from_value(value, "message")?,
-            None => String::default(),
-        };
-        Ok(ClientDisconnectEvent { message })
+        Ok(ClientDisconnectEvent {
+            message: String::from_value(iter.next(), "message")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -433,27 +250,11 @@ pub struct ClientBeginConnectEvent {
 impl FromRawGameEvent for ClientBeginConnectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let address = match iter.next() {
-            Some(value) => String::from_value(value, "address")?,
-            None => String::default(),
-        };
-        let ip = match iter.next() {
-            Some(value) => u32::from_value(value, "ip")?,
-            None => u32::default(),
-        };
-        let port = match iter.next() {
-            Some(value) => u16::from_value(value, "port")?,
-            None => u16::default(),
-        };
-        let source = match iter.next() {
-            Some(value) => String::from_value(value, "source")?,
-            None => String::default(),
-        };
         Ok(ClientBeginConnectEvent {
-            address,
-            ip,
-            port,
-            source,
+            address: String::from_value(iter.next(), "address")?,
+            ip: u32::from_value(iter.next(), "ip")?,
+            port: u16::from_value(iter.next(), "port")?,
+            source: String::from_value(iter.next(), "source")?,
         })
     }
 }
@@ -466,19 +267,11 @@ pub struct ClientConnectedEvent {
 impl FromRawGameEvent for ClientConnectedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let address = match iter.next() {
-            Some(value) => String::from_value(value, "address")?,
-            None => String::default(),
-        };
-        let ip = match iter.next() {
-            Some(value) => u32::from_value(value, "ip")?,
-            None => u32::default(),
-        };
-        let port = match iter.next() {
-            Some(value) => u16::from_value(value, "port")?,
-            None => u16::default(),
-        };
-        Ok(ClientConnectedEvent { address, ip, port })
+        Ok(ClientConnectedEvent {
+            address: String::from_value(iter.next(), "address")?,
+            ip: u32::from_value(iter.next(), "ip")?,
+            port: u16::from_value(iter.next(), "port")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -490,19 +283,11 @@ pub struct ClientFullConnectEvent {
 impl FromRawGameEvent for ClientFullConnectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let address = match iter.next() {
-            Some(value) => String::from_value(value, "address")?,
-            None => String::default(),
-        };
-        let ip = match iter.next() {
-            Some(value) => u32::from_value(value, "ip")?,
-            None => u32::default(),
-        };
-        let port = match iter.next() {
-            Some(value) => u16::from_value(value, "port")?,
-            None => u16::default(),
-        };
-        Ok(ClientFullConnectEvent { address, ip, port })
+        Ok(ClientFullConnectEvent {
+            address: String::from_value(iter.next(), "address")?,
+            ip: u32::from_value(iter.next(), "ip")?,
+            port: u16::from_value(iter.next(), "port")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -520,15 +305,10 @@ pub struct TeamInfoEvent {
 impl FromRawGameEvent for TeamInfoEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team_id = match iter.next() {
-            Some(value) => u8::from_value(value, "team_id")?,
-            None => u8::default(),
-        };
-        let team_name = match iter.next() {
-            Some(value) => String::from_value(value, "team_name")?,
-            None => String::default(),
-        };
-        Ok(TeamInfoEvent { team_id, team_name })
+        Ok(TeamInfoEvent {
+            team_id: u8::from_value(iter.next(), "team_id")?,
+            team_name: String::from_value(iter.next(), "team_name")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -539,15 +319,10 @@ pub struct TeamScoreEvent {
 impl FromRawGameEvent for TeamScoreEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team_id = match iter.next() {
-            Some(value) => u8::from_value(value, "team_id")?,
-            None => u8::default(),
-        };
-        let score = match iter.next() {
-            Some(value) => u16::from_value(value, "score")?,
-            None => u16::default(),
-        };
-        Ok(TeamScoreEvent { team_id, score })
+        Ok(TeamScoreEvent {
+            team_id: u8::from_value(iter.next(), "team_id")?,
+            score: u16::from_value(iter.next(), "score")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -559,22 +334,10 @@ pub struct TeamPlayBroadcastAudioEvent {
 impl FromRawGameEvent for TeamPlayBroadcastAudioEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let sound = match iter.next() {
-            Some(value) => String::from_value(value, "sound")?,
-            None => String::default(),
-        };
-        let additional_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "additional_flags")?,
-            None => u16::default(),
-        };
         Ok(TeamPlayBroadcastAudioEvent {
-            team,
-            sound,
-            additional_flags,
+            team: u8::from_value(iter.next(), "team")?,
+            sound: String::from_value(iter.next(), "sound")?,
+            additional_flags: u16::from_value(iter.next(), "additional_flags")?,
         })
     }
 }
@@ -591,42 +354,14 @@ pub struct PlayerTeamEvent {
 impl FromRawGameEvent for PlayerTeamEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let old_team = match iter.next() {
-            Some(value) => u8::from_value(value, "old_team")?,
-            None => u8::default(),
-        };
-        let disconnect = match iter.next() {
-            Some(value) => bool::from_value(value, "disconnect")?,
-            None => bool::default(),
-        };
-        let auto_team = match iter.next() {
-            Some(value) => bool::from_value(value, "auto_team")?,
-            None => bool::default(),
-        };
-        let silent = match iter.next() {
-            Some(value) => bool::from_value(value, "silent")?,
-            None => bool::default(),
-        };
-        let name = match iter.next() {
-            Some(value) => String::from_value(value, "name")?,
-            None => String::default(),
-        };
         Ok(PlayerTeamEvent {
-            user_id,
-            team,
-            old_team,
-            disconnect,
-            auto_team,
-            silent,
-            name,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            team: u8::from_value(iter.next(), "team")?,
+            old_team: u8::from_value(iter.next(), "old_team")?,
+            disconnect: bool::from_value(iter.next(), "disconnect")?,
+            auto_team: bool::from_value(iter.next(), "auto_team")?,
+            silent: bool::from_value(iter.next(), "silent")?,
+            name: String::from_value(iter.next(), "name")?,
         })
     }
 }
@@ -638,15 +373,10 @@ pub struct PlayerClassEvent {
 impl FromRawGameEvent for PlayerClassEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let class = match iter.next() {
-            Some(value) => String::from_value(value, "class")?,
-            None => String::default(),
-        };
-        Ok(PlayerClassEvent { user_id, class })
+        Ok(PlayerClassEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            class: String::from_value(iter.next(), "class")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -681,137 +411,33 @@ pub struct PlayerDeathEvent {
 impl FromRawGameEvent for PlayerDeathEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "victim_ent_index")?,
-            None => u32::default(),
-        };
-        let inflictor_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
-            None => u32::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let weapon = match iter.next() {
-            Some(value) => String::from_value(value, "weapon")?,
-            None => String::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let damage_bits = match iter.next() {
-            Some(value) => u32::from_value(value, "damage_bits")?,
-            None => u32::default(),
-        };
-        let custom_kill = match iter.next() {
-            Some(value) => u16::from_value(value, "custom_kill")?,
-            None => u16::default(),
-        };
-        let assister = match iter.next() {
-            Some(value) => u16::from_value(value, "assister")?,
-            None => u16::default(),
-        };
-        let weapon_log_class_name = match iter.next() {
-            Some(value) => String::from_value(value, "weapon_log_class_name")?,
-            None => String::default(),
-        };
-        let stun_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "stun_flags")?,
-            None => u16::default(),
-        };
-        let death_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "death_flags")?,
-            None => u16::default(),
-        };
-        let silent_kill = match iter.next() {
-            Some(value) => bool::from_value(value, "silent_kill")?,
-            None => bool::default(),
-        };
-        let player_penetrate_count = match iter.next() {
-            Some(value) => u16::from_value(value, "player_penetrate_count")?,
-            None => u16::default(),
-        };
-        let assister_fallback = match iter.next() {
-            Some(value) => String::from_value(value, "assister_fallback")?,
-            None => String::default(),
-        };
-        let kill_streak_total = match iter.next() {
-            Some(value) => u16::from_value(value, "kill_streak_total")?,
-            None => u16::default(),
-        };
-        let kill_streak_wep = match iter.next() {
-            Some(value) => u16::from_value(value, "kill_streak_wep")?,
-            None => u16::default(),
-        };
-        let kill_streak_assist = match iter.next() {
-            Some(value) => u16::from_value(value, "kill_streak_assist")?,
-            None => u16::default(),
-        };
-        let kill_streak_victim = match iter.next() {
-            Some(value) => u16::from_value(value, "kill_streak_victim")?,
-            None => u16::default(),
-        };
-        let ducks_streaked = match iter.next() {
-            Some(value) => u16::from_value(value, "ducks_streaked")?,
-            None => u16::default(),
-        };
-        let duck_streak_total = match iter.next() {
-            Some(value) => u16::from_value(value, "duck_streak_total")?,
-            None => u16::default(),
-        };
-        let duck_streak_assist = match iter.next() {
-            Some(value) => u16::from_value(value, "duck_streak_assist")?,
-            None => u16::default(),
-        };
-        let duck_streak_victim = match iter.next() {
-            Some(value) => u16::from_value(value, "duck_streak_victim")?,
-            None => u16::default(),
-        };
-        let rocket_jump = match iter.next() {
-            Some(value) => bool::from_value(value, "rocket_jump")?,
-            None => bool::default(),
-        };
-        let weapon_def_index = match iter.next() {
-            Some(value) => u32::from_value(value, "weapon_def_index")?,
-            None => u32::default(),
-        };
-        let crit_type = match iter.next() {
-            Some(value) => u16::from_value(value, "crit_type")?,
-            None => u16::default(),
-        };
         Ok(PlayerDeathEvent {
-            user_id,
-            victim_ent_index,
-            inflictor_ent_index,
-            attacker,
-            weapon,
-            weapon_id,
-            damage_bits,
-            custom_kill,
-            assister,
-            weapon_log_class_name,
-            stun_flags,
-            death_flags,
-            silent_kill,
-            player_penetrate_count,
-            assister_fallback,
-            kill_streak_total,
-            kill_streak_wep,
-            kill_streak_assist,
-            kill_streak_victim,
-            ducks_streaked,
-            duck_streak_total,
-            duck_streak_assist,
-            duck_streak_victim,
-            rocket_jump,
-            weapon_def_index,
-            crit_type,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            weapon: String::from_value(iter.next(), "weapon")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
+            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
+            assister: u16::from_value(iter.next(), "assister")?,
+            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
+            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
+            death_flags: u16::from_value(iter.next(), "death_flags")?,
+            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
+            player_penetrate_count: u16::from_value(iter.next(), "player_penetrate_count")?,
+            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
+            kill_streak_total: u16::from_value(iter.next(), "kill_streak_total")?,
+            kill_streak_wep: u16::from_value(iter.next(), "kill_streak_wep")?,
+            kill_streak_assist: u16::from_value(iter.next(), "kill_streak_assist")?,
+            kill_streak_victim: u16::from_value(iter.next(), "kill_streak_victim")?,
+            ducks_streaked: u16::from_value(iter.next(), "ducks_streaked")?,
+            duck_streak_total: u16::from_value(iter.next(), "duck_streak_total")?,
+            duck_streak_assist: u16::from_value(iter.next(), "duck_streak_assist")?,
+            duck_streak_victim: u16::from_value(iter.next(), "duck_streak_victim")?,
+            rocket_jump: bool::from_value(iter.next(), "rocket_jump")?,
+            weapon_def_index: u32::from_value(iter.next(), "weapon_def_index")?,
+            crit_type: u16::from_value(iter.next(), "crit_type")?,
         })
     }
 }
@@ -832,62 +458,18 @@ pub struct PlayerHurtEvent {
 impl FromRawGameEvent for PlayerHurtEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let health = match iter.next() {
-            Some(value) => u16::from_value(value, "health")?,
-            None => u16::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let damage_amount = match iter.next() {
-            Some(value) => u16::from_value(value, "damage_amount")?,
-            None => u16::default(),
-        };
-        let custom = match iter.next() {
-            Some(value) => u16::from_value(value, "custom")?,
-            None => u16::default(),
-        };
-        let show_disguised_crit = match iter.next() {
-            Some(value) => bool::from_value(value, "show_disguised_crit")?,
-            None => bool::default(),
-        };
-        let crit = match iter.next() {
-            Some(value) => bool::from_value(value, "crit")?,
-            None => bool::default(),
-        };
-        let mini_crit = match iter.next() {
-            Some(value) => bool::from_value(value, "mini_crit")?,
-            None => bool::default(),
-        };
-        let all_see_crit = match iter.next() {
-            Some(value) => bool::from_value(value, "all_see_crit")?,
-            None => bool::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let bonus_effect = match iter.next() {
-            Some(value) => u8::from_value(value, "bonus_effect")?,
-            None => u8::default(),
-        };
         Ok(PlayerHurtEvent {
-            user_id,
-            health,
-            attacker,
-            damage_amount,
-            custom,
-            show_disguised_crit,
-            crit,
-            mini_crit,
-            all_see_crit,
-            weapon_id,
-            bonus_effect,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            health: u16::from_value(iter.next(), "health")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            damage_amount: u16::from_value(iter.next(), "damage_amount")?,
+            custom: u16::from_value(iter.next(), "custom")?,
+            show_disguised_crit: bool::from_value(iter.next(), "show_disguised_crit")?,
+            crit: bool::from_value(iter.next(), "crit")?,
+            mini_crit: bool::from_value(iter.next(), "mini_crit")?,
+            all_see_crit: bool::from_value(iter.next(), "all_see_crit")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            bonus_effect: u8::from_value(iter.next(), "bonus_effect")?,
         })
     }
 }
@@ -900,22 +482,10 @@ pub struct PlayerChatEvent {
 impl FromRawGameEvent for PlayerChatEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team_only = match iter.next() {
-            Some(value) => bool::from_value(value, "team_only")?,
-            None => bool::default(),
-        };
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
         Ok(PlayerChatEvent {
-            team_only,
-            user_id,
-            text,
+            team_only: bool::from_value(iter.next(), "team_only")?,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            text: String::from_value(iter.next(), "text")?,
         })
     }
 }
@@ -929,27 +499,11 @@ pub struct PlayerScoreEvent {
 impl FromRawGameEvent for PlayerScoreEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let kills = match iter.next() {
-            Some(value) => u16::from_value(value, "kills")?,
-            None => u16::default(),
-        };
-        let deaths = match iter.next() {
-            Some(value) => u16::from_value(value, "deaths")?,
-            None => u16::default(),
-        };
-        let score = match iter.next() {
-            Some(value) => u16::from_value(value, "score")?,
-            None => u16::default(),
-        };
         Ok(PlayerScoreEvent {
-            user_id,
-            kills,
-            deaths,
-            score,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            kills: u16::from_value(iter.next(), "kills")?,
+            deaths: u16::from_value(iter.next(), "deaths")?,
+            score: u16::from_value(iter.next(), "score")?,
         })
     }
 }
@@ -962,22 +516,10 @@ pub struct PlayerSpawnEvent {
 impl FromRawGameEvent for PlayerSpawnEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u16::from_value(value, "team")?,
-            None => u16::default(),
-        };
-        let class = match iter.next() {
-            Some(value) => u16::from_value(value, "class")?,
-            None => u16::default(),
-        };
         Ok(PlayerSpawnEvent {
-            user_id,
-            team,
-            class,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            team: u16::from_value(iter.next(), "team")?,
+            class: u16::from_value(iter.next(), "class")?,
         })
     }
 }
@@ -990,22 +532,10 @@ pub struct PlayerShootEvent {
 impl FromRawGameEvent for PlayerShootEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let weapon = match iter.next() {
-            Some(value) => u8::from_value(value, "weapon")?,
-            None => u8::default(),
-        };
-        let mode = match iter.next() {
-            Some(value) => u8::from_value(value, "mode")?,
-            None => u8::default(),
-        };
         Ok(PlayerShootEvent {
-            user_id,
-            weapon,
-            mode,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            weapon: u8::from_value(iter.next(), "weapon")?,
+            mode: u8::from_value(iter.next(), "mode")?,
         })
     }
 }
@@ -1017,15 +547,10 @@ pub struct PlayerUseEvent {
 impl FromRawGameEvent for PlayerUseEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let entity = match iter.next() {
-            Some(value) => u16::from_value(value, "entity")?,
-            None => u16::default(),
-        };
-        Ok(PlayerUseEvent { user_id, entity })
+        Ok(PlayerUseEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            entity: u16::from_value(iter.next(), "entity")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1037,22 +562,10 @@ pub struct PlayerChangeNameEvent {
 impl FromRawGameEvent for PlayerChangeNameEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let old_name = match iter.next() {
-            Some(value) => String::from_value(value, "old_name")?,
-            None => String::default(),
-        };
-        let new_name = match iter.next() {
-            Some(value) => String::from_value(value, "new_name")?,
-            None => String::default(),
-        };
         Ok(PlayerChangeNameEvent {
-            user_id,
-            old_name,
-            new_name,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            old_name: String::from_value(iter.next(), "old_name")?,
+            new_name: String::from_value(iter.next(), "new_name")?,
         })
     }
 }
@@ -1063,11 +576,9 @@ pub struct PlayerHintMessageEvent {
 impl FromRawGameEvent for PlayerHintMessageEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let hint_message = match iter.next() {
-            Some(value) => String::from_value(value, "hint_message")?,
-            None => String::default(),
-        };
-        Ok(PlayerHintMessageEvent { hint_message })
+        Ok(PlayerHintMessageEvent {
+            hint_message: String::from_value(iter.next(), "hint_message")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1077,11 +588,9 @@ pub struct BasePlayerTeleportedEvent {
 impl FromRawGameEvent for BasePlayerTeleportedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "ent_index")?,
-            None => u16::default(),
-        };
-        Ok(BasePlayerTeleportedEvent { ent_index })
+        Ok(BasePlayerTeleportedEvent {
+            ent_index: u16::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1098,11 +607,9 @@ pub struct GameNewMapEvent {
 impl FromRawGameEvent for GameNewMapEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let map_name = match iter.next() {
-            Some(value) => String::from_value(value, "map_name")?,
-            None => String::default(),
-        };
-        Ok(GameNewMapEvent { map_name })
+        Ok(GameNewMapEvent {
+            map_name: String::from_value(iter.next(), "map_name")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1115,27 +622,11 @@ pub struct GameStartEvent {
 impl FromRawGameEvent for GameStartEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let rounds_limit = match iter.next() {
-            Some(value) => u32::from_value(value, "rounds_limit")?,
-            None => u32::default(),
-        };
-        let time_limit = match iter.next() {
-            Some(value) => u32::from_value(value, "time_limit")?,
-            None => u32::default(),
-        };
-        let frag_limit = match iter.next() {
-            Some(value) => u32::from_value(value, "frag_limit")?,
-            None => u32::default(),
-        };
-        let objective = match iter.next() {
-            Some(value) => String::from_value(value, "objective")?,
-            None => String::default(),
-        };
         Ok(GameStartEvent {
-            rounds_limit,
-            time_limit,
-            frag_limit,
-            objective,
+            rounds_limit: u32::from_value(iter.next(), "rounds_limit")?,
+            time_limit: u32::from_value(iter.next(), "time_limit")?,
+            frag_limit: u32::from_value(iter.next(), "frag_limit")?,
+            objective: String::from_value(iter.next(), "objective")?,
         })
     }
 }
@@ -1146,11 +637,9 @@ pub struct GameEndEvent {
 impl FromRawGameEvent for GameEndEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let winner = match iter.next() {
-            Some(value) => u8::from_value(value, "winner")?,
-            None => u8::default(),
-        };
-        Ok(GameEndEvent { winner })
+        Ok(GameEndEvent {
+            winner: u8::from_value(iter.next(), "winner")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1162,22 +651,10 @@ pub struct RoundStartEvent {
 impl FromRawGameEvent for RoundStartEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let time_limit = match iter.next() {
-            Some(value) => u32::from_value(value, "time_limit")?,
-            None => u32::default(),
-        };
-        let frag_limit = match iter.next() {
-            Some(value) => u32::from_value(value, "frag_limit")?,
-            None => u32::default(),
-        };
-        let objective = match iter.next() {
-            Some(value) => String::from_value(value, "objective")?,
-            None => String::default(),
-        };
         Ok(RoundStartEvent {
-            time_limit,
-            frag_limit,
-            objective,
+            time_limit: u32::from_value(iter.next(), "time_limit")?,
+            frag_limit: u32::from_value(iter.next(), "frag_limit")?,
+            objective: String::from_value(iter.next(), "objective")?,
         })
     }
 }
@@ -1190,22 +667,10 @@ pub struct RoundEndEvent {
 impl FromRawGameEvent for RoundEndEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let winner = match iter.next() {
-            Some(value) => u8::from_value(value, "winner")?,
-            None => u8::default(),
-        };
-        let reason = match iter.next() {
-            Some(value) => u8::from_value(value, "reason")?,
-            None => u8::default(),
-        };
-        let message = match iter.next() {
-            Some(value) => String::from_value(value, "message")?,
-            None => String::default(),
-        };
         Ok(RoundEndEvent {
-            winner,
-            reason,
-            message,
+            winner: u8::from_value(iter.next(), "winner")?,
+            reason: u8::from_value(iter.next(), "reason")?,
+            message: String::from_value(iter.next(), "message")?,
         })
     }
 }
@@ -1217,15 +682,10 @@ pub struct GameMessageEvent {
 impl FromRawGameEvent for GameMessageEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let target = match iter.next() {
-            Some(value) => u8::from_value(value, "target")?,
-            None => u8::default(),
-        };
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        Ok(GameMessageEvent { target, text })
+        Ok(GameMessageEvent {
+            target: u8::from_value(iter.next(), "target")?,
+            text: String::from_value(iter.next(), "text")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1237,22 +697,10 @@ pub struct BreakBreakableEvent {
 impl FromRawGameEvent for BreakBreakableEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index")?,
-            None => u32::default(),
-        };
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let material = match iter.next() {
-            Some(value) => u8::from_value(value, "material")?,
-            None => u8::default(),
-        };
         Ok(BreakBreakableEvent {
-            ent_index,
-            user_id,
-            material,
+            ent_index: u32::from_value(iter.next(), "ent_index")?,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            material: u8::from_value(iter.next(), "material")?,
         })
     }
 }
@@ -1264,15 +712,10 @@ pub struct BreakPropEvent {
 impl FromRawGameEvent for BreakPropEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index")?,
-            None => u32::default(),
-        };
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(BreakPropEvent { ent_index, user_id })
+        Ok(BreakPropEvent {
+            ent_index: u32::from_value(iter.next(), "ent_index")?,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1285,27 +728,11 @@ pub struct EntityKilledEvent {
 impl FromRawGameEvent for EntityKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index_killed = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index_killed")?,
-            None => u32::default(),
-        };
-        let ent_index_attacker = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index_attacker")?,
-            None => u32::default(),
-        };
-        let ent_index_inflictor = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index_inflictor")?,
-            None => u32::default(),
-        };
-        let damage_bits = match iter.next() {
-            Some(value) => u32::from_value(value, "damage_bits")?,
-            None => u32::default(),
-        };
         Ok(EntityKilledEvent {
-            ent_index_killed,
-            ent_index_attacker,
-            ent_index_inflictor,
-            damage_bits,
+            ent_index_killed: u32::from_value(iter.next(), "ent_index_killed")?,
+            ent_index_attacker: u32::from_value(iter.next(), "ent_index_attacker")?,
+            ent_index_inflictor: u32::from_value(iter.next(), "ent_index_inflictor")?,
+            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
         })
     }
 }
@@ -1319,27 +746,11 @@ pub struct BonusUpdatedEvent {
 impl FromRawGameEvent for BonusUpdatedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let num_advanced = match iter.next() {
-            Some(value) => u16::from_value(value, "num_advanced")?,
-            None => u16::default(),
-        };
-        let num_bronze = match iter.next() {
-            Some(value) => u16::from_value(value, "num_bronze")?,
-            None => u16::default(),
-        };
-        let num_silver = match iter.next() {
-            Some(value) => u16::from_value(value, "num_silver")?,
-            None => u16::default(),
-        };
-        let num_gold = match iter.next() {
-            Some(value) => u16::from_value(value, "num_gold")?,
-            None => u16::default(),
-        };
         Ok(BonusUpdatedEvent {
-            num_advanced,
-            num_bronze,
-            num_silver,
-            num_gold,
+            num_advanced: u16::from_value(iter.next(), "num_advanced")?,
+            num_bronze: u16::from_value(iter.next(), "num_bronze")?,
+            num_silver: u16::from_value(iter.next(), "num_silver")?,
+            num_gold: u16::from_value(iter.next(), "num_gold")?,
         })
     }
 }
@@ -1352,22 +763,10 @@ pub struct AchievementEventEvent {
 impl FromRawGameEvent for AchievementEventEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let achievement_name = match iter.next() {
-            Some(value) => String::from_value(value, "achievement_name")?,
-            None => String::default(),
-        };
-        let cur_val = match iter.next() {
-            Some(value) => u16::from_value(value, "cur_val")?,
-            None => u16::default(),
-        };
-        let max_val = match iter.next() {
-            Some(value) => u16::from_value(value, "max_val")?,
-            None => u16::default(),
-        };
         Ok(AchievementEventEvent {
-            achievement_name,
-            cur_val,
-            max_val,
+            achievement_name: String::from_value(iter.next(), "achievement_name")?,
+            cur_val: u16::from_value(iter.next(), "cur_val")?,
+            max_val: u16::from_value(iter.next(), "max_val")?,
         })
     }
 }
@@ -1380,22 +779,10 @@ pub struct AchievementIncrementEvent {
 impl FromRawGameEvent for AchievementIncrementEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let achievement_id = match iter.next() {
-            Some(value) => u32::from_value(value, "achievement_id")?,
-            None => u32::default(),
-        };
-        let cur_val = match iter.next() {
-            Some(value) => u16::from_value(value, "cur_val")?,
-            None => u16::default(),
-        };
-        let max_val = match iter.next() {
-            Some(value) => u16::from_value(value, "max_val")?,
-            None => u16::default(),
-        };
         Ok(AchievementIncrementEvent {
-            achievement_id,
-            cur_val,
-            max_val,
+            achievement_id: u32::from_value(iter.next(), "achievement_id")?,
+            cur_val: u16::from_value(iter.next(), "cur_val")?,
+            max_val: u16::from_value(iter.next(), "max_val")?,
         })
     }
 }
@@ -1406,11 +793,9 @@ pub struct PhysgunPickupEvent {
 impl FromRawGameEvent for PhysgunPickupEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index")?,
-            None => u32::default(),
-        };
-        Ok(PhysgunPickupEvent { ent_index })
+        Ok(PhysgunPickupEvent {
+            ent_index: u32::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1420,11 +805,9 @@ pub struct FlareIgniteNpcEvent {
 impl FromRawGameEvent for FlareIgniteNpcEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index")?,
-            None => u32::default(),
-        };
-        Ok(FlareIgniteNpcEvent { ent_index })
+        Ok(FlareIgniteNpcEvent {
+            ent_index: u32::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1448,11 +831,9 @@ pub struct RagdollDissolvedEvent {
 impl FromRawGameEvent for RagdollDissolvedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index")?,
-            None => u32::default(),
-        };
-        Ok(RagdollDissolvedEvent { ent_index })
+        Ok(RagdollDissolvedEvent {
+            ent_index: u32::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1464,22 +845,10 @@ pub struct HLTVChangedModeEvent {
 impl FromRawGameEvent for HLTVChangedModeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let old_mode = match iter.next() {
-            Some(value) => u16::from_value(value, "old_mode")?,
-            None => u16::default(),
-        };
-        let new_mode = match iter.next() {
-            Some(value) => u16::from_value(value, "new_mode")?,
-            None => u16::default(),
-        };
-        let obs_target = match iter.next() {
-            Some(value) => u16::from_value(value, "obs_target")?,
-            None => u16::default(),
-        };
         Ok(HLTVChangedModeEvent {
-            old_mode,
-            new_mode,
-            obs_target,
+            old_mode: u16::from_value(iter.next(), "old_mode")?,
+            new_mode: u16::from_value(iter.next(), "new_mode")?,
+            obs_target: u16::from_value(iter.next(), "obs_target")?,
         })
     }
 }
@@ -1492,22 +861,10 @@ pub struct HLTVChangedTargetEvent {
 impl FromRawGameEvent for HLTVChangedTargetEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let mode = match iter.next() {
-            Some(value) => u16::from_value(value, "mode")?,
-            None => u16::default(),
-        };
-        let old_target = match iter.next() {
-            Some(value) => u16::from_value(value, "old_target")?,
-            None => u16::default(),
-        };
-        let obs_target = match iter.next() {
-            Some(value) => u16::from_value(value, "obs_target")?,
-            None => u16::default(),
-        };
         Ok(HLTVChangedTargetEvent {
-            mode,
-            old_target,
-            obs_target,
+            mode: u16::from_value(iter.next(), "mode")?,
+            old_target: u16::from_value(iter.next(), "old_target")?,
+            obs_target: u16::from_value(iter.next(), "obs_target")?,
         })
     }
 }
@@ -1528,27 +885,11 @@ pub struct VoteStartedEvent {
 impl FromRawGameEvent for VoteStartedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let issue = match iter.next() {
-            Some(value) => String::from_value(value, "issue")?,
-            None => String::default(),
-        };
-        let param_1 = match iter.next() {
-            Some(value) => String::from_value(value, "param_1")?,
-            None => String::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let initiator = match iter.next() {
-            Some(value) => u32::from_value(value, "initiator")?,
-            None => u32::default(),
-        };
         Ok(VoteStartedEvent {
-            issue,
-            param_1,
-            team,
-            initiator,
+            issue: String::from_value(iter.next(), "issue")?,
+            param_1: String::from_value(iter.next(), "param_1")?,
+            team: u8::from_value(iter.next(), "team")?,
+            initiator: u32::from_value(iter.next(), "initiator")?,
         })
     }
 }
@@ -1564,37 +905,13 @@ pub struct VoteChangedEvent {
 impl FromRawGameEvent for VoteChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let vote_option_1 = match iter.next() {
-            Some(value) => u8::from_value(value, "vote_option_1")?,
-            None => u8::default(),
-        };
-        let vote_option_2 = match iter.next() {
-            Some(value) => u8::from_value(value, "vote_option_2")?,
-            None => u8::default(),
-        };
-        let vote_option_3 = match iter.next() {
-            Some(value) => u8::from_value(value, "vote_option_3")?,
-            None => u8::default(),
-        };
-        let vote_option_4 = match iter.next() {
-            Some(value) => u8::from_value(value, "vote_option_4")?,
-            None => u8::default(),
-        };
-        let vote_option_5 = match iter.next() {
-            Some(value) => u8::from_value(value, "vote_option_5")?,
-            None => u8::default(),
-        };
-        let potential_votes = match iter.next() {
-            Some(value) => u8::from_value(value, "potential_votes")?,
-            None => u8::default(),
-        };
         Ok(VoteChangedEvent {
-            vote_option_1,
-            vote_option_2,
-            vote_option_3,
-            vote_option_4,
-            vote_option_5,
-            potential_votes,
+            vote_option_1: u8::from_value(iter.next(), "vote_option_1")?,
+            vote_option_2: u8::from_value(iter.next(), "vote_option_2")?,
+            vote_option_3: u8::from_value(iter.next(), "vote_option_3")?,
+            vote_option_4: u8::from_value(iter.next(), "vote_option_4")?,
+            vote_option_5: u8::from_value(iter.next(), "vote_option_5")?,
+            potential_votes: u8::from_value(iter.next(), "potential_votes")?,
         })
     }
 }
@@ -1607,22 +924,10 @@ pub struct VotePassedEvent {
 impl FromRawGameEvent for VotePassedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let details = match iter.next() {
-            Some(value) => String::from_value(value, "details")?,
-            None => String::default(),
-        };
-        let param_1 = match iter.next() {
-            Some(value) => String::from_value(value, "param_1")?,
-            None => String::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
         Ok(VotePassedEvent {
-            details,
-            param_1,
-            team,
+            details: String::from_value(iter.next(), "details")?,
+            param_1: String::from_value(iter.next(), "param_1")?,
+            team: u8::from_value(iter.next(), "team")?,
         })
     }
 }
@@ -1633,11 +938,9 @@ pub struct VoteFailedEvent {
 impl FromRawGameEvent for VoteFailedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        Ok(VoteFailedEvent { team })
+        Ok(VoteFailedEvent {
+            team: u8::from_value(iter.next(), "team")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1649,22 +952,10 @@ pub struct VoteCastEvent {
 impl FromRawGameEvent for VoteCastEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let vote_option = match iter.next() {
-            Some(value) => u8::from_value(value, "vote_option")?,
-            None => u8::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u16::from_value(value, "team")?,
-            None => u16::default(),
-        };
-        let entity_id = match iter.next() {
-            Some(value) => u32::from_value(value, "entity_id")?,
-            None => u32::default(),
-        };
         Ok(VoteCastEvent {
-            vote_option,
-            team,
-            entity_id,
+            vote_option: u8::from_value(iter.next(), "vote_option")?,
+            team: u16::from_value(iter.next(), "team")?,
+            entity_id: u32::from_value(iter.next(), "entity_id")?,
         })
     }
 }
@@ -1680,37 +971,13 @@ pub struct VoteOptionsEvent {
 impl FromRawGameEvent for VoteOptionsEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let count = match iter.next() {
-            Some(value) => u8::from_value(value, "count")?,
-            None => u8::default(),
-        };
-        let option_1 = match iter.next() {
-            Some(value) => String::from_value(value, "option_1")?,
-            None => String::default(),
-        };
-        let option_2 = match iter.next() {
-            Some(value) => String::from_value(value, "option_2")?,
-            None => String::default(),
-        };
-        let option_3 = match iter.next() {
-            Some(value) => String::from_value(value, "option_3")?,
-            None => String::default(),
-        };
-        let option_4 = match iter.next() {
-            Some(value) => String::from_value(value, "option_4")?,
-            None => String::default(),
-        };
-        let option_5 = match iter.next() {
-            Some(value) => String::from_value(value, "option_5")?,
-            None => String::default(),
-        };
         Ok(VoteOptionsEvent {
-            count,
-            option_1,
-            option_2,
-            option_3,
-            option_4,
-            option_5,
+            count: u8::from_value(iter.next(), "count")?,
+            option_1: String::from_value(iter.next(), "option_1")?,
+            option_2: String::from_value(iter.next(), "option_2")?,
+            option_3: String::from_value(iter.next(), "option_3")?,
+            option_4: String::from_value(iter.next(), "option_4")?,
+            option_5: String::from_value(iter.next(), "option_5")?,
         })
     }
 }
@@ -1744,22 +1011,10 @@ pub struct ReplayYoutubeStatsEvent {
 impl FromRawGameEvent for ReplayYoutubeStatsEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let views = match iter.next() {
-            Some(value) => u32::from_value(value, "views")?,
-            None => u32::default(),
-        };
-        let likes = match iter.next() {
-            Some(value) => u32::from_value(value, "likes")?,
-            None => u32::default(),
-        };
-        let favorited = match iter.next() {
-            Some(value) => u32::from_value(value, "favorited")?,
-            None => u32::default(),
-        };
         Ok(ReplayYoutubeStatsEvent {
-            views,
-            likes,
-            favorited,
+            views: u32::from_value(iter.next(), "views")?,
+            likes: u32::from_value(iter.next(), "likes")?,
+            favorited: u32::from_value(iter.next(), "favorited")?,
         })
     }
 }
@@ -1819,11 +1074,9 @@ pub struct IntroFinishEvent {
 impl FromRawGameEvent for IntroFinishEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(IntroFinishEvent { player })
+        Ok(IntroFinishEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1833,11 +1086,9 @@ pub struct IntroNextCameraEvent {
 impl FromRawGameEvent for IntroNextCameraEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(IntroNextCameraEvent { player })
+        Ok(IntroNextCameraEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1848,15 +1099,10 @@ pub struct PlayerChangeClassEvent {
 impl FromRawGameEvent for PlayerChangeClassEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let class = match iter.next() {
-            Some(value) => u16::from_value(value, "class")?,
-            None => u16::default(),
-        };
-        Ok(PlayerChangeClassEvent { user_id, class })
+        Ok(PlayerChangeClassEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            class: u16::from_value(iter.next(), "class")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1866,11 +1112,9 @@ pub struct TfMapTimeRemainingEvent {
 impl FromRawGameEvent for TfMapTimeRemainingEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let seconds = match iter.next() {
-            Some(value) => u32::from_value(value, "seconds")?,
-            None => u32::default(),
-        };
-        Ok(TfMapTimeRemainingEvent { seconds })
+        Ok(TfMapTimeRemainingEvent {
+            seconds: u32::from_value(iter.next(), "seconds")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1880,11 +1124,9 @@ pub struct TfGameOverEvent {
 impl FromRawGameEvent for TfGameOverEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let reason = match iter.next() {
-            Some(value) => String::from_value(value, "reason")?,
-            None => String::default(),
-        };
-        Ok(TfGameOverEvent { reason })
+        Ok(TfGameOverEvent {
+            reason: String::from_value(iter.next(), "reason")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1895,17 +1137,9 @@ pub struct CtfFlagCapturedEvent {
 impl FromRawGameEvent for CtfFlagCapturedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let capping_team = match iter.next() {
-            Some(value) => u16::from_value(value, "capping_team")?,
-            None => u16::default(),
-        };
-        let capping_team_score = match iter.next() {
-            Some(value) => u16::from_value(value, "capping_team_score")?,
-            None => u16::default(),
-        };
         Ok(CtfFlagCapturedEvent {
-            capping_team,
-            capping_team_score,
+            capping_team: u16::from_value(iter.next(), "capping_team")?,
+            capping_team_score: u16::from_value(iter.next(), "capping_team_score")?,
         })
     }
 }
@@ -1923,11 +1157,9 @@ pub struct ControlPointUpdateImagesEvent {
 impl FromRawGameEvent for ControlPointUpdateImagesEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointUpdateImagesEvent { index })
+        Ok(ControlPointUpdateImagesEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1937,11 +1169,9 @@ pub struct ControlPointUpdateLayoutEvent {
 impl FromRawGameEvent for ControlPointUpdateLayoutEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointUpdateLayoutEvent { index })
+        Ok(ControlPointUpdateLayoutEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1951,11 +1181,9 @@ pub struct ControlPointUpdateCappingEvent {
 impl FromRawGameEvent for ControlPointUpdateCappingEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointUpdateCappingEvent { index })
+        Ok(ControlPointUpdateCappingEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1965,11 +1193,9 @@ pub struct ControlPointUpdateOwnerEvent {
 impl FromRawGameEvent for ControlPointUpdateOwnerEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointUpdateOwnerEvent { index })
+        Ok(ControlPointUpdateOwnerEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1980,15 +1206,10 @@ pub struct ControlPointStartTouchEvent {
 impl FromRawGameEvent for ControlPointStartTouchEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let area = match iter.next() {
-            Some(value) => u16::from_value(value, "area")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointStartTouchEvent { player, area })
+        Ok(ControlPointStartTouchEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            area: u16::from_value(iter.next(), "area")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -1999,15 +1220,10 @@ pub struct ControlPointEndTouchEvent {
 impl FromRawGameEvent for ControlPointEndTouchEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let area = match iter.next() {
-            Some(value) => u16::from_value(value, "area")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointEndTouchEvent { player, area })
+        Ok(ControlPointEndTouchEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            area: u16::from_value(iter.next(), "area")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2017,11 +1233,9 @@ pub struct ControlPointPulseElementEvent {
 impl FromRawGameEvent for ControlPointPulseElementEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointPulseElementEvent { player })
+        Ok(ControlPointPulseElementEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2032,15 +1246,10 @@ pub struct ControlPointFakeCaptureEvent {
 impl FromRawGameEvent for ControlPointFakeCaptureEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let int_data = match iter.next() {
-            Some(value) => u16::from_value(value, "int_data")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointFakeCaptureEvent { player, int_data })
+        Ok(ControlPointFakeCaptureEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            int_data: u16::from_value(iter.next(), "int_data")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2051,15 +1260,10 @@ pub struct ControlPointFakeCaptureMultiplierEvent {
 impl FromRawGameEvent for ControlPointFakeCaptureMultiplierEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let int_data = match iter.next() {
-            Some(value) => u16::from_value(value, "int_data")?,
-            None => u16::default(),
-        };
-        Ok(ControlPointFakeCaptureMultiplierEvent { player, int_data })
+        Ok(ControlPointFakeCaptureMultiplierEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            int_data: u16::from_value(iter.next(), "int_data")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2069,11 +1273,9 @@ pub struct TeamPlayRoundSelectedEvent {
 impl FromRawGameEvent for TeamPlayRoundSelectedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let round = match iter.next() {
-            Some(value) => String::from_value(value, "round")?,
-            None => String::default(),
-        };
-        Ok(TeamPlayRoundSelectedEvent { round })
+        Ok(TeamPlayRoundSelectedEvent {
+            round: String::from_value(iter.next(), "round")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2083,11 +1285,9 @@ pub struct TeamPlayRoundStartEvent {
 impl FromRawGameEvent for TeamPlayRoundStartEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let full_reset = match iter.next() {
-            Some(value) => bool::from_value(value, "full_reset")?,
-            None => bool::default(),
-        };
-        Ok(TeamPlayRoundStartEvent { full_reset })
+        Ok(TeamPlayRoundStartEvent {
+            full_reset: bool::from_value(iter.next(), "full_reset")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2139,11 +1339,9 @@ pub struct TeamPlayRoundRestartSecondsEvent {
 impl FromRawGameEvent for TeamPlayRoundRestartSecondsEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let seconds = match iter.next() {
-            Some(value) => u16::from_value(value, "seconds")?,
-            None => u16::default(),
-        };
-        Ok(TeamPlayRoundRestartSecondsEvent { seconds })
+        Ok(TeamPlayRoundRestartSecondsEvent {
+            seconds: u16::from_value(iter.next(), "seconds")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2153,11 +1351,9 @@ pub struct TeamPlayTeamReadyEvent {
 impl FromRawGameEvent for TeamPlayTeamReadyEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        Ok(TeamPlayTeamReadyEvent { team })
+        Ok(TeamPlayTeamReadyEvent {
+            team: u8::from_value(iter.next(), "team")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2173,42 +1369,14 @@ pub struct TeamPlayRoundWinEvent {
 impl FromRawGameEvent for TeamPlayRoundWinEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let win_reason = match iter.next() {
-            Some(value) => u8::from_value(value, "win_reason")?,
-            None => u8::default(),
-        };
-        let flag_cap_limit = match iter.next() {
-            Some(value) => u16::from_value(value, "flag_cap_limit")?,
-            None => u16::default(),
-        };
-        let full_round = match iter.next() {
-            Some(value) => u16::from_value(value, "full_round")?,
-            None => u16::default(),
-        };
-        let round_time = match iter.next() {
-            Some(value) => f32::from_value(value, "round_time")?,
-            None => f32::default(),
-        };
-        let losing_team_num_caps = match iter.next() {
-            Some(value) => u16::from_value(value, "losing_team_num_caps")?,
-            None => u16::default(),
-        };
-        let was_sudden_death = match iter.next() {
-            Some(value) => u8::from_value(value, "was_sudden_death")?,
-            None => u8::default(),
-        };
         Ok(TeamPlayRoundWinEvent {
-            team,
-            win_reason,
-            flag_cap_limit,
-            full_round,
-            round_time,
-            losing_team_num_caps,
-            was_sudden_death,
+            team: u8::from_value(iter.next(), "team")?,
+            win_reason: u8::from_value(iter.next(), "win_reason")?,
+            flag_cap_limit: u16::from_value(iter.next(), "flag_cap_limit")?,
+            full_round: u16::from_value(iter.next(), "full_round")?,
+            round_time: f32::from_value(iter.next(), "round_time")?,
+            losing_team_num_caps: u16::from_value(iter.next(), "losing_team_num_caps")?,
+            was_sudden_death: u8::from_value(iter.next(), "was_sudden_death")?,
         })
     }
 }
@@ -2226,11 +1394,9 @@ pub struct TeamPlayRoundStalemateEvent {
 impl FromRawGameEvent for TeamPlayRoundStalemateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let reason = match iter.next() {
-            Some(value) => u8::from_value(value, "reason")?,
-            None => u8::default(),
-        };
-        Ok(TeamPlayRoundStalemateEvent { reason })
+        Ok(TeamPlayRoundStalemateEvent {
+            reason: u8::from_value(iter.next(), "reason")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2268,11 +1434,9 @@ pub struct TeamPlayGameOverEvent {
 impl FromRawGameEvent for TeamPlayGameOverEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let reason = match iter.next() {
-            Some(value) => String::from_value(value, "reason")?,
-            None => String::default(),
-        };
-        Ok(TeamPlayGameOverEvent { reason })
+        Ok(TeamPlayGameOverEvent {
+            reason: String::from_value(iter.next(), "reason")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2282,11 +1446,9 @@ pub struct TeamPlayMapTimeRemainingEvent {
 impl FromRawGameEvent for TeamPlayMapTimeRemainingEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let seconds = match iter.next() {
-            Some(value) => u16::from_value(value, "seconds")?,
-            None => u16::default(),
-        };
-        Ok(TeamPlayMapTimeRemainingEvent { seconds })
+        Ok(TeamPlayMapTimeRemainingEvent {
+            seconds: u16::from_value(iter.next(), "seconds")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2296,11 +1458,9 @@ pub struct TeamPlayTimerFlashEvent {
 impl FromRawGameEvent for TeamPlayTimerFlashEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let time_remaining = match iter.next() {
-            Some(value) => u16::from_value(value, "time_remaining")?,
-            None => u16::default(),
-        };
-        Ok(TeamPlayTimerFlashEvent { time_remaining })
+        Ok(TeamPlayTimerFlashEvent {
+            time_remaining: u16::from_value(iter.next(), "time_remaining")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2311,17 +1471,9 @@ pub struct TeamPlayTimerTimeAddedEvent {
 impl FromRawGameEvent for TeamPlayTimerTimeAddedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let timer = match iter.next() {
-            Some(value) => u16::from_value(value, "timer")?,
-            None => u16::default(),
-        };
-        let seconds_added = match iter.next() {
-            Some(value) => u16::from_value(value, "seconds_added")?,
-            None => u16::default(),
-        };
         Ok(TeamPlayTimerTimeAddedEvent {
-            timer,
-            seconds_added,
+            timer: u16::from_value(iter.next(), "timer")?,
+            seconds_added: u16::from_value(iter.next(), "seconds_added")?,
         })
     }
 }
@@ -2337,37 +1489,13 @@ pub struct TeamPlayPointStartCaptureEvent {
 impl FromRawGameEvent for TeamPlayPointStartCaptureEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let cp = match iter.next() {
-            Some(value) => u8::from_value(value, "cp")?,
-            None => u8::default(),
-        };
-        let cp_name = match iter.next() {
-            Some(value) => String::from_value(value, "cp_name")?,
-            None => String::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let cap_team = match iter.next() {
-            Some(value) => u8::from_value(value, "cap_team")?,
-            None => u8::default(),
-        };
-        let cappers = match iter.next() {
-            Some(value) => String::from_value(value, "cappers")?,
-            None => String::default(),
-        };
-        let cap_time = match iter.next() {
-            Some(value) => f32::from_value(value, "cap_time")?,
-            None => f32::default(),
-        };
         Ok(TeamPlayPointStartCaptureEvent {
-            cp,
-            cp_name,
-            team,
-            cap_team,
-            cappers,
-            cap_time,
+            cp: u8::from_value(iter.next(), "cp")?,
+            cp_name: String::from_value(iter.next(), "cp_name")?,
+            team: u8::from_value(iter.next(), "team")?,
+            cap_team: u8::from_value(iter.next(), "cap_team")?,
+            cappers: String::from_value(iter.next(), "cappers")?,
+            cap_time: f32::from_value(iter.next(), "cap_time")?,
         })
     }
 }
@@ -2381,27 +1509,11 @@ pub struct TeamPlayPointCapturedEvent {
 impl FromRawGameEvent for TeamPlayPointCapturedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let cp = match iter.next() {
-            Some(value) => u8::from_value(value, "cp")?,
-            None => u8::default(),
-        };
-        let cp_name = match iter.next() {
-            Some(value) => String::from_value(value, "cp_name")?,
-            None => String::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let cappers = match iter.next() {
-            Some(value) => String::from_value(value, "cappers")?,
-            None => String::default(),
-        };
         Ok(TeamPlayPointCapturedEvent {
-            cp,
-            cp_name,
-            team,
-            cappers,
+            cp: u8::from_value(iter.next(), "cp")?,
+            cp_name: String::from_value(iter.next(), "cp_name")?,
+            team: u8::from_value(iter.next(), "team")?,
+            cappers: String::from_value(iter.next(), "cappers")?,
         })
     }
 }
@@ -2414,19 +1526,11 @@ pub struct TeamPlayPointLockedEvent {
 impl FromRawGameEvent for TeamPlayPointLockedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let cp = match iter.next() {
-            Some(value) => u8::from_value(value, "cp")?,
-            None => u8::default(),
-        };
-        let cp_name = match iter.next() {
-            Some(value) => String::from_value(value, "cp_name")?,
-            None => String::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        Ok(TeamPlayPointLockedEvent { cp, cp_name, team })
+        Ok(TeamPlayPointLockedEvent {
+            cp: u8::from_value(iter.next(), "cp")?,
+            cp_name: String::from_value(iter.next(), "cp_name")?,
+            team: u8::from_value(iter.next(), "team")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2438,19 +1542,11 @@ pub struct TeamPlayPointUnlockedEvent {
 impl FromRawGameEvent for TeamPlayPointUnlockedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let cp = match iter.next() {
-            Some(value) => u8::from_value(value, "cp")?,
-            None => u8::default(),
-        };
-        let cp_name = match iter.next() {
-            Some(value) => String::from_value(value, "cp_name")?,
-            None => String::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        Ok(TeamPlayPointUnlockedEvent { cp, cp_name, team })
+        Ok(TeamPlayPointUnlockedEvent {
+            cp: u8::from_value(iter.next(), "cp")?,
+            cp_name: String::from_value(iter.next(), "cp_name")?,
+            team: u8::from_value(iter.next(), "team")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2462,22 +1558,10 @@ pub struct TeamPlayCaptureBrokenEvent {
 impl FromRawGameEvent for TeamPlayCaptureBrokenEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let cp = match iter.next() {
-            Some(value) => u8::from_value(value, "cp")?,
-            None => u8::default(),
-        };
-        let cp_name = match iter.next() {
-            Some(value) => String::from_value(value, "cp_name")?,
-            None => String::default(),
-        };
-        let time_remaining = match iter.next() {
-            Some(value) => f32::from_value(value, "time_remaining")?,
-            None => f32::default(),
-        };
         Ok(TeamPlayCaptureBrokenEvent {
-            cp,
-            cp_name,
-            time_remaining,
+            cp: u8::from_value(iter.next(), "cp")?,
+            cp_name: String::from_value(iter.next(), "cp_name")?,
+            time_remaining: f32::from_value(iter.next(), "time_remaining")?,
         })
     }
 }
@@ -2491,27 +1575,11 @@ pub struct TeamPlayCaptureBlockedEvent {
 impl FromRawGameEvent for TeamPlayCaptureBlockedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let cp = match iter.next() {
-            Some(value) => u8::from_value(value, "cp")?,
-            None => u8::default(),
-        };
-        let cp_name = match iter.next() {
-            Some(value) => String::from_value(value, "cp_name")?,
-            None => String::default(),
-        };
-        let blocker = match iter.next() {
-            Some(value) => u8::from_value(value, "blocker")?,
-            None => u8::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u8::from_value(value, "victim")?,
-            None => u8::default(),
-        };
         Ok(TeamPlayCaptureBlockedEvent {
-            cp,
-            cp_name,
-            blocker,
-            victim,
+            cp: u8::from_value(iter.next(), "cp")?,
+            cp_name: String::from_value(iter.next(), "cp_name")?,
+            blocker: u8::from_value(iter.next(), "blocker")?,
+            victim: u8::from_value(iter.next(), "victim")?,
         })
     }
 }
@@ -2526,32 +1594,12 @@ pub struct TeamPlayFlagEventEvent {
 impl FromRawGameEvent for TeamPlayFlagEventEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let carrier = match iter.next() {
-            Some(value) => u16::from_value(value, "carrier")?,
-            None => u16::default(),
-        };
-        let event_type = match iter.next() {
-            Some(value) => u16::from_value(value, "event_type")?,
-            None => u16::default(),
-        };
-        let home = match iter.next() {
-            Some(value) => u8::from_value(value, "home")?,
-            None => u8::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
         Ok(TeamPlayFlagEventEvent {
-            player,
-            carrier,
-            event_type,
-            home,
-            team,
+            player: u16::from_value(iter.next(), "player")?,
+            carrier: u16::from_value(iter.next(), "carrier")?,
+            event_type: u16::from_value(iter.next(), "event_type")?,
+            home: u8::from_value(iter.next(), "home")?,
+            team: u8::from_value(iter.next(), "team")?,
         })
     }
 }
@@ -2581,107 +1629,27 @@ pub struct TeamPlayWinPanelEvent {
 impl FromRawGameEvent for TeamPlayWinPanelEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let panel_style = match iter.next() {
-            Some(value) => u8::from_value(value, "panel_style")?,
-            None => u8::default(),
-        };
-        let winning_team = match iter.next() {
-            Some(value) => u8::from_value(value, "winning_team")?,
-            None => u8::default(),
-        };
-        let win_reason = match iter.next() {
-            Some(value) => u8::from_value(value, "win_reason")?,
-            None => u8::default(),
-        };
-        let cappers = match iter.next() {
-            Some(value) => String::from_value(value, "cappers")?,
-            None => String::default(),
-        };
-        let flag_cap_limit = match iter.next() {
-            Some(value) => u16::from_value(value, "flag_cap_limit")?,
-            None => u16::default(),
-        };
-        let blue_score = match iter.next() {
-            Some(value) => u16::from_value(value, "blue_score")?,
-            None => u16::default(),
-        };
-        let red_score = match iter.next() {
-            Some(value) => u16::from_value(value, "red_score")?,
-            None => u16::default(),
-        };
-        let blue_score_prev = match iter.next() {
-            Some(value) => u16::from_value(value, "blue_score_prev")?,
-            None => u16::default(),
-        };
-        let red_score_prev = match iter.next() {
-            Some(value) => u16::from_value(value, "red_score_prev")?,
-            None => u16::default(),
-        };
-        let round_complete = match iter.next() {
-            Some(value) => u16::from_value(value, "round_complete")?,
-            None => u16::default(),
-        };
-        let rounds_remaining = match iter.next() {
-            Some(value) => u16::from_value(value, "rounds_remaining")?,
-            None => u16::default(),
-        };
-        let player_1 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_1")?,
-            None => u16::default(),
-        };
-        let player_1_points = match iter.next() {
-            Some(value) => u16::from_value(value, "player_1_points")?,
-            None => u16::default(),
-        };
-        let player_2 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_2")?,
-            None => u16::default(),
-        };
-        let player_2_points = match iter.next() {
-            Some(value) => u16::from_value(value, "player_2_points")?,
-            None => u16::default(),
-        };
-        let player_3 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_3")?,
-            None => u16::default(),
-        };
-        let player_3_points = match iter.next() {
-            Some(value) => u16::from_value(value, "player_3_points")?,
-            None => u16::default(),
-        };
-        let kill_stream_player_1 = match iter.next() {
-            Some(value) => u16::from_value(value, "kill_stream_player_1")?,
-            None => u16::default(),
-        };
-        let kill_stream_player_1_count = match iter.next() {
-            Some(value) => u16::from_value(value, "kill_stream_player_1_count")?,
-            None => u16::default(),
-        };
-        let game_over = match iter.next() {
-            Some(value) => u8::from_value(value, "game_over")?,
-            None => u8::default(),
-        };
         Ok(TeamPlayWinPanelEvent {
-            panel_style,
-            winning_team,
-            win_reason,
-            cappers,
-            flag_cap_limit,
-            blue_score,
-            red_score,
-            blue_score_prev,
-            red_score_prev,
-            round_complete,
-            rounds_remaining,
-            player_1,
-            player_1_points,
-            player_2,
-            player_2_points,
-            player_3,
-            player_3_points,
-            kill_stream_player_1,
-            kill_stream_player_1_count,
-            game_over,
+            panel_style: u8::from_value(iter.next(), "panel_style")?,
+            winning_team: u8::from_value(iter.next(), "winning_team")?,
+            win_reason: u8::from_value(iter.next(), "win_reason")?,
+            cappers: String::from_value(iter.next(), "cappers")?,
+            flag_cap_limit: u16::from_value(iter.next(), "flag_cap_limit")?,
+            blue_score: u16::from_value(iter.next(), "blue_score")?,
+            red_score: u16::from_value(iter.next(), "red_score")?,
+            blue_score_prev: u16::from_value(iter.next(), "blue_score_prev")?,
+            red_score_prev: u16::from_value(iter.next(), "red_score_prev")?,
+            round_complete: u16::from_value(iter.next(), "round_complete")?,
+            rounds_remaining: u16::from_value(iter.next(), "rounds_remaining")?,
+            player_1: u16::from_value(iter.next(), "player_1")?,
+            player_1_points: u16::from_value(iter.next(), "player_1_points")?,
+            player_2: u16::from_value(iter.next(), "player_2")?,
+            player_2_points: u16::from_value(iter.next(), "player_2_points")?,
+            player_3: u16::from_value(iter.next(), "player_3")?,
+            player_3_points: u16::from_value(iter.next(), "player_3_points")?,
+            kill_stream_player_1: u16::from_value(iter.next(), "kill_stream_player_1")?,
+            kill_stream_player_1_count: u16::from_value(iter.next(), "kill_stream_player_1_count")?,
+            game_over: u8::from_value(iter.next(), "game_over")?,
         })
     }
 }
@@ -2693,15 +1661,10 @@ pub struct TeamPlayTeamBalancedPlayerEvent {
 impl FromRawGameEvent for TeamPlayTeamBalancedPlayerEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        Ok(TeamPlayTeamBalancedPlayerEvent { player, team })
+        Ok(TeamPlayTeamBalancedPlayerEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            team: u8::from_value(iter.next(), "team")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2718,11 +1681,9 @@ pub struct TeamPlayAlertEvent {
 impl FromRawGameEvent for TeamPlayAlertEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let alert_type = match iter.next() {
-            Some(value) => u16::from_value(value, "alert_type")?,
-            None => u16::default(),
-        };
-        Ok(TeamPlayAlertEvent { alert_type })
+        Ok(TeamPlayAlertEvent {
+            alert_type: u16::from_value(iter.next(), "alert_type")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2734,22 +1695,10 @@ pub struct TrainingCompleteEvent {
 impl FromRawGameEvent for TrainingCompleteEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let next_map = match iter.next() {
-            Some(value) => String::from_value(value, "next_map")?,
-            None => String::default(),
-        };
-        let map = match iter.next() {
-            Some(value) => String::from_value(value, "map")?,
-            None => String::default(),
-        };
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
         Ok(TrainingCompleteEvent {
-            next_map,
-            map,
-            text,
+            next_map: String::from_value(iter.next(), "next_map")?,
+            map: String::from_value(iter.next(), "map")?,
+            text: String::from_value(iter.next(), "text")?,
         })
     }
 }
@@ -2760,11 +1709,9 @@ pub struct ShowFreezePanelEvent {
 impl FromRawGameEvent for ShowFreezePanelEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let killer = match iter.next() {
-            Some(value) => u16::from_value(value, "killer")?,
-            None => u16::default(),
-        };
-        Ok(ShowFreezePanelEvent { killer })
+        Ok(ShowFreezePanelEvent {
+            killer: u16::from_value(iter.next(), "killer")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2795,11 +1742,9 @@ pub struct LocalPlayerScoreChangedEvent {
 impl FromRawGameEvent for LocalPlayerScoreChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let score = match iter.next() {
-            Some(value) => u16::from_value(value, "score")?,
-            None => u16::default(),
-        };
-        Ok(LocalPlayerScoreChangedEvent { score })
+        Ok(LocalPlayerScoreChangedEvent {
+            score: u16::from_value(iter.next(), "score")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2825,22 +1770,10 @@ pub struct BuildingInfoChangedEvent {
 impl FromRawGameEvent for BuildingInfoChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let building_type = match iter.next() {
-            Some(value) => u8::from_value(value, "building_type")?,
-            None => u8::default(),
-        };
-        let object_mode = match iter.next() {
-            Some(value) => u8::from_value(value, "object_mode")?,
-            None => u8::default(),
-        };
-        let remove = match iter.next() {
-            Some(value) => u8::from_value(value, "remove")?,
-            None => u8::default(),
-        };
         Ok(BuildingInfoChangedEvent {
-            building_type,
-            object_mode,
-            remove,
+            building_type: u8::from_value(iter.next(), "building_type")?,
+            object_mode: u8::from_value(iter.next(), "object_mode")?,
+            remove: u8::from_value(iter.next(), "remove")?,
         })
     }
 }
@@ -2851,11 +1784,9 @@ pub struct LocalPlayerChangeDisguiseEvent {
 impl FromRawGameEvent for LocalPlayerChangeDisguiseEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let disguised = match iter.next() {
-            Some(value) => bool::from_value(value, "disguised")?,
-            None => bool::default(),
-        };
-        Ok(LocalPlayerChangeDisguiseEvent { disguised })
+        Ok(LocalPlayerChangeDisguiseEvent {
+            disguised: bool::from_value(iter.next(), "disguised")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2866,17 +1797,9 @@ pub struct PlayerAccountChangedEvent {
 impl FromRawGameEvent for PlayerAccountChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let old_value = match iter.next() {
-            Some(value) => u16::from_value(value, "old_value")?,
-            None => u16::default(),
-        };
-        let new_value = match iter.next() {
-            Some(value) => u16::from_value(value, "new_value")?,
-            None => u16::default(),
-        };
         Ok(PlayerAccountChangedEvent {
-            old_value,
-            new_value,
+            old_value: u16::from_value(iter.next(), "old_value")?,
+            new_value: u16::from_value(iter.next(), "new_value")?,
         })
     }
 }
@@ -2895,15 +1818,10 @@ pub struct FlagStatusUpdateEvent {
 impl FromRawGameEvent for FlagStatusUpdateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "ent_index")?,
-            None => u32::default(),
-        };
-        Ok(FlagStatusUpdateEvent { user_id, ent_index })
+        Ok(FlagStatusUpdateEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            ent_index: u32::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2913,11 +1831,9 @@ pub struct PlayerStatsUpdatedEvent {
 impl FromRawGameEvent for PlayerStatsUpdatedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let force_upload = match iter.next() {
-            Some(value) => bool::from_value(value, "force_upload")?,
-            None => bool::default(),
-        };
-        Ok(PlayerStatsUpdatedEvent { force_upload })
+        Ok(PlayerStatsUpdatedEvent {
+            force_upload: bool::from_value(iter.next(), "force_upload")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2935,15 +1851,10 @@ pub struct PlayerChargeDeployedEvent {
 impl FromRawGameEvent for PlayerChargeDeployedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let target_id = match iter.next() {
-            Some(value) => u16::from_value(value, "target_id")?,
-            None => u16::default(),
-        };
-        Ok(PlayerChargeDeployedEvent { user_id, target_id })
+        Ok(PlayerChargeDeployedEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            target_id: u16::from_value(iter.next(), "target_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -2955,22 +1866,10 @@ pub struct PlayerBuiltObjectEvent {
 impl FromRawGameEvent for PlayerBuiltObjectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let object = match iter.next() {
-            Some(value) => u16::from_value(value, "object")?,
-            None => u16::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
         Ok(PlayerBuiltObjectEvent {
-            user_id,
-            object,
-            index,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            object: u16::from_value(iter.next(), "object")?,
+            index: u16::from_value(iter.next(), "index")?,
         })
     }
 }
@@ -2984,27 +1883,11 @@ pub struct PlayerUpgradedObjectEvent {
 impl FromRawGameEvent for PlayerUpgradedObjectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let object = match iter.next() {
-            Some(value) => u16::from_value(value, "object")?,
-            None => u16::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        let is_builder = match iter.next() {
-            Some(value) => bool::from_value(value, "is_builder")?,
-            None => bool::default(),
-        };
         Ok(PlayerUpgradedObjectEvent {
-            user_id,
-            object,
-            index,
-            is_builder,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            object: u16::from_value(iter.next(), "object")?,
+            index: u16::from_value(iter.next(), "index")?,
+            is_builder: bool::from_value(iter.next(), "is_builder")?,
         })
     }
 }
@@ -3017,22 +1900,10 @@ pub struct PlayerCarryObjectEvent {
 impl FromRawGameEvent for PlayerCarryObjectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let object = match iter.next() {
-            Some(value) => u16::from_value(value, "object")?,
-            None => u16::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
         Ok(PlayerCarryObjectEvent {
-            user_id,
-            object,
-            index,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            object: u16::from_value(iter.next(), "object")?,
+            index: u16::from_value(iter.next(), "index")?,
         })
     }
 }
@@ -3045,22 +1916,10 @@ pub struct PlayerDropObjectEvent {
 impl FromRawGameEvent for PlayerDropObjectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let object = match iter.next() {
-            Some(value) => u16::from_value(value, "object")?,
-            None => u16::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
         Ok(PlayerDropObjectEvent {
-            user_id,
-            object,
-            index,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            object: u16::from_value(iter.next(), "object")?,
+            index: u16::from_value(iter.next(), "index")?,
         })
     }
 }
@@ -3073,22 +1932,10 @@ pub struct ObjectRemovedEvent {
 impl FromRawGameEvent for ObjectRemovedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let object_type = match iter.next() {
-            Some(value) => u16::from_value(value, "object_type")?,
-            None => u16::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
         Ok(ObjectRemovedEvent {
-            user_id,
-            object_type,
-            index,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            object_type: u16::from_value(iter.next(), "object_type")?,
+            index: u16::from_value(iter.next(), "index")?,
         })
     }
 }
@@ -3106,47 +1953,15 @@ pub struct ObjectDestroyedEvent {
 impl FromRawGameEvent for ObjectDestroyedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let assister = match iter.next() {
-            Some(value) => u16::from_value(value, "assister")?,
-            None => u16::default(),
-        };
-        let weapon = match iter.next() {
-            Some(value) => String::from_value(value, "weapon")?,
-            None => String::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let object_type = match iter.next() {
-            Some(value) => u16::from_value(value, "object_type")?,
-            None => u16::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        let was_building = match iter.next() {
-            Some(value) => bool::from_value(value, "was_building")?,
-            None => bool::default(),
-        };
         Ok(ObjectDestroyedEvent {
-            user_id,
-            attacker,
-            assister,
-            weapon,
-            weapon_id,
-            object_type,
-            index,
-            was_building,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            assister: u16::from_value(iter.next(), "assister")?,
+            weapon: String::from_value(iter.next(), "weapon")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            object_type: u16::from_value(iter.next(), "object_type")?,
+            index: u16::from_value(iter.next(), "index")?,
+            was_building: bool::from_value(iter.next(), "was_building")?,
         })
     }
 }
@@ -3159,22 +1974,10 @@ pub struct ObjectDetonatedEvent {
 impl FromRawGameEvent for ObjectDetonatedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let object_type = match iter.next() {
-            Some(value) => u16::from_value(value, "object_type")?,
-            None => u16::default(),
-        };
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
         Ok(ObjectDetonatedEvent {
-            user_id,
-            object_type,
-            index,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            object_type: u16::from_value(iter.next(), "object_type")?,
+            index: u16::from_value(iter.next(), "index")?,
         })
     }
 }
@@ -3186,17 +1989,9 @@ pub struct AchievementEarnedEvent {
 impl FromRawGameEvent for AchievementEarnedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        let achievement = match iter.next() {
-            Some(value) => u16::from_value(value, "achievement")?,
-            None => u16::default(),
-        };
         Ok(AchievementEarnedEvent {
-            player,
-            achievement,
+            player: u8::from_value(iter.next(), "player")?,
+            achievement: u16::from_value(iter.next(), "achievement")?,
         })
     }
 }
@@ -3217,27 +2012,11 @@ pub struct TournamentStateUpdateEvent {
 impl FromRawGameEvent for TournamentStateUpdateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let name_change = match iter.next() {
-            Some(value) => bool::from_value(value, "name_change")?,
-            None => bool::default(),
-        };
-        let ready_state = match iter.next() {
-            Some(value) => u16::from_value(value, "ready_state")?,
-            None => u16::default(),
-        };
-        let new_name = match iter.next() {
-            Some(value) => String::from_value(value, "new_name")?,
-            None => String::default(),
-        };
         Ok(TournamentStateUpdateEvent {
-            user_id,
-            name_change,
-            ready_state,
-            new_name,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            name_change: bool::from_value(iter.next(), "name_change")?,
+            ready_state: u16::from_value(iter.next(), "ready_state")?,
+            new_name: String::from_value(iter.next(), "new_name")?,
         })
     }
 }
@@ -3255,11 +2034,9 @@ pub struct PlayerCalledForMedicEvent {
 impl FromRawGameEvent for PlayerCalledForMedicEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(PlayerCalledForMedicEvent { user_id })
+        Ok(PlayerCalledForMedicEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3269,11 +2046,9 @@ pub struct PlayerAskedForBallEvent {
 impl FromRawGameEvent for PlayerAskedForBallEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(PlayerAskedForBallEvent { user_id })
+        Ok(PlayerAskedForBallEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3292,22 +2067,10 @@ pub struct PlayerIgnitedInvEvent {
 impl FromRawGameEvent for PlayerIgnitedInvEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let pyro_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "pyro_ent_index")?,
-            None => u8::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "victim_ent_index")?,
-            None => u8::default(),
-        };
-        let medic_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "medic_ent_index")?,
-            None => u8::default(),
-        };
         Ok(PlayerIgnitedInvEvent {
-            pyro_ent_index,
-            victim_ent_index,
-            medic_ent_index,
+            pyro_ent_index: u8::from_value(iter.next(), "pyro_ent_index")?,
+            victim_ent_index: u8::from_value(iter.next(), "victim_ent_index")?,
+            medic_ent_index: u8::from_value(iter.next(), "medic_ent_index")?,
         })
     }
 }
@@ -3320,22 +2083,10 @@ pub struct PlayerIgnitedEvent {
 impl FromRawGameEvent for PlayerIgnitedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let pyro_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "pyro_ent_index")?,
-            None => u8::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "victim_ent_index")?,
-            None => u8::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u8::from_value(value, "weapon_id")?,
-            None => u8::default(),
-        };
         Ok(PlayerIgnitedEvent {
-            pyro_ent_index,
-            victim_ent_index,
-            weapon_id,
+            pyro_ent_index: u8::from_value(iter.next(), "pyro_ent_index")?,
+            victim_ent_index: u8::from_value(iter.next(), "victim_ent_index")?,
+            weapon_id: u8::from_value(iter.next(), "weapon_id")?,
         })
     }
 }
@@ -3348,22 +2099,10 @@ pub struct PlayerExtinguishedEvent {
 impl FromRawGameEvent for PlayerExtinguishedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let victim = match iter.next() {
-            Some(value) => u8::from_value(value, "victim")?,
-            None => u8::default(),
-        };
-        let healer = match iter.next() {
-            Some(value) => u8::from_value(value, "healer")?,
-            None => u8::default(),
-        };
-        let item_definition_index = match iter.next() {
-            Some(value) => u16::from_value(value, "item_definition_index")?,
-            None => u16::default(),
-        };
         Ok(PlayerExtinguishedEvent {
-            victim,
-            healer,
-            item_definition_index,
+            victim: u8::from_value(iter.next(), "victim")?,
+            healer: u8::from_value(iter.next(), "healer")?,
+            item_definition_index: u16::from_value(iter.next(), "item_definition_index")?,
         })
     }
 }
@@ -3376,22 +2115,10 @@ pub struct PlayerTeleportedEvent {
 impl FromRawGameEvent for PlayerTeleportedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let builder_id = match iter.next() {
-            Some(value) => u16::from_value(value, "builder_id")?,
-            None => u16::default(),
-        };
-        let dist = match iter.next() {
-            Some(value) => f32::from_value(value, "dist")?,
-            None => f32::default(),
-        };
         Ok(PlayerTeleportedEvent {
-            user_id,
-            builder_id,
-            dist,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            builder_id: u16::from_value(iter.next(), "builder_id")?,
+            dist: f32::from_value(iter.next(), "dist")?,
         })
     }
 }
@@ -3402,11 +2129,9 @@ pub struct PlayerHealedMedicCallEvent {
 impl FromRawGameEvent for PlayerHealedMedicCallEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(PlayerHealedMedicCallEvent { user_id })
+        Ok(PlayerHealedMedicCallEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3431,17 +2156,9 @@ pub struct PlayerInvulnedEvent {
 impl FromRawGameEvent for PlayerInvulnedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let medic_user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "medic_user_id")?,
-            None => u16::default(),
-        };
         Ok(PlayerInvulnedEvent {
-            user_id,
-            medic_user_id,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            medic_user_id: u16::from_value(iter.next(), "medic_user_id")?,
         })
     }
 }
@@ -3454,22 +2171,10 @@ pub struct EscortSpeedEvent {
 impl FromRawGameEvent for EscortSpeedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let speed = match iter.next() {
-            Some(value) => u8::from_value(value, "speed")?,
-            None => u8::default(),
-        };
-        let players = match iter.next() {
-            Some(value) => u8::from_value(value, "players")?,
-            None => u8::default(),
-        };
         Ok(EscortSpeedEvent {
-            team,
-            speed,
-            players,
+            team: u8::from_value(iter.next(), "team")?,
+            speed: u8::from_value(iter.next(), "speed")?,
+            players: u8::from_value(iter.next(), "players")?,
         })
     }
 }
@@ -3482,22 +2187,10 @@ pub struct EscortProgressEvent {
 impl FromRawGameEvent for EscortProgressEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let progress = match iter.next() {
-            Some(value) => f32::from_value(value, "progress")?,
-            None => f32::default(),
-        };
-        let reset = match iter.next() {
-            Some(value) => bool::from_value(value, "reset")?,
-            None => bool::default(),
-        };
         Ok(EscortProgressEvent {
-            team,
-            progress,
-            reset,
+            team: u8::from_value(iter.next(), "team")?,
+            progress: f32::from_value(iter.next(), "progress")?,
+            reset: bool::from_value(iter.next(), "reset")?,
         })
     }
 }
@@ -3509,15 +2202,10 @@ pub struct EscortRecedeEvent {
 impl FromRawGameEvent for EscortRecedeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let recede_time = match iter.next() {
-            Some(value) => f32::from_value(value, "recede_time")?,
-            None => f32::default(),
-        };
-        Ok(EscortRecedeEvent { team, recede_time })
+        Ok(EscortRecedeEvent {
+            team: u8::from_value(iter.next(), "team")?,
+            recede_time: f32::from_value(iter.next(), "recede_time")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3542,15 +2230,10 @@ pub struct PlayerEscortScoreEvent {
 impl FromRawGameEvent for PlayerEscortScoreEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        let points = match iter.next() {
-            Some(value) => u8::from_value(value, "points")?,
-            None => u8::default(),
-        };
-        Ok(PlayerEscortScoreEvent { player, points })
+        Ok(PlayerEscortScoreEvent {
+            player: u8::from_value(iter.next(), "player")?,
+            points: u8::from_value(iter.next(), "points")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3562,22 +2245,10 @@ pub struct PlayerHealOnHitEvent {
 impl FromRawGameEvent for PlayerHealOnHitEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
-        let ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "ent_index")?,
-            None => u8::default(),
-        };
-        let weapon_def_index = match iter.next() {
-            Some(value) => u32::from_value(value, "weapon_def_index")?,
-            None => u32::default(),
-        };
         Ok(PlayerHealOnHitEvent {
-            amount,
-            ent_index,
-            weapon_def_index,
+            amount: u16::from_value(iter.next(), "amount")?,
+            ent_index: u8::from_value(iter.next(), "ent_index")?,
+            weapon_def_index: u32::from_value(iter.next(), "weapon_def_index")?,
         })
     }
 }
@@ -3589,15 +2260,10 @@ pub struct PlayerStealSandvichEvent {
 impl FromRawGameEvent for PlayerStealSandvichEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let owner = match iter.next() {
-            Some(value) => u16::from_value(value, "owner")?,
-            None => u16::default(),
-        };
-        let target = match iter.next() {
-            Some(value) => u16::from_value(value, "target")?,
-            None => u16::default(),
-        };
-        Ok(PlayerStealSandvichEvent { owner, target })
+        Ok(PlayerStealSandvichEvent {
+            owner: u16::from_value(iter.next(), "owner")?,
+            target: u16::from_value(iter.next(), "target")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3607,11 +2273,9 @@ pub struct ShowClassLayoutEvent {
 impl FromRawGameEvent for ShowClassLayoutEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let show = match iter.next() {
-            Some(value) => bool::from_value(value, "show")?,
-            None => bool::default(),
-        };
-        Ok(ShowClassLayoutEvent { show })
+        Ok(ShowClassLayoutEvent {
+            show: bool::from_value(iter.next(), "show")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3621,11 +2285,9 @@ pub struct ShowVsPanelEvent {
 impl FromRawGameEvent for ShowVsPanelEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let show = match iter.next() {
-            Some(value) => bool::from_value(value, "show")?,
-            None => bool::default(),
-        };
-        Ok(ShowVsPanelEvent { show })
+        Ok(ShowVsPanelEvent {
+            show: bool::from_value(iter.next(), "show")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3636,15 +2298,10 @@ pub struct PlayerDamagedEvent {
 impl FromRawGameEvent for PlayerDamagedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
-        let kind = match iter.next() {
-            Some(value) => u32::from_value(value, "kind")?,
-            None => u32::default(),
-        };
-        Ok(PlayerDamagedEvent { amount, kind })
+        Ok(PlayerDamagedEvent {
+            amount: u16::from_value(iter.next(), "amount")?,
+            kind: u32::from_value(iter.next(), "kind")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3655,15 +2312,10 @@ pub struct ArenaPlayerNotificationEvent {
 impl FromRawGameEvent for ArenaPlayerNotificationEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        let message = match iter.next() {
-            Some(value) => u8::from_value(value, "message")?,
-            None => u8::default(),
-        };
-        Ok(ArenaPlayerNotificationEvent { player, message })
+        Ok(ArenaPlayerNotificationEvent {
+            player: u8::from_value(iter.next(), "player")?,
+            message: u8::from_value(iter.next(), "message")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3674,15 +2326,10 @@ pub struct ArenaMatchMaxStreakEvent {
 impl FromRawGameEvent for ArenaMatchMaxStreakEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let streak = match iter.next() {
-            Some(value) => u8::from_value(value, "streak")?,
-            None => u8::default(),
-        };
-        Ok(ArenaMatchMaxStreakEvent { team, streak })
+        Ok(ArenaMatchMaxStreakEvent {
+            team: u8::from_value(iter.next(), "team")?,
+            streak: u8::from_value(iter.next(), "streak")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3738,207 +2385,47 @@ pub struct ArenaWinPanelEvent {
 impl FromRawGameEvent for ArenaWinPanelEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let panel_style = match iter.next() {
-            Some(value) => u8::from_value(value, "panel_style")?,
-            None => u8::default(),
-        };
-        let winning_team = match iter.next() {
-            Some(value) => u8::from_value(value, "winning_team")?,
-            None => u8::default(),
-        };
-        let win_reason = match iter.next() {
-            Some(value) => u8::from_value(value, "win_reason")?,
-            None => u8::default(),
-        };
-        let cappers = match iter.next() {
-            Some(value) => String::from_value(value, "cappers")?,
-            None => String::default(),
-        };
-        let flag_cap_limit = match iter.next() {
-            Some(value) => u16::from_value(value, "flag_cap_limit")?,
-            None => u16::default(),
-        };
-        let blue_score = match iter.next() {
-            Some(value) => u16::from_value(value, "blue_score")?,
-            None => u16::default(),
-        };
-        let red_score = match iter.next() {
-            Some(value) => u16::from_value(value, "red_score")?,
-            None => u16::default(),
-        };
-        let blue_score_prev = match iter.next() {
-            Some(value) => u16::from_value(value, "blue_score_prev")?,
-            None => u16::default(),
-        };
-        let red_score_prev = match iter.next() {
-            Some(value) => u16::from_value(value, "red_score_prev")?,
-            None => u16::default(),
-        };
-        let round_complete = match iter.next() {
-            Some(value) => u16::from_value(value, "round_complete")?,
-            None => u16::default(),
-        };
-        let player_1 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_1")?,
-            None => u16::default(),
-        };
-        let player_1_damage = match iter.next() {
-            Some(value) => u16::from_value(value, "player_1_damage")?,
-            None => u16::default(),
-        };
-        let player_1_healing = match iter.next() {
-            Some(value) => u16::from_value(value, "player_1_healing")?,
-            None => u16::default(),
-        };
-        let player_1_lifetime = match iter.next() {
-            Some(value) => u16::from_value(value, "player_1_lifetime")?,
-            None => u16::default(),
-        };
-        let player_1_kills = match iter.next() {
-            Some(value) => u16::from_value(value, "player_1_kills")?,
-            None => u16::default(),
-        };
-        let player_2 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_2")?,
-            None => u16::default(),
-        };
-        let player_2_damage = match iter.next() {
-            Some(value) => u16::from_value(value, "player_2_damage")?,
-            None => u16::default(),
-        };
-        let player_2_healing = match iter.next() {
-            Some(value) => u16::from_value(value, "player_2_healing")?,
-            None => u16::default(),
-        };
-        let player_2_lifetime = match iter.next() {
-            Some(value) => u16::from_value(value, "player_2_lifetime")?,
-            None => u16::default(),
-        };
-        let player_2_kills = match iter.next() {
-            Some(value) => u16::from_value(value, "player_2_kills")?,
-            None => u16::default(),
-        };
-        let player_3 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_3")?,
-            None => u16::default(),
-        };
-        let player_3_damage = match iter.next() {
-            Some(value) => u16::from_value(value, "player_3_damage")?,
-            None => u16::default(),
-        };
-        let player_3_healing = match iter.next() {
-            Some(value) => u16::from_value(value, "player_3_healing")?,
-            None => u16::default(),
-        };
-        let player_3_lifetime = match iter.next() {
-            Some(value) => u16::from_value(value, "player_3_lifetime")?,
-            None => u16::default(),
-        };
-        let player_3_kills = match iter.next() {
-            Some(value) => u16::from_value(value, "player_3_kills")?,
-            None => u16::default(),
-        };
-        let player_4 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_4")?,
-            None => u16::default(),
-        };
-        let player_4_damage = match iter.next() {
-            Some(value) => u16::from_value(value, "player_4_damage")?,
-            None => u16::default(),
-        };
-        let player_4_healing = match iter.next() {
-            Some(value) => u16::from_value(value, "player_4_healing")?,
-            None => u16::default(),
-        };
-        let player_4_lifetime = match iter.next() {
-            Some(value) => u16::from_value(value, "player_4_lifetime")?,
-            None => u16::default(),
-        };
-        let player_4_kills = match iter.next() {
-            Some(value) => u16::from_value(value, "player_4_kills")?,
-            None => u16::default(),
-        };
-        let player_5 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_5")?,
-            None => u16::default(),
-        };
-        let player_5_damage = match iter.next() {
-            Some(value) => u16::from_value(value, "player_5_damage")?,
-            None => u16::default(),
-        };
-        let player_5_healing = match iter.next() {
-            Some(value) => u16::from_value(value, "player_5_healing")?,
-            None => u16::default(),
-        };
-        let player_5_lifetime = match iter.next() {
-            Some(value) => u16::from_value(value, "player_5_lifetime")?,
-            None => u16::default(),
-        };
-        let player_5_kills = match iter.next() {
-            Some(value) => u16::from_value(value, "player_5_kills")?,
-            None => u16::default(),
-        };
-        let player_6 = match iter.next() {
-            Some(value) => u16::from_value(value, "player_6")?,
-            None => u16::default(),
-        };
-        let player_6_damage = match iter.next() {
-            Some(value) => u16::from_value(value, "player_6_damage")?,
-            None => u16::default(),
-        };
-        let player_6_healing = match iter.next() {
-            Some(value) => u16::from_value(value, "player_6_healing")?,
-            None => u16::default(),
-        };
-        let player_6_lifetime = match iter.next() {
-            Some(value) => u16::from_value(value, "player_6_lifetime")?,
-            None => u16::default(),
-        };
-        let player_6_kills = match iter.next() {
-            Some(value) => u16::from_value(value, "player_6_kills")?,
-            None => u16::default(),
-        };
         Ok(ArenaWinPanelEvent {
-            panel_style,
-            winning_team,
-            win_reason,
-            cappers,
-            flag_cap_limit,
-            blue_score,
-            red_score,
-            blue_score_prev,
-            red_score_prev,
-            round_complete,
-            player_1,
-            player_1_damage,
-            player_1_healing,
-            player_1_lifetime,
-            player_1_kills,
-            player_2,
-            player_2_damage,
-            player_2_healing,
-            player_2_lifetime,
-            player_2_kills,
-            player_3,
-            player_3_damage,
-            player_3_healing,
-            player_3_lifetime,
-            player_3_kills,
-            player_4,
-            player_4_damage,
-            player_4_healing,
-            player_4_lifetime,
-            player_4_kills,
-            player_5,
-            player_5_damage,
-            player_5_healing,
-            player_5_lifetime,
-            player_5_kills,
-            player_6,
-            player_6_damage,
-            player_6_healing,
-            player_6_lifetime,
-            player_6_kills,
+            panel_style: u8::from_value(iter.next(), "panel_style")?,
+            winning_team: u8::from_value(iter.next(), "winning_team")?,
+            win_reason: u8::from_value(iter.next(), "win_reason")?,
+            cappers: String::from_value(iter.next(), "cappers")?,
+            flag_cap_limit: u16::from_value(iter.next(), "flag_cap_limit")?,
+            blue_score: u16::from_value(iter.next(), "blue_score")?,
+            red_score: u16::from_value(iter.next(), "red_score")?,
+            blue_score_prev: u16::from_value(iter.next(), "blue_score_prev")?,
+            red_score_prev: u16::from_value(iter.next(), "red_score_prev")?,
+            round_complete: u16::from_value(iter.next(), "round_complete")?,
+            player_1: u16::from_value(iter.next(), "player_1")?,
+            player_1_damage: u16::from_value(iter.next(), "player_1_damage")?,
+            player_1_healing: u16::from_value(iter.next(), "player_1_healing")?,
+            player_1_lifetime: u16::from_value(iter.next(), "player_1_lifetime")?,
+            player_1_kills: u16::from_value(iter.next(), "player_1_kills")?,
+            player_2: u16::from_value(iter.next(), "player_2")?,
+            player_2_damage: u16::from_value(iter.next(), "player_2_damage")?,
+            player_2_healing: u16::from_value(iter.next(), "player_2_healing")?,
+            player_2_lifetime: u16::from_value(iter.next(), "player_2_lifetime")?,
+            player_2_kills: u16::from_value(iter.next(), "player_2_kills")?,
+            player_3: u16::from_value(iter.next(), "player_3")?,
+            player_3_damage: u16::from_value(iter.next(), "player_3_damage")?,
+            player_3_healing: u16::from_value(iter.next(), "player_3_healing")?,
+            player_3_lifetime: u16::from_value(iter.next(), "player_3_lifetime")?,
+            player_3_kills: u16::from_value(iter.next(), "player_3_kills")?,
+            player_4: u16::from_value(iter.next(), "player_4")?,
+            player_4_damage: u16::from_value(iter.next(), "player_4_damage")?,
+            player_4_healing: u16::from_value(iter.next(), "player_4_healing")?,
+            player_4_lifetime: u16::from_value(iter.next(), "player_4_lifetime")?,
+            player_4_kills: u16::from_value(iter.next(), "player_4_kills")?,
+            player_5: u16::from_value(iter.next(), "player_5")?,
+            player_5_damage: u16::from_value(iter.next(), "player_5_damage")?,
+            player_5_healing: u16::from_value(iter.next(), "player_5_healing")?,
+            player_5_lifetime: u16::from_value(iter.next(), "player_5_lifetime")?,
+            player_5_kills: u16::from_value(iter.next(), "player_5_kills")?,
+            player_6: u16::from_value(iter.next(), "player_6")?,
+            player_6_damage: u16::from_value(iter.next(), "player_6_damage")?,
+            player_6_healing: u16::from_value(iter.next(), "player_6_healing")?,
+            player_6_lifetime: u16::from_value(iter.next(), "player_6_lifetime")?,
+            player_6_kills: u16::from_value(iter.next(), "player_6_kills")?,
         })
     }
 }
@@ -3951,22 +2438,10 @@ pub struct PveWinPanelEvent {
 impl FromRawGameEvent for PveWinPanelEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let panel_style = match iter.next() {
-            Some(value) => u8::from_value(value, "panel_style")?,
-            None => u8::default(),
-        };
-        let winning_team = match iter.next() {
-            Some(value) => u8::from_value(value, "winning_team")?,
-            None => u8::default(),
-        };
-        let win_reason = match iter.next() {
-            Some(value) => u8::from_value(value, "win_reason")?,
-            None => u8::default(),
-        };
         Ok(PveWinPanelEvent {
-            panel_style,
-            winning_team,
-            win_reason,
+            panel_style: u8::from_value(iter.next(), "panel_style")?,
+            winning_team: u8::from_value(iter.next(), "winning_team")?,
+            win_reason: u8::from_value(iter.next(), "win_reason")?,
         })
     }
 }
@@ -3977,11 +2452,9 @@ pub struct AirDashEvent {
 impl FromRawGameEvent for AirDashEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        Ok(AirDashEvent { player })
+        Ok(AirDashEvent {
+            player: u8::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -3991,11 +2464,9 @@ pub struct LandedEvent {
 impl FromRawGameEvent for LandedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        Ok(LandedEvent { player })
+        Ok(LandedEvent {
+            player: u8::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4005,11 +2476,9 @@ pub struct PlayerDamageDodgedEvent {
 impl FromRawGameEvent for PlayerDamageDodgedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let damage = match iter.next() {
-            Some(value) => u16::from_value(value, "damage")?,
-            None => u16::default(),
-        };
-        Ok(PlayerDamageDodgedEvent { damage })
+        Ok(PlayerDamageDodgedEvent {
+            damage: u16::from_value(iter.next(), "damage")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4022,27 +2491,11 @@ pub struct PlayerStunnedEvent {
 impl FromRawGameEvent for PlayerStunnedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let stunner = match iter.next() {
-            Some(value) => u16::from_value(value, "stunner")?,
-            None => u16::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u16::from_value(value, "victim")?,
-            None => u16::default(),
-        };
-        let victim_capping = match iter.next() {
-            Some(value) => bool::from_value(value, "victim_capping")?,
-            None => bool::default(),
-        };
-        let big_stun = match iter.next() {
-            Some(value) => bool::from_value(value, "big_stun")?,
-            None => bool::default(),
-        };
         Ok(PlayerStunnedEvent {
-            stunner,
-            victim,
-            victim_capping,
-            big_stun,
+            stunner: u16::from_value(iter.next(), "stunner")?,
+            victim: u16::from_value(iter.next(), "victim")?,
+            victim_capping: bool::from_value(iter.next(), "victim_capping")?,
+            big_stun: bool::from_value(iter.next(), "big_stun")?,
         })
     }
 }
@@ -4054,17 +2507,9 @@ pub struct ScoutGrandSlamEvent {
 impl FromRawGameEvent for ScoutGrandSlamEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let scout_id = match iter.next() {
-            Some(value) => u16::from_value(value, "scout_id")?,
-            None => u16::default(),
-        };
-        let target_id = match iter.next() {
-            Some(value) => u16::from_value(value, "target_id")?,
-            None => u16::default(),
-        };
         Ok(ScoutGrandSlamEvent {
-            scout_id,
-            target_id,
+            scout_id: u16::from_value(iter.next(), "scout_id")?,
+            target_id: u16::from_value(iter.next(), "target_id")?,
         })
     }
 }
@@ -4078,27 +2523,11 @@ pub struct ScoutSlamdollLandedEvent {
 impl FromRawGameEvent for ScoutSlamdollLandedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let target_index = match iter.next() {
-            Some(value) => u16::from_value(value, "target_index")?,
-            None => u16::default(),
-        };
-        let x = match iter.next() {
-            Some(value) => f32::from_value(value, "x")?,
-            None => f32::default(),
-        };
-        let y = match iter.next() {
-            Some(value) => f32::from_value(value, "y")?,
-            None => f32::default(),
-        };
-        let z = match iter.next() {
-            Some(value) => f32::from_value(value, "z")?,
-            None => f32::default(),
-        };
         Ok(ScoutSlamdollLandedEvent {
-            target_index,
-            x,
-            y,
-            z,
+            target_index: u16::from_value(iter.next(), "target_index")?,
+            x: f32::from_value(iter.next(), "x")?,
+            y: f32::from_value(iter.next(), "y")?,
+            z: f32::from_value(iter.next(), "z")?,
         })
     }
 }
@@ -4119,62 +2548,18 @@ pub struct ArrowImpactEvent {
 impl FromRawGameEvent for ArrowImpactEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let attached_entity = match iter.next() {
-            Some(value) => u16::from_value(value, "attached_entity")?,
-            None => u16::default(),
-        };
-        let shooter = match iter.next() {
-            Some(value) => u16::from_value(value, "shooter")?,
-            None => u16::default(),
-        };
-        let bone_index_attached = match iter.next() {
-            Some(value) => u16::from_value(value, "bone_index_attached")?,
-            None => u16::default(),
-        };
-        let bone_position_x = match iter.next() {
-            Some(value) => f32::from_value(value, "bone_position_x")?,
-            None => f32::default(),
-        };
-        let bone_position_y = match iter.next() {
-            Some(value) => f32::from_value(value, "bone_position_y")?,
-            None => f32::default(),
-        };
-        let bone_position_z = match iter.next() {
-            Some(value) => f32::from_value(value, "bone_position_z")?,
-            None => f32::default(),
-        };
-        let bone_angles_x = match iter.next() {
-            Some(value) => f32::from_value(value, "bone_angles_x")?,
-            None => f32::default(),
-        };
-        let bone_angles_y = match iter.next() {
-            Some(value) => f32::from_value(value, "bone_angles_y")?,
-            None => f32::default(),
-        };
-        let bone_angles_z = match iter.next() {
-            Some(value) => f32::from_value(value, "bone_angles_z")?,
-            None => f32::default(),
-        };
-        let projectile_type = match iter.next() {
-            Some(value) => u16::from_value(value, "projectile_type")?,
-            None => u16::default(),
-        };
-        let is_crit = match iter.next() {
-            Some(value) => bool::from_value(value, "is_crit")?,
-            None => bool::default(),
-        };
         Ok(ArrowImpactEvent {
-            attached_entity,
-            shooter,
-            bone_index_attached,
-            bone_position_x,
-            bone_position_y,
-            bone_position_z,
-            bone_angles_x,
-            bone_angles_y,
-            bone_angles_z,
-            projectile_type,
-            is_crit,
+            attached_entity: u16::from_value(iter.next(), "attached_entity")?,
+            shooter: u16::from_value(iter.next(), "shooter")?,
+            bone_index_attached: u16::from_value(iter.next(), "bone_index_attached")?,
+            bone_position_x: f32::from_value(iter.next(), "bone_position_x")?,
+            bone_position_y: f32::from_value(iter.next(), "bone_position_y")?,
+            bone_position_z: f32::from_value(iter.next(), "bone_position_z")?,
+            bone_angles_x: f32::from_value(iter.next(), "bone_angles_x")?,
+            bone_angles_y: f32::from_value(iter.next(), "bone_angles_y")?,
+            bone_angles_z: f32::from_value(iter.next(), "bone_angles_z")?,
+            projectile_type: u16::from_value(iter.next(), "projectile_type")?,
+            is_crit: bool::from_value(iter.next(), "is_crit")?,
         })
     }
 }
@@ -4186,17 +2571,9 @@ pub struct PlayerJaratedEvent {
 impl FromRawGameEvent for PlayerJaratedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let thrower_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "thrower_ent_index")?,
-            None => u8::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "victim_ent_index")?,
-            None => u8::default(),
-        };
         Ok(PlayerJaratedEvent {
-            thrower_ent_index,
-            victim_ent_index,
+            thrower_ent_index: u8::from_value(iter.next(), "thrower_ent_index")?,
+            victim_ent_index: u8::from_value(iter.next(), "victim_ent_index")?,
         })
     }
 }
@@ -4208,17 +2585,9 @@ pub struct PlayerJaratedFadeEvent {
 impl FromRawGameEvent for PlayerJaratedFadeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let thrower_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "thrower_ent_index")?,
-            None => u8::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "victim_ent_index")?,
-            None => u8::default(),
-        };
         Ok(PlayerJaratedFadeEvent {
-            thrower_ent_index,
-            victim_ent_index,
+            thrower_ent_index: u8::from_value(iter.next(), "thrower_ent_index")?,
+            victim_ent_index: u8::from_value(iter.next(), "victim_ent_index")?,
         })
     }
 }
@@ -4230,17 +2599,9 @@ pub struct PlayerShieldBlockedEvent {
 impl FromRawGameEvent for PlayerShieldBlockedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let attacker_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "attacker_ent_index")?,
-            None => u8::default(),
-        };
-        let blocker_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "blocker_ent_index")?,
-            None => u8::default(),
-        };
         Ok(PlayerShieldBlockedEvent {
-            attacker_ent_index,
-            blocker_ent_index,
+            attacker_ent_index: u8::from_value(iter.next(), "attacker_ent_index")?,
+            blocker_ent_index: u8::from_value(iter.next(), "blocker_ent_index")?,
         })
     }
 }
@@ -4251,11 +2612,9 @@ pub struct PlayerPinnedEvent {
 impl FromRawGameEvent for PlayerPinnedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let pinned = match iter.next() {
-            Some(value) => u8::from_value(value, "pinned")?,
-            None => u8::default(),
-        };
-        Ok(PlayerPinnedEvent { pinned })
+        Ok(PlayerPinnedEvent {
+            pinned: u8::from_value(iter.next(), "pinned")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4265,11 +2624,9 @@ pub struct PlayerHealedByMedicEvent {
 impl FromRawGameEvent for PlayerHealedByMedicEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let medic = match iter.next() {
-            Some(value) => u8::from_value(value, "medic")?,
-            None => u8::default(),
-        };
-        Ok(PlayerHealedByMedicEvent { medic })
+        Ok(PlayerHealedByMedicEvent {
+            medic: u8::from_value(iter.next(), "medic")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4282,27 +2639,11 @@ pub struct PlayerSappedObjectEvent {
 impl FromRawGameEvent for PlayerSappedObjectEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let owner_id = match iter.next() {
-            Some(value) => u16::from_value(value, "owner_id")?,
-            None => u16::default(),
-        };
-        let object = match iter.next() {
-            Some(value) => u8::from_value(value, "object")?,
-            None => u8::default(),
-        };
-        let sapper_id = match iter.next() {
-            Some(value) => u16::from_value(value, "sapper_id")?,
-            None => u16::default(),
-        };
         Ok(PlayerSappedObjectEvent {
-            user_id,
-            owner_id,
-            object,
-            sapper_id,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            owner_id: u16::from_value(iter.next(), "owner_id")?,
+            object: u8::from_value(iter.next(), "object")?,
+            sapper_id: u16::from_value(iter.next(), "sapper_id")?,
         })
     }
 }
@@ -4319,42 +2660,14 @@ pub struct ItemFoundEvent {
 impl FromRawGameEvent for ItemFoundEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        let quality = match iter.next() {
-            Some(value) => u8::from_value(value, "quality")?,
-            None => u8::default(),
-        };
-        let method = match iter.next() {
-            Some(value) => u8::from_value(value, "method")?,
-            None => u8::default(),
-        };
-        let item_def = match iter.next() {
-            Some(value) => u32::from_value(value, "item_def")?,
-            None => u32::default(),
-        };
-        let is_strange = match iter.next() {
-            Some(value) => u8::from_value(value, "is_strange")?,
-            None => u8::default(),
-        };
-        let is_unusual = match iter.next() {
-            Some(value) => u8::from_value(value, "is_unusual")?,
-            None => u8::default(),
-        };
-        let wear = match iter.next() {
-            Some(value) => f32::from_value(value, "wear")?,
-            None => f32::default(),
-        };
         Ok(ItemFoundEvent {
-            player,
-            quality,
-            method,
-            item_def,
-            is_strange,
-            is_unusual,
-            wear,
+            player: u8::from_value(iter.next(), "player")?,
+            quality: u8::from_value(iter.next(), "quality")?,
+            method: u8::from_value(iter.next(), "method")?,
+            item_def: u32::from_value(iter.next(), "item_def")?,
+            is_strange: u8::from_value(iter.next(), "is_strange")?,
+            is_unusual: u8::from_value(iter.next(), "is_unusual")?,
+            wear: f32::from_value(iter.next(), "wear")?,
         })
     }
 }
@@ -4378,77 +2691,21 @@ pub struct ShowAnnotationEvent {
 impl FromRawGameEvent for ShowAnnotationEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let world_pos_x = match iter.next() {
-            Some(value) => f32::from_value(value, "world_pos_x")?,
-            None => f32::default(),
-        };
-        let world_pos_y = match iter.next() {
-            Some(value) => f32::from_value(value, "world_pos_y")?,
-            None => f32::default(),
-        };
-        let world_pos_z = match iter.next() {
-            Some(value) => f32::from_value(value, "world_pos_z")?,
-            None => f32::default(),
-        };
-        let world_normal_x = match iter.next() {
-            Some(value) => f32::from_value(value, "world_normal_x")?,
-            None => f32::default(),
-        };
-        let world_normal_y = match iter.next() {
-            Some(value) => f32::from_value(value, "world_normal_y")?,
-            None => f32::default(),
-        };
-        let world_normal_z = match iter.next() {
-            Some(value) => f32::from_value(value, "world_normal_z")?,
-            None => f32::default(),
-        };
-        let id = match iter.next() {
-            Some(value) => u32::from_value(value, "id")?,
-            None => u32::default(),
-        };
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        let lifetime = match iter.next() {
-            Some(value) => f32::from_value(value, "lifetime")?,
-            None => f32::default(),
-        };
-        let visibility_bit_field = match iter.next() {
-            Some(value) => u32::from_value(value, "visibility_bit_field")?,
-            None => u32::default(),
-        };
-        let follow_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "follow_ent_index")?,
-            None => u32::default(),
-        };
-        let show_distance = match iter.next() {
-            Some(value) => bool::from_value(value, "show_distance")?,
-            None => bool::default(),
-        };
-        let play_sound = match iter.next() {
-            Some(value) => String::from_value(value, "play_sound")?,
-            None => String::default(),
-        };
-        let show_effect = match iter.next() {
-            Some(value) => bool::from_value(value, "show_effect")?,
-            None => bool::default(),
-        };
         Ok(ShowAnnotationEvent {
-            world_pos_x,
-            world_pos_y,
-            world_pos_z,
-            world_normal_x,
-            world_normal_y,
-            world_normal_z,
-            id,
-            text,
-            lifetime,
-            visibility_bit_field,
-            follow_ent_index,
-            show_distance,
-            play_sound,
-            show_effect,
+            world_pos_x: f32::from_value(iter.next(), "world_pos_x")?,
+            world_pos_y: f32::from_value(iter.next(), "world_pos_y")?,
+            world_pos_z: f32::from_value(iter.next(), "world_pos_z")?,
+            world_normal_x: f32::from_value(iter.next(), "world_normal_x")?,
+            world_normal_y: f32::from_value(iter.next(), "world_normal_y")?,
+            world_normal_z: f32::from_value(iter.next(), "world_normal_z")?,
+            id: u32::from_value(iter.next(), "id")?,
+            text: String::from_value(iter.next(), "text")?,
+            lifetime: f32::from_value(iter.next(), "lifetime")?,
+            visibility_bit_field: u32::from_value(iter.next(), "visibility_bit_field")?,
+            follow_ent_index: u32::from_value(iter.next(), "follow_ent_index")?,
+            show_distance: bool::from_value(iter.next(), "show_distance")?,
+            play_sound: String::from_value(iter.next(), "play_sound")?,
+            show_effect: bool::from_value(iter.next(), "show_effect")?,
         })
     }
 }
@@ -4459,11 +2716,9 @@ pub struct HideAnnotationEvent {
 impl FromRawGameEvent for HideAnnotationEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let id = match iter.next() {
-            Some(value) => u32::from_value(value, "id")?,
-            None => u32::default(),
-        };
-        Ok(HideAnnotationEvent { id })
+        Ok(HideAnnotationEvent {
+            id: u32::from_value(iter.next(), "id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4473,11 +2728,9 @@ pub struct PostInventoryApplicationEvent {
 impl FromRawGameEvent for PostInventoryApplicationEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(PostInventoryApplicationEvent { user_id })
+        Ok(PostInventoryApplicationEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4488,15 +2741,10 @@ pub struct ControlPointUnlockUpdatedEvent {
 impl FromRawGameEvent for ControlPointUnlockUpdatedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        let time = match iter.next() {
-            Some(value) => f32::from_value(value, "time")?,
-            None => f32::default(),
-        };
-        Ok(ControlPointUnlockUpdatedEvent { index, time })
+        Ok(ControlPointUnlockUpdatedEvent {
+            index: u16::from_value(iter.next(), "index")?,
+            time: f32::from_value(iter.next(), "time")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4507,17 +2755,9 @@ pub struct DeployBuffBannerEvent {
 impl FromRawGameEvent for DeployBuffBannerEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let buff_type = match iter.next() {
-            Some(value) => u8::from_value(value, "buff_type")?,
-            None => u8::default(),
-        };
-        let buff_owner = match iter.next() {
-            Some(value) => u16::from_value(value, "buff_owner")?,
-            None => u16::default(),
-        };
         Ok(DeployBuffBannerEvent {
-            buff_type,
-            buff_owner,
+            buff_type: u8::from_value(iter.next(), "buff_type")?,
+            buff_owner: u16::from_value(iter.next(), "buff_owner")?,
         })
     }
 }
@@ -4530,22 +2770,10 @@ pub struct PlayerBuffEvent {
 impl FromRawGameEvent for PlayerBuffEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let buff_owner = match iter.next() {
-            Some(value) => u16::from_value(value, "buff_owner")?,
-            None => u16::default(),
-        };
-        let buff_type = match iter.next() {
-            Some(value) => u8::from_value(value, "buff_type")?,
-            None => u8::default(),
-        };
         Ok(PlayerBuffEvent {
-            user_id,
-            buff_owner,
-            buff_type,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            buff_owner: u16::from_value(iter.next(), "buff_owner")?,
+            buff_type: u8::from_value(iter.next(), "buff_type")?,
         })
     }
 }
@@ -4559,27 +2787,11 @@ pub struct MedicDeathEvent {
 impl FromRawGameEvent for MedicDeathEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let healing = match iter.next() {
-            Some(value) => u16::from_value(value, "healing")?,
-            None => u16::default(),
-        };
-        let charged = match iter.next() {
-            Some(value) => bool::from_value(value, "charged")?,
-            None => bool::default(),
-        };
         Ok(MedicDeathEvent {
-            user_id,
-            attacker,
-            healing,
-            charged,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            healing: u16::from_value(iter.next(), "healing")?,
+            charged: bool::from_value(iter.next(), "charged")?,
         })
     }
 }
@@ -4604,11 +2816,9 @@ pub struct HalloweenPumpkinGrabEvent {
 impl FromRawGameEvent for HalloweenPumpkinGrabEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(HalloweenPumpkinGrabEvent { user_id })
+        Ok(HalloweenPumpkinGrabEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4619,17 +2829,9 @@ pub struct RocketJumpEvent {
 impl FromRawGameEvent for RocketJumpEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let play_sound = match iter.next() {
-            Some(value) => bool::from_value(value, "play_sound")?,
-            None => bool::default(),
-        };
         Ok(RocketJumpEvent {
-            user_id,
-            play_sound,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            play_sound: bool::from_value(iter.next(), "play_sound")?,
         })
     }
 }
@@ -4640,11 +2842,9 @@ pub struct RocketJumpLandedEvent {
 impl FromRawGameEvent for RocketJumpLandedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(RocketJumpLandedEvent { user_id })
+        Ok(RocketJumpLandedEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4655,17 +2855,9 @@ pub struct StickyJumpEvent {
 impl FromRawGameEvent for StickyJumpEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let play_sound = match iter.next() {
-            Some(value) => bool::from_value(value, "play_sound")?,
-            None => bool::default(),
-        };
         Ok(StickyJumpEvent {
-            user_id,
-            play_sound,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            play_sound: bool::from_value(iter.next(), "play_sound")?,
         })
     }
 }
@@ -4676,11 +2868,9 @@ pub struct StickyJumpLandedEvent {
 impl FromRawGameEvent for StickyJumpLandedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(StickyJumpLandedEvent { user_id })
+        Ok(StickyJumpLandedEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4691,17 +2881,9 @@ pub struct RocketPackLaunchEvent {
 impl FromRawGameEvent for RocketPackLaunchEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let play_sound = match iter.next() {
-            Some(value) => bool::from_value(value, "play_sound")?,
-            None => bool::default(),
-        };
         Ok(RocketPackLaunchEvent {
-            user_id,
-            play_sound,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            play_sound: bool::from_value(iter.next(), "play_sound")?,
         })
     }
 }
@@ -4712,11 +2894,9 @@ pub struct RocketPackLandedEvent {
 impl FromRawGameEvent for RocketPackLandedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(RocketPackLandedEvent { user_id })
+        Ok(RocketPackLandedEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4727,15 +2907,10 @@ pub struct MedicDefendedEvent {
 impl FromRawGameEvent for MedicDefendedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let medic = match iter.next() {
-            Some(value) => u16::from_value(value, "medic")?,
-            None => u16::default(),
-        };
-        Ok(MedicDefendedEvent { user_id, medic })
+        Ok(MedicDefendedEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            medic: u16::from_value(iter.next(), "medic")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4745,11 +2920,9 @@ pub struct LocalPlayerHealedEvent {
 impl FromRawGameEvent for LocalPlayerHealedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
-        Ok(LocalPlayerHealedEvent { amount })
+        Ok(LocalPlayerHealedEvent {
+            amount: u16::from_value(iter.next(), "amount")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4759,11 +2932,9 @@ pub struct PlayerDestroyedPipeBombEvent {
 impl FromRawGameEvent for PlayerDestroyedPipeBombEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(PlayerDestroyedPipeBombEvent { user_id })
+        Ok(PlayerDestroyedPipeBombEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4776,27 +2947,11 @@ pub struct ObjectDeflectedEvent {
 impl FromRawGameEvent for ObjectDeflectedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let owner_id = match iter.next() {
-            Some(value) => u16::from_value(value, "owner_id")?,
-            None => u16::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let object_ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "object_ent_index")?,
-            None => u16::default(),
-        };
         Ok(ObjectDeflectedEvent {
-            user_id,
-            owner_id,
-            weapon_id,
-            object_ent_index,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            owner_id: u16::from_value(iter.next(), "owner_id")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            object_ent_index: u16::from_value(iter.next(), "object_ent_index")?,
         })
     }
 }
@@ -4807,11 +2962,9 @@ pub struct PlayerMvpEvent {
 impl FromRawGameEvent for PlayerMvpEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(PlayerMvpEvent { player })
+        Ok(PlayerMvpEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4836,15 +2989,10 @@ pub struct NavBlockedEvent {
 impl FromRawGameEvent for NavBlockedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let area = match iter.next() {
-            Some(value) => u32::from_value(value, "area")?,
-            None => u32::default(),
-        };
-        let blocked = match iter.next() {
-            Some(value) => bool::from_value(value, "blocked")?,
-            None => bool::default(),
-        };
-        Ok(NavBlockedEvent { area, blocked })
+        Ok(NavBlockedEvent {
+            area: u32::from_value(iter.next(), "area")?,
+            blocked: bool::from_value(iter.next(), "blocked")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4854,11 +3002,9 @@ pub struct PathTrackPassedEvent {
 impl FromRawGameEvent for PathTrackPassedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(PathTrackPassedEvent { index })
+        Ok(PathTrackPassedEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4869,15 +3015,10 @@ pub struct NumCappersChangedEvent {
 impl FromRawGameEvent for NumCappersChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        let count = match iter.next() {
-            Some(value) => u8::from_value(value, "count")?,
-            None => u8::default(),
-        };
-        Ok(NumCappersChangedEvent { index, count })
+        Ok(NumCappersChangedEvent {
+            index: u16::from_value(iter.next(), "index")?,
+            count: u8::from_value(iter.next(), "count")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4895,15 +3036,10 @@ pub struct UpdateStatusItemEvent {
 impl FromRawGameEvent for UpdateStatusItemEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u8::from_value(value, "index")?,
-            None => u8::default(),
-        };
-        let object = match iter.next() {
-            Some(value) => u8::from_value(value, "object")?,
-            None => u8::default(),
-        };
-        Ok(UpdateStatusItemEvent { index, object })
+        Ok(UpdateStatusItemEvent {
+            index: u8::from_value(iter.next(), "index")?,
+            object: u8::from_value(iter.next(), "object")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4934,11 +3070,9 @@ pub struct AchievementEarnedLocalEvent {
 impl FromRawGameEvent for AchievementEarnedLocalEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let achievement = match iter.next() {
-            Some(value) => u16::from_value(value, "achievement")?,
-            None => u16::default(),
-        };
-        Ok(AchievementEarnedLocalEvent { achievement })
+        Ok(AchievementEarnedLocalEvent {
+            achievement: u16::from_value(iter.next(), "achievement")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -4950,22 +3084,10 @@ pub struct PlayerHealedEvent {
 impl FromRawGameEvent for PlayerHealedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let patient = match iter.next() {
-            Some(value) => u16::from_value(value, "patient")?,
-            None => u16::default(),
-        };
-        let healer = match iter.next() {
-            Some(value) => u16::from_value(value, "healer")?,
-            None => u16::default(),
-        };
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
         Ok(PlayerHealedEvent {
-            patient,
-            healer,
-            amount,
+            patient: u16::from_value(iter.next(), "patient")?,
+            healer: u16::from_value(iter.next(), "healer")?,
+            amount: u16::from_value(iter.next(), "amount")?,
         })
     }
 }
@@ -4978,22 +3100,10 @@ pub struct BuildingHealedEvent {
 impl FromRawGameEvent for BuildingHealedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let building = match iter.next() {
-            Some(value) => u16::from_value(value, "building")?,
-            None => u16::default(),
-        };
-        let healer = match iter.next() {
-            Some(value) => u16::from_value(value, "healer")?,
-            None => u16::default(),
-        };
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
         Ok(BuildingHealedEvent {
-            building,
-            healer,
-            amount,
+            building: u16::from_value(iter.next(), "building")?,
+            healer: u16::from_value(iter.next(), "healer")?,
+            amount: u16::from_value(iter.next(), "amount")?,
         })
     }
 }
@@ -5005,15 +3115,10 @@ pub struct ItemPickupEvent {
 impl FromRawGameEvent for ItemPickupEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let item = match iter.next() {
-            Some(value) => String::from_value(value, "item")?,
-            None => String::default(),
-        };
-        Ok(ItemPickupEvent { user_id, item })
+        Ok(ItemPickupEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            item: String::from_value(iter.next(), "item")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5028,37 +3133,13 @@ pub struct DuelStatusEvent {
 impl FromRawGameEvent for DuelStatusEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let killer = match iter.next() {
-            Some(value) => u16::from_value(value, "killer")?,
-            None => u16::default(),
-        };
-        let score_type = match iter.next() {
-            Some(value) => u16::from_value(value, "score_type")?,
-            None => u16::default(),
-        };
-        let initiator = match iter.next() {
-            Some(value) => u16::from_value(value, "initiator")?,
-            None => u16::default(),
-        };
-        let target = match iter.next() {
-            Some(value) => u16::from_value(value, "target")?,
-            None => u16::default(),
-        };
-        let initiator_score = match iter.next() {
-            Some(value) => u16::from_value(value, "initiator_score")?,
-            None => u16::default(),
-        };
-        let target_score = match iter.next() {
-            Some(value) => u16::from_value(value, "target_score")?,
-            None => u16::default(),
-        };
         Ok(DuelStatusEvent {
-            killer,
-            score_type,
-            initiator,
-            target,
-            initiator_score,
-            target_score,
+            killer: u16::from_value(iter.next(), "killer")?,
+            score_type: u16::from_value(iter.next(), "score_type")?,
+            initiator: u16::from_value(iter.next(), "initiator")?,
+            target: u16::from_value(iter.next(), "target")?,
+            initiator_score: u16::from_value(iter.next(), "initiator_score")?,
+            target_score: u16::from_value(iter.next(), "target_score")?,
         })
     }
 }
@@ -5082,77 +3163,21 @@ pub struct FishNoticeEvent {
 impl FromRawGameEvent for FishNoticeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "victim_ent_index")?,
-            None => u32::default(),
-        };
-        let inflictor_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
-            None => u32::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let weapon = match iter.next() {
-            Some(value) => String::from_value(value, "weapon")?,
-            None => String::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let damage_bits = match iter.next() {
-            Some(value) => u32::from_value(value, "damage_bits")?,
-            None => u32::default(),
-        };
-        let custom_kill = match iter.next() {
-            Some(value) => u16::from_value(value, "custom_kill")?,
-            None => u16::default(),
-        };
-        let assister = match iter.next() {
-            Some(value) => u16::from_value(value, "assister")?,
-            None => u16::default(),
-        };
-        let weapon_log_class_name = match iter.next() {
-            Some(value) => String::from_value(value, "weapon_log_class_name")?,
-            None => String::default(),
-        };
-        let stun_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "stun_flags")?,
-            None => u16::default(),
-        };
-        let death_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "death_flags")?,
-            None => u16::default(),
-        };
-        let silent_kill = match iter.next() {
-            Some(value) => bool::from_value(value, "silent_kill")?,
-            None => bool::default(),
-        };
-        let assister_fallback = match iter.next() {
-            Some(value) => String::from_value(value, "assister_fallback")?,
-            None => String::default(),
-        };
         Ok(FishNoticeEvent {
-            user_id,
-            victim_ent_index,
-            inflictor_ent_index,
-            attacker,
-            weapon,
-            weapon_id,
-            damage_bits,
-            custom_kill,
-            assister,
-            weapon_log_class_name,
-            stun_flags,
-            death_flags,
-            silent_kill,
-            assister_fallback,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            weapon: String::from_value(iter.next(), "weapon")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
+            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
+            assister: u16::from_value(iter.next(), "assister")?,
+            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
+            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
+            death_flags: u16::from_value(iter.next(), "death_flags")?,
+            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
+            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
         })
     }
 }
@@ -5176,77 +3201,21 @@ pub struct FishNoticeArmEvent {
 impl FromRawGameEvent for FishNoticeArmEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "victim_ent_index")?,
-            None => u32::default(),
-        };
-        let inflictor_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
-            None => u32::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let weapon = match iter.next() {
-            Some(value) => String::from_value(value, "weapon")?,
-            None => String::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let damage_bits = match iter.next() {
-            Some(value) => u32::from_value(value, "damage_bits")?,
-            None => u32::default(),
-        };
-        let custom_kill = match iter.next() {
-            Some(value) => u16::from_value(value, "custom_kill")?,
-            None => u16::default(),
-        };
-        let assister = match iter.next() {
-            Some(value) => u16::from_value(value, "assister")?,
-            None => u16::default(),
-        };
-        let weapon_log_class_name = match iter.next() {
-            Some(value) => String::from_value(value, "weapon_log_class_name")?,
-            None => String::default(),
-        };
-        let stun_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "stun_flags")?,
-            None => u16::default(),
-        };
-        let death_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "death_flags")?,
-            None => u16::default(),
-        };
-        let silent_kill = match iter.next() {
-            Some(value) => bool::from_value(value, "silent_kill")?,
-            None => bool::default(),
-        };
-        let assister_fallback = match iter.next() {
-            Some(value) => String::from_value(value, "assister_fallback")?,
-            None => String::default(),
-        };
         Ok(FishNoticeArmEvent {
-            user_id,
-            victim_ent_index,
-            inflictor_ent_index,
-            attacker,
-            weapon,
-            weapon_id,
-            damage_bits,
-            custom_kill,
-            assister,
-            weapon_log_class_name,
-            stun_flags,
-            death_flags,
-            silent_kill,
-            assister_fallback,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            weapon: String::from_value(iter.next(), "weapon")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
+            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
+            assister: u16::from_value(iter.next(), "assister")?,
+            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
+            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
+            death_flags: u16::from_value(iter.next(), "death_flags")?,
+            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
+            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
         })
     }
 }
@@ -5270,77 +3239,21 @@ pub struct SlapNoticeEvent {
 impl FromRawGameEvent for SlapNoticeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "victim_ent_index")?,
-            None => u32::default(),
-        };
-        let inflictor_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
-            None => u32::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let weapon = match iter.next() {
-            Some(value) => String::from_value(value, "weapon")?,
-            None => String::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let damage_bits = match iter.next() {
-            Some(value) => u32::from_value(value, "damage_bits")?,
-            None => u32::default(),
-        };
-        let custom_kill = match iter.next() {
-            Some(value) => u16::from_value(value, "custom_kill")?,
-            None => u16::default(),
-        };
-        let assister = match iter.next() {
-            Some(value) => u16::from_value(value, "assister")?,
-            None => u16::default(),
-        };
-        let weapon_log_class_name = match iter.next() {
-            Some(value) => String::from_value(value, "weapon_log_class_name")?,
-            None => String::default(),
-        };
-        let stun_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "stun_flags")?,
-            None => u16::default(),
-        };
-        let death_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "death_flags")?,
-            None => u16::default(),
-        };
-        let silent_kill = match iter.next() {
-            Some(value) => bool::from_value(value, "silent_kill")?,
-            None => bool::default(),
-        };
-        let assister_fallback = match iter.next() {
-            Some(value) => String::from_value(value, "assister_fallback")?,
-            None => String::default(),
-        };
         Ok(SlapNoticeEvent {
-            user_id,
-            victim_ent_index,
-            inflictor_ent_index,
-            attacker,
-            weapon,
-            weapon_id,
-            damage_bits,
-            custom_kill,
-            assister,
-            weapon_log_class_name,
-            stun_flags,
-            death_flags,
-            silent_kill,
-            assister_fallback,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            weapon: String::from_value(iter.next(), "weapon")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
+            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
+            assister: u16::from_value(iter.next(), "assister")?,
+            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
+            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
+            death_flags: u16::from_value(iter.next(), "death_flags")?,
+            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
+            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
         })
     }
 }
@@ -5365,82 +3278,22 @@ pub struct ThrowableHitEvent {
 impl FromRawGameEvent for ThrowableHitEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "victim_ent_index")?,
-            None => u32::default(),
-        };
-        let inflictor_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
-            None => u32::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let weapon = match iter.next() {
-            Some(value) => String::from_value(value, "weapon")?,
-            None => String::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let damage_bits = match iter.next() {
-            Some(value) => u32::from_value(value, "damage_bits")?,
-            None => u32::default(),
-        };
-        let custom_kill = match iter.next() {
-            Some(value) => u16::from_value(value, "custom_kill")?,
-            None => u16::default(),
-        };
-        let assister = match iter.next() {
-            Some(value) => u16::from_value(value, "assister")?,
-            None => u16::default(),
-        };
-        let weapon_log_class_name = match iter.next() {
-            Some(value) => String::from_value(value, "weapon_log_class_name")?,
-            None => String::default(),
-        };
-        let stun_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "stun_flags")?,
-            None => u16::default(),
-        };
-        let death_flags = match iter.next() {
-            Some(value) => u16::from_value(value, "death_flags")?,
-            None => u16::default(),
-        };
-        let silent_kill = match iter.next() {
-            Some(value) => bool::from_value(value, "silent_kill")?,
-            None => bool::default(),
-        };
-        let assister_fallback = match iter.next() {
-            Some(value) => String::from_value(value, "assister_fallback")?,
-            None => String::default(),
-        };
-        let total_hits = match iter.next() {
-            Some(value) => u16::from_value(value, "total_hits")?,
-            None => u16::default(),
-        };
         Ok(ThrowableHitEvent {
-            user_id,
-            victim_ent_index,
-            inflictor_ent_index,
-            attacker,
-            weapon,
-            weapon_id,
-            damage_bits,
-            custom_kill,
-            assister,
-            weapon_log_class_name,
-            stun_flags,
-            death_flags,
-            silent_kill,
-            assister_fallback,
-            total_hits,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            weapon: String::from_value(iter.next(), "weapon")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
+            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
+            assister: u16::from_value(iter.next(), "assister")?,
+            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
+            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
+            death_flags: u16::from_value(iter.next(), "death_flags")?,
+            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
+            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
+            total_hits: u16::from_value(iter.next(), "total_hits")?,
         })
     }
 }
@@ -5465,11 +3318,9 @@ pub struct MerasmusSummonedEvent {
 impl FromRawGameEvent for MerasmusSummonedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        Ok(MerasmusSummonedEvent { level })
+        Ok(MerasmusSummonedEvent {
+            level: u16::from_value(iter.next(), "level")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5479,11 +3330,9 @@ pub struct MerasmusKilledEvent {
 impl FromRawGameEvent for MerasmusKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        Ok(MerasmusKilledEvent { level })
+        Ok(MerasmusKilledEvent {
+            level: u16::from_value(iter.next(), "level")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5494,17 +3343,9 @@ pub struct MerasmusEscapeWarningEvent {
 impl FromRawGameEvent for MerasmusEscapeWarningEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        let time_remaining = match iter.next() {
-            Some(value) => u8::from_value(value, "time_remaining")?,
-            None => u8::default(),
-        };
         Ok(MerasmusEscapeWarningEvent {
-            level,
-            time_remaining,
+            level: u16::from_value(iter.next(), "level")?,
+            time_remaining: u8::from_value(iter.next(), "time_remaining")?,
         })
     }
 }
@@ -5515,11 +3356,9 @@ pub struct MerasmusEscapedEvent {
 impl FromRawGameEvent for MerasmusEscapedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        Ok(MerasmusEscapedEvent { level })
+        Ok(MerasmusEscapedEvent {
+            level: u16::from_value(iter.next(), "level")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5529,11 +3368,9 @@ pub struct EyeballBossSummonedEvent {
 impl FromRawGameEvent for EyeballBossSummonedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        Ok(EyeballBossSummonedEvent { level })
+        Ok(EyeballBossSummonedEvent {
+            level: u16::from_value(iter.next(), "level")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5544,17 +3381,9 @@ pub struct EyeballBossStunnedEvent {
 impl FromRawGameEvent for EyeballBossStunnedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        let player_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "player_ent_index")?,
-            None => u8::default(),
-        };
         Ok(EyeballBossStunnedEvent {
-            level,
-            player_ent_index,
+            level: u16::from_value(iter.next(), "level")?,
+            player_ent_index: u8::from_value(iter.next(), "player_ent_index")?,
         })
     }
 }
@@ -5565,11 +3394,9 @@ pub struct EyeballBossKilledEvent {
 impl FromRawGameEvent for EyeballBossKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        Ok(EyeballBossKilledEvent { level })
+        Ok(EyeballBossKilledEvent {
+            level: u16::from_value(iter.next(), "level")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5580,17 +3407,9 @@ pub struct EyeballBossKillerEvent {
 impl FromRawGameEvent for EyeballBossKillerEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        let player_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "player_ent_index")?,
-            None => u8::default(),
-        };
         Ok(EyeballBossKillerEvent {
-            level,
-            player_ent_index,
+            level: u16::from_value(iter.next(), "level")?,
+            player_ent_index: u8::from_value(iter.next(), "player_ent_index")?,
         })
     }
 }
@@ -5602,17 +3421,9 @@ pub struct EyeballBossEscapeImminentEvent {
 impl FromRawGameEvent for EyeballBossEscapeImminentEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        let time_remaining = match iter.next() {
-            Some(value) => u8::from_value(value, "time_remaining")?,
-            None => u8::default(),
-        };
         Ok(EyeballBossEscapeImminentEvent {
-            level,
-            time_remaining,
+            level: u16::from_value(iter.next(), "level")?,
+            time_remaining: u8::from_value(iter.next(), "time_remaining")?,
         })
     }
 }
@@ -5623,11 +3434,9 @@ pub struct EyeballBossEscapedEvent {
 impl FromRawGameEvent for EyeballBossEscapedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        Ok(EyeballBossEscapedEvent { level })
+        Ok(EyeballBossEscapedEvent {
+            level: u16::from_value(iter.next(), "level")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5643,42 +3452,14 @@ pub struct NpcHurtEvent {
 impl FromRawGameEvent for NpcHurtEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "ent_index")?,
-            None => u16::default(),
-        };
-        let health = match iter.next() {
-            Some(value) => u16::from_value(value, "health")?,
-            None => u16::default(),
-        };
-        let attacker_player = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker_player")?,
-            None => u16::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let damage_amount = match iter.next() {
-            Some(value) => u16::from_value(value, "damage_amount")?,
-            None => u16::default(),
-        };
-        let crit = match iter.next() {
-            Some(value) => bool::from_value(value, "crit")?,
-            None => bool::default(),
-        };
-        let boss = match iter.next() {
-            Some(value) => u16::from_value(value, "boss")?,
-            None => u16::default(),
-        };
         Ok(NpcHurtEvent {
-            ent_index,
-            health,
-            attacker_player,
-            weapon_id,
-            damage_amount,
-            crit,
-            boss,
+            ent_index: u16::from_value(iter.next(), "ent_index")?,
+            health: u16::from_value(iter.next(), "health")?,
+            attacker_player: u16::from_value(iter.next(), "attacker_player")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            damage_amount: u16::from_value(iter.next(), "damage_amount")?,
+            crit: bool::from_value(iter.next(), "crit")?,
+            boss: u16::from_value(iter.next(), "boss")?,
         })
     }
 }
@@ -5690,15 +3471,10 @@ pub struct ControlPointTimerUpdatedEvent {
 impl FromRawGameEvent for ControlPointTimerUpdatedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        let time = match iter.next() {
-            Some(value) => f32::from_value(value, "time")?,
-            None => f32::default(),
-        };
-        Ok(ControlPointTimerUpdatedEvent { index, time })
+        Ok(ControlPointTimerUpdatedEvent {
+            index: u16::from_value(iter.next(), "index")?,
+            time: f32::from_value(iter.next(), "time")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5708,11 +3484,9 @@ pub struct PlayerHighFiveStartEvent {
 impl FromRawGameEvent for PlayerHighFiveStartEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "ent_index")?,
-            None => u8::default(),
-        };
-        Ok(PlayerHighFiveStartEvent { ent_index })
+        Ok(PlayerHighFiveStartEvent {
+            ent_index: u8::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5722,11 +3496,9 @@ pub struct PlayerHighFiveCancelEvent {
 impl FromRawGameEvent for PlayerHighFiveCancelEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "ent_index")?,
-            None => u8::default(),
-        };
-        Ok(PlayerHighFiveCancelEvent { ent_index })
+        Ok(PlayerHighFiveCancelEvent {
+            ent_index: u8::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5737,17 +3509,9 @@ pub struct PlayerHighFiveSuccessEvent {
 impl FromRawGameEvent for PlayerHighFiveSuccessEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let initiator_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "initiator_ent_index")?,
-            None => u8::default(),
-        };
-        let partner_ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "partner_ent_index")?,
-            None => u8::default(),
-        };
         Ok(PlayerHighFiveSuccessEvent {
-            initiator_ent_index,
-            partner_ent_index,
+            initiator_ent_index: u8::from_value(iter.next(), "initiator_ent_index")?,
+            partner_ent_index: u8::from_value(iter.next(), "partner_ent_index")?,
         })
     }
 }
@@ -5760,22 +3524,10 @@ pub struct PlayerBonusPointsEvent {
 impl FromRawGameEvent for PlayerBonusPointsEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let points = match iter.next() {
-            Some(value) => u16::from_value(value, "points")?,
-            None => u16::default(),
-        };
-        let player_ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "player_ent_index")?,
-            None => u16::default(),
-        };
-        let source_ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "source_ent_index")?,
-            None => u16::default(),
-        };
         Ok(PlayerBonusPointsEvent {
-            points,
-            player_ent_index,
-            source_ent_index,
+            points: u16::from_value(iter.next(), "points")?,
+            player_ent_index: u16::from_value(iter.next(), "player_ent_index")?,
+            source_ent_index: u16::from_value(iter.next(), "source_ent_index")?,
         })
     }
 }
@@ -5794,15 +3546,10 @@ pub struct PlayerBuybackEvent {
 impl FromRawGameEvent for PlayerBuybackEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let cost = match iter.next() {
-            Some(value) => u16::from_value(value, "cost")?,
-            None => u16::default(),
-        };
-        Ok(PlayerBuybackEvent { player, cost })
+        Ok(PlayerBuybackEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            cost: u16::from_value(iter.next(), "cost")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5814,19 +3561,11 @@ pub struct PlayerUsedPowerUpBottleEvent {
 impl FromRawGameEvent for PlayerUsedPowerUpBottleEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let kind = match iter.next() {
-            Some(value) => u16::from_value(value, "kind")?,
-            None => u16::default(),
-        };
-        let time = match iter.next() {
-            Some(value) => f32::from_value(value, "time")?,
-            None => f32::default(),
-        };
-        Ok(PlayerUsedPowerUpBottleEvent { player, kind, time })
+        Ok(PlayerUsedPowerUpBottleEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            kind: u16::from_value(iter.next(), "kind")?,
+            time: f32::from_value(iter.next(), "time")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5836,11 +3575,9 @@ pub struct ChristmasGiftGrabEvent {
 impl FromRawGameEvent for ChristmasGiftGrabEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(ChristmasGiftGrabEvent { user_id })
+        Ok(ChristmasGiftGrabEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5852,22 +3589,10 @@ pub struct PlayerKilledAchievementZoneEvent {
 impl FromRawGameEvent for PlayerKilledAchievementZoneEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u16::from_value(value, "victim")?,
-            None => u16::default(),
-        };
-        let zone_id = match iter.next() {
-            Some(value) => u16::from_value(value, "zone_id")?,
-            None => u16::default(),
-        };
         Ok(PlayerKilledAchievementZoneEvent {
-            attacker,
-            victim,
-            zone_id,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            victim: u16::from_value(iter.next(), "victim")?,
+            zone_id: u16::from_value(iter.next(), "zone_id")?,
         })
     }
 }
@@ -5906,11 +3631,9 @@ pub struct PartyQueueStateChangedEvent {
 impl FromRawGameEvent for PartyQueueStateChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let match_group = match iter.next() {
-            Some(value) => u16::from_value(value, "match_group")?,
-            None => u16::default(),
-        };
-        Ok(PartyQueueStateChangedEvent { match_group })
+        Ok(PartyQueueStateChangedEvent {
+            match_group: u16::from_value(iter.next(), "match_group")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5922,22 +3645,10 @@ pub struct PartyChatEvent {
 impl FromRawGameEvent for PartyChatEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let steam_id = match iter.next() {
-            Some(value) => String::from_value(value, "steam_id")?,
-            None => String::default(),
-        };
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        let kind = match iter.next() {
-            Some(value) => u16::from_value(value, "kind")?,
-            None => u16::default(),
-        };
         Ok(PartyChatEvent {
-            steam_id,
-            text,
-            kind,
+            steam_id: String::from_value(iter.next(), "steam_id")?,
+            text: String::from_value(iter.next(), "text")?,
+            kind: u16::from_value(iter.next(), "kind")?,
         })
     }
 }
@@ -5948,11 +3659,9 @@ pub struct PartyMemberJoinEvent {
 impl FromRawGameEvent for PartyMemberJoinEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let steam_id = match iter.next() {
-            Some(value) => String::from_value(value, "steam_id")?,
-            None => String::default(),
-        };
-        Ok(PartyMemberJoinEvent { steam_id })
+        Ok(PartyMemberJoinEvent {
+            steam_id: String::from_value(iter.next(), "steam_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5962,11 +3671,9 @@ pub struct PartyMemberLeaveEvent {
 impl FromRawGameEvent for PartyMemberLeaveEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let steam_id = match iter.next() {
-            Some(value) => String::from_value(value, "steam_id")?,
-            None => String::default(),
-        };
-        Ok(PartyMemberLeaveEvent { steam_id })
+        Ok(PartyMemberLeaveEvent {
+            steam_id: String::from_value(iter.next(), "steam_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -5991,15 +3698,10 @@ pub struct MvmMissionUpdateEvent {
 impl FromRawGameEvent for MvmMissionUpdateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let class = match iter.next() {
-            Some(value) => u16::from_value(value, "class")?,
-            None => u16::default(),
-        };
-        let count = match iter.next() {
-            Some(value) => u16::from_value(value, "count")?,
-            None => u16::default(),
-        };
-        Ok(MvmMissionUpdateEvent { class, count })
+        Ok(MvmMissionUpdateEvent {
+            class: u16::from_value(iter.next(), "class")?,
+            count: u16::from_value(iter.next(), "count")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6016,11 +3718,9 @@ pub struct PlayerCurrencyChangedEvent {
 impl FromRawGameEvent for PlayerCurrencyChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let currency = match iter.next() {
-            Some(value) => u16::from_value(value, "currency")?,
-            None => u16::default(),
-        };
-        Ok(PlayerCurrencyChangedEvent { currency })
+        Ok(PlayerCurrencyChangedEvent {
+            currency: u16::from_value(iter.next(), "currency")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6030,11 +3730,9 @@ pub struct DoomsdayRocketOpenEvent {
 impl FromRawGameEvent for DoomsdayRocketOpenEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        Ok(DoomsdayRocketOpenEvent { team })
+        Ok(DoomsdayRocketOpenEvent {
+            team: u8::from_value(iter.next(), "team")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6044,11 +3742,9 @@ pub struct RemoveNemesisRelationshipsEvent {
 impl FromRawGameEvent for RemoveNemesisRelationshipsEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(RemoveNemesisRelationshipsEvent { player })
+        Ok(RemoveNemesisRelationshipsEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6079,11 +3775,9 @@ pub struct MvmQuickSentryUpgradeEvent {
 impl FromRawGameEvent for MvmQuickSentryUpgradeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(MvmQuickSentryUpgradeEvent { player })
+        Ok(MvmQuickSentryUpgradeEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6100,11 +3794,9 @@ pub struct MvmKillRobotDeliveringBombEvent {
 impl FromRawGameEvent for MvmKillRobotDeliveringBombEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(MvmKillRobotDeliveringBombEvent { player })
+        Ok(MvmKillRobotDeliveringBombEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6115,15 +3807,10 @@ pub struct MvmPickupCurrencyEvent {
 impl FromRawGameEvent for MvmPickupCurrencyEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let currency = match iter.next() {
-            Some(value) => u16::from_value(value, "currency")?,
-            None => u16::default(),
-        };
-        Ok(MvmPickupCurrencyEvent { player, currency })
+        Ok(MvmPickupCurrencyEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            currency: u16::from_value(iter.next(), "currency")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6133,11 +3820,9 @@ pub struct MvmBombCarrierKilledEvent {
 impl FromRawGameEvent for MvmBombCarrierKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        Ok(MvmBombCarrierKilledEvent { level })
+        Ok(MvmBombCarrierKilledEvent {
+            level: u16::from_value(iter.next(), "level")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6150,27 +3835,11 @@ pub struct MvmSentryBusterDetonateEvent {
 impl FromRawGameEvent for MvmSentryBusterDetonateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let det_x = match iter.next() {
-            Some(value) => f32::from_value(value, "det_x")?,
-            None => f32::default(),
-        };
-        let det_y = match iter.next() {
-            Some(value) => f32::from_value(value, "det_y")?,
-            None => f32::default(),
-        };
-        let det_z = match iter.next() {
-            Some(value) => f32::from_value(value, "det_z")?,
-            None => f32::default(),
-        };
         Ok(MvmSentryBusterDetonateEvent {
-            player,
-            det_x,
-            det_y,
-            det_z,
+            player: u16::from_value(iter.next(), "player")?,
+            det_x: f32::from_value(iter.next(), "det_x")?,
+            det_y: f32::from_value(iter.next(), "det_y")?,
+            det_z: f32::from_value(iter.next(), "det_z")?,
         })
     }
 }
@@ -6181,11 +3850,9 @@ pub struct MvmScoutMarkedForDeathEvent {
 impl FromRawGameEvent for MvmScoutMarkedForDeathEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(MvmScoutMarkedForDeathEvent { player })
+        Ok(MvmScoutMarkedForDeathEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6195,11 +3862,9 @@ pub struct MvmMedicPowerUpSharedEvent {
 impl FromRawGameEvent for MvmMedicPowerUpSharedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(MvmMedicPowerUpSharedEvent { player })
+        Ok(MvmMedicPowerUpSharedEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6211,22 +3876,10 @@ pub struct MvmBeginWaveEvent {
 impl FromRawGameEvent for MvmBeginWaveEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let wave_index = match iter.next() {
-            Some(value) => u16::from_value(value, "wave_index")?,
-            None => u16::default(),
-        };
-        let max_waves = match iter.next() {
-            Some(value) => u16::from_value(value, "max_waves")?,
-            None => u16::default(),
-        };
-        let advanced = match iter.next() {
-            Some(value) => u16::from_value(value, "advanced")?,
-            None => u16::default(),
-        };
         Ok(MvmBeginWaveEvent {
-            wave_index,
-            max_waves,
-            advanced,
+            wave_index: u16::from_value(iter.next(), "wave_index")?,
+            max_waves: u16::from_value(iter.next(), "max_waves")?,
+            advanced: u16::from_value(iter.next(), "advanced")?,
         })
     }
 }
@@ -6237,11 +3890,9 @@ pub struct MvmWaveCompleteEvent {
 impl FromRawGameEvent for MvmWaveCompleteEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let advanced = match iter.next() {
-            Some(value) => bool::from_value(value, "advanced")?,
-            None => bool::default(),
-        };
-        Ok(MvmWaveCompleteEvent { advanced })
+        Ok(MvmWaveCompleteEvent {
+            advanced: bool::from_value(iter.next(), "advanced")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6251,11 +3902,9 @@ pub struct MvmMissionCompleteEvent {
 impl FromRawGameEvent for MvmMissionCompleteEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let mission = match iter.next() {
-            Some(value) => String::from_value(value, "mission")?,
-            None => String::default(),
-        };
-        Ok(MvmMissionCompleteEvent { mission })
+        Ok(MvmMissionCompleteEvent {
+            mission: String::from_value(iter.next(), "mission")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6265,11 +3914,9 @@ pub struct MvmBombResetByPlayerEvent {
 impl FromRawGameEvent for MvmBombResetByPlayerEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(MvmBombResetByPlayerEvent { player })
+        Ok(MvmBombResetByPlayerEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6286,11 +3933,9 @@ pub struct MvmBombDeployResetByPlayerEvent {
 impl FromRawGameEvent for MvmBombDeployResetByPlayerEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(MvmBombDeployResetByPlayerEvent { player })
+        Ok(MvmBombDeployResetByPlayerEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6314,11 +3959,9 @@ pub struct DamageResistedEvent {
 impl FromRawGameEvent for DamageResistedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u8::from_value(value, "ent_index")?,
-            None => u8::default(),
-        };
-        Ok(DamageResistedEvent { ent_index })
+        Ok(DamageResistedEvent {
+            ent_index: u8::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6329,17 +3972,9 @@ pub struct RevivePlayerNotifyEvent {
 impl FromRawGameEvent for RevivePlayerNotifyEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "ent_index")?,
-            None => u16::default(),
-        };
-        let marker_ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "marker_ent_index")?,
-            None => u16::default(),
-        };
         Ok(RevivePlayerNotifyEvent {
-            ent_index,
-            marker_ent_index,
+            ent_index: u16::from_value(iter.next(), "ent_index")?,
+            marker_ent_index: u16::from_value(iter.next(), "marker_ent_index")?,
         })
     }
 }
@@ -6350,11 +3985,9 @@ pub struct RevivePlayerStoppedEvent {
 impl FromRawGameEvent for RevivePlayerStoppedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "ent_index")?,
-            None => u16::default(),
-        };
-        Ok(RevivePlayerStoppedEvent { ent_index })
+        Ok(RevivePlayerStoppedEvent {
+            ent_index: u16::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6364,11 +3997,9 @@ pub struct RevivePlayerCompleteEvent {
 impl FromRawGameEvent for RevivePlayerCompleteEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "ent_index")?,
-            None => u16::default(),
-        };
-        Ok(RevivePlayerCompleteEvent { ent_index })
+        Ok(RevivePlayerCompleteEvent {
+            ent_index: u16::from_value(iter.next(), "ent_index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6378,11 +4009,9 @@ pub struct PlayerTurnedToGhostEvent {
 impl FromRawGameEvent for PlayerTurnedToGhostEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        Ok(PlayerTurnedToGhostEvent { user_id })
+        Ok(PlayerTurnedToGhostEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6393,15 +4022,10 @@ pub struct MedigunShieldBlockedDamageEvent {
 impl FromRawGameEvent for MedigunShieldBlockedDamageEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let damage = match iter.next() {
-            Some(value) => f32::from_value(value, "damage")?,
-            None => f32::default(),
-        };
-        Ok(MedigunShieldBlockedDamageEvent { user_id, damage })
+        Ok(MedigunShieldBlockedDamageEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            damage: f32::from_value(iter.next(), "damage")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6411,11 +4035,9 @@ pub struct MvmAdvWaveCompleteNoGatesEvent {
 impl FromRawGameEvent for MvmAdvWaveCompleteNoGatesEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(MvmAdvWaveCompleteNoGatesEvent { index })
+        Ok(MvmAdvWaveCompleteNoGatesEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6426,15 +4048,10 @@ pub struct MvmSniperHeadshotCurrencyEvent {
 impl FromRawGameEvent for MvmSniperHeadshotCurrencyEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let currency = match iter.next() {
-            Some(value) => u16::from_value(value, "currency")?,
-            None => u16::default(),
-        };
-        Ok(MvmSniperHeadshotCurrencyEvent { user_id, currency })
+        Ok(MvmSniperHeadshotCurrencyEvent {
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            currency: u16::from_value(iter.next(), "currency")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6466,15 +4083,10 @@ pub struct PlayerDirectHitStunEvent {
 impl FromRawGameEvent for PlayerDirectHitStunEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u16::from_value(value, "victim")?,
-            None => u16::default(),
-        };
-        Ok(PlayerDirectHitStunEvent { attacker, victim })
+        Ok(PlayerDirectHitStunEvent {
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            victim: u16::from_value(iter.next(), "victim")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6484,11 +4096,9 @@ pub struct MvmSentryBusterKilledEvent {
 impl FromRawGameEvent for MvmSentryBusterKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let sentry_buster = match iter.next() {
-            Some(value) => u16::from_value(value, "sentry_buster")?,
-            None => u16::default(),
-        };
-        Ok(MvmSentryBusterKilledEvent { sentry_buster })
+        Ok(MvmSentryBusterKilledEvent {
+            sentry_buster: u16::from_value(iter.next(), "sentry_buster")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6498,11 +4108,9 @@ pub struct UpgradesFileChangedEvent {
 impl FromRawGameEvent for UpgradesFileChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let path = match iter.next() {
-            Some(value) => String::from_value(value, "path")?,
-            None => String::default(),
-        };
-        Ok(UpgradesFileChangedEvent { path })
+        Ok(UpgradesFileChangedEvent {
+            path: String::from_value(iter.next(), "path")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6514,22 +4122,10 @@ pub struct RdTeamPointsChangedEvent {
 impl FromRawGameEvent for RdTeamPointsChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let points = match iter.next() {
-            Some(value) => u16::from_value(value, "points")?,
-            None => u16::default(),
-        };
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let method = match iter.next() {
-            Some(value) => u8::from_value(value, "method")?,
-            None => u8::default(),
-        };
         Ok(RdTeamPointsChangedEvent {
-            points,
-            team,
-            method,
+            points: u16::from_value(iter.next(), "points")?,
+            team: u8::from_value(iter.next(), "team")?,
+            method: u8::from_value(iter.next(), "method")?,
         })
     }
 }
@@ -6555,52 +4151,16 @@ pub struct RdRobotKilledEvent {
 impl FromRawGameEvent for RdRobotKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "user_id")?,
-            None => u16::default(),
-        };
-        let victim_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "victim_ent_index")?,
-            None => u32::default(),
-        };
-        let inflictor_ent_index = match iter.next() {
-            Some(value) => u32::from_value(value, "inflictor_ent_index")?,
-            None => u32::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        let weapon = match iter.next() {
-            Some(value) => String::from_value(value, "weapon")?,
-            None => String::default(),
-        };
-        let weapon_id = match iter.next() {
-            Some(value) => u16::from_value(value, "weapon_id")?,
-            None => u16::default(),
-        };
-        let damage_bits = match iter.next() {
-            Some(value) => u32::from_value(value, "damage_bits")?,
-            None => u32::default(),
-        };
-        let custom_kill = match iter.next() {
-            Some(value) => u16::from_value(value, "custom_kill")?,
-            None => u16::default(),
-        };
-        let weapon_log_class_name = match iter.next() {
-            Some(value) => String::from_value(value, "weapon_log_class_name")?,
-            None => String::default(),
-        };
         Ok(RdRobotKilledEvent {
-            user_id,
-            victim_ent_index,
-            inflictor_ent_index,
-            attacker,
-            weapon,
-            weapon_id,
-            damage_bits,
-            custom_kill,
-            weapon_log_class_name,
+            user_id: u16::from_value(iter.next(), "user_id")?,
+            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+            weapon: String::from_value(iter.next(), "weapon")?,
+            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
+            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
+            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
+            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
         })
     }
 }
@@ -6614,27 +4174,11 @@ pub struct RdRobotImpactEvent {
 impl FromRawGameEvent for RdRobotImpactEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let ent_index = match iter.next() {
-            Some(value) => u16::from_value(value, "ent_index")?,
-            None => u16::default(),
-        };
-        let impulse_x = match iter.next() {
-            Some(value) => f32::from_value(value, "impulse_x")?,
-            None => f32::default(),
-        };
-        let impulse_y = match iter.next() {
-            Some(value) => f32::from_value(value, "impulse_y")?,
-            None => f32::default(),
-        };
-        let impulse_z = match iter.next() {
-            Some(value) => f32::from_value(value, "impulse_z")?,
-            None => f32::default(),
-        };
         Ok(RdRobotImpactEvent {
-            ent_index,
-            impulse_x,
-            impulse_y,
-            impulse_z,
+            ent_index: u16::from_value(iter.next(), "ent_index")?,
+            impulse_x: f32::from_value(iter.next(), "impulse_x")?,
+            impulse_y: f32::from_value(iter.next(), "impulse_y")?,
+            impulse_z: f32::from_value(iter.next(), "impulse_z")?,
         })
     }
 }
@@ -6645,11 +4189,9 @@ pub struct TeamPlayPreRoundTimeLeftEvent {
 impl FromRawGameEvent for TeamPlayPreRoundTimeLeftEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let time = match iter.next() {
-            Some(value) => u16::from_value(value, "time")?,
-            None => u16::default(),
-        };
-        Ok(TeamPlayPreRoundTimeLeftEvent { time })
+        Ok(TeamPlayPreRoundTimeLeftEvent {
+            time: u16::from_value(iter.next(), "time")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6659,11 +4201,9 @@ pub struct ParachuteDeployEvent {
 impl FromRawGameEvent for ParachuteDeployEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(ParachuteDeployEvent { index })
+        Ok(ParachuteDeployEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6673,11 +4213,9 @@ pub struct ParachuteHolsterEvent {
 impl FromRawGameEvent for ParachuteHolsterEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(ParachuteHolsterEvent { index })
+        Ok(ParachuteHolsterEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6687,11 +4225,9 @@ pub struct KillRefillsMeterEvent {
 impl FromRawGameEvent for KillRefillsMeterEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(KillRefillsMeterEvent { index })
+        Ok(KillRefillsMeterEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6704,27 +4240,11 @@ pub struct RpsTauntEventEvent {
 impl FromRawGameEvent for RpsTauntEventEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let winner = match iter.next() {
-            Some(value) => u16::from_value(value, "winner")?,
-            None => u16::default(),
-        };
-        let winner_rps = match iter.next() {
-            Some(value) => u8::from_value(value, "winner_rps")?,
-            None => u8::default(),
-        };
-        let loser = match iter.next() {
-            Some(value) => u16::from_value(value, "loser")?,
-            None => u16::default(),
-        };
-        let loser_rps = match iter.next() {
-            Some(value) => u8::from_value(value, "loser_rps")?,
-            None => u8::default(),
-        };
         Ok(RpsTauntEventEvent {
-            winner,
-            winner_rps,
-            loser,
-            loser_rps,
+            winner: u16::from_value(iter.next(), "winner")?,
+            winner_rps: u8::from_value(iter.next(), "winner_rps")?,
+            loser: u16::from_value(iter.next(), "loser")?,
+            loser_rps: u8::from_value(iter.next(), "loser_rps")?,
         })
     }
 }
@@ -6735,11 +4255,9 @@ pub struct CongaKillEvent {
 impl FromRawGameEvent for CongaKillEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(CongaKillEvent { index })
+        Ok(CongaKillEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6749,11 +4267,9 @@ pub struct PlayerInitialSpawnEvent {
 impl FromRawGameEvent for PlayerInitialSpawnEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(PlayerInitialSpawnEvent { index })
+        Ok(PlayerInitialSpawnEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6775,37 +4291,13 @@ pub struct CompetitiveStatsUpdateEvent {
 impl FromRawGameEvent for CompetitiveStatsUpdateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        let kills_rank = match iter.next() {
-            Some(value) => u8::from_value(value, "kills_rank")?,
-            None => u8::default(),
-        };
-        let score_rank = match iter.next() {
-            Some(value) => u8::from_value(value, "score_rank")?,
-            None => u8::default(),
-        };
-        let damage_rank = match iter.next() {
-            Some(value) => u8::from_value(value, "damage_rank")?,
-            None => u8::default(),
-        };
-        let healing_rank = match iter.next() {
-            Some(value) => u8::from_value(value, "healing_rank")?,
-            None => u8::default(),
-        };
-        let support_rank = match iter.next() {
-            Some(value) => u8::from_value(value, "support_rank")?,
-            None => u8::default(),
-        };
         Ok(CompetitiveStatsUpdateEvent {
-            index,
-            kills_rank,
-            score_rank,
-            damage_rank,
-            healing_rank,
-            support_rank,
+            index: u16::from_value(iter.next(), "index")?,
+            kills_rank: u8::from_value(iter.next(), "kills_rank")?,
+            score_rank: u8::from_value(iter.next(), "score_rank")?,
+            damage_rank: u8::from_value(iter.next(), "damage_rank")?,
+            healing_rank: u8::from_value(iter.next(), "healing_rank")?,
+            support_rank: u8::from_value(iter.next(), "support_rank")?,
         })
     }
 }
@@ -6817,15 +4309,10 @@ pub struct MiniGameWinEvent {
 impl FromRawGameEvent for MiniGameWinEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let team = match iter.next() {
-            Some(value) => u8::from_value(value, "team")?,
-            None => u8::default(),
-        };
-        let kind = match iter.next() {
-            Some(value) => u8::from_value(value, "kind")?,
-            None => u8::default(),
-        };
-        Ok(MiniGameWinEvent { team, kind })
+        Ok(MiniGameWinEvent {
+            team: u8::from_value(iter.next(), "team")?,
+            kind: u8::from_value(iter.next(), "kind")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6835,11 +4322,9 @@ pub struct SentryOnGoActiveEvent {
 impl FromRawGameEvent for SentryOnGoActiveEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(SentryOnGoActiveEvent { index })
+        Ok(SentryOnGoActiveEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6849,11 +4334,9 @@ pub struct DuckXpLevelUpEvent {
 impl FromRawGameEvent for DuckXpLevelUpEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let level = match iter.next() {
-            Some(value) => u16::from_value(value, "level")?,
-            None => u16::default(),
-        };
-        Ok(DuckXpLevelUpEvent { level })
+        Ok(DuckXpLevelUpEvent {
+            level: u16::from_value(iter.next(), "level")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6886,22 +4369,10 @@ pub struct RdPlayerScorePointsEvent {
 impl FromRawGameEvent for RdPlayerScorePointsEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let method = match iter.next() {
-            Some(value) => u16::from_value(value, "method")?,
-            None => u16::default(),
-        };
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
         Ok(RdPlayerScorePointsEvent {
-            player,
-            method,
-            amount,
+            player: u16::from_value(iter.next(), "player")?,
+            method: u16::from_value(iter.next(), "method")?,
+            amount: u16::from_value(iter.next(), "amount")?,
         })
     }
 }
@@ -6912,11 +4383,9 @@ pub struct DemomanDetStickiesEvent {
 impl FromRawGameEvent for DemomanDetStickiesEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(DemomanDetStickiesEvent { player })
+        Ok(DemomanDetStickiesEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6929,27 +4398,11 @@ pub struct QuestObjectiveCompletedEvent {
 impl FromRawGameEvent for QuestObjectiveCompletedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let quest_item_id_low = match iter.next() {
-            Some(value) => u32::from_value(value, "quest_item_id_low")?,
-            None => u32::default(),
-        };
-        let quest_item_id_hi = match iter.next() {
-            Some(value) => u32::from_value(value, "quest_item_id_hi")?,
-            None => u32::default(),
-        };
-        let quest_objective_id = match iter.next() {
-            Some(value) => u32::from_value(value, "quest_objective_id")?,
-            None => u32::default(),
-        };
-        let scorer_user_id = match iter.next() {
-            Some(value) => u16::from_value(value, "scorer_user_id")?,
-            None => u16::default(),
-        };
         Ok(QuestObjectiveCompletedEvent {
-            quest_item_id_low,
-            quest_item_id_hi,
-            quest_objective_id,
-            scorer_user_id,
+            quest_item_id_low: u32::from_value(iter.next(), "quest_item_id_low")?,
+            quest_item_id_hi: u32::from_value(iter.next(), "quest_item_id_hi")?,
+            quest_objective_id: u32::from_value(iter.next(), "quest_objective_id")?,
+            scorer_user_id: u16::from_value(iter.next(), "scorer_user_id")?,
         })
     }
 }
@@ -6961,15 +4414,10 @@ pub struct PlayerScoreChangedEvent {
 impl FromRawGameEvent for PlayerScoreChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        let delta = match iter.next() {
-            Some(value) => u16::from_value(value, "delta")?,
-            None => u16::default(),
-        };
-        Ok(PlayerScoreChangedEvent { player, delta })
+        Ok(PlayerScoreChangedEvent {
+            player: u8::from_value(iter.next(), "player")?,
+            delta: u16::from_value(iter.next(), "delta")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -6982,27 +4430,11 @@ pub struct KilledCappingPlayerEvent {
 impl FromRawGameEvent for KilledCappingPlayerEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let cp = match iter.next() {
-            Some(value) => u8::from_value(value, "cp")?,
-            None => u8::default(),
-        };
-        let killer = match iter.next() {
-            Some(value) => u8::from_value(value, "killer")?,
-            None => u8::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u8::from_value(value, "victim")?,
-            None => u8::default(),
-        };
-        let assister = match iter.next() {
-            Some(value) => u8::from_value(value, "assister")?,
-            None => u8::default(),
-        };
         Ok(KilledCappingPlayerEvent {
-            cp,
-            killer,
-            victim,
-            assister,
+            cp: u8::from_value(iter.next(), "cp")?,
+            killer: u8::from_value(iter.next(), "killer")?,
+            victim: u8::from_value(iter.next(), "victim")?,
+            assister: u8::from_value(iter.next(), "assister")?,
         })
     }
 }
@@ -7014,15 +4446,10 @@ pub struct EnvironmentalDeathEvent {
 impl FromRawGameEvent for EnvironmentalDeathEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let killer = match iter.next() {
-            Some(value) => u8::from_value(value, "killer")?,
-            None => u8::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u8::from_value(value, "victim")?,
-            None => u8::default(),
-        };
-        Ok(EnvironmentalDeathEvent { killer, victim })
+        Ok(EnvironmentalDeathEvent {
+            killer: u8::from_value(iter.next(), "killer")?,
+            victim: u8::from_value(iter.next(), "victim")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7034,22 +4461,10 @@ pub struct ProjectileDirectHitEvent {
 impl FromRawGameEvent for ProjectileDirectHitEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let attacker = match iter.next() {
-            Some(value) => u8::from_value(value, "attacker")?,
-            None => u8::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u8::from_value(value, "victim")?,
-            None => u8::default(),
-        };
-        let weapon_def_index = match iter.next() {
-            Some(value) => u32::from_value(value, "weapon_def_index")?,
-            None => u32::default(),
-        };
         Ok(ProjectileDirectHitEvent {
-            attacker,
-            victim,
-            weapon_def_index,
+            attacker: u8::from_value(iter.next(), "attacker")?,
+            victim: u8::from_value(iter.next(), "victim")?,
+            weapon_def_index: u32::from_value(iter.next(), "weapon_def_index")?,
         })
     }
 }
@@ -7060,11 +4475,9 @@ pub struct PassGetEvent {
 impl FromRawGameEvent for PassGetEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let owner = match iter.next() {
-            Some(value) => u16::from_value(value, "owner")?,
-            None => u16::default(),
-        };
-        Ok(PassGetEvent { owner })
+        Ok(PassGetEvent {
+            owner: u16::from_value(iter.next(), "owner")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7076,22 +4489,10 @@ pub struct PassScoreEvent {
 impl FromRawGameEvent for PassScoreEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let scorer = match iter.next() {
-            Some(value) => u16::from_value(value, "scorer")?,
-            None => u16::default(),
-        };
-        let assister = match iter.next() {
-            Some(value) => u16::from_value(value, "assister")?,
-            None => u16::default(),
-        };
-        let points = match iter.next() {
-            Some(value) => u8::from_value(value, "points")?,
-            None => u8::default(),
-        };
         Ok(PassScoreEvent {
-            scorer,
-            assister,
-            points,
+            scorer: u16::from_value(iter.next(), "scorer")?,
+            assister: u16::from_value(iter.next(), "assister")?,
+            points: u8::from_value(iter.next(), "points")?,
         })
     }
 }
@@ -7103,15 +4504,10 @@ pub struct PassFreeEvent {
 impl FromRawGameEvent for PassFreeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let owner = match iter.next() {
-            Some(value) => u16::from_value(value, "owner")?,
-            None => u16::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        Ok(PassFreeEvent { owner, attacker })
+        Ok(PassFreeEvent {
+            owner: u16::from_value(iter.next(), "owner")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7124,27 +4520,11 @@ pub struct PassPassCaughtEvent {
 impl FromRawGameEvent for PassPassCaughtEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let passer = match iter.next() {
-            Some(value) => u16::from_value(value, "passer")?,
-            None => u16::default(),
-        };
-        let catcher = match iter.next() {
-            Some(value) => u16::from_value(value, "catcher")?,
-            None => u16::default(),
-        };
-        let dist = match iter.next() {
-            Some(value) => f32::from_value(value, "dist")?,
-            None => f32::default(),
-        };
-        let duration = match iter.next() {
-            Some(value) => f32::from_value(value, "duration")?,
-            None => f32::default(),
-        };
         Ok(PassPassCaughtEvent {
-            passer,
-            catcher,
-            dist,
-            duration,
+            passer: u16::from_value(iter.next(), "passer")?,
+            catcher: u16::from_value(iter.next(), "catcher")?,
+            dist: f32::from_value(iter.next(), "dist")?,
+            duration: f32::from_value(iter.next(), "duration")?,
         })
     }
 }
@@ -7156,15 +4536,10 @@ pub struct PassBallStolenEvent {
 impl FromRawGameEvent for PassBallStolenEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let victim = match iter.next() {
-            Some(value) => u16::from_value(value, "victim")?,
-            None => u16::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u16::from_value(value, "attacker")?,
-            None => u16::default(),
-        };
-        Ok(PassBallStolenEvent { victim, attacker })
+        Ok(PassBallStolenEvent {
+            victim: u16::from_value(iter.next(), "victim")?,
+            attacker: u16::from_value(iter.next(), "attacker")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7175,15 +4550,10 @@ pub struct PassBallBlockedEvent {
 impl FromRawGameEvent for PassBallBlockedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let owner = match iter.next() {
-            Some(value) => u16::from_value(value, "owner")?,
-            None => u16::default(),
-        };
-        let blocker = match iter.next() {
-            Some(value) => u16::from_value(value, "blocker")?,
-            None => u16::default(),
-        };
-        Ok(PassBallBlockedEvent { owner, blocker })
+        Ok(PassBallBlockedEvent {
+            owner: u16::from_value(iter.next(), "owner")?,
+            blocker: u16::from_value(iter.next(), "blocker")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7196,27 +4566,11 @@ pub struct DamagePreventedEvent {
 impl FromRawGameEvent for DamagePreventedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let preventor = match iter.next() {
-            Some(value) => u16::from_value(value, "preventor")?,
-            None => u16::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u16::from_value(value, "victim")?,
-            None => u16::default(),
-        };
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
-        let condition = match iter.next() {
-            Some(value) => u16::from_value(value, "condition")?,
-            None => u16::default(),
-        };
         Ok(DamagePreventedEvent {
-            preventor,
-            victim,
-            amount,
-            condition,
+            preventor: u16::from_value(iter.next(), "preventor")?,
+            victim: u16::from_value(iter.next(), "victim")?,
+            amount: u16::from_value(iter.next(), "amount")?,
+            condition: u16::from_value(iter.next(), "condition")?,
         })
     }
 }
@@ -7228,15 +4582,10 @@ pub struct HalloweenBossKilledEvent {
 impl FromRawGameEvent for HalloweenBossKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let boss = match iter.next() {
-            Some(value) => u16::from_value(value, "boss")?,
-            None => u16::default(),
-        };
-        let killer = match iter.next() {
-            Some(value) => u16::from_value(value, "killer")?,
-            None => u16::default(),
-        };
-        Ok(HalloweenBossKilledEvent { boss, killer })
+        Ok(HalloweenBossKilledEvent {
+            boss: u16::from_value(iter.next(), "boss")?,
+            killer: u16::from_value(iter.next(), "killer")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7246,11 +4595,9 @@ pub struct EscapedLootIslandEvent {
 impl FromRawGameEvent for EscapedLootIslandEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(EscapedLootIslandEvent { player })
+        Ok(EscapedLootIslandEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7260,11 +4607,9 @@ pub struct TaggedPlayerAsItEvent {
 impl FromRawGameEvent for TaggedPlayerAsItEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(TaggedPlayerAsItEvent { player })
+        Ok(TaggedPlayerAsItEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7274,11 +4619,9 @@ pub struct MerasmusStunnedEvent {
 impl FromRawGameEvent for MerasmusStunnedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(MerasmusStunnedEvent { player })
+        Ok(MerasmusStunnedEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7288,11 +4631,9 @@ pub struct MerasmusPropFoundEvent {
 impl FromRawGameEvent for MerasmusPropFoundEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(MerasmusPropFoundEvent { player })
+        Ok(MerasmusPropFoundEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7302,11 +4643,9 @@ pub struct HalloweenSkeletonKilledEvent {
 impl FromRawGameEvent for HalloweenSkeletonKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(HalloweenSkeletonKilledEvent { player })
+        Ok(HalloweenSkeletonKilledEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7316,11 +4655,9 @@ pub struct EscapeHellEvent {
 impl FromRawGameEvent for EscapeHellEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(EscapeHellEvent { player })
+        Ok(EscapeHellEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7330,11 +4667,9 @@ pub struct CrossSpectralBridgeEvent {
 impl FromRawGameEvent for CrossSpectralBridgeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        Ok(CrossSpectralBridgeEvent { player })
+        Ok(CrossSpectralBridgeEvent {
+            player: u16::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7345,15 +4680,10 @@ pub struct MiniGameWonEvent {
 impl FromRawGameEvent for MiniGameWonEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u16::from_value(value, "player")?,
-            None => u16::default(),
-        };
-        let game = match iter.next() {
-            Some(value) => u16::from_value(value, "game")?,
-            None => u16::default(),
-        };
-        Ok(MiniGameWonEvent { player, game })
+        Ok(MiniGameWonEvent {
+            player: u16::from_value(iter.next(), "player")?,
+            game: u16::from_value(iter.next(), "game")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7364,15 +4694,10 @@ pub struct RespawnGhostEvent {
 impl FromRawGameEvent for RespawnGhostEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let reviver = match iter.next() {
-            Some(value) => u16::from_value(value, "reviver")?,
-            None => u16::default(),
-        };
-        let ghost = match iter.next() {
-            Some(value) => u16::from_value(value, "ghost")?,
-            None => u16::default(),
-        };
-        Ok(RespawnGhostEvent { reviver, ghost })
+        Ok(RespawnGhostEvent {
+            reviver: u16::from_value(iter.next(), "reviver")?,
+            ghost: u16::from_value(iter.next(), "ghost")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7383,15 +4708,10 @@ pub struct KillInHellEvent {
 impl FromRawGameEvent for KillInHellEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let killer = match iter.next() {
-            Some(value) => u16::from_value(value, "killer")?,
-            None => u16::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u16::from_value(value, "victim")?,
-            None => u16::default(),
-        };
-        Ok(KillInHellEvent { killer, victim })
+        Ok(KillInHellEvent {
+            killer: u16::from_value(iter.next(), "killer")?,
+            victim: u16::from_value(iter.next(), "victim")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7401,11 +4721,9 @@ pub struct HalloweenDuckCollectedEvent {
 impl FromRawGameEvent for HalloweenDuckCollectedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let collector = match iter.next() {
-            Some(value) => u16::from_value(value, "collector")?,
-            None => u16::default(),
-        };
-        Ok(HalloweenDuckCollectedEvent { collector })
+        Ok(HalloweenDuckCollectedEvent {
+            collector: u16::from_value(iter.next(), "collector")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7415,11 +4733,9 @@ pub struct SpecialScoreEvent {
 impl FromRawGameEvent for SpecialScoreEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        Ok(SpecialScoreEvent { player })
+        Ok(SpecialScoreEvent {
+            player: u8::from_value(iter.next(), "player")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7430,15 +4746,10 @@ pub struct TeamLeaderKilledEvent {
 impl FromRawGameEvent for TeamLeaderKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let killer = match iter.next() {
-            Some(value) => u8::from_value(value, "killer")?,
-            None => u8::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u8::from_value(value, "victim")?,
-            None => u8::default(),
-        };
-        Ok(TeamLeaderKilledEvent { killer, victim })
+        Ok(TeamLeaderKilledEvent {
+            killer: u8::from_value(iter.next(), "killer")?,
+            victim: u8::from_value(iter.next(), "victim")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7450,22 +4761,10 @@ pub struct HalloweenSoulCollectedEvent {
 impl FromRawGameEvent for HalloweenSoulCollectedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let intended_target = match iter.next() {
-            Some(value) => u8::from_value(value, "intended_target")?,
-            None => u8::default(),
-        };
-        let collecting_player = match iter.next() {
-            Some(value) => u8::from_value(value, "collecting_player")?,
-            None => u8::default(),
-        };
-        let soul_count = match iter.next() {
-            Some(value) => u8::from_value(value, "soul_count")?,
-            None => u8::default(),
-        };
         Ok(HalloweenSoulCollectedEvent {
-            intended_target,
-            collecting_player,
-            soul_count,
+            intended_target: u8::from_value(iter.next(), "intended_target")?,
+            collecting_player: u8::from_value(iter.next(), "collecting_player")?,
+            soul_count: u8::from_value(iter.next(), "soul_count")?,
         })
     }
 }
@@ -7484,15 +4783,10 @@ pub struct DeadRingerCheatDeathEvent {
 impl FromRawGameEvent for DeadRingerCheatDeathEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let spy = match iter.next() {
-            Some(value) => u8::from_value(value, "spy")?,
-            None => u8::default(),
-        };
-        let attacker = match iter.next() {
-            Some(value) => u8::from_value(value, "attacker")?,
-            None => u8::default(),
-        };
-        Ok(DeadRingerCheatDeathEvent { spy, attacker })
+        Ok(DeadRingerCheatDeathEvent {
+            spy: u8::from_value(iter.next(), "spy")?,
+            attacker: u8::from_value(iter.next(), "attacker")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7504,22 +4798,10 @@ pub struct CrossbowHealEvent {
 impl FromRawGameEvent for CrossbowHealEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let healer = match iter.next() {
-            Some(value) => u8::from_value(value, "healer")?,
-            None => u8::default(),
-        };
-        let target = match iter.next() {
-            Some(value) => u8::from_value(value, "target")?,
-            None => u8::default(),
-        };
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
         Ok(CrossbowHealEvent {
-            healer,
-            target,
-            amount,
+            healer: u8::from_value(iter.next(), "healer")?,
+            target: u8::from_value(iter.next(), "target")?,
+            amount: u16::from_value(iter.next(), "amount")?,
         })
     }
 }
@@ -7533,27 +4815,11 @@ pub struct DamageMitigatedEvent {
 impl FromRawGameEvent for DamageMitigatedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let mitigator = match iter.next() {
-            Some(value) => u8::from_value(value, "mitigator")?,
-            None => u8::default(),
-        };
-        let damaged = match iter.next() {
-            Some(value) => u8::from_value(value, "damaged")?,
-            None => u8::default(),
-        };
-        let amount = match iter.next() {
-            Some(value) => u16::from_value(value, "amount")?,
-            None => u16::default(),
-        };
-        let item_definition_index = match iter.next() {
-            Some(value) => u16::from_value(value, "item_definition_index")?,
-            None => u16::default(),
-        };
         Ok(DamageMitigatedEvent {
-            mitigator,
-            damaged,
-            amount,
-            item_definition_index,
+            mitigator: u8::from_value(iter.next(), "mitigator")?,
+            damaged: u8::from_value(iter.next(), "damaged")?,
+            amount: u16::from_value(iter.next(), "amount")?,
+            item_definition_index: u16::from_value(iter.next(), "item_definition_index")?,
         })
     }
 }
@@ -7565,15 +4831,10 @@ pub struct PayloadPushedEvent {
 impl FromRawGameEvent for PayloadPushedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let pusher = match iter.next() {
-            Some(value) => u8::from_value(value, "pusher")?,
-            None => u8::default(),
-        };
-        let distance = match iter.next() {
-            Some(value) => u16::from_value(value, "distance")?,
-            None => u16::default(),
-        };
-        Ok(PayloadPushedEvent { pusher, distance })
+        Ok(PayloadPushedEvent {
+            pusher: u8::from_value(iter.next(), "pusher")?,
+            distance: u16::from_value(iter.next(), "distance")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7583,11 +4844,9 @@ pub struct PlayerAbandonedMatchEvent {
 impl FromRawGameEvent for PlayerAbandonedMatchEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let game_over = match iter.next() {
-            Some(value) => bool::from_value(value, "game_over")?,
-            None => bool::default(),
-        };
-        Ok(PlayerAbandonedMatchEvent { game_over })
+        Ok(PlayerAbandonedMatchEvent {
+            game_over: bool::from_value(iter.next(), "game_over")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7601,32 +4860,12 @@ pub struct ClDrawlineEvent {
 impl FromRawGameEvent for ClDrawlineEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let player = match iter.next() {
-            Some(value) => u8::from_value(value, "player")?,
-            None => u8::default(),
-        };
-        let panel = match iter.next() {
-            Some(value) => u8::from_value(value, "panel")?,
-            None => u8::default(),
-        };
-        let line = match iter.next() {
-            Some(value) => u8::from_value(value, "line")?,
-            None => u8::default(),
-        };
-        let x = match iter.next() {
-            Some(value) => f32::from_value(value, "x")?,
-            None => f32::default(),
-        };
-        let y = match iter.next() {
-            Some(value) => f32::from_value(value, "y")?,
-            None => f32::default(),
-        };
         Ok(ClDrawlineEvent {
-            player,
-            panel,
-            line,
-            x,
-            y,
+            player: u8::from_value(iter.next(), "player")?,
+            panel: u8::from_value(iter.next(), "panel")?,
+            line: u8::from_value(iter.next(), "line")?,
+            x: f32::from_value(iter.next(), "x")?,
+            y: f32::from_value(iter.next(), "y")?,
         })
     }
 }
@@ -7637,11 +4876,9 @@ pub struct RestartTimerTimeEvent {
 impl FromRawGameEvent for RestartTimerTimeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let time = match iter.next() {
-            Some(value) => u8::from_value(value, "time")?,
-            None => u8::default(),
-        };
-        Ok(RestartTimerTimeEvent { time })
+        Ok(RestartTimerTimeEvent {
+            time: u8::from_value(iter.next(), "time")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7700,11 +4937,9 @@ pub struct DsScreenshotEvent {
 impl FromRawGameEvent for DsScreenshotEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let delay = match iter.next() {
-            Some(value) => f32::from_value(value, "delay")?,
-            None => f32::default(),
-        };
-        Ok(DsScreenshotEvent { delay })
+        Ok(DsScreenshotEvent {
+            delay: f32::from_value(iter.next(), "delay")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7742,11 +4977,9 @@ pub struct RematchVotePeriodOverEvent {
 impl FromRawGameEvent for RematchVotePeriodOverEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let success = match iter.next() {
-            Some(value) => bool::from_value(value, "success")?,
-            None => bool::default(),
-        };
-        Ok(RematchVotePeriodOverEvent { success })
+        Ok(RematchVotePeriodOverEvent {
+            success: bool::from_value(iter.next(), "success")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7785,15 +5018,10 @@ pub struct PlayerNextMapVoteChangeEvent {
 impl FromRawGameEvent for PlayerNextMapVoteChangeEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let map_index = match iter.next() {
-            Some(value) => u8::from_value(value, "map_index")?,
-            None => u8::default(),
-        };
-        let vote = match iter.next() {
-            Some(value) => u8::from_value(value, "vote")?,
-            None => u8::default(),
-        };
-        Ok(PlayerNextMapVoteChangeEvent { map_index, vote })
+        Ok(PlayerNextMapVoteChangeEvent {
+            map_index: u8::from_value(iter.next(), "map_index")?,
+            vote: u8::from_value(iter.next(), "vote")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7814,32 +5042,12 @@ pub struct ProtoDefChangedEvent {
 impl FromRawGameEvent for ProtoDefChangedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let kind = match iter.next() {
-            Some(value) => u8::from_value(value, "kind")?,
-            None => u8::default(),
-        };
-        let definition_index = match iter.next() {
-            Some(value) => u32::from_value(value, "definition_index")?,
-            None => u32::default(),
-        };
-        let created = match iter.next() {
-            Some(value) => bool::from_value(value, "created")?,
-            None => bool::default(),
-        };
-        let deleted = match iter.next() {
-            Some(value) => bool::from_value(value, "deleted")?,
-            None => bool::default(),
-        };
-        let erase_history = match iter.next() {
-            Some(value) => bool::from_value(value, "erase_history")?,
-            None => bool::default(),
-        };
         Ok(ProtoDefChangedEvent {
-            kind,
-            definition_index,
-            created,
-            deleted,
-            erase_history,
+            kind: u8::from_value(iter.next(), "kind")?,
+            definition_index: u32::from_value(iter.next(), "definition_index")?,
+            created: bool::from_value(iter.next(), "created")?,
+            deleted: bool::from_value(iter.next(), "deleted")?,
+            erase_history: bool::from_value(iter.next(), "erase_history")?,
         })
     }
 }
@@ -7852,22 +5060,10 @@ pub struct PlayerDominationEvent {
 impl FromRawGameEvent for PlayerDominationEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let dominator = match iter.next() {
-            Some(value) => u16::from_value(value, "dominator")?,
-            None => u16::default(),
-        };
-        let dominated = match iter.next() {
-            Some(value) => u16::from_value(value, "dominated")?,
-            None => u16::default(),
-        };
-        let dominations = match iter.next() {
-            Some(value) => u16::from_value(value, "dominations")?,
-            None => u16::default(),
-        };
         Ok(PlayerDominationEvent {
-            dominator,
-            dominated,
-            dominations,
+            dominator: u16::from_value(iter.next(), "dominator")?,
+            dominated: u16::from_value(iter.next(), "dominated")?,
+            dominations: u16::from_value(iter.next(), "dominations")?,
         })
     }
 }
@@ -7879,15 +5075,10 @@ pub struct PlayerRocketPackPushedEvent {
 impl FromRawGameEvent for PlayerRocketPackPushedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let pusher = match iter.next() {
-            Some(value) => u16::from_value(value, "pusher")?,
-            None => u16::default(),
-        };
-        let pushed = match iter.next() {
-            Some(value) => u16::from_value(value, "pushed")?,
-            None => u16::default(),
-        };
-        Ok(PlayerRocketPackPushedEvent { pusher, pushed })
+        Ok(PlayerRocketPackPushedEvent {
+            pusher: u16::from_value(iter.next(), "pusher")?,
+            pushed: u16::from_value(iter.next(), "pushed")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7898,15 +5089,10 @@ pub struct QuestRequestEvent {
 impl FromRawGameEvent for QuestRequestEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let request = match iter.next() {
-            Some(value) => u32::from_value(value, "request")?,
-            None => u32::default(),
-        };
-        let msg = match iter.next() {
-            Some(value) => String::from_value(value, "msg")?,
-            None => String::default(),
-        };
-        Ok(QuestRequestEvent { request, msg })
+        Ok(QuestRequestEvent {
+            request: u32::from_value(iter.next(), "request")?,
+            msg: String::from_value(iter.next(), "msg")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -7918,22 +5104,10 @@ pub struct QuestResponseEvent {
 impl FromRawGameEvent for QuestResponseEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let request = match iter.next() {
-            Some(value) => u32::from_value(value, "request")?,
-            None => u32::default(),
-        };
-        let success = match iter.next() {
-            Some(value) => bool::from_value(value, "success")?,
-            None => bool::default(),
-        };
-        let msg = match iter.next() {
-            Some(value) => String::from_value(value, "msg")?,
-            None => String::default(),
-        };
         Ok(QuestResponseEvent {
-            request,
-            success,
-            msg,
+            request: u32::from_value(iter.next(), "request")?,
+            success: bool::from_value(iter.next(), "success")?,
+            msg: String::from_value(iter.next(), "msg")?,
         })
     }
 }
@@ -7948,32 +5122,12 @@ pub struct QuestProgressEvent {
 impl FromRawGameEvent for QuestProgressEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let owner = match iter.next() {
-            Some(value) => u16::from_value(value, "owner")?,
-            None => u16::default(),
-        };
-        let scorer = match iter.next() {
-            Some(value) => u16::from_value(value, "scorer")?,
-            None => u16::default(),
-        };
-        let kind = match iter.next() {
-            Some(value) => u8::from_value(value, "kind")?,
-            None => u8::default(),
-        };
-        let completed = match iter.next() {
-            Some(value) => bool::from_value(value, "completed")?,
-            None => bool::default(),
-        };
-        let quest_definition_index = match iter.next() {
-            Some(value) => u32::from_value(value, "quest_definition_index")?,
-            None => u32::default(),
-        };
         Ok(QuestProgressEvent {
-            owner,
-            scorer,
-            kind,
-            completed,
-            quest_definition_index,
+            owner: u16::from_value(iter.next(), "owner")?,
+            scorer: u16::from_value(iter.next(), "scorer")?,
+            kind: u8::from_value(iter.next(), "kind")?,
+            completed: bool::from_value(iter.next(), "completed")?,
+            quest_definition_index: u32::from_value(iter.next(), "quest_definition_index")?,
         })
     }
 }
@@ -7987,27 +5141,11 @@ pub struct ProjectileRemovedEvent {
 impl FromRawGameEvent for ProjectileRemovedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let attacker = match iter.next() {
-            Some(value) => u8::from_value(value, "attacker")?,
-            None => u8::default(),
-        };
-        let weapon_def_index = match iter.next() {
-            Some(value) => u32::from_value(value, "weapon_def_index")?,
-            None => u32::default(),
-        };
-        let num_hit = match iter.next() {
-            Some(value) => u8::from_value(value, "num_hit")?,
-            None => u8::default(),
-        };
-        let num_direct_hit = match iter.next() {
-            Some(value) => u8::from_value(value, "num_direct_hit")?,
-            None => u8::default(),
-        };
         Ok(ProjectileRemovedEvent {
-            attacker,
-            weapon_def_index,
-            num_hit,
-            num_direct_hit,
+            attacker: u8::from_value(iter.next(), "attacker")?,
+            weapon_def_index: u32::from_value(iter.next(), "weapon_def_index")?,
+            num_hit: u8::from_value(iter.next(), "num_hit")?,
+            num_direct_hit: u8::from_value(iter.next(), "num_direct_hit")?,
         })
     }
 }
@@ -8027,22 +5165,10 @@ pub struct GasDousedPlayerIgnitedEvent {
 impl FromRawGameEvent for GasDousedPlayerIgnitedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let igniter = match iter.next() {
-            Some(value) => u16::from_value(value, "igniter")?,
-            None => u16::default(),
-        };
-        let douser = match iter.next() {
-            Some(value) => u16::from_value(value, "douser")?,
-            None => u16::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u16::from_value(value, "victim")?,
-            None => u16::default(),
-        };
         Ok(GasDousedPlayerIgnitedEvent {
-            igniter,
-            douser,
-            victim,
+            igniter: u16::from_value(iter.next(), "igniter")?,
+            douser: u16::from_value(iter.next(), "douser")?,
+            victim: u16::from_value(iter.next(), "victim")?,
         })
     }
 }
@@ -8053,11 +5179,9 @@ pub struct QuestTurnInStateEvent {
 impl FromRawGameEvent for QuestTurnInStateEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let state = match iter.next() {
-            Some(value) => u16::from_value(value, "state")?,
-            None => u16::default(),
-        };
-        Ok(QuestTurnInStateEvent { state })
+        Ok(QuestTurnInStateEvent {
+            state: u16::from_value(iter.next(), "state")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -8075,15 +5199,10 @@ pub struct CapperKilledEvent {
 impl FromRawGameEvent for CapperKilledEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let blocker = match iter.next() {
-            Some(value) => u16::from_value(value, "blocker")?,
-            None => u16::default(),
-        };
-        let victim = match iter.next() {
-            Some(value) => u16::from_value(value, "victim")?,
-            None => u16::default(),
-        };
-        Ok(CapperKilledEvent { blocker, victim })
+        Ok(CapperKilledEvent {
+            blocker: u16::from_value(iter.next(), "blocker")?,
+            victim: u16::from_value(iter.next(), "victim")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -8110,27 +5229,11 @@ pub struct HLTVStatusEvent {
 impl FromRawGameEvent for HLTVStatusEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let clients = match iter.next() {
-            Some(value) => u32::from_value(value, "clients")?,
-            None => u32::default(),
-        };
-        let slots = match iter.next() {
-            Some(value) => u32::from_value(value, "slots")?,
-            None => u32::default(),
-        };
-        let proxies = match iter.next() {
-            Some(value) => u16::from_value(value, "proxies")?,
-            None => u16::default(),
-        };
-        let master = match iter.next() {
-            Some(value) => String::from_value(value, "master")?,
-            None => String::default(),
-        };
         Ok(HLTVStatusEvent {
-            clients,
-            slots,
-            proxies,
-            master,
+            clients: u32::from_value(iter.next(), "clients")?,
+            slots: u32::from_value(iter.next(), "slots")?,
+            proxies: u16::from_value(iter.next(), "proxies")?,
+            master: String::from_value(iter.next(), "master")?,
         })
     }
 }
@@ -8141,11 +5244,9 @@ pub struct HLTVCameramanEvent {
 impl FromRawGameEvent for HLTVCameramanEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        Ok(HLTVCameramanEvent { index })
+        Ok(HLTVCameramanEvent {
+            index: u16::from_value(iter.next(), "index")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -8157,22 +5258,10 @@ pub struct HLTVRankCameraEvent {
 impl FromRawGameEvent for HLTVRankCameraEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u8::from_value(value, "index")?,
-            None => u8::default(),
-        };
-        let rank = match iter.next() {
-            Some(value) => f32::from_value(value, "rank")?,
-            None => f32::default(),
-        };
-        let target = match iter.next() {
-            Some(value) => u16::from_value(value, "target")?,
-            None => u16::default(),
-        };
         Ok(HLTVRankCameraEvent {
-            index,
-            rank,
-            target,
+            index: u8::from_value(iter.next(), "index")?,
+            rank: f32::from_value(iter.next(), "rank")?,
+            target: u16::from_value(iter.next(), "target")?,
         })
     }
 }
@@ -8185,22 +5274,10 @@ pub struct HLTVRankEntityEvent {
 impl FromRawGameEvent for HLTVRankEntityEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let index = match iter.next() {
-            Some(value) => u16::from_value(value, "index")?,
-            None => u16::default(),
-        };
-        let rank = match iter.next() {
-            Some(value) => f32::from_value(value, "rank")?,
-            None => f32::default(),
-        };
-        let target = match iter.next() {
-            Some(value) => u16::from_value(value, "target")?,
-            None => u16::default(),
-        };
         Ok(HLTVRankEntityEvent {
-            index,
-            rank,
-            target,
+            index: u16::from_value(iter.next(), "index")?,
+            rank: f32::from_value(iter.next(), "rank")?,
+            target: u16::from_value(iter.next(), "target")?,
         })
     }
 }
@@ -8218,47 +5295,15 @@ pub struct HLTVFixedEvent {
 impl FromRawGameEvent for HLTVFixedEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let pos_x = match iter.next() {
-            Some(value) => u32::from_value(value, "pos_x")?,
-            None => u32::default(),
-        };
-        let pos_y = match iter.next() {
-            Some(value) => u32::from_value(value, "pos_y")?,
-            None => u32::default(),
-        };
-        let pos_z = match iter.next() {
-            Some(value) => u32::from_value(value, "pos_z")?,
-            None => u32::default(),
-        };
-        let theta = match iter.next() {
-            Some(value) => u16::from_value(value, "theta")?,
-            None => u16::default(),
-        };
-        let phi = match iter.next() {
-            Some(value) => u16::from_value(value, "phi")?,
-            None => u16::default(),
-        };
-        let offset = match iter.next() {
-            Some(value) => u16::from_value(value, "offset")?,
-            None => u16::default(),
-        };
-        let fov = match iter.next() {
-            Some(value) => f32::from_value(value, "fov")?,
-            None => f32::default(),
-        };
-        let target = match iter.next() {
-            Some(value) => u16::from_value(value, "target")?,
-            None => u16::default(),
-        };
         Ok(HLTVFixedEvent {
-            pos_x,
-            pos_y,
-            pos_z,
-            theta,
-            phi,
-            offset,
-            fov,
-            target,
+            pos_x: u32::from_value(iter.next(), "pos_x")?,
+            pos_y: u32::from_value(iter.next(), "pos_y")?,
+            pos_z: u32::from_value(iter.next(), "pos_z")?,
+            theta: u16::from_value(iter.next(), "theta")?,
+            phi: u16::from_value(iter.next(), "phi")?,
+            offset: u16::from_value(iter.next(), "offset")?,
+            fov: f32::from_value(iter.next(), "fov")?,
+            target: u16::from_value(iter.next(), "target")?,
         })
     }
 }
@@ -8275,42 +5320,14 @@ pub struct HLTVChaseEvent {
 impl FromRawGameEvent for HLTVChaseEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let target_1 = match iter.next() {
-            Some(value) => u16::from_value(value, "target_1")?,
-            None => u16::default(),
-        };
-        let target_2 = match iter.next() {
-            Some(value) => u16::from_value(value, "target_2")?,
-            None => u16::default(),
-        };
-        let distance = match iter.next() {
-            Some(value) => u16::from_value(value, "distance")?,
-            None => u16::default(),
-        };
-        let theta = match iter.next() {
-            Some(value) => u16::from_value(value, "theta")?,
-            None => u16::default(),
-        };
-        let phi = match iter.next() {
-            Some(value) => u16::from_value(value, "phi")?,
-            None => u16::default(),
-        };
-        let inertia = match iter.next() {
-            Some(value) => u8::from_value(value, "inertia")?,
-            None => u8::default(),
-        };
-        let in_eye = match iter.next() {
-            Some(value) => u8::from_value(value, "in_eye")?,
-            None => u8::default(),
-        };
         Ok(HLTVChaseEvent {
-            target_1,
-            target_2,
-            distance,
-            theta,
-            phi,
-            inertia,
-            in_eye,
+            target_1: u16::from_value(iter.next(), "target_1")?,
+            target_2: u16::from_value(iter.next(), "target_2")?,
+            distance: u16::from_value(iter.next(), "distance")?,
+            theta: u16::from_value(iter.next(), "theta")?,
+            phi: u16::from_value(iter.next(), "phi")?,
+            inertia: u8::from_value(iter.next(), "inertia")?,
+            in_eye: u8::from_value(iter.next(), "in_eye")?,
         })
     }
 }
@@ -8321,11 +5338,9 @@ pub struct HLTVMessageEvent {
 impl FromRawGameEvent for HLTVMessageEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        Ok(HLTVMessageEvent { text })
+        Ok(HLTVMessageEvent {
+            text: String::from_value(iter.next(), "text")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -8335,11 +5350,9 @@ pub struct HLTVTitleEvent {
 impl FromRawGameEvent for HLTVTitleEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        Ok(HLTVTitleEvent { text })
+        Ok(HLTVTitleEvent {
+            text: String::from_value(iter.next(), "text")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -8349,11 +5362,9 @@ pub struct HLTVChatEvent {
 impl FromRawGameEvent for HLTVChatEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let text = match iter.next() {
-            Some(value) => String::from_value(value, "text")?,
-            None => String::default(),
-        };
-        Ok(HLTVChatEvent { text })
+        Ok(HLTVChatEvent {
+            text: String::from_value(iter.next(), "text")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -8373,23 +5384,12 @@ pub struct ReplaySessionInfoEvent {
 impl FromRawGameEvent for ReplaySessionInfoEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let sn = match iter.next() {
-            Some(value) => String::from_value(value, "sn")?,
-            None => String::default(),
-        };
-        let di = match iter.next() {
-            Some(value) => u8::from_value(value, "di")?,
-            None => u8::default(),
-        };
-        let cb = match iter.next() {
-            Some(value) => u32::from_value(value, "cb")?,
-            None => u32::default(),
-        };
-        let st = match iter.next() {
-            Some(value) => u32::from_value(value, "st")?,
-            None => u32::default(),
-        };
-        Ok(ReplaySessionInfoEvent { sn, di, cb, st })
+        Ok(ReplaySessionInfoEvent {
+            sn: String::from_value(iter.next(), "sn")?,
+            di: u8::from_value(iter.next(), "di")?,
+            cb: u32::from_value(iter.next(), "cb")?,
+            st: u32::from_value(iter.next(), "st")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -8413,11 +5413,9 @@ pub struct ReplayServerErrorEvent {
 impl FromRawGameEvent for ReplayServerErrorEvent {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
         let mut iter = values.into_iter();
-        let error = match iter.next() {
-            Some(value) => String::from_value(value, "error")?,
-            None => String::default(),
-        };
-        Ok(ReplayServerErrorEvent { error })
+        Ok(ReplayServerErrorEvent {
+            error: String::from_value(iter.next(), "error")?,
+        })
     }
 }
 #[derive(Debug)]
@@ -10846,3 +7844,4 @@ impl GameEvent {
         })
     }
 }
+

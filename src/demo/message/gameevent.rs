@@ -75,6 +75,12 @@ impl From<GameEventTypeId> for usize {
     }
 }
 
+impl From<GameEventTypeId> for u16 {
+    fn from(id: GameEventTypeId) -> Self {
+        id.0
+    }
+}
+
 #[derive(Debug)]
 pub struct GameEventListMessage {
     pub event_list: Vec<GameEventDefinition>,

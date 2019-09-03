@@ -1,15 +1,13 @@
 extern crate proc_macro;
 
+use inflector::Inflector;
+use lazy_static::lazy_static;
+use proc_macro2::{Ident, Literal, Span, TokenStream};
+use quote::quote;
 use tf_demo_parser::demo::gamevent::{GameEventDefinition, GameEventValueType};
-use tf_demo_parser::demo::message::Message;
-use tf_demo_parser::demo::packet::stringtable::StringTableEntry;
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::{Demo, ParserState};
 use tf_demo_parser::{DemoParser, MessageType};
-use inflector::Inflector;
-use lazy_static::lazy_static;
-use quote::quote;
-use proc_macro2::{Span, Ident, TokenStream, Literal};
 
 struct GameEventAnalyser;
 
@@ -20,16 +18,8 @@ impl MessageHandler for GameEventAnalyser {
         false
     }
 
-    fn handle_message(&mut self, _message: Message, _tick: u32) {}
-
-    fn handle_string_entry(&mut self, _table: &String, _index: usize, _entry: &StringTableEntry) {}
-
     fn get_output(self, state: ParserState) -> Self::Output {
-        state
-            .event_definitions
-            .into_iter()
-            .map(|(_, definition)| definition)
-            .collect()
+        state.event_definitions
     }
 }
 
@@ -216,7 +206,7 @@ fn get_event_name(name: &str) -> String {
 }
 
 pub fn generate_game_events(demo: Demo) -> TokenStream {
-    let  (_, mut events) =
+    let (_, mut events) =
         DemoParser::parse_with_analyser(demo.get_stream(), GameEventAnalyser).unwrap();
 
     events.sort();
@@ -244,19 +234,11 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             let ty = Ident::new(get_type_name(entry.kind), span);
 
             quote!(
-                let #name = match iter.next() {
-                    Some(value) => #ty::from_value(value, #name_str)?,
-                    None => #ty::default()
-                };
+                #name: #ty::from_value(iter.next(), #name_str)?,
             )
         });
 
-        let field_names = event.entries.iter().map(|entry| {
-            let name = Ident::new(&get_entry_name(&entry.name), span);
-            quote!(#name,)
-        });
-
-        let iter = if event.entries.len() >  0 {
+        let iter = if event.entries.len() > 0 {
             quote!(
                 let mut iter = values.into_iter();
             )
@@ -264,7 +246,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             quote!()
         };
 
-        let param_name = if event.entries.len() >  0 {
+        let param_name = if event.entries.len() > 0 {
             quote!(values)
         } else {
             quote!(_values)
@@ -279,10 +261,9 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             impl FromRawGameEvent for #name {
                 fn from_raw_event(#param_name: Vec<GameEventValue>) -> Result<Self> {
                     #iter
-                    #(#entry_constructors)*
 
                     Ok(#name {
-                        #(#field_names)*
+                        #(#entry_constructors)*
                     })
                 }
             }
