@@ -85,8 +85,6 @@ impl<T: MessageHandler> DemoHandler<T> {
     }
 
     fn handle_string_table(&mut self, table: StringTable) {
-        self.string_table_names.push(table.name.clone());
-
         self.state_handler
             .handle_string_table_meta(table.get_table_meta());
         for (entry_index, entry) in table.entries.into_iter() {
@@ -96,6 +94,8 @@ impl<T: MessageHandler> DemoHandler<T> {
             self.analyser
                 .handle_string_entry(&table.name, entry_index, &entry);
         }
+
+        self.string_table_names.push(table.name);
     }
 
     fn handle_table_update(&mut self, table_id: u8, entries: Vec<(u16, StringTableEntry)>) {
