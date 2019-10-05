@@ -7,30 +7,32 @@ use crate::demo::packet::datatable::{ClassId, SendTable, SendTableName, ServerCl
 use crate::demo::parser::ParseBitSkip;
 use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
 use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
-use parse_display::Display;
+use parse_display::{Display, FromStr};
 use std::collections::HashMap;
 use std::fmt;
 use std::hint::unreachable_unchecked;
 use std::num::ParseIntError;
 use std::rc::Rc;
-use std::str::FromStr;
 
 #[derive(
-    Debug, Copy, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Display, Ord, PartialOrd,
+    Debug,
+    Copy,
+    Clone,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    Display,
+    Ord,
+    PartialOrd,
+    FromStr,
 )]
 pub struct EntityId(u32);
 
 impl From<u32> for EntityId {
     fn from(num: u32) -> Self {
         EntityId(num)
-    }
-}
-
-impl FromStr for EntityId {
-    type Err = ParseIntError;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        u32::from_str(s).map(EntityId::from)
     }
 }
 

@@ -5,7 +5,7 @@ use crate::demo::sendprop::{
     SendPropDefinition, SendPropDefinitionIndex, SendPropFlag, SendPropName, SendPropType,
 };
 use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
-use parse_display::Display;
+use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
 use std::cell::{Cell, RefCell};
@@ -13,18 +13,9 @@ use std::fmt;
 use std::num::ParseIntError;
 use std::ops::Deref;
 use std::rc::Rc;
-use std::str::FromStr;
 
-#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Display)]
+#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Display, FromStr)]
 pub struct ClassId(u16);
-
-impl FromStr for ClassId {
-    type Err = ParseIntError;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        u16::from_str(s).map(|num| ClassId(num))
-    }
-}
 
 impl From<u16> for ClassId {
     fn from(int: u16) -> Self {
