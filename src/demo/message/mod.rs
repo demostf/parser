@@ -15,7 +15,7 @@ use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
 use crate::demo::parser::ParseBitSkip;
-use crate::{MalformedDemoError, Parse, ParseError, ParserState, Result, Stream};
+use crate::{Parse, ParseError, ParserState, Result, Stream};
 
 pub mod bspdecal;
 pub mod classinfo;
@@ -65,7 +65,7 @@ impl Parse for MessageType {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let raw = stream.read_int(6)?;
         let prop_type: Option<MessageType> = MessageType::from_u8(raw);
-        prop_type.ok_or(MalformedDemoError::InvalidMessageType(raw).into())
+        prop_type.ok_or(ParseError::InvalidMessageType(raw))
     }
 }
 

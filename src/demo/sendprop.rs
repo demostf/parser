@@ -3,7 +3,7 @@ use enumflags2::BitFlags;
 use enumflags2_derive::EnumFlags;
 use serde::{Deserialize, Serialize};
 
-use crate::{MalformedDemoError, Parse, ParseError, ReadResult, Result, Stream};
+use crate::{Parse, ParseError, ReadResult, Result, Stream};
 
 use super::packet::datatable::ParseSendTable;
 use super::vector::{Vector, VectorXY};

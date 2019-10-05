@@ -215,7 +215,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
     let imports = quote!(
         use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
-        use crate::{GameEventError, MalformedDemoError, Result};
+        use crate::{GameEventError, Result};
     );
 
     let event_definitions = events.iter().map(|event| {

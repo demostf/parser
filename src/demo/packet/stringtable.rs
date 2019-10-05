@@ -3,7 +3,7 @@ use std::fmt;
 use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::message::stringtable::StringTableMeta;
-use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(BitRead, Clone, Copy, Debug)]
 pub struct FixedUserDataSize {
@@ -125,7 +125,7 @@ impl Parse for StringTablePacket {
         let tables = packet_data.read_sized(count)?;
 
         if packet_data.bits_left() > 7 {
-            Err(MalformedDemoError::DataRemaining(packet_data.bits_left()).into())
+            Err(ParseError::DataRemaining(packet_data.bits_left()))
         } else {
             Ok(StringTablePacket { tick, tables })
         }

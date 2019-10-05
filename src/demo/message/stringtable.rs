@@ -6,7 +6,7 @@ use crate::demo::packet::stringtable::{
     ExtraData, FixedUserDataSize, StringTable, StringTableEntry,
 };
 use crate::demo::parser::ParseBitSkip;
-use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -122,7 +122,7 @@ impl Parse for UpdateStringTableMessage {
 
         let entries = match state.string_tables.get(table_id as usize) {
             Some(table) => parse_string_table_update(&mut data, table, changed),
-            None => return Err(MalformedDemoError::StringTableNotFound(table_id).into()),
+            None => return Err(ParseError::StringTableNotFound(table_id).into()),
         }?;
 
         Ok(UpdateStringTableMessage { table_id, entries })

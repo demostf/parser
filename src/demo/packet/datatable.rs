@@ -4,7 +4,7 @@ use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{
     SendPropDefinition, SendPropDefinitionIndex, SendPropFlag, SendPropName, SendPropType,
 };
-use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
@@ -220,7 +220,7 @@ impl Parse for DataTablePacket {
         let server_classes = packet_data.read_sized(server_class_count)?;
 
         if packet_data.bits_left() > 7 {
-            Err(MalformedDemoError::DataRemaining(packet_data.bits_left()).into())
+            Err(ParseError::DataRemaining(packet_data.bits_left()))
         } else {
             Ok(DataTablePacket {
                 tick,

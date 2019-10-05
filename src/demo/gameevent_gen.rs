@@ -1,5 +1,5 @@
 use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
-use crate::{GameEventError, MalformedDemoError, Result};
+use crate::{GameEventError, Result};
 #[derive(Debug)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
@@ -7844,4 +7844,3 @@ impl GameEvent {
         })
     }
 }
-

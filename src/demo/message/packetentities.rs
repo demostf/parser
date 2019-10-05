@@ -6,7 +6,7 @@ use crate::demo::message::stringtable::{log_base2, read_var_int};
 use crate::demo::packet::datatable::{ClassId, SendTable, SendTableName, ServerClass};
 use crate::demo::parser::ParseBitSkip;
 use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
-use crate::{MalformedDemoError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
 use std::collections::HashMap;
 use std::fmt;
@@ -111,7 +111,7 @@ fn get_send_table(state: &ParserState, class: ClassId) -> Result<&SendTable> {
     state
         .send_tables
         .get(usize::from(class))
-        .ok_or_else(|| MalformedDemoError::UnknownServerClass(class).into())
+        .ok_or_else(|| ParseError::UnknownServerClass(class))
 }
 
 fn get_entity_for_update(
@@ -122,7 +122,7 @@ fn get_entity_for_update(
     let class_id = *state
         .entity_classes
         .get(&entity_index)
-        .ok_or_else(|| MalformedDemoError::UnknownEntity(entity_index))?;
+        .ok_or_else(|| ParseError::UnknownEntity(entity_index))?;
 
     Ok(PacketEntity {
         server_class: class_id,
@@ -207,7 +207,7 @@ impl PacketEntitiesMessage {
         let send_table = state
             .send_tables
             .get(usize::from(class_index))
-            .ok_or_else(|| MalformedDemoError::UnknownServerClass(class_index))?;
+            .ok_or_else(|| ParseError::UnknownServerClass(class_index))?;
 
         let props = match state.instance_baselines[baseline_index].get(&entity_index) {
             Some(baseline) => baseline.clone(),
@@ -250,7 +250,7 @@ impl PacketEntitiesMessage {
                     });
                 }
                 None => {
-                    return Err(ParseError::from(MalformedDemoError::PropIndexOutOfBounds {
+                    return Err(ParseError::from(ParseError::PropIndexOutOfBounds {
                         index,
                         prop_count: send_table.flattened_props.len(),
                     }))
