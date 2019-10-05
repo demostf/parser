@@ -26,6 +26,7 @@ better-panic = "0.1"
 err-derive = "0.1"
 parse-display = "0.1"
 jemallocator = "0.3"
+main_error = "0.1.0"
 
 [dev-dependencies]
 pretty_assertions = "0.6"
