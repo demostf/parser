@@ -23,7 +23,7 @@ serde = { version = "1.0", features = ["derive", "rc"] }
 serde_json = "1.0"
 serde_repr = "0.1"
 better-panic = "0.1"
-err-derive = { version = "0.1", git = "https://gitlab.com/torkleyy/err-derive.git" }
+err-derive = "0.2"
 parse-display = "0.1"
 jemallocator = "0.3"
 main_error = "0.1.0"
