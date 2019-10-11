@@ -10,7 +10,7 @@ use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
-    pub table: StringTable,
+    pub table: Box<StringTable>,
 }
 
 #[derive(Debug)]
@@ -85,7 +85,9 @@ impl Parse for CreateStringTableMessage {
             compressed,
             name,
         };
-        Ok(CreateStringTableMessage { table })
+        Ok(CreateStringTableMessage {
+            table: Box::new(table),
+        })
     }
 }
 

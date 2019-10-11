@@ -11,7 +11,7 @@ use parse_display::{Display, FromStr};
 use std::collections::HashMap;
 use std::fmt;
 use std::hint::unreachable_unchecked;
-use std::num::ParseIntError;
+use std::num::{NonZeroU32, ParseIntError};
 use std::rc::Rc;
 
 #[derive(
@@ -102,7 +102,7 @@ pub struct PacketEntitiesMessage {
     pub entities: Vec<PacketEntity>,
     pub removed_entities: Vec<EntityId>,
     pub max_entries: u16,
-    pub delta: Option<u32>,
+    pub delta: Option<NonZeroU32>,
     pub base_line: u8,
     pub updated_base_line: bool,
 }
@@ -186,7 +186,7 @@ impl Parse for PacketEntitiesMessage {
             entities,
             removed_entities,
             max_entries,
-            delta,
+            delta: delta.and_then(NonZeroU32::new),
             base_line,
             updated_base_line,
         })
@@ -253,7 +253,7 @@ impl PacketEntitiesMessage {
                     return Err(ParseError::from(ParseError::PropIndexOutOfBounds {
                         index,
                         prop_count: send_table.flattened_props.len(),
-                    }))
+                    }));
                 }
             }
         }

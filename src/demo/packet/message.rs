@@ -1,17 +1,22 @@
-use bitstream_reader::{BitRead, BitSize, LazyBitRead, LittleEndian};
+use bitstream_reader::{BitRead, BitSize, Endianness, LazyBitRead, LittleEndian};
 
 use crate::demo::message::{Message, MessageType};
 use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
 
+#[derive(Debug, BitRead, BitSize)]
+pub struct MessagePacketMeta {
+    pub flags: u32, // TODO
+    pub view_angles: ViewAngles,
+    pub sequence_in: u32,
+    pub sequence_out: u32,
+}
+
 #[derive(Debug)]
 pub struct MessagePacket {
     pub tick: u32,
     pub messages: Vec<Message>,
-    pub sequence_in: u32,
-    pub sequence_out: u32,
-    pub view_angles: LazyBitRead<ViewAngles, LittleEndian>,
-    pub flags: u32, // TODO
+    pub meta: LazyBitRead<MessagePacketMeta, LittleEndian>,
 }
 
 #[derive(Clone, Debug)]
@@ -27,8 +32,8 @@ impl BitSize for ViewAngles {
     }
 }
 
-impl BitRead<LittleEndian> for ViewAngles {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
+impl<E: Endianness> BitRead<E> for ViewAngles {
+    fn read(stream: &mut bitstream_reader::BitStream<E>) -> ReadResult<Self> {
         let view_origin_1 = Vector::read(stream)?;
         let view_angle_1 = Vector::read(stream)?;
         let local_view_angle_1 = Vector::read(stream)?;
@@ -46,12 +51,9 @@ impl BitRead<LittleEndian> for ViewAngles {
 impl Parse for MessagePacket {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let tick = stream.read()?;
-        let flags = stream.read()?;
 
-        let view_angles = stream.read()?;
+        let meta = stream.read()?;
 
-        let sequence_in = stream.read()?;
-        let sequence_out = stream.read()?;
         let length: u32 = stream.read()?;
         let mut packet_data = stream.read_bits(length as usize * 8)?;
 
@@ -70,10 +72,7 @@ impl Parse for MessagePacket {
         let packet = MessagePacket {
             tick,
             messages,
-            view_angles,
-            sequence_in,
-            sequence_out,
-            flags,
+            meta,
         };
         Ok(packet)
     }

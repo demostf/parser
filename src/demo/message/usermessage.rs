@@ -71,8 +71,8 @@ pub enum UserMessageType {
 
 #[derive(Debug)]
 pub enum UserMessage {
-    SayText2(SayText2Message),
-    Text(TextMessage),
+    SayText2(Box<SayText2Message>),
+    Text(Box<TextMessage>),
     ResetHUD(ResetHudMessage),
     Train(TrainMessage),
     VoiceSubtitle(VoiceSubtitleMessage),
