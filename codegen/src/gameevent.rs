@@ -4,6 +4,8 @@ use inflector::Inflector;
 use lazy_static::lazy_static;
 use proc_macro2::{Ident, Literal, Span, TokenStream};
 use quote::quote;
+use std::collections::hash_map::HashMap;
+use tf_demo_parser::demo::gameevent_gen::get_sizes;
 use tf_demo_parser::demo::gamevent::{GameEventDefinition, GameEventValueType};
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::{Demo, ParserState};
@@ -21,6 +23,14 @@ impl MessageHandler for GameEventAnalyser {
     fn get_output(self, state: ParserState) -> Self::Output {
         state.event_definitions
     }
+}
+
+fn should_box_event(name: &str) -> bool {
+    lazy_static! {
+        static ref SIZES: HashMap<&'static str, usize> = get_sizes();
+    }
+
+    SIZES.get(name).cloned().unwrap_or_default() > 120
 }
 
 fn get_type_name(ty: GameEventValueType) -> &'static str {
@@ -275,7 +285,11 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         let name = Ident::new(&name_str, span);
         let struct_name = Ident::new(&format!("{}Event", name_str), span);
 
-        quote!(#name(#struct_name),)
+        if should_box_event(&name_str) {
+            quote!(#name(Box<#struct_name>),)
+        } else {
+            quote!(#name(#struct_name),)
+        }
     });
 
     let event_types = events.iter().map(|event| {
@@ -298,10 +312,28 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         let variant_name = Ident::new(&name, span);
         let struct_name = Ident::new(&format!("{}Event", name), span);
 
+        if should_box_event(&name) {
+            quote!(
+                GameEventType::#variant_name => {
+                    GameEvent::#variant_name(<Box<#struct_name>>::from_raw_event(event.values)?)
+                }
+            )
+        } else {
+            quote!(
+                GameEventType::#variant_name => {
+                    GameEvent::#variant_name(#struct_name::from_raw_event(event.values)?)
+                }
+            )
+        }
+    });
+
+    let sizes = events.iter().map(|event| {
+        let name = get_event_name(&event.name);
+        let variant_name = Ident::new(&name, span);
+        let struct_name = Ident::new(&format!("{}Event", name), span);
+
         quote!(
-            GameEventType::#variant_name => {
-                GameEvent::#variant_name(#struct_name::from_raw_event(event.values)?)
-            }
+            (#name, std::mem::size_of::<#struct_name>())
         )
     });
 
@@ -338,6 +370,12 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
                     GameEventType::Unknown => GameEvent::Unknown(event),
                 })
             }
+        }
+
+        pub fn get_sizes() -> std::collections::hash_map::HashMap<&'static str, usize> {
+            vec![
+                #(#sizes,)*
+            ].into_iter().collect()
         }
     )
 }

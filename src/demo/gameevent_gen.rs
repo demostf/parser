@@ -5420,12 +5420,12 @@ impl FromRawGameEvent for ReplayServerErrorEvent {
 }
 #[derive(Debug)]
 pub enum GameEvent {
-    ServerSpawn(ServerSpawnEvent),
+    ServerSpawn(Box<ServerSpawnEvent>),
     ServerChangeLevelFailed(ServerChangeLevelFailedEvent),
     ServerShutdown(ServerShutdownEvent),
     ServerCvar(ServerCvarEvent),
     ServerMessage(ServerMessageEvent),
-    ServerAddBan(ServerAddBanEvent),
+    ServerAddBan(Box<ServerAddBanEvent>),
     ServerRemoveBan(ServerRemoveBanEvent),
     PlayerConnect(PlayerConnectEvent),
     PlayerConnectClient(PlayerConnectClientEvent),
@@ -5443,7 +5443,7 @@ pub enum GameEvent {
     TeamPlayBroadcastAudio(TeamPlayBroadcastAudioEvent),
     PlayerTeam(PlayerTeamEvent),
     PlayerClass(PlayerClassEvent),
-    PlayerDeath(PlayerDeathEvent),
+    PlayerDeath(Box<PlayerDeathEvent>),
     PlayerHurt(PlayerHurtEvent),
     PlayerChat(PlayerChatEvent),
     PlayerScore(PlayerScoreEvent),
@@ -5479,7 +5479,7 @@ pub enum GameEvent {
     VotePassed(VotePassedEvent),
     VoteFailed(VoteFailedEvent),
     VoteCast(VoteCastEvent),
-    VoteOptions(VoteOptionsEvent),
+    VoteOptions(Box<VoteOptionsEvent>),
     ReplaySaved(ReplaySavedEvent),
     EnteredPerformanceMode(EnteredPerformanceModeEvent),
     BrowseReplays(BrowseReplaysEvent),
@@ -6640,7 +6640,7 @@ impl GameEvent {
     pub fn from_raw_event(event: RawGameEvent) -> Result<Self> {
         Ok(match event.event_type {
             GameEventType::ServerSpawn => {
-                GameEvent::ServerSpawn(ServerSpawnEvent::from_raw_event(event.values)?)
+                GameEvent::ServerSpawn(<Box<ServerSpawnEvent>>::from_raw_event(event.values)?)
             }
             GameEventType::ServerChangeLevelFailed => GameEvent::ServerChangeLevelFailed(
                 ServerChangeLevelFailedEvent::from_raw_event(event.values)?,
@@ -6655,7 +6655,7 @@ impl GameEvent {
                 GameEvent::ServerMessage(ServerMessageEvent::from_raw_event(event.values)?)
             }
             GameEventType::ServerAddBan => {
-                GameEvent::ServerAddBan(ServerAddBanEvent::from_raw_event(event.values)?)
+                GameEvent::ServerAddBan(<Box<ServerAddBanEvent>>::from_raw_event(event.values)?)
             }
             GameEventType::ServerRemoveBan => {
                 GameEvent::ServerRemoveBan(ServerRemoveBanEvent::from_raw_event(event.values)?)
@@ -6709,7 +6709,7 @@ impl GameEvent {
                 GameEvent::PlayerClass(PlayerClassEvent::from_raw_event(event.values)?)
             }
             GameEventType::PlayerDeath => {
-                GameEvent::PlayerDeath(PlayerDeathEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerDeath(<Box<PlayerDeathEvent>>::from_raw_event(event.values)?)
             }
             GameEventType::PlayerHurt => {
                 GameEvent::PlayerHurt(PlayerHurtEvent::from_raw_event(event.values)?)
@@ -6817,7 +6817,7 @@ impl GameEvent {
                 GameEvent::VoteCast(VoteCastEvent::from_raw_event(event.values)?)
             }
             GameEventType::VoteOptions => {
-                GameEvent::VoteOptions(VoteOptionsEvent::from_raw_event(event.values)?)
+                GameEvent::VoteOptions(<Box<VoteOptionsEvent>>::from_raw_event(event.values)?)
             }
             GameEventType::ReplaySaved => {
                 GameEvent::ReplaySaved(ReplaySavedEvent::from_raw_event(event.values)?)
@@ -7844,3 +7844,1194 @@ impl GameEvent {
         })
     }
 }
+pub fn get_sizes() -> std::collections::hash_map::HashMap<&'static str, usize> {
+    vec![
+        ("ServerSpawn", std::mem::size_of::<ServerSpawnEvent>()),
+        (
+            "ServerChangeLevelFailed",
+            std::mem::size_of::<ServerChangeLevelFailedEvent>(),
+        ),
+        ("ServerShutdown", std::mem::size_of::<ServerShutdownEvent>()),
+        ("ServerCvar", std::mem::size_of::<ServerCvarEvent>()),
+        ("ServerMessage", std::mem::size_of::<ServerMessageEvent>()),
+        ("ServerAddBan", std::mem::size_of::<ServerAddBanEvent>()),
+        (
+            "ServerRemoveBan",
+            std::mem::size_of::<ServerRemoveBanEvent>(),
+        ),
+        ("PlayerConnect", std::mem::size_of::<PlayerConnectEvent>()),
+        (
+            "PlayerConnectClient",
+            std::mem::size_of::<PlayerConnectClientEvent>(),
+        ),
+        ("PlayerInfo", std::mem::size_of::<PlayerInfoEvent>()),
+        (
+            "PlayerDisconnect",
+            std::mem::size_of::<PlayerDisconnectEvent>(),
+        ),
+        ("PlayerActivate", std::mem::size_of::<PlayerActivateEvent>()),
+        ("PlayerSay", std::mem::size_of::<PlayerSayEvent>()),
+        (
+            "ClientDisconnect",
+            std::mem::size_of::<ClientDisconnectEvent>(),
+        ),
+        (
+            "ClientBeginConnect",
+            std::mem::size_of::<ClientBeginConnectEvent>(),
+        ),
+        (
+            "ClientConnected",
+            std::mem::size_of::<ClientConnectedEvent>(),
+        ),
+        (
+            "ClientFullConnect",
+            std::mem::size_of::<ClientFullConnectEvent>(),
+        ),
+        ("HostQuit", std::mem::size_of::<HostQuitEvent>()),
+        ("TeamInfo", std::mem::size_of::<TeamInfoEvent>()),
+        ("TeamScore", std::mem::size_of::<TeamScoreEvent>()),
+        (
+            "TeamPlayBroadcastAudio",
+            std::mem::size_of::<TeamPlayBroadcastAudioEvent>(),
+        ),
+        ("PlayerTeam", std::mem::size_of::<PlayerTeamEvent>()),
+        ("PlayerClass", std::mem::size_of::<PlayerClassEvent>()),
+        ("PlayerDeath", std::mem::size_of::<PlayerDeathEvent>()),
+        ("PlayerHurt", std::mem::size_of::<PlayerHurtEvent>()),
+        ("PlayerChat", std::mem::size_of::<PlayerChatEvent>()),
+        ("PlayerScore", std::mem::size_of::<PlayerScoreEvent>()),
+        ("PlayerSpawn", std::mem::size_of::<PlayerSpawnEvent>()),
+        ("PlayerShoot", std::mem::size_of::<PlayerShootEvent>()),
+        ("PlayerUse", std::mem::size_of::<PlayerUseEvent>()),
+        (
+            "PlayerChangeName",
+            std::mem::size_of::<PlayerChangeNameEvent>(),
+        ),
+        (
+            "PlayerHintMessage",
+            std::mem::size_of::<PlayerHintMessageEvent>(),
+        ),
+        (
+            "BasePlayerTeleported",
+            std::mem::size_of::<BasePlayerTeleportedEvent>(),
+        ),
+        ("GameInit", std::mem::size_of::<GameInitEvent>()),
+        ("GameNewMap", std::mem::size_of::<GameNewMapEvent>()),
+        ("GameStart", std::mem::size_of::<GameStartEvent>()),
+        ("GameEnd", std::mem::size_of::<GameEndEvent>()),
+        ("RoundStart", std::mem::size_of::<RoundStartEvent>()),
+        ("RoundEnd", std::mem::size_of::<RoundEndEvent>()),
+        ("GameMessage", std::mem::size_of::<GameMessageEvent>()),
+        ("BreakBreakable", std::mem::size_of::<BreakBreakableEvent>()),
+        ("BreakProp", std::mem::size_of::<BreakPropEvent>()),
+        ("EntityKilled", std::mem::size_of::<EntityKilledEvent>()),
+        ("BonusUpdated", std::mem::size_of::<BonusUpdatedEvent>()),
+        (
+            "AchievementEvent",
+            std::mem::size_of::<AchievementEventEvent>(),
+        ),
+        (
+            "AchievementIncrement",
+            std::mem::size_of::<AchievementIncrementEvent>(),
+        ),
+        ("PhysgunPickup", std::mem::size_of::<PhysgunPickupEvent>()),
+        ("FlareIgniteNpc", std::mem::size_of::<FlareIgniteNpcEvent>()),
+        (
+            "HelicopterGrenadePuntMiss",
+            std::mem::size_of::<HelicopterGrenadePuntMissEvent>(),
+        ),
+        (
+            "UserDataDownloaded",
+            std::mem::size_of::<UserDataDownloadedEvent>(),
+        ),
+        (
+            "RagdollDissolved",
+            std::mem::size_of::<RagdollDissolvedEvent>(),
+        ),
+        (
+            "HLTVChangedMode",
+            std::mem::size_of::<HLTVChangedModeEvent>(),
+        ),
+        (
+            "HLTVChangedTarget",
+            std::mem::size_of::<HLTVChangedTargetEvent>(),
+        ),
+        ("VoteEnded", std::mem::size_of::<VoteEndedEvent>()),
+        ("VoteStarted", std::mem::size_of::<VoteStartedEvent>()),
+        ("VoteChanged", std::mem::size_of::<VoteChangedEvent>()),
+        ("VotePassed", std::mem::size_of::<VotePassedEvent>()),
+        ("VoteFailed", std::mem::size_of::<VoteFailedEvent>()),
+        ("VoteCast", std::mem::size_of::<VoteCastEvent>()),
+        ("VoteOptions", std::mem::size_of::<VoteOptionsEvent>()),
+        ("ReplaySaved", std::mem::size_of::<ReplaySavedEvent>()),
+        (
+            "EnteredPerformanceMode",
+            std::mem::size_of::<EnteredPerformanceModeEvent>(),
+        ),
+        ("BrowseReplays", std::mem::size_of::<BrowseReplaysEvent>()),
+        (
+            "ReplayYoutubeStats",
+            std::mem::size_of::<ReplayYoutubeStatsEvent>(),
+        ),
+        (
+            "InventoryUpdated",
+            std::mem::size_of::<InventoryUpdatedEvent>(),
+        ),
+        ("CartUpdated", std::mem::size_of::<CartUpdatedEvent>()),
+        (
+            "StorePriceSheetUpdated",
+            std::mem::size_of::<StorePriceSheetUpdatedEvent>(),
+        ),
+        (
+            "EconInventoryConnected",
+            std::mem::size_of::<EconInventoryConnectedEvent>(),
+        ),
+        (
+            "ItemSchemaInitialized",
+            std::mem::size_of::<ItemSchemaInitializedEvent>(),
+        ),
+        ("GcNewSession", std::mem::size_of::<GcNewSessionEvent>()),
+        ("GcLostSession", std::mem::size_of::<GcLostSessionEvent>()),
+        ("IntroFinish", std::mem::size_of::<IntroFinishEvent>()),
+        (
+            "IntroNextCamera",
+            std::mem::size_of::<IntroNextCameraEvent>(),
+        ),
+        (
+            "PlayerChangeClass",
+            std::mem::size_of::<PlayerChangeClassEvent>(),
+        ),
+        (
+            "TfMapTimeRemaining",
+            std::mem::size_of::<TfMapTimeRemainingEvent>(),
+        ),
+        ("TfGameOver", std::mem::size_of::<TfGameOverEvent>()),
+        (
+            "CtfFlagCaptured",
+            std::mem::size_of::<CtfFlagCapturedEvent>(),
+        ),
+        (
+            "ControlPointInitialized",
+            std::mem::size_of::<ControlPointInitializedEvent>(),
+        ),
+        (
+            "ControlPointUpdateImages",
+            std::mem::size_of::<ControlPointUpdateImagesEvent>(),
+        ),
+        (
+            "ControlPointUpdateLayout",
+            std::mem::size_of::<ControlPointUpdateLayoutEvent>(),
+        ),
+        (
+            "ControlPointUpdateCapping",
+            std::mem::size_of::<ControlPointUpdateCappingEvent>(),
+        ),
+        (
+            "ControlPointUpdateOwner",
+            std::mem::size_of::<ControlPointUpdateOwnerEvent>(),
+        ),
+        (
+            "ControlPointStartTouch",
+            std::mem::size_of::<ControlPointStartTouchEvent>(),
+        ),
+        (
+            "ControlPointEndTouch",
+            std::mem::size_of::<ControlPointEndTouchEvent>(),
+        ),
+        (
+            "ControlPointPulseElement",
+            std::mem::size_of::<ControlPointPulseElementEvent>(),
+        ),
+        (
+            "ControlPointFakeCapture",
+            std::mem::size_of::<ControlPointFakeCaptureEvent>(),
+        ),
+        (
+            "ControlPointFakeCaptureMultiplier",
+            std::mem::size_of::<ControlPointFakeCaptureMultiplierEvent>(),
+        ),
+        (
+            "TeamPlayRoundSelected",
+            std::mem::size_of::<TeamPlayRoundSelectedEvent>(),
+        ),
+        (
+            "TeamPlayRoundStart",
+            std::mem::size_of::<TeamPlayRoundStartEvent>(),
+        ),
+        (
+            "TeamPlayRoundActive",
+            std::mem::size_of::<TeamPlayRoundActiveEvent>(),
+        ),
+        (
+            "TeamPlayWaitingBegins",
+            std::mem::size_of::<TeamPlayWaitingBeginsEvent>(),
+        ),
+        (
+            "TeamPlayWaitingEnds",
+            std::mem::size_of::<TeamPlayWaitingEndsEvent>(),
+        ),
+        (
+            "TeamPlayWaitingAboutToEnd",
+            std::mem::size_of::<TeamPlayWaitingAboutToEndEvent>(),
+        ),
+        (
+            "TeamPlayRestartRound",
+            std::mem::size_of::<TeamPlayRestartRoundEvent>(),
+        ),
+        (
+            "TeamPlayReadyRestart",
+            std::mem::size_of::<TeamPlayReadyRestartEvent>(),
+        ),
+        (
+            "TeamPlayRoundRestartSeconds",
+            std::mem::size_of::<TeamPlayRoundRestartSecondsEvent>(),
+        ),
+        (
+            "TeamPlayTeamReady",
+            std::mem::size_of::<TeamPlayTeamReadyEvent>(),
+        ),
+        (
+            "TeamPlayRoundWin",
+            std::mem::size_of::<TeamPlayRoundWinEvent>(),
+        ),
+        (
+            "TeamPlayUpdateTimer",
+            std::mem::size_of::<TeamPlayUpdateTimerEvent>(),
+        ),
+        (
+            "TeamPlayRoundStalemate",
+            std::mem::size_of::<TeamPlayRoundStalemateEvent>(),
+        ),
+        (
+            "TeamPlayOvertimeBegin",
+            std::mem::size_of::<TeamPlayOvertimeBeginEvent>(),
+        ),
+        (
+            "TeamPlayOvertimeEnd",
+            std::mem::size_of::<TeamPlayOvertimeEndEvent>(),
+        ),
+        (
+            "TeamPlaySuddenDeathBegin",
+            std::mem::size_of::<TeamPlaySuddenDeathBeginEvent>(),
+        ),
+        (
+            "TeamPlaySuddenDeathEnd",
+            std::mem::size_of::<TeamPlaySuddenDeathEndEvent>(),
+        ),
+        (
+            "TeamPlayGameOver",
+            std::mem::size_of::<TeamPlayGameOverEvent>(),
+        ),
+        (
+            "TeamPlayMapTimeRemaining",
+            std::mem::size_of::<TeamPlayMapTimeRemainingEvent>(),
+        ),
+        (
+            "TeamPlayTimerFlash",
+            std::mem::size_of::<TeamPlayTimerFlashEvent>(),
+        ),
+        (
+            "TeamPlayTimerTimeAdded",
+            std::mem::size_of::<TeamPlayTimerTimeAddedEvent>(),
+        ),
+        (
+            "TeamPlayPointStartCapture",
+            std::mem::size_of::<TeamPlayPointStartCaptureEvent>(),
+        ),
+        (
+            "TeamPlayPointCaptured",
+            std::mem::size_of::<TeamPlayPointCapturedEvent>(),
+        ),
+        (
+            "TeamPlayPointLocked",
+            std::mem::size_of::<TeamPlayPointLockedEvent>(),
+        ),
+        (
+            "TeamPlayPointUnlocked",
+            std::mem::size_of::<TeamPlayPointUnlockedEvent>(),
+        ),
+        (
+            "TeamPlayCaptureBroken",
+            std::mem::size_of::<TeamPlayCaptureBrokenEvent>(),
+        ),
+        (
+            "TeamPlayCaptureBlocked",
+            std::mem::size_of::<TeamPlayCaptureBlockedEvent>(),
+        ),
+        (
+            "TeamPlayFlagEvent",
+            std::mem::size_of::<TeamPlayFlagEventEvent>(),
+        ),
+        (
+            "TeamPlayWinPanel",
+            std::mem::size_of::<TeamPlayWinPanelEvent>(),
+        ),
+        (
+            "TeamPlayTeamBalancedPlayer",
+            std::mem::size_of::<TeamPlayTeamBalancedPlayerEvent>(),
+        ),
+        (
+            "TeamPlaySetupFinished",
+            std::mem::size_of::<TeamPlaySetupFinishedEvent>(),
+        ),
+        ("TeamPlayAlert", std::mem::size_of::<TeamPlayAlertEvent>()),
+        (
+            "TrainingComplete",
+            std::mem::size_of::<TrainingCompleteEvent>(),
+        ),
+        (
+            "ShowFreezePanel",
+            std::mem::size_of::<ShowFreezePanelEvent>(),
+        ),
+        (
+            "HideFreezePanel",
+            std::mem::size_of::<HideFreezePanelEvent>(),
+        ),
+        (
+            "FreezeCamStarted",
+            std::mem::size_of::<FreezeCamStartedEvent>(),
+        ),
+        (
+            "LocalPlayerChangeTeam",
+            std::mem::size_of::<LocalPlayerChangeTeamEvent>(),
+        ),
+        (
+            "LocalPlayerScoreChanged",
+            std::mem::size_of::<LocalPlayerScoreChangedEvent>(),
+        ),
+        (
+            "LocalPlayerChangeClass",
+            std::mem::size_of::<LocalPlayerChangeClassEvent>(),
+        ),
+        (
+            "LocalPlayerRespawn",
+            std::mem::size_of::<LocalPlayerRespawnEvent>(),
+        ),
+        (
+            "BuildingInfoChanged",
+            std::mem::size_of::<BuildingInfoChangedEvent>(),
+        ),
+        (
+            "LocalPlayerChangeDisguise",
+            std::mem::size_of::<LocalPlayerChangeDisguiseEvent>(),
+        ),
+        (
+            "PlayerAccountChanged",
+            std::mem::size_of::<PlayerAccountChangedEvent>(),
+        ),
+        ("SpyPdaReset", std::mem::size_of::<SpyPdaResetEvent>()),
+        (
+            "FlagStatusUpdate",
+            std::mem::size_of::<FlagStatusUpdateEvent>(),
+        ),
+        (
+            "PlayerStatsUpdated",
+            std::mem::size_of::<PlayerStatsUpdatedEvent>(),
+        ),
+        (
+            "PlayingCommentary",
+            std::mem::size_of::<PlayingCommentaryEvent>(),
+        ),
+        (
+            "PlayerChargeDeployed",
+            std::mem::size_of::<PlayerChargeDeployedEvent>(),
+        ),
+        (
+            "PlayerBuiltObject",
+            std::mem::size_of::<PlayerBuiltObjectEvent>(),
+        ),
+        (
+            "PlayerUpgradedObject",
+            std::mem::size_of::<PlayerUpgradedObjectEvent>(),
+        ),
+        (
+            "PlayerCarryObject",
+            std::mem::size_of::<PlayerCarryObjectEvent>(),
+        ),
+        (
+            "PlayerDropObject",
+            std::mem::size_of::<PlayerDropObjectEvent>(),
+        ),
+        ("ObjectRemoved", std::mem::size_of::<ObjectRemovedEvent>()),
+        (
+            "ObjectDestroyed",
+            std::mem::size_of::<ObjectDestroyedEvent>(),
+        ),
+        (
+            "ObjectDetonated",
+            std::mem::size_of::<ObjectDetonatedEvent>(),
+        ),
+        (
+            "AchievementEarned",
+            std::mem::size_of::<AchievementEarnedEvent>(),
+        ),
+        (
+            "SpecTargetUpdated",
+            std::mem::size_of::<SpecTargetUpdatedEvent>(),
+        ),
+        (
+            "TournamentStateUpdate",
+            std::mem::size_of::<TournamentStateUpdateEvent>(),
+        ),
+        (
+            "TournamentEnableCountdown",
+            std::mem::size_of::<TournamentEnableCountdownEvent>(),
+        ),
+        (
+            "PlayerCalledForMedic",
+            std::mem::size_of::<PlayerCalledForMedicEvent>(),
+        ),
+        (
+            "PlayerAskedForBall",
+            std::mem::size_of::<PlayerAskedForBallEvent>(),
+        ),
+        (
+            "LocalPlayerBecameObserver",
+            std::mem::size_of::<LocalPlayerBecameObserverEvent>(),
+        ),
+        (
+            "PlayerIgnitedInv",
+            std::mem::size_of::<PlayerIgnitedInvEvent>(),
+        ),
+        ("PlayerIgnited", std::mem::size_of::<PlayerIgnitedEvent>()),
+        (
+            "PlayerExtinguished",
+            std::mem::size_of::<PlayerExtinguishedEvent>(),
+        ),
+        (
+            "PlayerTeleported",
+            std::mem::size_of::<PlayerTeleportedEvent>(),
+        ),
+        (
+            "PlayerHealedMedicCall",
+            std::mem::size_of::<PlayerHealedMedicCallEvent>(),
+        ),
+        (
+            "LocalPlayerChargeReady",
+            std::mem::size_of::<LocalPlayerChargeReadyEvent>(),
+        ),
+        (
+            "LocalPlayerWindDown",
+            std::mem::size_of::<LocalPlayerWindDownEvent>(),
+        ),
+        ("PlayerInvulned", std::mem::size_of::<PlayerInvulnedEvent>()),
+        ("EscortSpeed", std::mem::size_of::<EscortSpeedEvent>()),
+        ("EscortProgress", std::mem::size_of::<EscortProgressEvent>()),
+        ("EscortRecede", std::mem::size_of::<EscortRecedeEvent>()),
+        (
+            "GameUIActivated",
+            std::mem::size_of::<GameUIActivatedEvent>(),
+        ),
+        ("GameUIHidden", std::mem::size_of::<GameUIHiddenEvent>()),
+        (
+            "PlayerEscortScore",
+            std::mem::size_of::<PlayerEscortScoreEvent>(),
+        ),
+        (
+            "PlayerHealOnHit",
+            std::mem::size_of::<PlayerHealOnHitEvent>(),
+        ),
+        (
+            "PlayerStealSandvich",
+            std::mem::size_of::<PlayerStealSandvichEvent>(),
+        ),
+        (
+            "ShowClassLayout",
+            std::mem::size_of::<ShowClassLayoutEvent>(),
+        ),
+        ("ShowVsPanel", std::mem::size_of::<ShowVsPanelEvent>()),
+        ("PlayerDamaged", std::mem::size_of::<PlayerDamagedEvent>()),
+        (
+            "ArenaPlayerNotification",
+            std::mem::size_of::<ArenaPlayerNotificationEvent>(),
+        ),
+        (
+            "ArenaMatchMaxStreak",
+            std::mem::size_of::<ArenaMatchMaxStreakEvent>(),
+        ),
+        (
+            "ArenaRoundStart",
+            std::mem::size_of::<ArenaRoundStartEvent>(),
+        ),
+        ("ArenaWinPanel", std::mem::size_of::<ArenaWinPanelEvent>()),
+        ("PveWinPanel", std::mem::size_of::<PveWinPanelEvent>()),
+        ("AirDash", std::mem::size_of::<AirDashEvent>()),
+        ("Landed", std::mem::size_of::<LandedEvent>()),
+        (
+            "PlayerDamageDodged",
+            std::mem::size_of::<PlayerDamageDodgedEvent>(),
+        ),
+        ("PlayerStunned", std::mem::size_of::<PlayerStunnedEvent>()),
+        ("ScoutGrandSlam", std::mem::size_of::<ScoutGrandSlamEvent>()),
+        (
+            "ScoutSlamdollLanded",
+            std::mem::size_of::<ScoutSlamdollLandedEvent>(),
+        ),
+        ("ArrowImpact", std::mem::size_of::<ArrowImpactEvent>()),
+        ("PlayerJarated", std::mem::size_of::<PlayerJaratedEvent>()),
+        (
+            "PlayerJaratedFade",
+            std::mem::size_of::<PlayerJaratedFadeEvent>(),
+        ),
+        (
+            "PlayerShieldBlocked",
+            std::mem::size_of::<PlayerShieldBlockedEvent>(),
+        ),
+        ("PlayerPinned", std::mem::size_of::<PlayerPinnedEvent>()),
+        (
+            "PlayerHealedByMedic",
+            std::mem::size_of::<PlayerHealedByMedicEvent>(),
+        ),
+        (
+            "PlayerSappedObject",
+            std::mem::size_of::<PlayerSappedObjectEvent>(),
+        ),
+        ("ItemFound", std::mem::size_of::<ItemFoundEvent>()),
+        ("ShowAnnotation", std::mem::size_of::<ShowAnnotationEvent>()),
+        ("HideAnnotation", std::mem::size_of::<HideAnnotationEvent>()),
+        (
+            "PostInventoryApplication",
+            std::mem::size_of::<PostInventoryApplicationEvent>(),
+        ),
+        (
+            "ControlPointUnlockUpdated",
+            std::mem::size_of::<ControlPointUnlockUpdatedEvent>(),
+        ),
+        (
+            "DeployBuffBanner",
+            std::mem::size_of::<DeployBuffBannerEvent>(),
+        ),
+        ("PlayerBuff", std::mem::size_of::<PlayerBuffEvent>()),
+        ("MedicDeath", std::mem::size_of::<MedicDeathEvent>()),
+        ("OvertimeNag", std::mem::size_of::<OvertimeNagEvent>()),
+        ("TeamsChanged", std::mem::size_of::<TeamsChangedEvent>()),
+        (
+            "HalloweenPumpkinGrab",
+            std::mem::size_of::<HalloweenPumpkinGrabEvent>(),
+        ),
+        ("RocketJump", std::mem::size_of::<RocketJumpEvent>()),
+        (
+            "RocketJumpLanded",
+            std::mem::size_of::<RocketJumpLandedEvent>(),
+        ),
+        ("StickyJump", std::mem::size_of::<StickyJumpEvent>()),
+        (
+            "StickyJumpLanded",
+            std::mem::size_of::<StickyJumpLandedEvent>(),
+        ),
+        (
+            "RocketPackLaunch",
+            std::mem::size_of::<RocketPackLaunchEvent>(),
+        ),
+        (
+            "RocketPackLanded",
+            std::mem::size_of::<RocketPackLandedEvent>(),
+        ),
+        ("MedicDefended", std::mem::size_of::<MedicDefendedEvent>()),
+        (
+            "LocalPlayerHealed",
+            std::mem::size_of::<LocalPlayerHealedEvent>(),
+        ),
+        (
+            "PlayerDestroyedPipeBomb",
+            std::mem::size_of::<PlayerDestroyedPipeBombEvent>(),
+        ),
+        (
+            "ObjectDeflected",
+            std::mem::size_of::<ObjectDeflectedEvent>(),
+        ),
+        ("PlayerMvp", std::mem::size_of::<PlayerMvpEvent>()),
+        ("RaidSpawnMob", std::mem::size_of::<RaidSpawnMobEvent>()),
+        ("RaidSpawnSquad", std::mem::size_of::<RaidSpawnSquadEvent>()),
+        ("NavBlocked", std::mem::size_of::<NavBlockedEvent>()),
+        (
+            "PathTrackPassed",
+            std::mem::size_of::<PathTrackPassedEvent>(),
+        ),
+        (
+            "NumCappersChanged",
+            std::mem::size_of::<NumCappersChangedEvent>(),
+        ),
+        (
+            "PlayerRegenerate",
+            std::mem::size_of::<PlayerRegenerateEvent>(),
+        ),
+        (
+            "UpdateStatusItem",
+            std::mem::size_of::<UpdateStatusItemEvent>(),
+        ),
+        (
+            "StatsResetRound",
+            std::mem::size_of::<StatsResetRoundEvent>(),
+        ),
+        (
+            "ScoreStatsAccumulatedUpdate",
+            std::mem::size_of::<ScoreStatsAccumulatedUpdateEvent>(),
+        ),
+        (
+            "ScoreStatsAccumulatedReset",
+            std::mem::size_of::<ScoreStatsAccumulatedResetEvent>(),
+        ),
+        (
+            "AchievementEarnedLocal",
+            std::mem::size_of::<AchievementEarnedLocalEvent>(),
+        ),
+        ("PlayerHealed", std::mem::size_of::<PlayerHealedEvent>()),
+        ("BuildingHealed", std::mem::size_of::<BuildingHealedEvent>()),
+        ("ItemPickup", std::mem::size_of::<ItemPickupEvent>()),
+        ("DuelStatus", std::mem::size_of::<DuelStatusEvent>()),
+        ("FishNotice", std::mem::size_of::<FishNoticeEvent>()),
+        ("FishNoticeArm", std::mem::size_of::<FishNoticeArmEvent>()),
+        ("SlapNotice", std::mem::size_of::<SlapNoticeEvent>()),
+        ("ThrowableHit", std::mem::size_of::<ThrowableHitEvent>()),
+        (
+            "PumpkinLordSummoned",
+            std::mem::size_of::<PumpkinLordSummonedEvent>(),
+        ),
+        (
+            "PumpkinLordKilled",
+            std::mem::size_of::<PumpkinLordKilledEvent>(),
+        ),
+        (
+            "MerasmusSummoned",
+            std::mem::size_of::<MerasmusSummonedEvent>(),
+        ),
+        ("MerasmusKilled", std::mem::size_of::<MerasmusKilledEvent>()),
+        (
+            "MerasmusEscapeWarning",
+            std::mem::size_of::<MerasmusEscapeWarningEvent>(),
+        ),
+        (
+            "MerasmusEscaped",
+            std::mem::size_of::<MerasmusEscapedEvent>(),
+        ),
+        (
+            "EyeballBossSummoned",
+            std::mem::size_of::<EyeballBossSummonedEvent>(),
+        ),
+        (
+            "EyeballBossStunned",
+            std::mem::size_of::<EyeballBossStunnedEvent>(),
+        ),
+        (
+            "EyeballBossKilled",
+            std::mem::size_of::<EyeballBossKilledEvent>(),
+        ),
+        (
+            "EyeballBossKiller",
+            std::mem::size_of::<EyeballBossKillerEvent>(),
+        ),
+        (
+            "EyeballBossEscapeImminent",
+            std::mem::size_of::<EyeballBossEscapeImminentEvent>(),
+        ),
+        (
+            "EyeballBossEscaped",
+            std::mem::size_of::<EyeballBossEscapedEvent>(),
+        ),
+        ("NpcHurt", std::mem::size_of::<NpcHurtEvent>()),
+        (
+            "ControlPointTimerUpdated",
+            std::mem::size_of::<ControlPointTimerUpdatedEvent>(),
+        ),
+        (
+            "PlayerHighFiveStart",
+            std::mem::size_of::<PlayerHighFiveStartEvent>(),
+        ),
+        (
+            "PlayerHighFiveCancel",
+            std::mem::size_of::<PlayerHighFiveCancelEvent>(),
+        ),
+        (
+            "PlayerHighFiveSuccess",
+            std::mem::size_of::<PlayerHighFiveSuccessEvent>(),
+        ),
+        (
+            "PlayerBonusPoints",
+            std::mem::size_of::<PlayerBonusPointsEvent>(),
+        ),
+        ("PlayerUpgraded", std::mem::size_of::<PlayerUpgradedEvent>()),
+        ("PlayerBuyback", std::mem::size_of::<PlayerBuybackEvent>()),
+        (
+            "PlayerUsedPowerUpBottle",
+            std::mem::size_of::<PlayerUsedPowerUpBottleEvent>(),
+        ),
+        (
+            "ChristmasGiftGrab",
+            std::mem::size_of::<ChristmasGiftGrabEvent>(),
+        ),
+        (
+            "PlayerKilledAchievementZone",
+            std::mem::size_of::<PlayerKilledAchievementZoneEvent>(),
+        ),
+        ("PartyUpdated", std::mem::size_of::<PartyUpdatedEvent>()),
+        (
+            "PartyPrefChanged",
+            std::mem::size_of::<PartyPrefChangedEvent>(),
+        ),
+        (
+            "PartyCriteriaChanged",
+            std::mem::size_of::<PartyCriteriaChangedEvent>(),
+        ),
+        (
+            "PartyInvitesChanged",
+            std::mem::size_of::<PartyInvitesChangedEvent>(),
+        ),
+        (
+            "PartyQueueStateChanged",
+            std::mem::size_of::<PartyQueueStateChangedEvent>(),
+        ),
+        ("PartyChat", std::mem::size_of::<PartyChatEvent>()),
+        (
+            "PartyMemberJoin",
+            std::mem::size_of::<PartyMemberJoinEvent>(),
+        ),
+        (
+            "PartyMemberLeave",
+            std::mem::size_of::<PartyMemberLeaveEvent>(),
+        ),
+        (
+            "MatchInvitesUpdated",
+            std::mem::size_of::<MatchInvitesUpdatedEvent>(),
+        ),
+        ("LobbyUpdated", std::mem::size_of::<LobbyUpdatedEvent>()),
+        (
+            "MvmMissionUpdate",
+            std::mem::size_of::<MvmMissionUpdateEvent>(),
+        ),
+        (
+            "RecalculateHolidays",
+            std::mem::size_of::<RecalculateHolidaysEvent>(),
+        ),
+        (
+            "PlayerCurrencyChanged",
+            std::mem::size_of::<PlayerCurrencyChangedEvent>(),
+        ),
+        (
+            "DoomsdayRocketOpen",
+            std::mem::size_of::<DoomsdayRocketOpenEvent>(),
+        ),
+        (
+            "RemoveNemesisRelationships",
+            std::mem::size_of::<RemoveNemesisRelationshipsEvent>(),
+        ),
+        (
+            "MvmCreditBonusWave",
+            std::mem::size_of::<MvmCreditBonusWaveEvent>(),
+        ),
+        (
+            "MvmCreditBonusAll",
+            std::mem::size_of::<MvmCreditBonusAllEvent>(),
+        ),
+        (
+            "MvmCreditBonusAllAdvanced",
+            std::mem::size_of::<MvmCreditBonusAllAdvancedEvent>(),
+        ),
+        (
+            "MvmQuickSentryUpgrade",
+            std::mem::size_of::<MvmQuickSentryUpgradeEvent>(),
+        ),
+        (
+            "MvmTankDestroyedByPlayers",
+            std::mem::size_of::<MvmTankDestroyedByPlayersEvent>(),
+        ),
+        (
+            "MvmKillRobotDeliveringBomb",
+            std::mem::size_of::<MvmKillRobotDeliveringBombEvent>(),
+        ),
+        (
+            "MvmPickupCurrency",
+            std::mem::size_of::<MvmPickupCurrencyEvent>(),
+        ),
+        (
+            "MvmBombCarrierKilled",
+            std::mem::size_of::<MvmBombCarrierKilledEvent>(),
+        ),
+        (
+            "MvmSentryBusterDetonate",
+            std::mem::size_of::<MvmSentryBusterDetonateEvent>(),
+        ),
+        (
+            "MvmScoutMarkedForDeath",
+            std::mem::size_of::<MvmScoutMarkedForDeathEvent>(),
+        ),
+        (
+            "MvmMedicPowerUpShared",
+            std::mem::size_of::<MvmMedicPowerUpSharedEvent>(),
+        ),
+        ("MvmBeginWave", std::mem::size_of::<MvmBeginWaveEvent>()),
+        (
+            "MvmWaveComplete",
+            std::mem::size_of::<MvmWaveCompleteEvent>(),
+        ),
+        (
+            "MvmMissionComplete",
+            std::mem::size_of::<MvmMissionCompleteEvent>(),
+        ),
+        (
+            "MvmBombResetByPlayer",
+            std::mem::size_of::<MvmBombResetByPlayerEvent>(),
+        ),
+        (
+            "MvmBombAlarmTriggered",
+            std::mem::size_of::<MvmBombAlarmTriggeredEvent>(),
+        ),
+        (
+            "MvmBombDeployResetByPlayer",
+            std::mem::size_of::<MvmBombDeployResetByPlayerEvent>(),
+        ),
+        ("MvmWaveFailed", std::mem::size_of::<MvmWaveFailedEvent>()),
+        ("MvmResetStats", std::mem::size_of::<MvmResetStatsEvent>()),
+        ("DamageResisted", std::mem::size_of::<DamageResistedEvent>()),
+        (
+            "RevivePlayerNotify",
+            std::mem::size_of::<RevivePlayerNotifyEvent>(),
+        ),
+        (
+            "RevivePlayerStopped",
+            std::mem::size_of::<RevivePlayerStoppedEvent>(),
+        ),
+        (
+            "RevivePlayerComplete",
+            std::mem::size_of::<RevivePlayerCompleteEvent>(),
+        ),
+        (
+            "PlayerTurnedToGhost",
+            std::mem::size_of::<PlayerTurnedToGhostEvent>(),
+        ),
+        (
+            "MedigunShieldBlockedDamage",
+            std::mem::size_of::<MedigunShieldBlockedDamageEvent>(),
+        ),
+        (
+            "MvmAdvWaveCompleteNoGates",
+            std::mem::size_of::<MvmAdvWaveCompleteNoGatesEvent>(),
+        ),
+        (
+            "MvmSniperHeadshotCurrency",
+            std::mem::size_of::<MvmSniperHeadshotCurrencyEvent>(),
+        ),
+        (
+            "MvmMannhattanPit",
+            std::mem::size_of::<MvmMannhattanPitEvent>(),
+        ),
+        (
+            "FlagCarriedInDetectionZone",
+            std::mem::size_of::<FlagCarriedInDetectionZoneEvent>(),
+        ),
+        (
+            "MvmAdvWaveKilledStunRadio",
+            std::mem::size_of::<MvmAdvWaveKilledStunRadioEvent>(),
+        ),
+        (
+            "PlayerDirectHitStun",
+            std::mem::size_of::<PlayerDirectHitStunEvent>(),
+        ),
+        (
+            "MvmSentryBusterKilled",
+            std::mem::size_of::<MvmSentryBusterKilledEvent>(),
+        ),
+        (
+            "UpgradesFileChanged",
+            std::mem::size_of::<UpgradesFileChangedEvent>(),
+        ),
+        (
+            "RdTeamPointsChanged",
+            std::mem::size_of::<RdTeamPointsChangedEvent>(),
+        ),
+        (
+            "RdRulesStateChanged",
+            std::mem::size_of::<RdRulesStateChangedEvent>(),
+        ),
+        ("RdRobotKilled", std::mem::size_of::<RdRobotKilledEvent>()),
+        ("RdRobotImpact", std::mem::size_of::<RdRobotImpactEvent>()),
+        (
+            "TeamPlayPreRoundTimeLeft",
+            std::mem::size_of::<TeamPlayPreRoundTimeLeftEvent>(),
+        ),
+        (
+            "ParachuteDeploy",
+            std::mem::size_of::<ParachuteDeployEvent>(),
+        ),
+        (
+            "ParachuteHolster",
+            std::mem::size_of::<ParachuteHolsterEvent>(),
+        ),
+        (
+            "KillRefillsMeter",
+            std::mem::size_of::<KillRefillsMeterEvent>(),
+        ),
+        ("RpsTauntEvent", std::mem::size_of::<RpsTauntEventEvent>()),
+        ("CongaKill", std::mem::size_of::<CongaKillEvent>()),
+        (
+            "PlayerInitialSpawn",
+            std::mem::size_of::<PlayerInitialSpawnEvent>(),
+        ),
+        (
+            "CompetitiveVictory",
+            std::mem::size_of::<CompetitiveVictoryEvent>(),
+        ),
+        (
+            "CompetitiveStatsUpdate",
+            std::mem::size_of::<CompetitiveStatsUpdateEvent>(),
+        ),
+        ("MiniGameWin", std::mem::size_of::<MiniGameWinEvent>()),
+        (
+            "SentryOnGoActive",
+            std::mem::size_of::<SentryOnGoActiveEvent>(),
+        ),
+        ("DuckXpLevelUp", std::mem::size_of::<DuckXpLevelUpEvent>()),
+        ("QuestLogOpened", std::mem::size_of::<QuestLogOpenedEvent>()),
+        ("SchemaUpdated", std::mem::size_of::<SchemaUpdatedEvent>()),
+        (
+            "LocalPlayerPickupWeapon",
+            std::mem::size_of::<LocalPlayerPickupWeaponEvent>(),
+        ),
+        (
+            "RdPlayerScorePoints",
+            std::mem::size_of::<RdPlayerScorePointsEvent>(),
+        ),
+        (
+            "DemomanDetStickies",
+            std::mem::size_of::<DemomanDetStickiesEvent>(),
+        ),
+        (
+            "QuestObjectiveCompleted",
+            std::mem::size_of::<QuestObjectiveCompletedEvent>(),
+        ),
+        (
+            "PlayerScoreChanged",
+            std::mem::size_of::<PlayerScoreChangedEvent>(),
+        ),
+        (
+            "KilledCappingPlayer",
+            std::mem::size_of::<KilledCappingPlayerEvent>(),
+        ),
+        (
+            "EnvironmentalDeath",
+            std::mem::size_of::<EnvironmentalDeathEvent>(),
+        ),
+        (
+            "ProjectileDirectHit",
+            std::mem::size_of::<ProjectileDirectHitEvent>(),
+        ),
+        ("PassGet", std::mem::size_of::<PassGetEvent>()),
+        ("PassScore", std::mem::size_of::<PassScoreEvent>()),
+        ("PassFree", std::mem::size_of::<PassFreeEvent>()),
+        ("PassPassCaught", std::mem::size_of::<PassPassCaughtEvent>()),
+        ("PassBallStolen", std::mem::size_of::<PassBallStolenEvent>()),
+        (
+            "PassBallBlocked",
+            std::mem::size_of::<PassBallBlockedEvent>(),
+        ),
+        (
+            "DamagePrevented",
+            std::mem::size_of::<DamagePreventedEvent>(),
+        ),
+        (
+            "HalloweenBossKilled",
+            std::mem::size_of::<HalloweenBossKilledEvent>(),
+        ),
+        (
+            "EscapedLootIsland",
+            std::mem::size_of::<EscapedLootIslandEvent>(),
+        ),
+        (
+            "TaggedPlayerAsIt",
+            std::mem::size_of::<TaggedPlayerAsItEvent>(),
+        ),
+        (
+            "MerasmusStunned",
+            std::mem::size_of::<MerasmusStunnedEvent>(),
+        ),
+        (
+            "MerasmusPropFound",
+            std::mem::size_of::<MerasmusPropFoundEvent>(),
+        ),
+        (
+            "HalloweenSkeletonKilled",
+            std::mem::size_of::<HalloweenSkeletonKilledEvent>(),
+        ),
+        ("EscapeHell", std::mem::size_of::<EscapeHellEvent>()),
+        (
+            "CrossSpectralBridge",
+            std::mem::size_of::<CrossSpectralBridgeEvent>(),
+        ),
+        ("MiniGameWon", std::mem::size_of::<MiniGameWonEvent>()),
+        ("RespawnGhost", std::mem::size_of::<RespawnGhostEvent>()),
+        ("KillInHell", std::mem::size_of::<KillInHellEvent>()),
+        (
+            "HalloweenDuckCollected",
+            std::mem::size_of::<HalloweenDuckCollectedEvent>(),
+        ),
+        ("SpecialScore", std::mem::size_of::<SpecialScoreEvent>()),
+        (
+            "TeamLeaderKilled",
+            std::mem::size_of::<TeamLeaderKilledEvent>(),
+        ),
+        (
+            "HalloweenSoulCollected",
+            std::mem::size_of::<HalloweenSoulCollectedEvent>(),
+        ),
+        (
+            "RecalculateTruce",
+            std::mem::size_of::<RecalculateTruceEvent>(),
+        ),
+        (
+            "DeadRingerCheatDeath",
+            std::mem::size_of::<DeadRingerCheatDeathEvent>(),
+        ),
+        ("CrossbowHeal", std::mem::size_of::<CrossbowHealEvent>()),
+        (
+            "DamageMitigated",
+            std::mem::size_of::<DamageMitigatedEvent>(),
+        ),
+        ("PayloadPushed", std::mem::size_of::<PayloadPushedEvent>()),
+        (
+            "PlayerAbandonedMatch",
+            std::mem::size_of::<PlayerAbandonedMatchEvent>(),
+        ),
+        ("ClDrawline", std::mem::size_of::<ClDrawlineEvent>()),
+        (
+            "RestartTimerTime",
+            std::mem::size_of::<RestartTimerTimeEvent>(),
+        ),
+        (
+            "WinLimitChanged",
+            std::mem::size_of::<WinLimitChangedEvent>(),
+        ),
+        (
+            "WinPanelShowScores",
+            std::mem::size_of::<WinPanelShowScoresEvent>(),
+        ),
+        (
+            "TopStreamsRequestFinished",
+            std::mem::size_of::<TopStreamsRequestFinishedEvent>(),
+        ),
+        (
+            "CompetitiveStateChanged",
+            std::mem::size_of::<CompetitiveStateChangedEvent>(),
+        ),
+        (
+            "GlobalWarDataUpdated",
+            std::mem::size_of::<GlobalWarDataUpdatedEvent>(),
+        ),
+        (
+            "StopWatchChanged",
+            std::mem::size_of::<StopWatchChangedEvent>(),
+        ),
+        ("DsStop", std::mem::size_of::<DsStopEvent>()),
+        ("DsScreenshot", std::mem::size_of::<DsScreenshotEvent>()),
+        (
+            "ShowMatchSummary",
+            std::mem::size_of::<ShowMatchSummaryEvent>(),
+        ),
+        (
+            "ExperienceChanged",
+            std::mem::size_of::<ExperienceChangedEvent>(),
+        ),
+        ("BeginXpLerp", std::mem::size_of::<BeginXpLerpEvent>()),
+        (
+            "MatchmakerStatsUpdated",
+            std::mem::size_of::<MatchmakerStatsUpdatedEvent>(),
+        ),
+        (
+            "RematchVotePeriodOver",
+            std::mem::size_of::<RematchVotePeriodOverEvent>(),
+        ),
+        (
+            "RematchFailedToCreate",
+            std::mem::size_of::<RematchFailedToCreateEvent>(),
+        ),
+        (
+            "PlayerRematchChange",
+            std::mem::size_of::<PlayerRematchChangeEvent>(),
+        ),
+        ("PingUpdated", std::mem::size_of::<PingUpdatedEvent>()),
+        ("MMStatsUpdated", std::mem::size_of::<MMStatsUpdatedEvent>()),
+        (
+            "PlayerNextMapVoteChange",
+            std::mem::size_of::<PlayerNextMapVoteChangeEvent>(),
+        ),
+        (
+            "VoteMapsChanged",
+            std::mem::size_of::<VoteMapsChangedEvent>(),
+        ),
+        (
+            "ProtoDefChanged",
+            std::mem::size_of::<ProtoDefChangedEvent>(),
+        ),
+        (
+            "PlayerDomination",
+            std::mem::size_of::<PlayerDominationEvent>(),
+        ),
+        (
+            "PlayerRocketPackPushed",
+            std::mem::size_of::<PlayerRocketPackPushedEvent>(),
+        ),
+        ("QuestRequest", std::mem::size_of::<QuestRequestEvent>()),
+        ("QuestResponse", std::mem::size_of::<QuestResponseEvent>()),
+        ("QuestProgress", std::mem::size_of::<QuestProgressEvent>()),
+        (
+            "ProjectileRemoved",
+            std::mem::size_of::<ProjectileRemovedEvent>(),
+        ),
+        (
+            "QuestMapDataChanged",
+            std::mem::size_of::<QuestMapDataChangedEvent>(),
+        ),
+        (
+            "GasDousedPlayerIgnited",
+            std::mem::size_of::<GasDousedPlayerIgnitedEvent>(),
+        ),
+        (
+            "QuestTurnInState",
+            std::mem::size_of::<QuestTurnInStateEvent>(),
+        ),
+        (
+            "ItemsAcknowledged",
+            std::mem::size_of::<ItemsAcknowledgedEvent>(),
+        ),
+        ("CapperKilled", std::mem::size_of::<CapperKilledEvent>()),
+        (
+            "MainMenuStabilized",
+            std::mem::size_of::<MainMenuStabilizedEvent>(),
+        ),
+        (
+            "WorldStatusChanged",
+            std::mem::size_of::<WorldStatusChangedEvent>(),
+        ),
+        ("HLTVStatus", std::mem::size_of::<HLTVStatusEvent>()),
+        ("HLTVCameraman", std::mem::size_of::<HLTVCameramanEvent>()),
+        ("HLTVRankCamera", std::mem::size_of::<HLTVRankCameraEvent>()),
+        ("HLTVRankEntity", std::mem::size_of::<HLTVRankEntityEvent>()),
+        ("HLTVFixed", std::mem::size_of::<HLTVFixedEvent>()),
+        ("HLTVChase", std::mem::size_of::<HLTVChaseEvent>()),
+        ("HLTVMessage", std::mem::size_of::<HLTVMessageEvent>()),
+        ("HLTVTitle", std::mem::size_of::<HLTVTitleEvent>()),
+        ("HLTVChat", std::mem::size_of::<HLTVChatEvent>()),
+        (
+            "ReplayStartRecord",
+            std::mem::size_of::<ReplayStartRecordEvent>(),
+        ),
+        (
+            "ReplaySessionInfo",
+            std::mem::size_of::<ReplaySessionInfoEvent>(),
+        ),
+        (
+            "ReplayEndRecord",
+            std::mem::size_of::<ReplayEndRecordEvent>(),
+        ),
+        (
+            "ReplayReplaysAvailable",
+            std::mem::size_of::<ReplayReplaysAvailableEvent>(),
+        ),
+        (
+            "ReplayServerError",
+            std::mem::size_of::<ReplayServerErrorEvent>(),
+        ),
+    ]
+    .into_iter()
+    .collect()
+}
+

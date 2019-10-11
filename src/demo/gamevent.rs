@@ -190,3 +190,9 @@ pub struct RawGameEvent {
 pub trait FromRawGameEvent: Sized {
     fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self>;
 }
+
+impl<T: FromRawGameEvent> FromRawGameEvent for Box<T> {
+    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
+        Ok(Box::new(T::from_raw_event(values)?))
+    }
+}
