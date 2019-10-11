@@ -78,7 +78,7 @@ pub enum Message {
     SetConVar(SetConVarMessage),
     SigOnState(SigOnStateMessage),
     Print(PrintMessage),
-    ServerInfo(ServerInfoMessage),
+    ServerInfo(Box<ServerInfoMessage>),
     ClassInfo(ClassInfoMessage),
     SetPause(SetPauseMessage),
     CreateStringTable(CreateStringTableMessage),
@@ -158,7 +158,7 @@ impl Message {
             }
             MessageType::Print => Message::Print(PrintMessage::parse(stream, state)?),
             MessageType::ServerInfo => {
-                Message::ServerInfo(ServerInfoMessage::parse(stream, state)?)
+                Message::ServerInfo(Box::new(ServerInfoMessage::parse(stream, state)?))
             }
             MessageType::ClassInfo => Message::ClassInfo(ClassInfoMessage::parse(stream, state)?),
             MessageType::SetPause => Message::SetPause(SetPauseMessage::parse(stream, state)?),

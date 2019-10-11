@@ -26,7 +26,7 @@ fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<
 
 #[derive(Debug)]
 pub struct GameEventMessage {
-    pub event: GameEvent,
+    pub event: Box<GameEvent>,
 }
 
 impl Parse for GameEventMessage {
@@ -49,7 +49,9 @@ impl Parse for GameEventMessage {
             None => return Err(ParseError::MalformedGameEvent(GameEventError::UnknownType)),
         };
         let event = GameEvent::from_raw_event(raw_event)?;
-        Ok(GameEventMessage { event })
+        Ok(GameEventMessage {
+            event: Box::new(event),
+        })
     }
 }
 
