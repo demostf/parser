@@ -1,6 +1,7 @@
 use pretty_assertions::assert_eq;
 use std::fs;
 
+use tf_demo_parser::demo::parser::gamestateanalyser::{GameState, GameStateAnalyser};
 use tf_demo_parser::{Demo, DemoParser, MatchState, MessageType, MessageTypeAnalyser};
 
 fn snapshot_test(input_file: &str, snapshot_file: &str) {
@@ -32,6 +33,21 @@ fn test_message_types(input_file: &str, snapshot_file: &str) {
     assert_eq!(expected, message_types);
 }
 
+fn game_state_test(input_file: &str, snapshot_file: &str) {
+    let file = fs::read(input_file).expect("Unable to read file");
+    let demo = Demo::new(file);
+    let (_, state) =
+        DemoParser::parse_with_analyser(demo.get_stream(), GameStateAnalyser::new()).unwrap();
+
+    let expected: GameState = serde_json::from_slice(
+        fs::read(snapshot_file)
+            .expect("Unable to read file")
+            .as_slice(),
+    )
+    .unwrap();
+    assert_eq!(expected, state);
+}
+
 #[test]
 fn snapshot_test_small() {
     snapshot_test("data/small.dem", "data/small.json");
@@ -55,4 +71,14 @@ fn snapshot_test_malformed_cvar() {
 #[test]
 fn snapshot_test_decal() {
     snapshot_test("data/decal.dem", "data/decal.json");
+}
+
+#[test]
+fn game_state_test_small() {
+    game_state_test("data/small.dem", "data/small_game_state.json");
+}
+
+#[test]
+fn game_state_test_gully() {
+    game_state_test("data/gully.dem", "data/gully_game_state.json");
 }

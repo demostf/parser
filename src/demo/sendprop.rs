@@ -11,6 +11,7 @@ use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use parse_display::Display;
+use serde::export::TryFrom;
 use std::convert::TryInto;
 use std::fmt;
 use std::rc::Rc;
@@ -19,6 +20,12 @@ use std::rc::Rc;
     BitRead, PartialEq, Eq, Hash, Debug, Display, Clone, Serialize, Deserialize, Ord, PartialOrd,
 )]
 pub struct SendPropName(Rc<String>);
+
+impl SendPropName {
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
 
 impl PartialEq<&str> for SendPropName {
     fn eq(&self, other: &&str) -> bool {
@@ -525,6 +532,66 @@ impl From<String> for SendPropValue {
 impl From<Vec<SendPropValue>> for SendPropValue {
     fn from(value: Vec<SendPropValue>) -> Self {
         SendPropValue::Array(value)
+    }
+}
+
+impl TryFrom<&SendPropValue> for i64 {
+    type Error = ();
+    fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
+        match value {
+            SendPropValue::Integer(val) => Ok(*val),
+            _ => Err(()),
+        }
+    }
+}
+
+impl TryFrom<&SendPropValue> for Vector {
+    type Error = ();
+    fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
+        match value {
+            SendPropValue::Vector(val) => Ok(*val),
+            _ => Err(()),
+        }
+    }
+}
+
+impl TryFrom<&SendPropValue> for VectorXY {
+    type Error = ();
+    fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
+        match value {
+            SendPropValue::VectorXY(val) => Ok(*val),
+            _ => Err(()),
+        }
+    }
+}
+
+impl TryFrom<&SendPropValue> for f32 {
+    type Error = ();
+    fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
+        match value {
+            SendPropValue::Float(val) => Ok(*val),
+            _ => Err(()),
+        }
+    }
+}
+
+impl<'a> TryFrom<&'a SendPropValue> for &'a str {
+    type Error = ();
+    fn try_from(value: &'a SendPropValue) -> std::result::Result<Self, Self::Error> {
+        match value {
+            SendPropValue::String(val) => Ok(val.as_str()),
+            _ => Err(()),
+        }
+    }
+}
+
+impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
+    type Error = ();
+    fn try_from(value: &'a SendPropValue) -> std::result::Result<Self, Self::Error> {
+        match value {
+            SendPropValue::Array(val) => Ok(val.as_slice()),
+            _ => Err(()),
+        }
     }
 }
 

@@ -32,6 +32,12 @@ impl From<ClassId> for usize {
 #[derive(BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
 pub struct ServerClassName(Rc<String>);
 
+impl ServerClassName {
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
+
 impl From<String> for ServerClassName {
     fn from(value: String) -> Self {
         Self(Rc::new(value))
@@ -49,6 +55,12 @@ pub struct ServerClass {
     BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display, PartialOrd, Ord,
 )]
 pub struct SendTableName(Rc<String>);
+
+impl SendTableName {
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
 
 impl From<String> for SendTableName {
     fn from(value: String) -> Self {

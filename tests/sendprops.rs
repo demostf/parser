@@ -7,7 +7,9 @@ use std::fs;
 
 use std::collections::{HashMap, HashSet};
 use tf_demo_parser::demo::message::Message;
-use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTable, SendTableName};
+use tf_demo_parser::demo::packet::datatable::{
+    ParseSendTable, SendTable, SendTableName, ServerClass,
+};
 use tf_demo_parser::demo::packet::stringtable::StringTableEntry;
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::demo::sendprop::SendPropDefinition;
@@ -30,7 +32,7 @@ impl MessageHandler for SendPropAnalyser {
         false
     }
 
-    fn handle_data_tables(&mut self, tables: &[ParseSendTable]) {
+    fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {
         self.tables = tables.to_vec()
     }
 

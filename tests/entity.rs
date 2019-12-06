@@ -195,7 +195,5 @@ fn entity_test(input_file: &str, snapshot_file: &str) {
 
 #[test]
 fn entity_test_short() {
-    better_panic::install();
-
     entity_test("data/small.dem", "data/small_entities.json");
 }

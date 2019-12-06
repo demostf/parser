@@ -25,11 +25,11 @@ serde_repr = "0.1"
 err-derive = "0.2"
 parse-display = "0.1"
 main_error = "0.1.0"
+jemallocator = { version = "0.3", optional = true }
+better-panic = { version = "0.1", optional = true }
 
 [dev-dependencies]
 pretty_assertions = "0.6"
-jemallocator = "0.3"
-better-panic = "0.1"
 
 [profile.release]
 lto = true

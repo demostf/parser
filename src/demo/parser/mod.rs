@@ -15,6 +15,7 @@ use err_derive::Error;
 
 mod analyser;
 mod error;
+pub mod gamestateanalyser;
 mod handler;
 mod messagetypeanalyser;
 mod state;

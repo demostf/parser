@@ -15,7 +15,7 @@ pub trait MessageHandler {
 
     fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {}
 
-    fn handle_data_tables(&mut self, tables: &[ParseSendTable]) {}
+    fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {}
 
     fn get_output(self, state: ParserState) -> Self::Output;
 }
@@ -114,7 +114,8 @@ impl<T: MessageHandler> DemoHandler<T> {
         send_tables: Vec<ParseSendTable>,
         server_classes: Vec<ServerClass>,
     ) {
-        self.analyser.handle_data_tables(&send_tables);
+        self.analyser
+            .handle_data_tables(&send_tables, &server_classes);
         self.state_handler
             .handle_data_table(send_tables, server_classes);
     }

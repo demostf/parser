@@ -4,10 +4,12 @@ use std::fs;
 use main_error::MainError;
 pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Stream};
 
+#[cfg(feature = "jemallocator")]
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 fn main() -> Result<(), MainError> {
+    #[cfg(feature = "better_panic")]
     better_panic::install();
 
     let args: Vec<_> = env::args().collect();
