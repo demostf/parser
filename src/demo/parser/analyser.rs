@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
+use serde::{ser::SerializeMap, Deserialize, Deserializer, Serialize, Serializer};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::demo::gameevent_gen::{
@@ -13,6 +13,7 @@ use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::MessageHandler;
 use crate::demo::vector::Vector;
 use crate::{ParserState, ReadResult, Stream};
+use std::ops::{Index, IndexMut};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChatMassage {
@@ -86,7 +87,54 @@ impl Class {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Eq, PartialEq, Deserialize)]
+#[serde(from = "HashMap<Class, u8>")]
+pub struct ClassList([u8; 10]);
+
+impl Index<Class> for ClassList {
+    type Output = u8;
+
+    fn index(&self, class: Class) -> &Self::Output {
+        &self.0[class as u8 as usize]
+    }
+}
+
+impl IndexMut<Class> for ClassList {
+    fn index_mut(&mut self, class: Class) -> &mut Self::Output {
+        &mut self.0[class as u8 as usize]
+    }
+}
+
+impl Serialize for ClassList {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let count = self.0.iter().filter(|c| **c > 0).count();
+        let mut classes = serializer.serialize_map(Some(count))?;
+        for (class, count) in self.0.iter().copied().enumerate() {
+            if count > 0 {
+                classes.serialize_entry(&class, &count)?;
+            }
+        }
+
+        classes.end()
+    }
+}
+
+impl From<HashMap<Class, u8>> for ClassList {
+    fn from(map: HashMap<Class, u8>) -> Self {
+        let mut classes = ClassList::default();
+
+        for (class, count) in map.into_iter() {
+            classes[class] = count;
+        }
+
+        classes
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct UserId(u8);
 
 impl From<u32> for UserId {
@@ -179,6 +227,7 @@ pub struct Analyser {
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
     pub start_tick: u32,
+    user_states: HashMap<UserId, UserState>,
 }
 
 impl MessageHandler for Analyser {
@@ -222,7 +271,7 @@ impl MessageHandler for Analyser {
             chat: self.chat,
             deaths: self.deaths,
             rounds: self.rounds,
-            users: UserState::from_users_and_spawn(self.users, self.user_spawns),
+            users: self.user_states,
         }
     }
 }
@@ -247,6 +296,10 @@ impl Analyser {
 
     fn change_name(&mut self, from: String, to: String) {
         if let Some(user) = self.users.values_mut().find(|user| user.name == from) {
+            user.name = to.clone();
+        }
+
+        if let Some(user) = self.user_states.values_mut().find(|user| user.name == from) {
             user.name = to;
         }
     }
@@ -256,7 +309,14 @@ impl Analyser {
 
         match event {
             GameEvent::PlayerDeath(event) => self.deaths.push(Death::from_event(event, tick)),
-            GameEvent::PlayerSpawn(event) => self.user_spawns.push(Spawn::from_event(event, tick)),
+            GameEvent::PlayerSpawn(event) => {
+                let spawn = Spawn::from_event(event, tick);
+                if let Some(user_state) = self.user_states.get_mut(&spawn.user) {
+                    user_state.classes[spawn.class] += 1;
+                    user_state.team = spawn.team;
+                }
+                self.user_spawns.push(spawn);
+            }
             GameEvent::TeamPlayRoundWin(event) => {
                 if event.win_reason != WIN_REASON_TIME_LIMIT {
                     self.rounds.push(Round::from_event(event, tick))
@@ -273,6 +333,16 @@ impl Analyser {
 
         match text.parse() {
             Ok(entity_id) if (steam_id.len() > 0) => {
+                self.user_states.insert(
+                    user_id,
+                    UserState {
+                        classes: ClassList::default(),
+                        name: name.clone(),
+                        user_id,
+                        steam_id: steam_id.clone(),
+                        team: Team::Other,
+                    },
+                );
                 self.users.insert(
                     user_id,
                     UserInfo {
@@ -293,7 +363,7 @@ impl Analyser {
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct UserState {
-    pub classes: HashMap<Class, u8>,
+    pub classes: ClassList,
     pub name: String,
     pub user_id: UserId,
     pub steam_id: String,
@@ -303,37 +373,12 @@ pub struct UserState {
 impl From<UserInfo> for UserState {
     fn from(user: UserInfo) -> Self {
         UserState {
-            classes: HashMap::new(),
+            classes: ClassList::default(),
             team: Team::Other,
             name: user.name,
             user_id: user.user_id,
             steam_id: user.steam_id,
         }
-    }
-}
-
-impl UserState {
-    pub fn from_users_and_spawn(
-        users: HashMap<UserId, UserInfo>,
-        spawns: Vec<Spawn>,
-    ) -> HashMap<UserId, Self> {
-        let mut user_states: HashMap<_, _> = users
-            .into_iter()
-            .map(|(_, user)| (user.user_id, UserState::from(user)))
-            .collect();
-
-        for spawn in spawns {
-            if let Some(user) = user_states.get_mut(&spawn.user) {
-                user.handle_spawn(&spawn);
-            }
-        }
-
-        user_states
-    }
-
-    fn handle_spawn(&mut self, spawn: &Spawn) {
-        self.team = spawn.team;
-        *self.classes.entry(spawn.class).or_default() += 1;
     }
 }
 
