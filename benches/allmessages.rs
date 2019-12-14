@@ -32,7 +32,7 @@ impl MessageHandler for AllMessages {
 
     fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {}
 
-    fn get_output(self, state: ParserState) -> Self::Output {
+    fn get_output(self, state: &ParserState) -> Self::Output {
         test::black_box(true)
     }
 }

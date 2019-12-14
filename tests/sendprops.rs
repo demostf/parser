@@ -36,7 +36,7 @@ impl MessageHandler for SendPropAnalyser {
         self.tables = tables.to_vec()
     }
 
-    fn get_output(self, state: ParserState) -> Self::Output {
+    fn get_output(self, state: &ParserState) -> Self::Output {
         self.tables
     }
 }

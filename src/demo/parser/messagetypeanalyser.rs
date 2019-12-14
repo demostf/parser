@@ -32,7 +32,7 @@ impl MessageHandler for MessageTypeAnalyser {
 
     fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {}
 
-    fn get_output(self, state: ParserState) -> Self::Output {
+    fn get_output(self, state: &ParserState) -> Self::Output {
         self.packet_types
     }
 }

@@ -215,7 +215,7 @@ impl MessageHandler for Analyser {
         }
     }
 
-    fn get_output(self, state: ParserState) -> MatchState {
+    fn get_output(self, state: &ParserState) -> MatchState {
         MatchState {
             start_tick: self.start_tick,
             interval_per_tick: state.demo_meta.interval_per_tick,

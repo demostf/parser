@@ -166,7 +166,7 @@ impl MessageHandler for GameStateAnalyser {
             .collect();
     }
 
-    fn get_output(self, state: ParserState) -> Self::Output {
+    fn get_output(self, state: &ParserState) -> Self::Output {
         self.state
     }
 }

@@ -26,13 +26,13 @@ impl MessageHandler for SendPropAnalyser {
         false
     }
 
-    fn get_output(self, state: ParserState) -> Self::Output {
+    fn get_output(self, state: &ParserState) -> Self::Output {
         state
             .send_tables
-            .into_iter()
+            .iter()
             .map(|v| ParseSendTable {
-                name: v.name,
-                props: v.props,
+                name: v.name.clone(),
+                props: v.props.clone(),
                 needs_decoder: v.needs_decoder,
             })
             .collect()

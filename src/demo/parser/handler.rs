@@ -17,7 +17,42 @@ pub trait MessageHandler {
 
     fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {}
 
-    fn get_output(self, state: ParserState) -> Self::Output;
+    fn get_output(self, state: &ParserState) -> Self::Output;
+}
+
+pub struct MultiplexMessageHandler<A: MessageHandler, B: MessageHandler> {
+    handler_a: A,
+    handler_b: B,
+}
+
+impl<A: MessageHandler, B: MessageHandler> MessageHandler for MultiplexMessageHandler<A, B> {
+    type Output = (A::Output, B::Output);
+
+    fn does_handle(message_type: MessageType) -> bool {
+        A::does_handle(message_type) || B::does_handle(message_type)
+    }
+
+    fn handle_message(&mut self, message: &Message, tick: u32) {
+        self.handler_a.handle_message(message, tick);
+        self.handler_b.handle_message(message, tick);
+    }
+
+    fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {
+        self.handler_a.handle_string_entry(table, index, entries);
+        self.handler_b.handle_string_entry(table, index, entries);
+    }
+
+    fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {
+        self.handler_a.handle_data_tables(tables, server_classes);
+        self.handler_b.handle_data_tables(tables, server_classes);
+    }
+
+    fn get_output(self, state: &ParserState) -> Self::Output {
+        (
+            self.handler_a.get_output(state),
+            self.handler_b.get_output(state),
+        )
+    }
 }
 
 pub struct DemoHandler<T: MessageHandler> {
@@ -129,7 +164,7 @@ impl<T: MessageHandler> DemoHandler<T> {
     }
 
     pub fn get_output(self) -> T::Output {
-        self.analyser.get_output(self.state_handler)
+        self.analyser.get_output(&self.state_handler)
     }
 
     pub fn get_parser_state(&self) -> &ParserState {
