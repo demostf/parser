@@ -27,6 +27,7 @@ use std::rc::Rc;
     Ord,
     PartialOrd,
     FromStr,
+    Default,
 )]
 pub struct EntityId(u32);
 

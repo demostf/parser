@@ -87,7 +87,7 @@ impl Class {
     }
 }
 
-#[derive(Default, Debug, Eq, PartialEq, Deserialize)]
+#[derive(Default, Debug, Eq, PartialEq, Deserialize, Clone)]
 #[serde(from = "HashMap<Class, u8>")]
 pub struct ClassList([u8; 10]);
 
@@ -162,12 +162,26 @@ impl Spawn {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UserInfo {
+    pub classes: ClassList,
     pub name: String,
     pub user_id: UserId,
     pub steam_id: String,
+    #[serde(skip)]
     pub entity_id: EntityId,
+    pub team: Team,
+}
+
+impl PartialEq for UserInfo {
+    fn eq(&self, other: &UserInfo) -> bool {
+        self.classes == other.classes
+            && self.name == other.name
+            && self.user_id == other.user_id
+            && self.steam_id == other.steam_id
+            && self.team == other.team
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -227,7 +241,6 @@ pub struct Analyser {
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
     pub start_tick: u32,
-    user_states: HashMap<UserId, UserState>,
 }
 
 impl MessageHandler for Analyser {
@@ -271,7 +284,7 @@ impl MessageHandler for Analyser {
             chat: self.chat,
             deaths: self.deaths,
             rounds: self.rounds,
-            users: self.user_states,
+            users: self.users,
         }
     }
 }
@@ -296,10 +309,6 @@ impl Analyser {
 
     fn change_name(&mut self, from: String, to: String) {
         if let Some(user) = self.users.values_mut().find(|user| user.name == from) {
-            user.name = to.clone();
-        }
-
-        if let Some(user) = self.user_states.values_mut().find(|user| user.name == from) {
             user.name = to;
         }
     }
@@ -311,7 +320,7 @@ impl Analyser {
             GameEvent::PlayerDeath(event) => self.deaths.push(Death::from_event(event, tick)),
             GameEvent::PlayerSpawn(event) => {
                 let spawn = Spawn::from_event(event, tick);
-                if let Some(user_state) = self.user_states.get_mut(&spawn.user) {
+                if let Some(user_state) = self.users.get_mut(&spawn.user) {
                     user_state.classes[spawn.class] += 1;
                     user_state.team = spawn.team;
                 }
@@ -333,19 +342,11 @@ impl Analyser {
 
         match text.parse() {
             Ok(entity_id) if (steam_id.len() > 0) => {
-                self.user_states.insert(
-                    user_id,
-                    UserState {
-                        classes: ClassList::default(),
-                        name: name.clone(),
-                        user_id,
-                        steam_id: steam_id.clone(),
-                        team: Team::Other,
-                    },
-                );
                 self.users.insert(
                     user_id,
                     UserInfo {
+                        classes: ClassList::default(),
+                        team: Team::Other,
                         steam_id,
                         user_id,
                         name,
@@ -362,31 +363,9 @@ impl Analyser {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct UserState {
-    pub classes: ClassList,
-    pub name: String,
-    pub user_id: UserId,
-    pub steam_id: String,
-    pub team: Team,
-}
-
-impl From<UserInfo> for UserState {
-    fn from(user: UserInfo) -> Self {
-        UserState {
-            classes: ClassList::default(),
-            team: Team::Other,
-            name: user.name,
-            user_id: user.user_id,
-            steam_id: user.steam_id,
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
 pub struct MatchState {
     pub chat: Vec<ChatMassage>,
-    pub users: HashMap<UserId, UserState>,
+    pub users: HashMap<UserId, UserInfo>,
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
     pub start_tick: u32,
