@@ -65,7 +65,7 @@ impl Parse for MessagePacket {
                 let message = Message::from_type(message_type, &mut packet_data, state)?;
                 messages.push(message);
             } else {
-                let _ = Message::skip_type(message_type, &mut packet_data)?;
+                Message::skip_type(message_type, &mut packet_data)?;
             }
         }
 

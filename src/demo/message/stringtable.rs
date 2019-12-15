@@ -124,7 +124,7 @@ impl Parse for UpdateStringTableMessage {
 
         let entries = match state.string_tables.get(table_id as usize) {
             Some(table) => parse_string_table_update(&mut data, table, changed),
-            None => return Err(ParseError::StringTableNotFound(table_id).into()),
+            None => return Err(ParseError::StringTableNotFound(table_id)),
         }?;
 
         Ok(UpdateStringTableMessage { table_id, entries })

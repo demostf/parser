@@ -60,9 +60,9 @@ pub struct PacketEntity {
 
 impl fmt::Display for PacketEntity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}({}) {{\n", self.entity_index, self.server_class)?;
+        writeln!(f, "{}({}) {{", self.entity_index, self.server_class)?;
         for child in self.props.iter() {
-            write!(f, "\t{}\n", child)?;
+            writeln!(f, "\t{}", child)?;
         }
         write!(f, "}}")
     }
@@ -251,10 +251,10 @@ impl PacketEntitiesMessage {
                     });
                 }
                 None => {
-                    return Err(ParseError::from(ParseError::PropIndexOutOfBounds {
+                    return Err(ParseError::PropIndexOutOfBounds {
                         index,
                         prop_count: send_table.flattened_props.len(),
-                    }));
+                    });
                 }
             }
         }

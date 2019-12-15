@@ -167,18 +167,14 @@ impl SendPropDefinition {
         let mut low_value = None;
         let mut high_value = None;
         let mut bit_count = None;
-        if prop_type == SendPropType::DataTable {
+        if flags.contains(SendPropFlag::Exclude) || prop_type == SendPropType::DataTable {
             table_name = Some(stream.read()?);
+        } else if prop_type == SendPropType::Array {
+            element_count = Some(stream.read_int(10)?);
         } else {
-            if flags.contains(SendPropFlag::Exclude) {
-                table_name = Some(stream.read()?);
-            } else if prop_type == SendPropType::Array {
-                element_count = Some(stream.read_int(10)?);
-            } else {
-                low_value = Some(stream.read()?);
-                high_value = Some(stream.read()?);
-                bit_count = Some(stream.read_int(7)?);
-            }
+            low_value = Some(stream.read()?);
+            high_value = Some(stream.read()?);
+            bit_count = Some(stream.read_int(7)?);
         }
 
         if flags.contains(SendPropFlag::NoScale) {
@@ -403,17 +399,14 @@ impl SendPropValue {
             read_var_int(stream, !definition.flags.contains(SendPropFlag::Unsigned))
                 .map_err(ParseError::from)
                 .map(|int| int as i64)
+        } else if definition.flags.contains(SendPropFlag::Unsigned) {
+            let unsigned: u32 = stream.read_sized(definition.bit_count.unwrap_or(32) as usize)?;
+            //const MAX: u32 = std::i32::MAX as u32;
+            Ok(unsigned as i64)
         } else {
-            if definition.flags.contains(SendPropFlag::Unsigned) {
-                let unsigned: u32 =
-                    stream.read_sized(definition.bit_count.unwrap_or(32) as usize)?;
-                //const MAX: u32 = std::i32::MAX as u32;
-                Ok(unsigned as i64)
-            } else {
-                stream
-                    .read_int(definition.bit_count.unwrap_or(32) as usize)
-                    .map_err(ParseError::from)
-            }
+            stream
+                .read_int(definition.bit_count.unwrap_or(32) as usize)
+                .map_err(ParseError::from)
         }
     }
 

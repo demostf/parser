@@ -197,8 +197,8 @@ impl ParserState {
         }
     }
 
-    pub fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
-        match table.as_str() {
+    pub fn handle_string_entry(&mut self, table: &str, _index: usize, entry: &StringTableEntry) {
+        match table {
             "instancebaseline" => {
                 if let (Some(extra), Ok(class_id)) = (&entry.extra_data, entry.text().parse()) {
                     let baseline = StaticBaseline::new(class_id, extra.data.clone());

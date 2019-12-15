@@ -22,7 +22,7 @@ fn test_message_types(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
     let (_, message_types) =
-        DemoParser::parse_with_analyser(demo.get_stream(), MessageTypeAnalyser::new()).unwrap();
+        DemoParser::parse_with_analyser(demo.get_stream(), MessageTypeAnalyser::default()).unwrap();
 
     let expected: Vec<MessageType> = serde_json::from_slice(
         fs::read(snapshot_file)

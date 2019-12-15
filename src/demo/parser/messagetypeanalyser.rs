@@ -15,6 +15,7 @@ use crate::demo::parser::handler::MessageHandler;
 use crate::demo::vector::Vector;
 use crate::{ParserState, ReadResult, Stream};
 
+#[derive(Default)]
 pub struct MessageTypeAnalyser {
     packet_types: Vec<MessageType>,
 }
@@ -30,17 +31,7 @@ impl MessageHandler for MessageTypeAnalyser {
         self.packet_types.push(message.get_message_type())
     }
 
-    fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {}
-
     fn get_output(self, state: &ParserState) -> Self::Output {
         self.packet_types
-    }
-}
-
-impl MessageTypeAnalyser {
-    pub fn new() -> Self {
-        MessageTypeAnalyser {
-            packet_types: Vec::with_capacity(1024),
-        }
     }
 }

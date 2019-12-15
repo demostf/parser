@@ -13,7 +13,7 @@ pub trait MessageHandler {
 
     fn handle_message(&mut self, message: &Message, tick: u32) {}
 
-    fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {}
+    fn handle_string_entry(&mut self, table: &str, index: usize, entries: &StringTableEntry) {}
 
     fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {}
 
@@ -37,7 +37,7 @@ impl<A: MessageHandler, B: MessageHandler> MessageHandler for MultiplexMessageHa
         self.handler_b.handle_message(message, tick);
     }
 
-    fn handle_string_entry(&mut self, table: &String, index: usize, entries: &StringTableEntry) {
+    fn handle_string_entry(&mut self, table: &str, index: usize, entries: &StringTableEntry) {
         self.handler_a.handle_string_entry(table, index, entries);
         self.handler_b.handle_string_entry(table, index, entries);
     }
@@ -65,6 +65,12 @@ pub struct DemoHandler<T: MessageHandler> {
 impl DemoHandler<Analyser> {
     pub fn new() -> Self {
         Self::with_analyser(Analyser::new())
+    }
+}
+
+impl Default for DemoHandler<Analyser> {
+    fn default() -> Self {
+        DemoHandler::new()
     }
 }
 

@@ -101,7 +101,7 @@ impl BitRead<LittleEndian> for UserMessage {
 
 impl ParseBitSkip for UserMessage {
     fn parse_skip(stream: &mut Stream) -> Result<()> {
-        let _ = stream.skip_bits(8)?;
+        stream.skip_bits(8)?;
         let length: u32 = stream.read_int(11)?;
         stream.skip_bits(length as usize).map_err(ParseError::from)
     }
@@ -163,7 +163,7 @@ impl BitRead<LittleEndian> for SayText2Message {
                 if first == 7 {
                     let _color = stream.read_string(Some(6))?;
                 } else {
-                    let _ = stream.skip_bits(8)?;
+                    stream.skip_bits(8)?;
                 }
 
                 let text: String = stream.read().or_else(handle_utf8_error)?;
@@ -179,12 +179,12 @@ impl BitRead<LittleEndian> for SayText2Message {
                     (ChatMessageKind::ChatAll, None, text)
                 }
             } else {
-                let _ = stream.set_pos(stream.pos() - 8)?;
+                stream.set_pos(stream.pos() - 8)?;
 
                 let kind = stream.read()?;
                 let from = stream.read().or_else(handle_utf8_error)?;
                 let text = stream.read().or_else(handle_utf8_error)?;
-                let _ = stream.skip_bits(16)?;
+                stream.skip_bits(16)?;
                 (kind, Some(from), text)
             };
 

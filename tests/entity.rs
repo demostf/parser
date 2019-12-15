@@ -107,8 +107,6 @@ impl MessageHandler for EntityDumper {
         }
     }
 
-    fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {}
-
     fn get_output(self, state: &ParserState) -> Self::Output {
         self.entities
             .into_iter()

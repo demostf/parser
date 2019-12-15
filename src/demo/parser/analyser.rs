@@ -263,8 +263,8 @@ impl MessageHandler for Analyser {
         }
     }
 
-    fn handle_string_entry(&mut self, table: &String, _index: usize, entry: &StringTableEntry) {
-        match table.as_str() {
+    fn handle_string_entry(&mut self, table: &str, _index: usize, entry: &StringTableEntry) {
+        match table {
             "userinfo" => {
                 if let (Some(text), Some(data)) = (&entry.text, &entry.extra_data) {
                     if data.byte_len > 32 {
@@ -334,12 +334,14 @@ impl Analyser {
     }
 
     fn parse_user_info(&mut self, text: &str, mut data: Stream) -> ReadResult<()> {
-        let name: String = data.read_sized(32).unwrap_or("Malformed Name".into());
+        let name: String = data
+            .read_sized(32)
+            .unwrap_or_else(|_| "Malformed Name".into());
         let user_id = data.read::<u32>()?.into();
         let steam_id: String = data.read()?;
 
         match text.parse() {
-            Ok(entity_id) if (steam_id.len() > 0) => {
+            Ok(entity_id) if !steam_id.is_empty() => {
                 self.users.insert(
                     user_id,
                     UserInfo {
