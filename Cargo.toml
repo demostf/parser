@@ -33,3 +33,6 @@ pretty_assertions = "0.6"
 
 [profile.release]
 lto = true
+
+[profile.dev]
+opt-level = 2
