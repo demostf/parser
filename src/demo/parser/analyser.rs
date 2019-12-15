@@ -237,7 +237,6 @@ pub struct World {
 pub struct Analyser {
     pub chat: Vec<ChatMassage>,
     pub users: HashMap<UserId, UserInfo>,
-    pub user_spawns: Vec<Spawn>,
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
     pub start_tick: u32,
@@ -324,7 +323,6 @@ impl Analyser {
                     user_state.classes[spawn.class] += 1;
                     user_state.team = spawn.team;
                 }
-                self.user_spawns.push(spawn);
             }
             GameEvent::TeamPlayRoundWin(event) => {
                 if event.win_reason != WIN_REASON_TIME_LIMIT {
