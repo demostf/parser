@@ -1,5 +1,5 @@
-use enum_primitive_derive::Primitive;
-use num_traits::FromPrimitive;
+use num_enum::TryFromPrimitive;
+use std::convert::TryFrom;
 
 pub use generated::*;
 use serde::{Deserialize, Serialize};
@@ -28,7 +28,7 @@ pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
 
-#[derive(Primitive, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
+#[derive(TryFromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
 #[repr(u8)]
 pub enum MessageType {
     Empty = 0,
@@ -64,8 +64,7 @@ pub enum MessageType {
 impl Parse for MessageType {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let raw = stream.read_int(6)?;
-        let prop_type: Option<MessageType> = MessageType::from_u8(raw);
-        prop_type.ok_or(ParseError::InvalidMessageType(raw))
+        MessageType::try_from(raw).map_err(|_| ParseError::InvalidMessageType(raw))
     }
 }
 

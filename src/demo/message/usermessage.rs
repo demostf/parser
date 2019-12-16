@@ -1,12 +1,13 @@
 use bitstream_reader::{BitRead, LittleEndian, ReadError};
-use enum_primitive_derive::Primitive;
-use num_traits::FromPrimitive;
+use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
 
 use crate::demo::parser::ParseBitSkip;
 use crate::{ParseError, ReadResult, Result, Stream};
 
-#[derive(Primitive, Clone, Copy, Debug)]
+#[derive(TryFromPrimitive, Clone, Copy, Debug)]
+#[repr(u8)]
 pub enum UserMessageType {
     Geiger = 0,
     Train = 1,
@@ -83,7 +84,7 @@ pub enum UserMessage {
 impl BitRead<LittleEndian> for UserMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let message_type =
-            UserMessageType::from_u8(stream.read()?).unwrap_or(UserMessageType::Unknown);
+            UserMessageType::try_from(stream.read::<u8>()?).unwrap_or(UserMessageType::Unknown);
         let length = stream.read_int(11)?;
         let mut data = stream.read_bits(length)?;
         let message = match message_type {

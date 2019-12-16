@@ -1,5 +1,6 @@
 use bitstream_reader::BitRead;
-use enum_primitive_derive::Primitive;
+use num_enum::TryFromPrimitive;
+use std::convert::TryFrom;
 
 use crate::{Parse, ParserState, Result, Stream};
 
@@ -31,8 +32,9 @@ pub enum Packet {
     StringTables(StringTablePacket),
 }
 
-#[derive(BitRead, Primitive, Debug)]
+#[derive(BitRead, TryFromPrimitive, Debug)]
 #[discriminant_bits = 8]
+#[repr(u8)]
 pub enum PacketType {
     Sigon = 1,
     Message = 2,
