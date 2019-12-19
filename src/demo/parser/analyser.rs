@@ -13,6 +13,8 @@ use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::MessageHandler;
 use crate::demo::vector::Vector;
 use crate::{ParserState, ReadResult, Stream};
+use num_enum::TryFromPrimitive;
+use std::convert::TryFrom;
 use std::ops::{Index, IndexMut};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -34,28 +36,28 @@ impl ChatMassage {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, TryFromPrimitive)]
+#[serde(rename_all = "lowercase")]
+#[repr(u8)]
 pub enum Team {
     Other = 0,
     Spectator = 1,
-    #[serde(rename = "red")]
     Red = 2,
-    #[serde(rename = "blue")]
     Blue = 3,
 }
 
 impl Team {
-    pub fn new(number: u16) -> Self {
-        match number {
-            1 => Team::Spectator,
-            2 => Team::Red,
-            3 => Team::Blue,
-            _ => Team::Other,
-        }
+    pub fn new<U>(number: U) -> Self
+    where
+        u8: TryFrom<U>,
+    {
+        Team::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or(Team::Other)
     }
 }
 
-#[derive(Debug, Clone, Serialize_repr, Deserialize_repr, Copy, PartialEq, Eq, Hash)]
+#[derive(
+    Debug, Clone, Serialize_repr, Deserialize_repr, Copy, PartialEq, Eq, Hash, TryFromPrimitive,
+)]
 #[repr(u8)]
 pub enum Class {
     Other = 0,
@@ -71,19 +73,11 @@ pub enum Class {
 }
 
 impl Class {
-    pub fn new(number: u16) -> Self {
-        match number {
-            1 => Class::Scout,
-            2 => Class::Sniper,
-            3 => Class::Solder,
-            4 => Class::Demoman,
-            5 => Class::Medic,
-            6 => Class::Heavy,
-            7 => Class::Pyro,
-            8 => Class::Spy,
-            9 => Class::Engineer,
-            _ => Class::Other,
-        }
+    pub fn new<U>(number: U) -> Self
+    where
+        u8: TryFrom<U>,
+    {
+        Class::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or(Class::Other)
     }
 }
 
@@ -94,12 +88,14 @@ pub struct ClassList([u8; 10]);
 impl Index<Class> for ClassList {
     type Output = u8;
 
+    #[cfg_attr(feature = "no-panic", no_panic::no_panic)]
     fn index(&self, class: Class) -> &Self::Output {
         &self.0[class as u8 as usize]
     }
 }
 
 impl IndexMut<Class> for ClassList {
+    #[cfg_attr(feature = "no-panic", no_panic::no_panic)]
     fn index_mut(&mut self, class: Class) -> &mut Self::Output {
         &mut self.0[class as u8 as usize]
     }
@@ -143,6 +139,12 @@ impl From<u32> for UserId {
     }
 }
 
+impl From<u16> for UserId {
+    fn from(int: u16) -> Self {
+        UserId((int & 255) as u8)
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Spawn {
     pub user: UserId,
@@ -154,7 +156,7 @@ pub struct Spawn {
 impl Spawn {
     pub fn from_event(event: &PlayerSpawnEvent, tick: u32) -> Self {
         Spawn {
-            user: UserId((event.user_id & 255) as u8),
+            user: UserId::from(event.user_id),
             class: Class::new(event.class),
             team: Team::new(event.team),
             tick,
@@ -196,16 +198,16 @@ pub struct Death {
 impl Death {
     pub fn from_event(event: &PlayerDeathEvent, tick: u32) -> Self {
         let assister = if event.assister < (16 * 1024) {
-            Some(UserId((event.assister & 255) as u8))
+            Some(UserId::from(event.assister))
         } else {
             None
         };
         Death {
             assister,
             tick,
-            killer: UserId((event.attacker & 255) as u8),
+            killer: UserId::from(event.attacker),
             weapon: event.weapon.clone(),
-            victim: UserId((event.user_id & 255) as u8),
+            victim: UserId::from(event.user_id),
         }
     }
 }
@@ -220,7 +222,7 @@ pub struct Round {
 impl Round {
     pub fn from_event(event: &TeamPlayRoundWinEvent, tick: u32) -> Self {
         Round {
-            winner: Team::new(event.team as u16),
+            winner: Team::new(event.team),
             length: event.round_time,
             end_tick: tick,
         }

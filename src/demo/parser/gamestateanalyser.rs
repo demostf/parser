@@ -201,8 +201,7 @@ impl GameStateAnalyser {
                 {
                     match prop.definition.owner_table.as_str() {
                         "m_iTeam" => {
-                            player.team =
-                                Team::new(i64::try_from(&prop.value).unwrap_or_default() as u16)
+                            player.team = Team::new(i64::try_from(&prop.value).unwrap_or_default())
                         }
                         "m_iMaxHealth" => {
                             player.max_health =
@@ -210,7 +209,7 @@ impl GameStateAnalyser {
                         }
                         "m_iPlayerClass" => {
                             player.class =
-                                Class::new(i64::try_from(&prop.value).unwrap_or_default() as u16)
+                                Class::new(i64::try_from(&prop.value).unwrap_or_default())
                         }
                         _ => {}
                     }
