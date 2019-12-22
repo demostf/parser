@@ -28,3 +28,9 @@ impl PartialEq for VectorXY {
         (self.x - other.x < 0.001) && (self.y - other.y < 0.001)
     }
 }
+
+impl From<Vector> for VectorXY {
+    fn from(vec: Vector) -> Self {
+        VectorXY { x: vec.x, y: vec.y }
+    }
+}

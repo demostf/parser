@@ -2,7 +2,7 @@ use crate::demo::gameevent_gen::GameEventType::PlayerSappedObject;
 use crate::demo::message::packetentities::{EntityId, PacketEntity};
 use crate::demo::message::Message;
 use crate::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass, ServerClassName};
-use crate::demo::parser::analyser::{Class, Team, UserId};
+pub use crate::demo::parser::analyser::{Class, Team, UserId};
 use crate::demo::parser::handler::BorrowMessageHandler;
 use crate::demo::parser::MessageHandler;
 use crate::demo::vector::{Vector, VectorXY};
@@ -35,13 +35,13 @@ impl PlayerState {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Player {
     entity: EntityId,
-    position: Vector,
-    health: u16,
-    max_health: u16,
-    class: Class,
-    team: Team,
-    view_angle: f32,
-    state: PlayerState,
+    pub position: Vector,
+    pub health: u16,
+    pub max_health: u16,
+    pub class: Class,
+    pub team: Team,
+    pub view_angle: f32,
+    pub state: PlayerState,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -96,8 +96,8 @@ pub enum Building {
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct GameState {
-    players: Vec<Player>,
-    buildings: Vec<Building>,
+    pub players: Vec<Player>,
+    pub buildings: Vec<Building>,
 }
 
 impl GameState {

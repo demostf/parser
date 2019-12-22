@@ -83,6 +83,8 @@ impl<A: MessageHandler> DemoParser<A> {
         Ok((header, ticker.into_state()))
     }
 
+    /// A Ticker provides a way to step trough the demo packet by packet
+    /// while allowing to see the intermediate states
     pub fn ticker(mut self) -> Result<(Header, DemoTicker<A>)> {
         let header = Header::read(&mut self.stream)?;
         let ticker = DemoTicker {
