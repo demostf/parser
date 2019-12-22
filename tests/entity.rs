@@ -107,7 +107,7 @@ impl MessageHandler for EntityDumper {
         }
     }
 
-    fn get_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(self, state: &ParserState) -> Self::Output {
         self.entities
             .into_iter()
             .map(|(tick, entity)| EntityDump::from_entity(entity, tick, &state.server_classes))
@@ -119,7 +119,7 @@ fn entity_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
     let (_, entities) =
-        DemoParser::parse_with_analyser(demo.get_stream(), EntityDumper::new()).unwrap();
+        DemoParser::new_with_analyser(demo.get_stream(), EntityDumper::new()).unwrap();
 
     let json_file = File::open(snapshot_file).expect("Unable to read file");
     let mut reader = BufReader::new(json_file);

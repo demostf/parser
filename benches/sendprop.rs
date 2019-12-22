@@ -26,7 +26,7 @@ impl MessageHandler for SendPropAnalyser {
         false
     }
 
-    fn get_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(&self, state: &ParserState) -> Self::Output {
         state
             .send_tables
             .iter()
@@ -43,8 +43,7 @@ fn flatten_bench(input_file: &str, b: &mut Bencher) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
     let stream = demo.get_stream();
-    let (_, send_tables) =
-        DemoParser::parse_with_analyser(stream.clone(), SendPropAnalyser).unwrap();
+    let (_, send_tables) = DemoParser::new_with_analyser(stream.clone(), SendPropAnalyser).unwrap();
     b.iter(|| {
         let flat: Vec<_> = send_tables
             .iter()

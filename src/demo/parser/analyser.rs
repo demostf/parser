@@ -277,7 +277,7 @@ impl MessageHandler for Analyser {
         }
     }
 
-    fn get_output(self, state: &ParserState) -> MatchState {
+    fn into_output(self, state: &ParserState) -> Self::Output {
         self.state
     }
 }

@@ -30,7 +30,7 @@ impl MessageHandler for AllMessages {
         test::black_box(message);
     }
 
-    fn get_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(self, state: &ParserState) -> Self::Output {
         test::black_box(true)
     }
 }
@@ -41,7 +41,7 @@ fn bench_all(input_file: &str, b: &mut Bencher) {
     let stream = demo.get_stream();
     b.iter(|| {
         let _ =
-            test::black_box(DemoParser::parse_with_analyser(stream.clone(), AllMessages).unwrap());
+            test::black_box(DemoParser::new_with_analyser(stream.clone(), AllMessages).unwrap());
     });
 }
 

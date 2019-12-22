@@ -36,7 +36,7 @@ impl MessageHandler for SendPropAnalyser {
         self.tables = tables.to_vec()
     }
 
-    fn get_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(self, state: &ParserState) -> Self::Output {
         self.tables
     }
 }
@@ -45,7 +45,7 @@ fn flatten_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
     let (_, send_tables) =
-        DemoParser::parse_with_analyser(demo.get_stream(), SendPropAnalyser::new())
+        DemoParser::new_with_analyser(demo.get_stream(), SendPropAnalyser::new())
             .expect("Failed to parse");
     let flat_props: HashMap<SendTableName, Vec<String>> = send_tables
         .iter()

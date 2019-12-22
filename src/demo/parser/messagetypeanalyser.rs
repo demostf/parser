@@ -31,7 +31,7 @@ impl MessageHandler for MessageTypeAnalyser {
         self.packet_types.push(message.get_message_type())
     }
 
-    fn get_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(self, state: &ParserState) -> Self::Output {
         self.packet_types
     }
 }

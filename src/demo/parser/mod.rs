@@ -43,49 +43,45 @@ impl<T: BitSkip<LittleEndian>> ParseBitSkip for T {
     }
 }
 
-pub struct DemoParser {}
+pub struct DemoParser<A: MessageHandler> {
+    handler: DemoHandler<A>,
+    stream: Stream,
+}
 
-impl DemoParser {
-    pub fn parse_demo(stream: Stream) -> Result<(Header, MatchState)> {
-        Self::parse_with_analyser(stream, Analyser::new())
+impl DemoParser<Analyser> {
+    pub fn new(stream: Stream) -> DemoParser<Analyser> {
+        DemoParser::new_with_analyser(stream, Analyser::new())
     }
 
-    pub fn parse_all(stream: Stream) -> Result<(Header, MatchState)> {
-        Self::parse_all_with_analyser(stream, Analyser::new())
+    pub fn new_all(stream: Stream) -> DemoParser<Analyser> {
+        DemoParser::new_all_with_analyser(stream, Analyser::new())
+    }
+}
+
+impl<A: MessageHandler> DemoParser<A> {
+    pub fn new_with_analyser(stream: Stream, analyser: A) -> DemoParser<A> {
+        DemoParser {
+            handler: DemoHandler::with_analyser(analyser),
+            stream,
+        }
     }
 
-    pub fn parse_with_analyser<T: MessageHandler>(
-        stream: Stream,
-        analyser: T,
-    ) -> Result<(Header, T::Output)> {
-        Self::parse(stream, analyser, false)
+    pub fn new_all_with_analyser(stream: Stream, analyser: A) -> DemoParser<A> {
+        DemoParser {
+            handler: DemoHandler::parse_all_with_analyser(analyser),
+            stream,
+        }
     }
 
-    pub fn parse_all_with_analyser<T: MessageHandler>(
-        stream: Stream,
-        analyser: T,
-    ) -> Result<(Header, T::Output)> {
-        Self::parse(stream, analyser, true)
-    }
-
-    fn parse<T: MessageHandler>(
-        mut stream: Stream,
-        analyser: T,
-        all: bool,
-    ) -> Result<(Header, T::Output)> {
-        let mut handler = if all {
-            DemoHandler::parse_all_with_analyser(analyser)
-        } else {
-            DemoHandler::with_analyser(analyser)
-        };
-        let header = Header::read(&mut stream)?;
+    pub fn parse(mut self) -> Result<(Header, A::Output)> {
+        let header = Header::read(&mut self.stream)?;
         loop {
-            let packet = Packet::parse(&mut stream, handler.get_parser_state())?;
+            let packet = Packet::parse(&mut self.stream, self.handler.get_parser_state())?;
             match packet {
                 Packet::Stop(_) => break,
-                packet => handler.handle_packet(packet),
+                packet => self.handler.handle_packet(packet),
             };
         }
-        Ok((header, handler.get_output()))
+        Ok((header, self.handler.into_output()))
     }
 }

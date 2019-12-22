@@ -24,11 +24,12 @@ fn main() -> Result<(), MainError> {
         .unwrap_or_default();
     let file = fs::read(path)?;
     let demo = Demo::new(file);
-    let (_, state) = if all {
-        DemoParser::parse_all(demo.get_stream())
+    let parser = if all {
+        DemoParser::new_all(demo.get_stream())
     } else {
-        DemoParser::parse_demo(demo.get_stream())
-    }?;
+        DemoParser::new(demo.get_stream())
+    };
+    let (_, state) = parser.parse()?;
     println!("{}", serde_json::to_string(&state)?);
     Ok(())
 }

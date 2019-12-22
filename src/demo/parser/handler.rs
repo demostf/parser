@@ -17,7 +17,7 @@ pub trait MessageHandler {
 
     fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {}
 
-    fn get_output(self, state: &ParserState) -> Self::Output;
+    fn into_output(self, state: &ParserState) -> Self::Output;
 }
 
 pub struct MultiplexMessageHandler<A: MessageHandler, B: MessageHandler> {
@@ -47,10 +47,10 @@ impl<A: MessageHandler, B: MessageHandler> MessageHandler for MultiplexMessageHa
         self.handler_b.handle_data_tables(tables, server_classes);
     }
 
-    fn get_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(self, state: &ParserState) -> Self::Output {
         (
-            self.handler_a.get_output(state),
-            self.handler_b.get_output(state),
+            self.handler_a.into_output(state),
+            self.handler_b.into_output(state),
         )
     }
 }
@@ -169,8 +169,8 @@ impl<T: MessageHandler> DemoHandler<T> {
         self.state_handler.handle_message(message, self.tick);
     }
 
-    pub fn get_output(self) -> T::Output {
-        self.analyser.get_output(&self.state_handler)
+    pub fn into_output(self) -> T::Output {
+        self.analyser.into_output(&self.state_handler)
     }
 
     pub fn get_parser_state(&self) -> &ParserState {
