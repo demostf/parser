@@ -21,6 +21,8 @@ mod messagetypeanalyser;
 mod state;
 
 pub use self::error::*;
+use crate::demo::parser::handler::BorrowMessageHandler;
+use serde::export::PhantomData;
 
 pub trait Parse: Sized {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self>;
@@ -75,13 +77,42 @@ impl<A: MessageHandler> DemoParser<A> {
 
     pub fn parse(mut self) -> Result<(Header, A::Output)> {
         let header = Header::read(&mut self.stream)?;
-        loop {
-            let packet = Packet::parse(&mut self.stream, self.handler.get_parser_state())?;
-            match packet {
-                Packet::Stop(_) => break,
-                packet => self.handler.handle_packet(packet),
-            };
+        let mut packets = RawPacketStream::new(self.stream);
+        while let Some(packet) = packets.next(self.handler.get_parser_state())? {
+            self.handler.handle_packet(packet)
         }
         Ok((header, self.handler.into_output()))
+    }
+}
+
+pub struct RawPacketStream {
+    stream: Stream,
+    ended: bool,
+}
+
+impl RawPacketStream {
+    pub fn new(stream: Stream) -> Self {
+        RawPacketStream {
+            stream,
+            ended: false,
+        }
+    }
+
+    pub fn next(&mut self, state: &ParserState) -> Result<Option<Packet>> {
+        if self.ended {
+            Ok(None)
+        } else {
+            match Packet::parse(&mut self.stream, state) {
+                Ok(Packet::Stop(_)) => {
+                    self.ended = true;
+                    Ok(None)
+                }
+                Ok(packet) => Ok(Some(packet)),
+                Err(e) => {
+                    self.ended = true;
+                    Err(e)
+                }
+            }
+        }
     }
 }

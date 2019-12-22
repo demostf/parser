@@ -46,6 +46,7 @@ fn flatten_test(input_file: &str, snapshot_file: &str) {
     let demo = Demo::new(file);
     let (_, send_tables) =
         DemoParser::new_with_analyser(demo.get_stream(), SendPropAnalyser::new())
+            .parse()
             .expect("Failed to parse");
     let flat_props: HashMap<SendTableName, Vec<String>> = send_tables
         .iter()

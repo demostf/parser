@@ -3,7 +3,8 @@ use crate::demo::packet::datatable::{ParseSendTable, SendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
-use crate::ParserState;
+use crate::demo::parser::Parse;
+use crate::{ParseError, ParserState, Stream};
 use std::rc::Rc;
 
 pub trait MessageHandler {
@@ -18,6 +19,10 @@ pub trait MessageHandler {
     fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {}
 
     fn into_output(self, state: &ParserState) -> Self::Output;
+}
+
+pub trait BorrowMessageHandler: MessageHandler {
+    fn borrow_output(&self, state: &ParserState) -> &Self::Output;
 }
 
 pub struct MultiplexMessageHandler<A: MessageHandler, B: MessageHandler> {
@@ -175,5 +180,11 @@ impl<T: MessageHandler> DemoHandler<T> {
 
     pub fn get_parser_state(&self) -> &ParserState {
         &self.state_handler
+    }
+}
+
+impl<T: MessageHandler + BorrowMessageHandler> DemoHandler<T> {
+    pub fn borrow_output(&self) -> &T::Output {
+        self.analyser.borrow_output(&self.state_handler)
     }
 }

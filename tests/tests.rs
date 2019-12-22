@@ -7,7 +7,7 @@ use tf_demo_parser::{Demo, DemoParser, MatchState, MessageType, MessageTypeAnaly
 fn snapshot_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
-    let (_, state) = DemoParser::new(demo.get_stream()).unwrap();
+    let (_, state) = DemoParser::new(demo.get_stream()).parse().unwrap();
 
     let expected: MatchState = serde_json::from_slice(
         fs::read(snapshot_file)
@@ -22,7 +22,9 @@ fn test_message_types(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
     let (_, message_types) =
-        DemoParser::new_with_analyser(demo.get_stream(), MessageTypeAnalyser::default()).unwrap();
+        DemoParser::new_with_analyser(demo.get_stream(), MessageTypeAnalyser::default())
+            .parse()
+            .unwrap();
 
     let expected: Vec<MessageType> = serde_json::from_slice(
         fs::read(snapshot_file)
@@ -36,8 +38,9 @@ fn test_message_types(input_file: &str, snapshot_file: &str) {
 fn game_state_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
-    let (_, state) =
-        DemoParser::new_with_analyser(demo.get_stream(), GameStateAnalyser::new()).unwrap();
+    let (_, state) = DemoParser::new_with_analyser(demo.get_stream(), GameStateAnalyser::new())
+        .parse()
+        .unwrap();
 
     let expected: GameState = serde_json::from_slice(
         fs::read(snapshot_file)

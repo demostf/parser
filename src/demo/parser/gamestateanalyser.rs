@@ -3,6 +3,7 @@ use crate::demo::message::packetentities::{EntityId, PacketEntity};
 use crate::demo::message::Message;
 use crate::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass, ServerClassName};
 use crate::demo::parser::analyser::{Class, Team, UserId};
+use crate::demo::parser::handler::BorrowMessageHandler;
 use crate::demo::parser::MessageHandler;
 use crate::demo::vector::{Vector, VectorXY};
 use crate::{MessageType, ParserState};
@@ -168,6 +169,12 @@ impl MessageHandler for GameStateAnalyser {
 
     fn into_output(self, state: &ParserState) -> Self::Output {
         self.state
+    }
+}
+
+impl BorrowMessageHandler for GameStateAnalyser {
+    fn borrow_output(&self, state: &ParserState) -> &Self::Output {
+        &self.state
     }
 }
 

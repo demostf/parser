@@ -10,7 +10,7 @@ use crate::demo::message::packetentities::EntityId;
 use crate::demo::message::usermessage::{ChatMessageKind, SayText2Message, UserMessage};
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
-use crate::demo::parser::handler::MessageHandler;
+use crate::demo::parser::handler::{BorrowMessageHandler, MessageHandler};
 use crate::demo::vector::Vector;
 use crate::{ParserState, ReadResult, Stream};
 use num_enum::TryFromPrimitive;
@@ -279,6 +279,12 @@ impl MessageHandler for Analyser {
 
     fn into_output(self, state: &ParserState) -> Self::Output {
         self.state
+    }
+}
+
+impl BorrowMessageHandler for Analyser {
+    fn borrow_output(&self, state: &ParserState) -> &Self::Output {
+        &self.state
     }
 }
 
