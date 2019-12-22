@@ -76,12 +76,20 @@ impl<A: MessageHandler> DemoParser<A> {
     }
 
     pub fn parse(mut self) -> Result<(Header, A::Output)> {
-        let header = Header::read(&mut self.stream)?;
-        let mut packets = RawPacketStream::new(self.stream);
-        while let Some(packet) = packets.next(self.handler.get_parser_state())? {
-            self.handler.handle_packet(packet)
+        let (header, mut ticker) = self.ticker()?;
+        while ticker.tick()? {
+            // noop
         }
-        Ok((header, self.handler.into_output()))
+        Ok((header, ticker.into_state()))
+    }
+
+    pub fn ticker(mut self) -> Result<(Header, DemoTicker<A>)> {
+        let header = Header::read(&mut self.stream)?;
+        let ticker = DemoTicker {
+            handler: self.handler,
+            packets: RawPacketStream::new(self.stream),
+        };
+        Ok((header, ticker))
     }
 }
 
@@ -114,5 +122,37 @@ impl RawPacketStream {
                 }
             }
         }
+    }
+}
+
+pub struct DemoTicker<A: MessageHandler> {
+    handler: DemoHandler<A>,
+    packets: RawPacketStream,
+}
+
+impl<A: MessageHandler> DemoTicker<A> {
+    /// Process the next packet
+    ///
+    /// returns whether or not there are still packets left in the demo
+    pub fn tick(&mut self) -> Result<bool> {
+        Ok(
+            if let Some(packet) = self.packets.next(self.handler.get_parser_state())? {
+                self.handler.handle_packet(packet);
+
+                true
+            } else {
+                false
+            },
+        )
+    }
+
+    pub fn into_state(self) -> A::Output {
+        self.handler.into_output()
+    }
+}
+
+impl<A: MessageHandler + BorrowMessageHandler> DemoTicker<A> {
+    pub fn state(&self) -> &A::Output {
+        self.handler.borrow_output()
     }
 }
