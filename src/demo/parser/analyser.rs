@@ -237,11 +237,7 @@ pub struct World {
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Analyser {
-    pub chat: Vec<ChatMassage>,
-    pub users: HashMap<UserId, UserInfo>,
-    pub deaths: Vec<Death>,
-    pub rounds: Vec<Round>,
-    pub start_tick: u32,
+    state: MatchState,
 }
 
 impl MessageHandler for Analyser {
@@ -249,16 +245,19 @@ impl MessageHandler for Analyser {
 
     fn does_handle(message_type: MessageType) -> bool {
         match message_type {
-            MessageType::GameEvent | MessageType::UserMessage => true,
+            MessageType::GameEvent | MessageType::UserMessage | MessageType::ServerInfo => true,
             _ => false,
         }
     }
 
     fn handle_message(&mut self, message: &Message, tick: u32) {
-        if self.start_tick == 0 {
-            self.start_tick = tick;
+        if self.state.start_tick == 0 {
+            self.state.start_tick = tick;
         }
         match message {
+            Message::ServerInfo(message) => {
+                self.state.interval_per_tick = message.interval_per_tick
+            }
             Message::GameEvent(message) => self.handle_event(&message.event, tick),
             Message::UserMessage(message) => self.handle_user_message(&message, tick),
             _ => {}
@@ -279,14 +278,7 @@ impl MessageHandler for Analyser {
     }
 
     fn get_output(self, state: &ParserState) -> MatchState {
-        MatchState {
-            start_tick: self.start_tick,
-            interval_per_tick: state.demo_meta.interval_per_tick,
-            chat: self.chat,
-            deaths: self.deaths,
-            rounds: self.rounds,
-            users: self.users,
-        }
+        self.state
     }
 }
 
@@ -302,14 +294,15 @@ impl Analyser {
                     self.change_name(from, text_message.text.clone());
                 }
             } else {
-                self.chat
+                self.state
+                    .chat
                     .push(ChatMassage::from_message(text_message, tick));
             }
         }
     }
 
     fn change_name(&mut self, from: String, to: String) {
-        if let Some(user) = self.users.values_mut().find(|user| user.name == from) {
+        if let Some(user) = self.state.users.values_mut().find(|user| user.name == from) {
             user.name = to;
         }
     }
@@ -318,17 +311,17 @@ impl Analyser {
         const WIN_REASON_TIME_LIMIT: u8 = 6;
 
         match event {
-            GameEvent::PlayerDeath(event) => self.deaths.push(Death::from_event(event, tick)),
+            GameEvent::PlayerDeath(event) => self.state.deaths.push(Death::from_event(event, tick)),
             GameEvent::PlayerSpawn(event) => {
                 let spawn = Spawn::from_event(event, tick);
-                if let Some(user_state) = self.users.get_mut(&spawn.user) {
+                if let Some(user_state) = self.state.users.get_mut(&spawn.user) {
                     user_state.classes[spawn.class] += 1;
                     user_state.team = spawn.team;
                 }
             }
             GameEvent::TeamPlayRoundWin(event) => {
                 if event.win_reason != WIN_REASON_TIME_LIMIT {
-                    self.rounds.push(Round::from_event(event, tick))
+                    self.state.rounds.push(Round::from_event(event, tick))
                 }
             }
             _ => {}
@@ -344,7 +337,7 @@ impl Analyser {
 
         match text.parse() {
             Ok(entity_id) if !steam_id.is_empty() => {
-                self.users.insert(
+                self.state.users.insert(
                     user_id,
                     UserInfo {
                         classes: ClassList::default(),
@@ -363,7 +356,7 @@ impl Analyser {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct MatchState {
     pub chat: Vec<ChatMassage>,
