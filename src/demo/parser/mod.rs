@@ -75,7 +75,7 @@ impl<A: MessageHandler> DemoParser<A> {
         }
     }
 
-    pub fn parse(mut self) -> Result<(Header, A::Output)> {
+    pub fn parse(self) -> Result<(Header, A::Output)> {
         let (header, mut ticker) = self.ticker()?;
         while ticker.tick()? {
             // noop
