@@ -51,7 +51,13 @@ impl Team {
     where
         u8: TryFrom<U>,
     {
-        Team::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or(Team::Other)
+        Team::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or_default()
+    }
+}
+
+impl Default for Team {
+    fn default() -> Self {
+        Team::Other
     }
 }
 
@@ -77,7 +83,13 @@ impl Class {
     where
         u8: TryFrom<U>,
     {
-        Class::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or(Class::Other)
+        Class::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or_default()
+    }
+}
+
+impl Default for Class {
+    fn default() -> Self {
+        Class::Other
     }
 }
 

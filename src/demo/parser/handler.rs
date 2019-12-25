@@ -5,7 +5,6 @@ use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 use crate::demo::parser::Parse;
 use crate::{ParseError, ParserState, Stream};
-use std::rc::Rc;
 
 pub trait MessageHandler {
     type Output;
@@ -26,7 +25,7 @@ pub trait BorrowMessageHandler: MessageHandler {
 }
 
 pub struct DemoHandler<T: MessageHandler> {
-    tick: u32,
+    pub tick: u32,
     string_table_names: Vec<String>,
     analyser: T,
     state_handler: ParserState,
