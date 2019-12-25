@@ -40,8 +40,11 @@ fn bench_all(input_file: &str, b: &mut Bencher) {
     let demo = Demo::new(file);
     let stream = demo.get_stream();
     b.iter(|| {
-        let _ =
-            test::black_box(DemoParser::new_with_analyser(stream.clone(), AllMessages).unwrap());
+        let _ = test::black_box(
+            DemoParser::new_with_analyser(stream.clone(), AllMessages)
+                .parse()
+                .unwrap(),
+        );
     });
 }
 
