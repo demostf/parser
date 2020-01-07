@@ -98,13 +98,11 @@ impl BitRead<LittleEndian> for UserMessage {
         };
         Ok(message)
     }
-}
 
-impl ParseBitSkip for UserMessage {
-    fn parse_skip(stream: &mut Stream) -> Result<()> {
+    fn skip(stream: &mut Stream) -> ReadResult<()> {
         stream.skip_bits(8)?;
         let length: u32 = stream.read_int(11)?;
-        stream.skip_bits(length as usize).map_err(ParseError::from)
+        stream.skip_bits(length as usize)
     }
 }
 

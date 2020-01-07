@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::iter::FromIterator;
 
-use bitstream_reader::{BitRead, BitSkip, LittleEndian};
+use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{
@@ -117,5 +117,3 @@ impl BitRead<LittleEndian> for GameEventListMessage {
         Ok(GameEventListMessage { event_list })
     }
 }
-
-impl BitSkip<LittleEndian> for GameEventListMessage {}

@@ -1,10 +1,10 @@
-use bitstream_reader::{BitRead, BitSize, Endianness, LazyBitRead, LittleEndian};
+use bitstream_reader::{bit_size_of, BitRead, Endianness, LazyBitRead, LittleEndian};
 
 use crate::demo::message::{Message, MessageType};
 use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
 
-#[derive(Debug, BitRead, BitSize)]
+#[derive(Debug, BitRead)]
 pub struct MessagePacketMeta {
     pub flags: u32, // TODO
     pub view_angles: ViewAngles,
@@ -26,12 +26,6 @@ pub struct ViewAngles {
     pub local_angles: (Vector, Vector),
 }
 
-impl BitSize for ViewAngles {
-    fn bit_size() -> usize {
-        Vector::bit_size() * 6
-    }
-}
-
 impl<E: Endianness> BitRead<E> for ViewAngles {
     fn read(stream: &mut bitstream_reader::BitStream<E>) -> ReadResult<Self> {
         let view_origin_1 = Vector::read(stream)?;
@@ -45,6 +39,10 @@ impl<E: Endianness> BitRead<E> for ViewAngles {
             angles,
             local_angles,
         })
+    }
+
+    fn bit_size() -> Option<usize> {
+        Some(bit_size_of::<Vector>().unwrap() * 6)
     }
 }
 

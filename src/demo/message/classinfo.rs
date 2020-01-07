@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, BitReadSized, BitSkip, LittleEndian};
+use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 
 use crate::demo::message::stringtable::log_base2;
 use crate::{ReadResult, Stream};
@@ -40,5 +40,3 @@ impl BitRead<LittleEndian> for ClassInfoMessage {
         })
     }
 }
-
-impl BitSkip<LittleEndian> for ClassInfoMessage {}

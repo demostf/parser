@@ -1,8 +1,8 @@
-use bitstream_reader::{BitRead, BitSize};
+use bitstream_reader::BitRead;
 use parse_display::Display;
 use serde::{Deserialize, Serialize};
 
-#[derive(BitRead, BitSize, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]
+#[derive(BitRead, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]
 #[display("({x}, {y}, {z})")]
 pub struct Vector {
     pub x: f32,
@@ -16,7 +16,7 @@ impl PartialEq for Vector {
     }
 }
 
-#[derive(BitRead, BitSize, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]
+#[derive(BitRead, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]
 #[display("({x}, {y})")]
 pub struct VectorXY {
     pub x: f32,

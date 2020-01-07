@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, BitSkip, FromUtf8Error, LittleEndian, ReadError};
+use bitstream_reader::{BitRead, FromUtf8Error, LittleEndian, ReadError};
 
 pub use self::messagetypeanalyser::MessageTypeAnalyser;
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};
@@ -38,7 +38,7 @@ pub trait ParseBitSkip {
     fn parse_skip(stream: &mut Stream) -> Result<()>;
 }
 
-impl<T: BitSkip<LittleEndian>> ParseBitSkip for T {
+impl<T: BitRead<LittleEndian>> ParseBitSkip for T {
     #[inline(always)]
     fn parse_skip(stream: &mut Stream) -> Result<()> {
         Self::skip(stream).map_err(ParseError::from)
