@@ -9,6 +9,7 @@ use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 use std::borrow::Borrow;
 use std::cell::{Cell, RefCell};
+use std::cmp::min;
 use std::fmt;
 use std::num::ParseIntError;
 use std::ops::Deref;
@@ -83,7 +84,7 @@ impl ParseSendTable {
         let prop_count = stream.read_int(10)?;
 
         let mut array_element_prop = None;
-        let mut props = Vec::with_capacity(prop_count);
+        let mut props = Vec::with_capacity(min(prop_count, 128));
 
         for prop_index in 0..prop_count {
             let definition_index = SendPropDefinitionIndex::new(table_index, prop_index);

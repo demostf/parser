@@ -7,6 +7,7 @@ use crate::demo::packet::stringtable::{
 };
 use crate::demo::parser::ParseBitSkip;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use std::cmp::min;
 
 #[derive(Debug)]
 pub struct CreateStringTableMessage {
@@ -149,7 +150,7 @@ struct TableEntries {
 impl TableEntries {
     pub fn new(count: usize) -> Self {
         TableEntries {
-            entries: Vec::with_capacity(count),
+            entries: Vec::with_capacity(min(count, 128)),
             history: Vec::with_capacity(32),
         }
     }

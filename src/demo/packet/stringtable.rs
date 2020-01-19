@@ -4,6 +4,7 @@ use bitstream_reader::{BitRead, LittleEndian};
 
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use std::cmp::min;
 
 #[derive(BitRead, Clone, Copy, Debug)]
 pub struct FixedUserDataSize {
@@ -36,7 +37,7 @@ impl BitRead<LittleEndian> for StringTable {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let name = stream.read()?;
         let entry_count = stream.read_int(16)?;
-        let mut entries = Vec::with_capacity(entry_count as usize);
+        let mut entries = Vec::with_capacity(min(entry_count, 128) as usize);
 
         for index in 0..entry_count {
             entries.push((index, stream.read()?))

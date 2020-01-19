@@ -8,6 +8,7 @@ use crate::demo::parser::ParseBitSkip;
 use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
+use std::cmp::min;
 use std::collections::HashMap;
 use std::fmt;
 use std::hint::unreachable_unchecked;
@@ -146,7 +147,7 @@ impl Parse for PacketEntitiesMessage {
         let updated_base_line = stream.read()?;
         let mut data = stream.read_bits(length as usize)?;
 
-        let mut entities = Vec::with_capacity(updated_entries as usize);
+        let mut entities = Vec::with_capacity(min(updated_entries, 128) as usize);
         let mut removed_entities = Vec::new();
 
         let mut last_index: i32 = -1;

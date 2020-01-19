@@ -2,6 +2,7 @@ use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
 
 use crate::demo::message::stringtable::log_base2;
 use crate::{ReadResult, Stream};
+use std::cmp::min;
 
 #[derive(BitReadSized, Debug)]
 pub struct ClassInfoEntry {
@@ -23,7 +24,7 @@ impl BitRead<LittleEndian> for ClassInfoMessage {
         let count: u16 = stream.read()?;
         let create: bool = stream.read()?;
         let entries = if !create {
-            let mut entries = Vec::with_capacity(count as usize);
+            let mut entries = Vec::with_capacity(min(count, 128) as usize);
             let bits = log_base2(count);
             for _ in 0..count {
                 entries.push(stream.read_sized(bits as usize)?);

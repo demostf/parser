@@ -11,6 +11,7 @@ use crate::demo::packet::datatable::SendTableName;
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use parse_display::Display;
 use serde::export::TryFrom;
+use std::cmp::min;
 use std::convert::TryInto;
 use std::fmt;
 use std::rc::Rc;
@@ -423,7 +424,7 @@ impl SendPropValue {
         ) + 1;
 
         let count = stream.read_int(num_bits as usize)?;
-        let mut values = Vec::with_capacity(count);
+        let mut values = Vec::with_capacity(min(count, 128));
 
         let child_definition = definition
             .array_property
