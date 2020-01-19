@@ -297,6 +297,10 @@ impl BitRead<LittleEndian> for SendPropFlags {
         // since all 16 bits worth of flags are used there are no invalid flags
         Ok(SendPropFlags(BitFlags::from_bits_truncate(stream.read()?)))
     }
+
+    fn bit_size() -> Option<usize> {
+        Some(16)
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -400,7 +404,6 @@ impl SendPropValue {
                 .map(|int| int as i64)
         } else if definition.flags.contains(SendPropFlag::Unsigned) {
             let unsigned: u32 = stream.read_sized(definition.bit_count.unwrap_or(32) as usize)?;
-            //const MAX: u32 = std::i32::MAX as u32;
             Ok(unsigned as i64)
         } else {
             stream

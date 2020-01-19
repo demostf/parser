@@ -235,8 +235,6 @@ impl PacketEntitiesMessage {
         props: &mut Vec<SendProp>,
     ) -> Result<()> {
         let mut index = -1;
-        //let mut props: HashMap<i32, SendProp> = HashMap::new();
-        //let mut props = Vec::with_capacity(8);
 
         while stream.read()? {
             let diff: u32 = read_bit_var(stream)?;
@@ -260,18 +258,19 @@ impl PacketEntitiesMessage {
         }
 
         Ok(())
-        //Ok(props.into_iter().map(|(_, prop)| prop).collect())
     }
 }
 
 impl ParseBitSkip for PacketEntitiesMessage {
     fn parse_skip(stream: &mut Stream) -> Result<()> {
-        let _: u16 = stream.read_sized(11)?;
-        let _: Option<u32> = stream.read()?;
-        let _: u8 = stream.read_sized(1)?;
-        let _: u16 = stream.read_sized(11)?;
+        stream.skip_bits(11)?;
+        if stream.read()? {
+            stream.skip_bits(32)?;
+        }
+        stream.skip_bits(12)?;
         let length: u32 = stream.read_sized(20)?;
-        let _: bool = stream.read()?;
-        stream.skip_bits(length as usize).map_err(ParseError::from)
+        stream
+            .skip_bits(length as usize + 1)
+            .map_err(ParseError::from)
     }
 }

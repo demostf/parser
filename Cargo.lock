@@ -68,22 +68,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "bitstream_reader"
 version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "bitstream_reader_derive 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "bitstream_reader_derive 0.7.1",
  "memchr 2.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-traits 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "bitstream_reader_derive"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+version = "0.7.1"
 dependencies = [
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn_util 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn_util 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -545,12 +543,12 @@ dependencies = [
 
 [[package]]
 name = "syn_util"
-version = "0.3.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "proc-macro2 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.13 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -577,7 +575,7 @@ name = "tf-demo-parser"
 version = "0.1.0"
 dependencies = [
  "better-panic 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "bitstream_reader 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "bitstream_reader 0.7.0",
  "enumflags2 0.6.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "err-derive 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "jemallocator 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -652,8 +650,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum backtrace-sys 0.1.32 (registry+https://github.com/rust-lang/crates.io-index)" = "5d6575f128516de27e3ce99689419835fce9643a9b215a14d2b5b685be018491"
 "checksum better-panic 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "64714970eb2081691f85a923b78a490fd7c3e256dcc83c7a5177314586563356"
 "checksum bitflags 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
-"checksum bitstream_reader 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e61dbc828db189cc9b8bcde3ad5510f3ec8f116082619254091cfcc44d20ac0c"
-"checksum bitstream_reader_derive 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cc94bb155011c3a16833c511d95d1b99868749a8cd3693b7f6fab375691a5064"
 "checksum byteorder 1.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "a7c3dd8985a7111efc5c80b44e23ecdd8c007de8ade3b96595387e812b957cf5"
 "checksum cc 1.0.49 (registry+https://github.com/rust-lang/crates.io-index)" = "e450b8da92aa6f274e7c6437692f9f2ce6d701fb73bacfcf87897b3f89a4c20e"
 "checksum cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)" = "4785bdd1c96b2a846b2bd7cc02e86b6b3dbf14e7e53446c4f54c92a361040822"
@@ -710,7 +706,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum snap 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "95d697d63d44ad8b78b8d235bf85b34022a78af292c8918527c5f0cffdde7f43"
 "checksum syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)" = "9ca4b3b69a77cbe1ffc9e198781b7acb0c7365a883670e8f1c1bc66fba79a5c5"
 "checksum syn 1.0.13 (registry+https://github.com/rust-lang/crates.io-index)" = "1e4ff033220a41d1a57d8125eab57bf5263783dfdcc18688b1dacc6ce9651ef8"
-"checksum syn_util 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "50518d8ba51dbea1b0981d7bff56cecc2a20a02f22bf6fcf71a924bc241ee4a0"
+"checksum syn_util 0.4.1 (registry+https://github.com/rust-lang/crates.io-index)" = "54d358a6d0e025630dc486f8a76caf9b7c9ffefb117ca426c3f9b3911f20eb89"
 "checksum synstructure 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)" = "67656ea1dc1b41b1451851562ea232ec2e5a80242139f7e679ceccfb5d61f545"
 "checksum termios 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "72b620c5ea021d75a735c943269bb07d30c9b77d6ac6b236bc8b5c496ef05625"
 "checksum thread_local 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)" = "c6b53e329000edc2b34dbe8545fd20e55a333362d0a321909685a19bd28c3f1b"
