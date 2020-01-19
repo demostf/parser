@@ -64,7 +64,7 @@ impl BitRead<LittleEndian> for StringTable {
 #[endianness = "LittleEndian"]
 pub struct ExtraData {
     pub byte_len: u16,
-    #[size = "byte_len * 8"]
+    #[size = "byte_len.saturating_mul(8)"]
     pub data: Stream,
 }
 
@@ -120,7 +120,7 @@ impl Parse for StringTablePacket {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let tick = stream.read_int(32)?;
         let length: usize = stream.read_int(32)?;
-        let mut packet_data = stream.read_bits(length * 8)?;
+        let mut packet_data = stream.read_bits(length.saturating_mul(8))?;
         let count: usize = packet_data.read_int(8)?;
         let tables = packet_data.read_sized(count)?;
 
