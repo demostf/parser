@@ -97,7 +97,7 @@ pub struct PreFetchMessage {
 pub struct MenuMessage {
     pub kind: u16,
     pub length: u16,
-    #[size = "length * 8"]
+    #[size = "length.saturating_mul(8)"]
     pub index: Stream,
 }
 
@@ -111,6 +111,6 @@ pub struct GetCvarValueMessage {
 #[endianness = "LittleEndian"]
 pub struct CmdKeyValuesMessage {
     pub length: u32,
-    #[size = "length * 8"]
+    #[size = "length.saturating_mul(8)"]
     pub data: Stream,
 }
