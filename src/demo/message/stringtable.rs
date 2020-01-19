@@ -286,5 +286,7 @@ pub fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {
 }
 
 pub fn log_base2<T: PrimInt + Unsigned>(num: T) -> u32 {
-    (std::mem::size_of::<T>() as u32 * 8 - 1) - num.leading_zeros()
+    // log(0) = inf, but that's a useless result
+    // since this would only happen in malformed demos, we just return 0
+    (std::mem::size_of::<T>() as u32 * 8 - 1).saturating_sub(num.leading_zeros())
 }
