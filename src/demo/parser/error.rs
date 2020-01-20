@@ -1,4 +1,5 @@
 use crate::demo::gamevent::GameEventValueType;
+use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{ClassId, SendTableName};
 use bitstream_reader::{FromUtf8Error, ReadError};
@@ -46,7 +47,7 @@ pub enum ParseError {
     DataRemaining(usize),
     #[error(display = "String table with index {} not found", _0)]
     StringTableNotFound(u8),
-    #[error(display = "A malformed game event was read")]
+    #[error(display = "A malformed game event was read: {}", _0)]
     MalformedGameEvent(#[error(source)] GameEventError),
     #[error(
         display = "A read game event doesn't contain the expected values, expected type {} for {} event, got type {}",
@@ -95,8 +96,8 @@ pub enum GameEventError {
     IncorrectValueCount,
     #[error(display = "Event with 'none' value")]
     NoneValue,
-    #[error(display = "Unknown type")]
-    UnknownType,
+    #[error(display = "Unknown type: {}", _0)]
+    UnknownType(GameEventTypeId),
 }
 
 impl From<ReadError> for ParseError {

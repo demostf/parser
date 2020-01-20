@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::iter::FromIterator;
 
 use bitstream_reader::{BitRead, LittleEndian};
+use parse_display::Display;
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{
@@ -34,6 +35,17 @@ impl Parse for GameEventMessage {
         let length: u16 = stream.read_sized(11)?;
         let mut data = stream.read_bits(length as usize)?;
         let event_type: GameEventTypeId = data.read()?;
+
+        // game event definitions haven't been sent yet, ignore
+        if state.event_definitions.len() == 0 {
+            return Ok(GameEventMessage {
+                event: Box::new(GameEvent::Unknown(RawGameEvent {
+                    event_type: GameEventType::Unknown,
+                    values: Vec::new(),
+                })),
+            });
+        }
+
         let raw_event = match state.event_definitions.get(usize::from(event_type)) {
             Some(definition) => {
                 let mut values: Vec<GameEventValue> = Vec::with_capacity(definition.entries.len());
@@ -46,7 +58,12 @@ impl Parse for GameEventMessage {
                     values,
                 }
             }
-            None => return Err(ParseError::MalformedGameEvent(GameEventError::UnknownType)),
+            None => {
+                dbg!(state.event_definitions.len());
+                return Err(ParseError::MalformedGameEvent(GameEventError::UnknownType(
+                    event_type,
+                )));
+            }
         };
         let event = GameEvent::from_raw_event(raw_event)?;
         Ok(GameEventMessage {
@@ -62,7 +79,7 @@ impl ParseBitSkip for GameEventMessage {
     }
 }
 
-#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Display)]
 pub struct GameEventTypeId(#[size = 9] u16);
 
 impl From<GameEventTypeId> for usize {

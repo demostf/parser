@@ -154,7 +154,7 @@ impl Parse for PacketEntitiesMessage {
 
         for _ in 0..updated_entries {
             let diff: u32 = read_bit_var(&mut data)?;
-            last_index += diff as i32 + 1;
+            last_index = last_index.saturating_add(diff as i32).saturating_add(1);
             let entity_index = EntityId::from(last_index as u32);
 
             let pvs = data.read()?;
