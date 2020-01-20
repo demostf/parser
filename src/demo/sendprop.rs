@@ -483,7 +483,7 @@ impl SendPropValue {
                 .ok_or(MalformedSendPropDefinitionError::UnsizedFloat)?;
             let raw: u32 = stream.read_int(bit_count as usize)?;
             // is this -1 correct?, it is consistent with the js version but seems weird
-            let percentage = (raw as f32) / ((1 << bit_count) as f32 - 1.0);
+            let percentage = (raw as f32) / ((1i32.wrapping_shl(bit_count)) as f32 - 1.0);
             Ok(low + ((high - low) * percentage))
         }
     }

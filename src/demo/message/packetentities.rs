@@ -235,11 +235,11 @@ impl PacketEntitiesMessage {
         send_table: &SendTable,
         props: &mut Vec<SendProp>,
     ) -> Result<()> {
-        let mut index = -1;
+        let mut index: i32 = -1;
 
         while stream.read()? {
             let diff: u32 = read_bit_var(stream)?;
-            index += (diff as i32) + 1;
+            index = index.saturating_add(diff as i32).saturating_add(1);
 
             match send_table.flattened_props.get(index as usize) {
                 Some(definition) => {

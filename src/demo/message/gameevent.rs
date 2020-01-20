@@ -62,7 +62,6 @@ impl Parse for GameEventMessage {
                 }
             }
             None => {
-                dbg!(state.event_definitions.len());
                 return Err(ParseError::MalformedGameEvent(GameEventError::UnknownType(
                     event_type,
                 )));
