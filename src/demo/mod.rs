@@ -1,4 +1,5 @@
-use bitstream_reader::{BitBuffer, BitStream, LittleEndian};
+use crate::ReadResult;
+use bitstream_reader::{BitBuffer, BitStream, LittleEndian, ReadError};
 
 pub mod gameevent_gen;
 pub mod gamevent;
@@ -26,5 +27,12 @@ impl Demo {
     /// Get a new stream with the data of the demo
     pub fn get_stream(&self) -> Stream {
         self.stream.clone()
+    }
+}
+
+pub(crate) fn handle_utf8_error(error: ReadError) -> ReadResult<String> {
+    match error {
+        ReadError::Utf8Error(_) => Ok("-- Malformed utf8 --".into()),
+        _ => Err(error),
     }
 }

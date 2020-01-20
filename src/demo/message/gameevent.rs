@@ -9,12 +9,15 @@ use crate::demo::gamevent::{
     GameEvent, GameEventDefinition, GameEventEntry, GameEventValue, GameEventValueType,
     RawGameEvent,
 };
+use crate::demo::handle_utf8_error;
 use crate::demo::parser::ParseBitSkip;
 use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {
     Ok(match definition.kind {
-        GameEventValueType::String => GameEventValue::String(stream.read()?),
+        GameEventValueType::String => {
+            GameEventValue::String(stream.read().or_else(handle_utf8_error)?)
+        }
         GameEventValueType::Float => GameEventValue::Float(stream.read()?),
         GameEventValueType::Long => GameEventValue::Long(stream.read()?),
         GameEventValueType::Short => GameEventValue::Short(stream.read()?),

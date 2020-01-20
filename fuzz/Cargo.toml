@@ -22,3 +22,10 @@ members = ["."]
 [[bin]]
 name = "fuzz_target_1"
 path = "fuzz_targets/fuzz_target_1.rs"
+
+[[bin]]
+name = "real_inputs"
+path = "fuzz_targets/real_inputs.rs"
+
+[profile.dev]
+opt-level = 2

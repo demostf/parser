@@ -3,6 +3,7 @@ use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 
+use crate::demo::handle_utf8_error;
 use crate::demo::parser::ParseBitSkip;
 use crate::{ParseError, ReadResult, Result, Stream};
 
@@ -143,13 +144,6 @@ pub struct SayText2Message {
     pub kind: ChatMessageKind,
     pub from: Option<String>,
     pub text: String,
-}
-
-fn handle_utf8_error(error: ReadError) -> ReadResult<String> {
-    match error {
-        ReadError::Utf8Error(_) => Ok("-- Malformed utf8 --".into()),
-        _ => Err(error),
-    }
 }
 
 impl BitRead<LittleEndian> for SayText2Message {
