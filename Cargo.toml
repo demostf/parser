@@ -12,10 +12,6 @@ path = "src/lib.rs"
 name = "parse_demo"
 path = "src/bin/main.rs"
 
-[[bin]]
-name = "all_test"
-path = "src/bin/all_test.rs"
-
 [dependencies]
 bitstream_reader = { version = "0.7", path = "../../bitbuffer" }
 num_enum = "0.4"
@@ -31,7 +27,6 @@ main_error = "0.1.0"
 jemallocator = { version = "0.3", optional = true }
 better-panic = { version = "0.1", optional = true }
 no-panic = { version = "0.1", optional = true }
-rayon = "1.3.0"
 
 [dev-dependencies]
 pretty_assertions = "0.6"
