@@ -116,6 +116,8 @@ impl FromGameEventValue for u32 {
     fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
         match value {
             Some(GameEventValue::Long(val)) => Ok(val),
+            Some(GameEventValue::Short(val)) => Ok(val as u32),
+            Some(GameEventValue::Byte(val)) => Ok(val as u32),
             None => Ok(u32::default()),
             Some(value) => Err(ParseError::InvalidGameEvent {
                 expected_type: GameEventValueType::Long,
@@ -129,7 +131,9 @@ impl FromGameEventValue for u32 {
 impl FromGameEventValue for u16 {
     fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
         match value {
+            Some(GameEventValue::Long(val)) => Ok(val as u16),
             Some(GameEventValue::Short(val)) => Ok(val),
+            Some(GameEventValue::Byte(val)) => Ok(val as u16),
             None => Ok(u16::default()),
             Some(value) => Err(ParseError::InvalidGameEvent {
                 expected_type: GameEventValueType::Short,
@@ -143,6 +147,8 @@ impl FromGameEventValue for u16 {
 impl FromGameEventValue for u8 {
     fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
         match value {
+            Some(GameEventValue::Long(val)) => Ok(val as u8),
+            Some(GameEventValue::Short(val)) => Ok(val as u8),
             Some(GameEventValue::Byte(val)) => Ok(val),
             None => Ok(u8::default()),
             Some(value) => Err(ParseError::InvalidGameEvent {
