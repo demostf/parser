@@ -5,6 +5,7 @@ use crate::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass,
 pub use crate::demo::parser::analyser::{Class, Team, UserId};
 use crate::demo::parser::handler::BorrowMessageHandler;
 use crate::demo::parser::MessageHandler;
+use crate::demo::sendprop::{SendProp, SendPropValue};
 use crate::demo::vector::{Vector, VectorXY};
 use crate::{MessageType, ParserState};
 use serde::{Deserialize, Serialize};
@@ -94,10 +95,17 @@ pub enum Building {
     },
 }
 
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct World {
+    pub boundary_min: Vector,
+    pub boundary_max: Vector,
+}
+
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct GameState {
     pub players: Vec<Player>,
     pub buildings: Vec<Building>,
+    pub world: Option<World>,
 }
 
 impl GameState {
@@ -192,6 +200,7 @@ impl GameStateAnalyser {
         match class_name {
             "CTFPlayer" => self.handle_player_entity(entity),
             "CTFPlayerResource" => self.handle_player_resource(entity),
+            "CWorld" => self.handle_world_entity(entity),
             _ => {}
         }
     }
@@ -261,6 +270,27 @@ impl GameStateAnalyser {
                 }
                 _ => {}
             }
+        }
+    }
+
+    pub fn handle_world_entity(&mut self, entity: &PacketEntity) {
+        if let (
+            Some(SendProp {
+                value: SendPropValue::Vector(boundary_min),
+                ..
+            }),
+            Some(SendProp {
+                value: SendPropValue::Vector(boundary_max),
+                ..
+            }),
+        ) = (
+            entity.get_prop_by_name("DT_WORLD", "m_WorldMins"),
+            entity.get_prop_by_name("DT_WORLD", "m_WorldMaxs"),
+        ) {
+            self.state.world = Some(World {
+                boundary_min: boundary_min.clone(),
+                boundary_max: boundary_max.clone(),
+            })
         }
     }
 }

@@ -84,6 +84,13 @@ impl PacketEntity {
             }
         }
     }
+
+    pub fn get_prop_by_name(&self, table_name: &str, name: &str) -> Option<&SendProp> {
+        self.props.iter().find(|prop| {
+            prop.definition.owner_table.as_str() == table_name
+                && prop.definition.name.as_str() == name
+        })
+    }
 }
 
 fn read_bit_var<T: BitReadSized<LittleEndian>>(stream: &mut Stream) -> ReadResult<T> {
