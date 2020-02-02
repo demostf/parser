@@ -250,6 +250,7 @@ pub struct World {
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Analyser {
     state: MatchState,
+    user_id_map: HashMap<EntityId, UserId>,
 }
 
 impl MessageHandler for Analyser {
@@ -279,11 +280,10 @@ impl MessageHandler for Analyser {
     fn handle_string_entry(&mut self, table: &str, _index: usize, entry: &StringTableEntry) {
         match table {
             "userinfo" => {
-                if let (Some(text), Some(data)) = (&entry.text, &entry.extra_data) {
-                    if data.byte_len > 32 {
-                        let _ = self.parse_user_info(text, data.data.clone());
-                    }
-                }
+                let _ = self.parse_user_info(
+                    entry.text.as_ref().map(|s| s.as_str()),
+                    entry.extra_data.as_ref().map(|data| data.data.clone()),
+                );
             }
             _ => {}
         }
@@ -346,28 +346,33 @@ impl Analyser {
         }
     }
 
-    fn parse_user_info(&mut self, text: &str, mut data: Stream) -> ReadResult<()> {
-        let name: String = data
-            .read_sized(32)
-            .unwrap_or_else(|_| "Malformed Name".into());
-        let user_id = data.read::<u32>()?.into();
-        let steam_id: String = data.read()?;
+    fn parse_user_info(&mut self, text: Option<&str>, data: Option<Stream>) -> ReadResult<()> {
+        if let Some(mut data) = data {
+            let name: String = data
+                .read_sized(32)
+                .unwrap_or_else(|_| "Malformed Name".into());
+            let user_id: UserId = data.read::<u32>()?.into();
+            let steam_id: String = data.read()?;
 
-        match text.parse() {
-            Ok(entity_id) if !steam_id.is_empty() => {
-                self.state.users.insert(
-                    user_id,
-                    UserInfo {
-                        classes: ClassList::default(),
-                        team: Team::Other,
-                        steam_id,
+            match text
+                .map(|text| text.parse())
+                .unwrap_or_else(|| Ok((user_id.0 as u32).into()))
+            {
+                Ok(entity_id) if !steam_id.is_empty() => {
+                    self.state.users.insert(
                         user_id,
-                        name,
-                        entity_id,
-                    },
-                );
+                        UserInfo {
+                            classes: ClassList::default(),
+                            team: Team::Other,
+                            steam_id,
+                            user_id,
+                            name,
+                            entity_id,
+                        },
+                    );
+                }
+                _ => {}
             }
-            _ => {}
         }
 
         Ok(())

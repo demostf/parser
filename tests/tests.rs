@@ -72,6 +72,11 @@ fn snapshot_test_malformed_cvar() {
 }
 
 #[test]
+fn snapshot_test_player_in_update() {
+    snapshot_test("data/nousers.dem", "data/nousers.json");
+}
+
+#[test]
 fn snapshot_test_decal() {
     snapshot_test("data/decal.dem", "data/decal.json");
 }
