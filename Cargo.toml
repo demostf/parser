@@ -13,7 +13,7 @@ name = "parse_demo"
 path = "src/bin/main.rs"
 
 [dependencies]
-bitstream_reader = { version = "0.7", path = "../../bitbuffer" }
+bitstream_reader = "0.7.1"
 num_enum = "0.4"
 num-traits = "0.2"
 enumflags2 = "0.6"
