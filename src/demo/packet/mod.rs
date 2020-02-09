@@ -32,7 +32,7 @@ pub enum Packet {
     StringTables(StringTablePacket),
 }
 
-#[derive(BitRead, TryFromPrimitive, Debug)]
+#[derive(BitRead, TryFromPrimitive, Debug, Clone, Copy)]
 #[discriminant_bits = 8]
 #[repr(u8)]
 pub enum PacketType {
