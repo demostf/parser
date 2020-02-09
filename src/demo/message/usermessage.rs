@@ -183,7 +183,13 @@ impl BitRead<LittleEndian> for SayText2Message {
 
         // cleanup color codes
         let mut text = text.replace(char::from(1), "").replace(char::from(3), "");
-        while let Some(pos) = text.find(char::from(7)) {
+        while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
+            if c == char::from(7) {
+                Some(index)
+            } else {
+                None
+            }
+        }) {
             text = text
                 .chars()
                 .take(pos)

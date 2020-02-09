@@ -72,6 +72,11 @@ fn snapshot_test_malformed_cvar() {
 }
 
 #[test]
+fn snapshot_test_unicode_chat() {
+    snapshot_test("data/unicode-saytext.dem", "data/unicode-saytext.json");
+}
+
+#[test]
 fn snapshot_test_player_in_update() {
     snapshot_test("data/nousers.dem", "data/nousers.json");
 }
