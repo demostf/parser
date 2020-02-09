@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use serde::{ser::SerializeMap, Deserialize, Deserializer, Serialize, Serializer};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -383,7 +383,7 @@ impl Analyser {
 #[serde(rename_all = "camelCase")]
 pub struct MatchState {
     pub chat: Vec<ChatMassage>,
-    pub users: HashMap<UserId, UserInfo>,
+    pub users: BTreeMap<UserId, UserInfo>,
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
     pub start_tick: u32,
