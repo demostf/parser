@@ -359,17 +359,20 @@ impl Analyser {
                 .unwrap_or_else(|| Ok((user_id.0 as u32).into()))
             {
                 Ok(entity_id) if !steam_id.is_empty() => {
-                    self.state.users.insert(
-                        user_id,
-                        UserInfo {
+                    self.state
+                        .users
+                        .entry(user_id)
+                        .and_modify(|info| {
+                            info.entity_id = entity_id;
+                        })
+                        .or_insert_with(|| UserInfo {
                             classes: ClassList::default(),
                             team: Team::Other,
                             steam_id,
                             user_id,
                             name,
                             entity_id,
-                        },
-                    );
+                        });
                 }
                 _ => {}
             }
