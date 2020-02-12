@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
+use bitbuffer::{BitRead, BitReadSized, LittleEndian};
 
 use crate::demo::message::stringtable::log_base2;
 use crate::{ReadResult, Stream};

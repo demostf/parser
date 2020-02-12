@@ -2,7 +2,7 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 
-pub use bitstream_reader::Result as ReadResult;
+pub use bitbuffer::Result as ReadResult;
 
 pub use crate::demo::{
     message::MessageType,

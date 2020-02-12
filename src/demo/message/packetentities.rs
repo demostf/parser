@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, BitReadSized, LittleEndian};
+use bitbuffer::{BitRead, BitReadSized, LittleEndian};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 

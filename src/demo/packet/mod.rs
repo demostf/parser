@@ -1,4 +1,4 @@
-use bitstream_reader::BitRead;
+use bitbuffer::BitRead;
 use num_enum::TryFromPrimitive;
 use std::convert::TryFrom;
 

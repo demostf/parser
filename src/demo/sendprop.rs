@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, LittleEndian};
 use enumflags2::BitFlags;
 use serde::{Deserialize, Serialize};
 

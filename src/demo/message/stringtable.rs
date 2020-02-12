@@ -1,4 +1,4 @@
-use bitstream_reader::{BitBuffer, BitStream, LittleEndian};
+use bitbuffer::{BitReadBuffer, BitReadStream, LittleEndian};
 use num_traits::{PrimInt, Unsigned};
 use snap::Decoder;
 
@@ -67,8 +67,8 @@ impl Parse for CreateStringTableMessage {
                 });
             }
 
-            let buffer = BitBuffer::new(decompressed_data, LittleEndian);
-            table_data = BitStream::new(buffer);
+            let buffer = BitReadBuffer::new(decompressed_data, LittleEndian);
+            table_data = BitReadStream::new(buffer);
         }
 
         let table_meta = StringTableMeta {

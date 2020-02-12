@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::iter::FromIterator;
 
-use bitstream_reader::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, LittleEndian};
 use parse_display::Display;
 
 use crate::demo::gameevent_gen::GameEventType;

@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, FromUtf8Error, LittleEndian, ReadError};
+use bitbuffer::{BitRead, FromUtf8Error, LittleEndian, ReadError};
 
 pub use self::messagetypeanalyser::MessageTypeAnalyser;
 use crate::demo::gamevent::{GameEventValue, GameEventValueType};

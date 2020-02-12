@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian, ReadError};
+use bitbuffer::{BitRead, LittleEndian, ReadError};
 use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;

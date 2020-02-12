@@ -1,4 +1,4 @@
-use bitstream_reader::{bit_size_of, BitRead, Endianness, LazyBitRead, LittleEndian};
+use bitbuffer::{bit_size_of, BitRead, Endianness, LazyBitRead, LittleEndian};
 
 use crate::demo::message::{Message, MessageType};
 use crate::demo::vector::Vector;
@@ -27,7 +27,7 @@ pub struct ViewAngles {
 }
 
 impl<E: Endianness> BitRead<E> for ViewAngles {
-    fn read(stream: &mut bitstream_reader::BitStream<E>) -> ReadResult<Self> {
+    fn read(stream: &mut bitbuffer::BitReadStream<E>) -> ReadResult<Self> {
         let view_origin_1 = Vector::read(stream)?;
         let view_angle_1 = Vector::read(stream)?;
         let local_view_angle_1 = Vector::read(stream)?;

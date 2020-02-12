@@ -2,7 +2,7 @@ use crate::demo::gamevent::GameEventValueType;
 use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{ClassId, SendTableName};
-use bitstream_reader::{FromUtf8Error, ReadError};
+use bitbuffer::{FromUtf8Error, ReadError};
 use err_derive::Error;
 
 /// Errors that can occur during parsing

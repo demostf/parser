@@ -1,4 +1,4 @@
-use bitstream_reader::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, LittleEndian};
 
 use crate::demo::sendprop::read_bit_coord;
 use crate::demo::vector::Vector;

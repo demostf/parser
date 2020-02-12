@@ -1,6 +1,6 @@
 use std::fmt;
 
-use bitstream_reader::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, LittleEndian};
 
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};

@@ -1,5 +1,5 @@
 use crate::ReadResult;
-use bitstream_reader::{BitBuffer, BitStream, LittleEndian, ReadError};
+use bitbuffer::{BitReadBuffer, BitReadStream, LittleEndian, ReadError};
 
 pub mod gameevent_gen;
 pub mod gamevent;
@@ -10,8 +10,8 @@ pub mod parser;
 pub mod sendprop;
 pub mod vector;
 
-pub type Buffer = BitBuffer<LittleEndian>;
-pub type Stream = BitStream<LittleEndian>;
+pub type Buffer = BitReadBuffer<LittleEndian>;
+pub type Stream = BitReadStream<LittleEndian>;
 
 pub struct Demo {
     stream: Stream,
