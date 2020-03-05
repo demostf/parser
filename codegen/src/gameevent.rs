@@ -20,8 +20,8 @@ impl MessageHandler for GameEventAnalyser {
         false
     }
 
-    fn get_output(self, state: ParserState) -> Self::Output {
-        state.event_definitions
+    fn into_output(self, state: &ParserState) -> Self::Output {
+        state.event_definitions.clone()
     }
 }
 
@@ -216,8 +216,9 @@ fn get_event_name(name: &str) -> String {
 }
 
 pub fn generate_game_events(demo: Demo) -> TokenStream {
-    let (_, mut events) =
-        DemoParser::parse_with_analyser(demo.get_stream(), GameEventAnalyser).unwrap();
+    let (_, mut events) = DemoParser::new_with_analyser(demo.get_stream(), GameEventAnalyser)
+        .parse()
+        .unwrap();
 
     events.sort();
 
