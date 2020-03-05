@@ -1,17 +1,15 @@
-use bitbuffer::{BitRead, FromUtf8Error, LittleEndian, ReadError};
+use bitbuffer::{BitRead, LittleEndian};
 
 pub use self::messagetypeanalyser::MessageTypeAnalyser;
-use crate::demo::gamevent::{GameEventValue, GameEventValueType};
+
 use crate::demo::header::Header;
-use crate::demo::message::packetentities::EntityId;
-use crate::demo::packet::datatable::{ClassId, SendTableName};
+
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 pub use crate::demo::parser::analyser::MatchState;
 pub use crate::demo::parser::handler::{DemoHandler, MessageHandler};
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
-use err_derive::Error;
 
 mod analyser;
 mod error;
@@ -22,7 +20,6 @@ mod state;
 
 pub use self::error::*;
 use crate::demo::parser::handler::BorrowMessageHandler;
-use serde::export::PhantomData;
 
 pub trait Parse: Sized {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self>;

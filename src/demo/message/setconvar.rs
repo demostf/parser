@@ -1,6 +1,5 @@
-use bitbuffer::{BitRead, BitReadSized, LittleEndian};
+use bitbuffer::{BitRead, LittleEndian};
 
-use crate::demo::message::stringtable::log_base2;
 use crate::{ReadResult, Stream};
 use std::cmp::min;
 

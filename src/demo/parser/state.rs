@@ -1,7 +1,8 @@
-use std::collections::{BTreeMap, HashMap};
+use fnv::FnvHashMap;
+use std::collections::HashMap;
 
 use crate::demo::gamevent::GameEventDefinition;
-use crate::demo::message::gameevent::GameEventTypeId;
+
 use crate::demo::message::packetentities::{EntityId, PacketEntitiesMessage, PVS};
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::message::{Message, MessageType};
@@ -9,13 +10,11 @@ use crate::demo::packet::datatable::{
     ClassId, ParseSendTable, SendTable, SendTableName, ServerClass,
 };
 use crate::demo::packet::stringtable::StringTableEntry;
-use crate::demo::parser::analyser::Analyser;
-use crate::demo::parser::handler::MessageHandler;
+
 use crate::demo::sendprop::SendProp;
 use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
 use std::cell::RefCell;
-use std::rc::Rc;
 
 #[derive(Default)]
 pub struct DemoMeta {
@@ -106,7 +105,7 @@ impl ParserState {
                 .map(|table| table.flatten_props(&parse_tables))
                 .collect();
 
-            let mut send_tables: HashMap<SendTableName, SendTable> = parse_tables
+            let mut send_tables: FnvHashMap<SendTableName, SendTable> = parse_tables
                 .into_iter()
                 .zip(flat_props.into_iter())
                 .map(|(parse_table, flat)| {

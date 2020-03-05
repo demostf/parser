@@ -1,7 +1,7 @@
-use crate::demo::gameevent_gen::GameEventType::PlayerSappedObject;
+
 use crate::demo::message::packetentities::{EntityId, PacketEntity};
 use crate::demo::message::Message;
-use crate::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass, ServerClassName};
+use crate::demo::packet::datatable::{ParseSendTable, ServerClass, ServerClassName};
 pub use crate::demo::parser::analyser::{Class, Team, UserId};
 use crate::demo::parser::handler::BorrowMessageHandler;
 use crate::demo::parser::MessageHandler;
@@ -114,7 +114,7 @@ impl GameState {
             .players
             .iter_mut()
             .enumerate()
-            .find(|(index, player)| player.entity == entity_id)
+            .find(|(_index, player)| player.entity == entity_id)
             .map(|(index, _)| index)
         {
             Some(index) => index,
@@ -156,7 +156,7 @@ impl MessageHandler for GameStateAnalyser {
         }
     }
 
-    fn handle_message(&mut self, message: &Message, tick: u32) {
+    fn handle_message(&mut self, message: &Message, _tick: u32) {
         match message {
             Message::PacketEntities(message) => {
                 for entity in &message.entities {
@@ -167,7 +167,7 @@ impl MessageHandler for GameStateAnalyser {
         }
     }
 
-    fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {
+    fn handle_data_tables(&mut self, _tables: &[ParseSendTable], server_classes: &[ServerClass]) {
         self.class_names = server_classes
             .iter()
             .map(|class| &class.name)
@@ -175,13 +175,13 @@ impl MessageHandler for GameStateAnalyser {
             .collect();
     }
 
-    fn into_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(self, _state: &ParserState) -> Self::Output {
         self.state
     }
 }
 
 impl BorrowMessageHandler for GameStateAnalyser {
-    fn borrow_output(&self, state: &ParserState) -> &Self::Output {
+    fn borrow_output(&self, _state: &ParserState) -> &Self::Output {
         &self.state
     }
 }

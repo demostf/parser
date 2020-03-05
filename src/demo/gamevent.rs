@@ -6,9 +6,8 @@ pub use super::gameevent_gen::{GameEvent, GameEventType};
 use crate::demo::message::gameevent::GameEventTypeId;
 use parse_display::Display;
 use std::cmp::Ordering;
-use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GameEventDefinition {
     pub id: GameEventTypeId,
     pub event_type: GameEventType,
@@ -36,7 +35,7 @@ impl Ord for GameEventDefinition {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GameEventEntry {
     pub name: String,
     pub kind: GameEventValueType,

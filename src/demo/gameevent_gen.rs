@@ -1,5 +1,5 @@
 use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
-use crate::{GameEventError, Result};
+use crate::Result;
 #[derive(Debug)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
@@ -9034,3 +9034,4 @@ pub fn get_sizes() -> std::collections::hash_map::HashMap<&'static str, usize> {
     .into_iter()
     .collect()
 }
+

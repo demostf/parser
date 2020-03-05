@@ -1,7 +1,7 @@
 use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
 use bitbuffer::{BitRead, LittleEndian};
-use std::collections::HashMap;
+
 
 #[derive(BitRead, Debug)]
 pub struct FileMessage {

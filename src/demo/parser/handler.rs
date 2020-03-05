@@ -1,21 +1,21 @@
 use crate::demo::message::{Message, MessageType};
-use crate::demo::packet::datatable::{ParseSendTable, SendTable, ServerClass};
+use crate::demo::packet::datatable::{ParseSendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
-use crate::demo::parser::Parse;
-use crate::{ParseError, ParserState, Stream};
+
+use crate::ParserState;
 
 pub trait MessageHandler {
     type Output;
 
     fn does_handle(message_type: MessageType) -> bool;
 
-    fn handle_message(&mut self, message: &Message, tick: u32) {}
+    fn handle_message(&mut self, _message: &Message, _tick: u32) {}
 
-    fn handle_string_entry(&mut self, table: &str, index: usize, entries: &StringTableEntry) {}
+    fn handle_string_entry(&mut self, _table: &str, _index: usize, _entries: &StringTableEntry) {}
 
-    fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {}
+    fn handle_data_tables(&mut self, _tables: &[ParseSendTable], _server_classes: &[ServerClass]) {}
 
     fn into_output(self, state: &ParserState) -> Self::Output;
 }

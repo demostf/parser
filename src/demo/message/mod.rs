@@ -2,7 +2,7 @@ use num_enum::TryFromPrimitive;
 use std::convert::TryFrom;
 
 pub use generated::*;
-use serde::{Deserialize, Serialize};
+
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::demo::message::bspdecal::*;

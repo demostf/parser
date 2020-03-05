@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, HashMap};
 
-use serde::{ser::SerializeMap, Deserialize, Deserializer, Serialize, Serializer};
+use serde::{ser::SerializeMap, Deserialize, Serialize, Serializer};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::demo::gameevent_gen::{
@@ -289,13 +289,13 @@ impl MessageHandler for Analyser {
         }
     }
 
-    fn into_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(self, _state: &ParserState) -> Self::Output {
         self.state
     }
 }
 
 impl BorrowMessageHandler for Analyser {
-    fn borrow_output(&self, state: &ParserState) -> &Self::Output {
+    fn borrow_output(&self, _state: &ParserState) -> &Self::Output {
         &self.state
     }
 }

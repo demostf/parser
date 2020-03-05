@@ -1,6 +1,6 @@
 use bitbuffer::BitRead;
 use num_enum::TryFromPrimitive;
-use std::convert::TryFrom;
+
 
 use crate::{Parse, ParserState, Result, Stream};
 

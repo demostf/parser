@@ -226,7 +226,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
     let imports = quote!(
         use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
-        use crate::{GameEventError, Result};
+        use crate::Result;
     );
 
     let event_definitions = events.iter().map(|event| {
@@ -330,7 +330,6 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
     let sizes = events.iter().map(|event| {
         let name = get_event_name(&event.name);
-        let variant_name = Ident::new(&name, span);
         let struct_name = Ident::new(&format!("{}Event", name), span);
 
         quote!(

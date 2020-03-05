@@ -2,17 +2,17 @@ use bitbuffer::{BitRead, BitReadSized, LittleEndian};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::demo::message::stringtable::{log_base2, read_var_int};
-use crate::demo::packet::datatable::{ClassId, SendTable, SendTableName, ServerClass};
+use crate::demo::message::stringtable::{log_base2};
+use crate::demo::packet::datatable::{ClassId, SendTable};
 use crate::demo::parser::ParseBitSkip;
 use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
 use std::cmp::min;
-use std::collections::HashMap;
+
 use std::fmt;
 use std::hint::unreachable_unchecked;
-use std::num::{NonZeroU32, ParseIntError};
+use std::num::{NonZeroU32};
 use std::rc::Rc;
 
 #[derive(
@@ -221,7 +221,7 @@ impl PacketEntitiesMessage {
         let props = match state.instance_baselines[baseline_index].get(&entity_index) {
             Some(baseline) => baseline.clone(),
             None => match state.static_baselines.get(&class_index) {
-                Some(static_baseline) => state.get_static_baseline(class_index, send_table)?,
+                Some(_static_baseline) => state.get_static_baseline(class_index, send_table)?,
                 None => Vec::with_capacity(8),
             },
         };

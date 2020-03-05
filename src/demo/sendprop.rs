@@ -2,7 +2,7 @@ use bitbuffer::{BitRead, LittleEndian};
 use enumflags2::BitFlags;
 use serde::{Deserialize, Serialize};
 
-use crate::{Parse, ParseError, ReadResult, Result, Stream};
+use crate::{ParseError, ReadResult, Result, Stream};
 
 use super::packet::datatable::ParseSendTable;
 use super::vector::{Vector, VectorXY};
@@ -12,7 +12,7 @@ use crate::demo::parser::MalformedSendPropDefinitionError;
 use parse_display::Display;
 use serde::export::TryFrom;
 use std::cmp::min;
-use std::convert::TryInto;
+
 use std::fmt;
 use std::rc::Rc;
 
@@ -438,7 +438,7 @@ impl SendPropValue {
         Ok(values)
     }
 
-    fn read_string(stream: &mut Stream, definition: &SendPropDefinition) -> Result<String> {
+    fn read_string(stream: &mut Stream, _definition: &SendPropDefinition) -> Result<String> {
         let length = stream.read_int(9)?;
         stream.read_sized(length).map_err(ParseError::from)
     }
