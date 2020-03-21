@@ -1,19 +1,10 @@
-#![allow(dead_code)]
-#![allow(unused_imports)]
-#![allow(unused_variables)]
-
-use pretty_assertions::assert_eq;
 use std::fs;
+use test_case::test_case;
 
 use std::collections::{HashMap, HashSet};
-use tf_demo_parser::demo::message::Message;
-use tf_demo_parser::demo::packet::datatable::{
-    ParseSendTable, SendTable, SendTableName, ServerClass,
-};
-use tf_demo_parser::demo::packet::stringtable::StringTableEntry;
+use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass};
 use tf_demo_parser::demo::parser::MessageHandler;
-use tf_demo_parser::demo::sendprop::SendPropDefinition;
-use tf_demo_parser::{Demo, DemoParser, MatchState, MessageType, MessageTypeAnalyser, ParserState};
+use tf_demo_parser::{Demo, DemoParser, MessageType, ParserState};
 
 pub struct SendPropAnalyser {
     tables: Vec<ParseSendTable>,
@@ -28,19 +19,20 @@ impl SendPropAnalyser {
 impl MessageHandler for SendPropAnalyser {
     type Output = Vec<ParseSendTable>;
 
-    fn does_handle(message_type: MessageType) -> bool {
+    fn does_handle(_message_type: MessageType) -> bool {
         false
     }
 
-    fn handle_data_tables(&mut self, tables: &[ParseSendTable], server_classes: &[ServerClass]) {
+    fn handle_data_tables(&mut self, tables: &[ParseSendTable], _server_classes: &[ServerClass]) {
         self.tables = tables.to_vec()
     }
 
-    fn into_output(self, state: &ParserState) -> Self::Output {
+    fn into_output(self, _state: &ParserState) -> Self::Output {
         self.tables
     }
 }
 
+#[test_case("data/gully.dem", "data/gully_props.json"; "gully.dem")]
 fn flatten_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
@@ -72,13 +64,8 @@ fn flatten_test(input_file: &str, snapshot_file: &str) {
     let expected_tables: HashSet<_> = expected.keys().collect();
     let actual_tables: HashSet<_> = flat_props.keys().collect();
 
-    assert_eq!(expected_tables, actual_tables);
+    pretty_assertions::assert_eq!(expected_tables, actual_tables);
     for table in expected_tables {
-        assert_eq!(expected[table], flat_props[table]);
+        pretty_assertions::assert_eq!(expected[table], flat_props[table]);
     }
-}
-
-#[test]
-fn sendprop_test_gully() {
-    flatten_test("data/gully.dem", "data/gully_props.json");
 }

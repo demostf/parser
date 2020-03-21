@@ -1,24 +1,16 @@
-#![allow(dead_code)]
-#![allow(unused_imports)]
-#![allow(unused_variables)]
-
-use pretty_assertions::assert_eq;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::fs::{self, File};
+use test_case::test_case;
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
-use std::rc::Rc;
 use tf_demo_parser::demo::message::packetentities::{EntityId, PacketEntity, PVS};
 use tf_demo_parser::demo::message::Message;
-use tf_demo_parser::demo::packet::datatable::{
-    ParseSendTable, SendTableName, ServerClass, ServerClassName,
-};
-use tf_demo_parser::demo::packet::stringtable::StringTableEntry;
+use tf_demo_parser::demo::packet::datatable::{ServerClass, ServerClassName};
 use tf_demo_parser::demo::parser::MessageHandler;
-use tf_demo_parser::demo::sendprop::{SendPropDefinition, SendPropName, SendPropValue};
-use tf_demo_parser::{Demo, DemoParser, MatchState, MessageType, MessageTypeAnalyser, ParserState};
+use tf_demo_parser::demo::sendprop::SendPropValue;
+use tf_demo_parser::{Demo, DemoParser, MessageType, ParserState};
 
 /// Compatible serialization with the js parser entity dumps
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
@@ -53,7 +45,6 @@ struct EntityDump {
 
 impl EntityDump {
     pub fn from_entity(entity: PacketEntity, tick: u32, classes: &[ServerClass]) -> Self {
-        let id = entity.entity_index;
         EntityDump {
             tick,
             server_class: classes[usize::from(entity.server_class)].name.clone(),
@@ -115,6 +106,7 @@ impl MessageHandler for EntityDumper {
     }
 }
 
+#[test_case("data/small.dem", "data/small_entities.json"; "small.dem")]
 fn entity_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(file);
@@ -135,31 +127,35 @@ fn entity_test(input_file: &str, snapshot_file: &str) {
         buffer.clear();
     }
 
-    assert_eq!(expected.len(), entities.len());
+    pretty_assertions::assert_eq!(expected.len(), entities.len());
 
     let entity_ids: Vec<_> = entities.iter().map(|entity| entity.id).collect();
     let expected_ids: Vec<_> = expected.iter().map(|entity| entity.id).collect();
 
-    assert_eq!(expected_ids, entity_ids);
+    pretty_assertions::assert_eq!(expected_ids, entity_ids);
 
     for (expected_entity, entity) in expected.into_iter().zip(entities.into_iter()) {
-        assert_eq!(
-            expected_entity.tick, entity.tick,
+        pretty_assertions::assert_eq!(
+            expected_entity.tick,
+            entity.tick,
             "Failed comparing entity {}",
             entity.id
         );
-        assert_eq!(
-            expected_entity.id, entity.id,
+        pretty_assertions::assert_eq!(
+            expected_entity.id,
+            entity.id,
             "Failed comparing entity {}",
             entity.id
         );
-        assert_eq!(
-            expected_entity.server_class, entity.server_class,
+        pretty_assertions::assert_eq!(
+            expected_entity.server_class,
+            entity.server_class,
             "Failed comparing entity {}",
             entity.id
         );
-        assert_eq!(
-            expected_entity.pvs, entity.pvs,
+        pretty_assertions::assert_eq!(
+            expected_entity.pvs,
+            entity.pvs,
             "Failed comparing entity {}",
             entity.id
         );
@@ -168,14 +164,15 @@ fn entity_test(input_file: &str, snapshot_file: &str) {
         prop_names.sort();
         expected_prop_names.sort();
 
-        assert_eq!(
-            expected_prop_names, prop_names,
+        pretty_assertions::assert_eq!(
+            expected_prop_names,
+            prop_names,
             "Failed comparing entity {}",
             entity.id
         );
 
         for prop_name in expected_prop_names {
-            assert_eq!(
+            pretty_assertions::assert_eq!(
                 expected_entity.props.get(prop_name),
                 entity.props.get(prop_name),
                 "Failed comparing entity {} prop {}",
@@ -184,15 +181,11 @@ fn entity_test(input_file: &str, snapshot_file: &str) {
             );
         }
 
-        assert_eq!(
-            expected_entity, entity,
+        pretty_assertions::assert_eq!(
+            expected_entity,
+            entity,
             "Failed comparing entity {}",
             entity.id
         );
     }
-}
-
-#[test]
-fn entity_test_short() {
-    entity_test("data/small.dem", "data/small_entities.json");
 }
