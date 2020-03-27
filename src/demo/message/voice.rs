@@ -6,7 +6,7 @@ use crate::{ReadResult, Stream};
 pub struct VoiceInitMessage {
     codec: String,
     quality: u8,
-    extra_data: u16,
+    sampling_rate: u16,
 }
 
 impl BitRead<LittleEndian> for VoiceInitMessage {
@@ -14,7 +14,7 @@ impl BitRead<LittleEndian> for VoiceInitMessage {
         let codec = stream.read()?;
         let quality = stream.read()?;
 
-        let extra_data = if quality == 255 {
+        let sampling_rate = if quality == 255 {
             stream.read()?
         } else if codec == "vaudio_celt" {
             11025
@@ -25,7 +25,7 @@ impl BitRead<LittleEndian> for VoiceInitMessage {
         Ok(VoiceInitMessage {
             codec,
             quality,
-            extra_data,
+            sampling_rate,
         })
     }
 }
