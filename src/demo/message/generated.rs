@@ -2,7 +2,6 @@ use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
 use bitbuffer::{BitRead, LittleEndian};
 
-
 #[derive(BitRead, Debug)]
 pub struct FileMessage {
     pub transfer_id: u32,

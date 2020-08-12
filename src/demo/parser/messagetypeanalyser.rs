@@ -1,17 +1,8 @@
-
-
-
-
-
-
-
-
 use crate::demo::message::{Message, MessageType};
-
 
 use crate::demo::parser::handler::MessageHandler;
 
-use crate::{ParserState};
+use crate::ParserState;
 
 #[derive(Default)]
 pub struct MessageTypeAnalyser {

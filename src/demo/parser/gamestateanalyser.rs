@@ -1,4 +1,3 @@
-
 use crate::demo::message::packetentities::{EntityId, PacketEntity};
 use crate::demo::message::Message;
 use crate::demo::packet::datatable::{ParseSendTable, ServerClass, ServerClassName};

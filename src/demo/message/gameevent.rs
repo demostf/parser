@@ -1,6 +1,3 @@
-
-
-
 use bitbuffer::{BitRead, LittleEndian};
 use parse_display::Display;
 

@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead};
+use bitbuffer::BitRead;
 
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{
@@ -8,10 +8,7 @@ use crate::{Parse, ParseError, ParserState, Result, Stream};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
-
 use std::cmp::min;
-
-
 
 use std::rc::Rc;
 

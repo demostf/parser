@@ -2,7 +2,7 @@ use bitbuffer::{BitRead, BitReadSized, LittleEndian};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::demo::message::stringtable::{log_base2};
+use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::{ClassId, SendTable};
 use crate::demo::parser::ParseBitSkip;
 use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
@@ -12,7 +12,7 @@ use std::cmp::min;
 
 use std::fmt;
 use std::hint::unreachable_unchecked;
-use std::num::{NonZeroU32};
+use std::num::NonZeroU32;
 use std::rc::Rc;
 
 #[derive(

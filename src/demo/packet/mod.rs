@@ -1,7 +1,6 @@
 use bitbuffer::BitRead;
 use num_enum::TryFromPrimitive;
 
-
 use crate::{Parse, ParserState, Result, Stream};
 
 use self::consolecmd::ConsoleCmdPacket;
