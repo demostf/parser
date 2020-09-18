@@ -14,7 +14,7 @@ use crate::Stream;
 mod analyser;
 mod error;
 pub mod gamestateanalyser;
-mod handler;
+pub mod handler;
 mod messagetypeanalyser;
 mod state;
 
