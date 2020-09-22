@@ -16,13 +16,14 @@ use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
 use std::cell::RefCell;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct DemoMeta {
     pub version: u16,
     pub game: String,
     pub interval_per_tick: f32,
 }
 
+#[derive(Clone)]
 pub struct ParserState {
     pub static_baselines: HashMap<ClassId, StaticBaseline, NullHasherBuilder>,
     pub parsed_static_baselines: RefCell<HashMap<ClassId, Vec<SendProp>, NullHasherBuilder>>,
@@ -38,6 +39,7 @@ pub struct ParserState {
     parse_all: bool,
 }
 
+#[derive(Clone)]
 pub struct StaticBaseline {
     pub class_id: ClassId,
     pub raw: Stream<'static>,

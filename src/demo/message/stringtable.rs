@@ -15,7 +15,7 @@ pub struct CreateStringTableMessage<'a> {
     pub table: Box<StringTable<'a>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StringTableMeta {
     pub max_entries: u16,
     pub fixed_userdata_size: Option<FixedUserDataSize>,

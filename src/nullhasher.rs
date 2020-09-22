@@ -34,6 +34,7 @@ impl Hasher for NullHasher {
     }
 }
 
+#[derive(Clone)]
 pub struct NullHasherBuilder;
 
 impl BuildHasher for NullHasherBuilder {

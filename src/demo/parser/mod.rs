@@ -92,6 +92,7 @@ impl<'a, A: MessageHandler> DemoParser<'a, A> {
     }
 }
 
+#[derive(Clone)]
 pub struct RawPacketStream<'a> {
     stream: Stream<'a>,
     ended: bool,
