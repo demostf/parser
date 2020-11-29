@@ -53,6 +53,10 @@ impl Team {
     {
         Team::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or_default()
     }
+
+    pub fn is_player(&self) -> bool {
+        *self == Team::Red || *self == Team::Blue
+    }
 }
 
 impl Default for Team {
@@ -69,7 +73,7 @@ pub enum Class {
     Other = 0,
     Scout = 1,
     Sniper = 2,
-    Solder = 3,
+    Soldier = 3,
     Demoman = 4,
     Medic = 5,
     Heavy = 6,
@@ -96,6 +100,31 @@ impl Default for Class {
 #[derive(Default, Debug, Eq, PartialEq, Deserialize, Clone)]
 #[serde(from = "HashMap<Class, u8>")]
 pub struct ClassList([u8; 10]);
+
+impl ClassList {
+    /// Get an iterator for all classes played and the number of spawn on the class
+    pub fn iter<'a>(&'a self) -> impl Iterator<Item = (Class, u8)> + 'a {
+        self.0
+            .iter()
+            .copied()
+            .enumerate()
+            .map(|(class, count)| (Class::new(class), count))
+            .filter(|(_, count)| *count > 0)
+    }
+
+    /// Get an iterator for all classes played and the number of spawn on the class, sorted by the number of spawns
+    pub fn sorted(&self) -> impl Iterator<Item = (Class, u8)> {
+        let mut classes = self.iter().collect::<Vec<(Class, u8)>>();
+        classes.sort_by(|a, b| a.1.cmp(&b.1).reverse());
+        classes.into_iter()
+    }
+}
+
+#[test]
+fn test_classlist_sorted() {
+    let list = ClassList([0, 1, 5, 0, 0, 3, 0, 0, 0, 0]);
+    assert_eq!(list.sorted().collect::<Vec<_>>(), &[(Class::Sniper, 5), (Class::Medic, 3), (Class::Scout, 1)])
+}
 
 impl Index<Class> for ClassList {
     type Output = u8;
@@ -226,9 +255,9 @@ impl Death {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Round {
-    winner: Team,
-    length: f32,
-    end_tick: u32,
+    pub winner: Team,
+    pub length: f32,
+    pub end_tick: u32,
 }
 
 impl Round {
@@ -243,8 +272,8 @@ impl Round {
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct World {
-    boundary_min: Vector,
-    boundary_max: Vector,
+    pub boundary_min: Vector,
+    pub boundary_max: Vector,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
