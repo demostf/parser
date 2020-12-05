@@ -2,14 +2,14 @@ use crate::demo::gamevent::GameEventValueType;
 use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{ClassId, SendTableName};
-use bitbuffer::{FromUtf8Error, ReadError};
+use bitbuffer::{BitError, FromUtf8Error};
 use err_derive::Error;
 
 /// Errors that can occur during parsing
 #[derive(Debug, Error)]
 pub enum ParseError {
     #[error(display = "Error while reading bits from stream: {}", _0)]
-    ReadError(#[error(source, no_from)] ReadError),
+    ReadError(#[error(source, no_from)] BitError),
     #[error(display = "Malformed utf8 while reading string")]
     MalformedUTF8(#[error(source)] FromUtf8Error),
     #[error(display = "Unexpected type of compressed data: {}", _0)]
@@ -100,10 +100,10 @@ pub enum GameEventError {
     UnknownType(GameEventTypeId),
 }
 
-impl From<ReadError> for ParseError {
-    fn from(err: ReadError) -> ParseError {
+impl From<BitError> for ParseError {
+    fn from(err: BitError) -> ParseError {
         match err {
-            ReadError::Utf8Error(utf8_error) => ParseError::MalformedUTF8(utf8_error),
+            BitError::Utf8Error(utf8_error) => ParseError::MalformedUTF8(utf8_error),
             _ => ParseError::ReadError(err),
         }
     }

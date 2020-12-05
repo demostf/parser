@@ -1,5 +1,5 @@
 use crate::ReadResult;
-use bitbuffer::{BitReadBuffer, BitReadStream, LittleEndian, ReadError};
+use bitbuffer::{BitError, BitReadBuffer, BitReadStream, LittleEndian};
 
 pub mod gameevent_gen;
 pub mod gamevent;
@@ -30,9 +30,9 @@ impl Demo {
     }
 }
 
-pub(crate) fn handle_utf8_error(error: ReadError) -> ReadResult<String> {
+pub(crate) fn handle_utf8_error(error: BitError) -> ReadResult<String> {
     match error {
-        ReadError::Utf8Error(_) => Ok("-- Malformed utf8 --".into()),
+        BitError::Utf8Error(_) => Ok("-- Malformed utf8 --".into()),
         _ => Err(error),
     }
 }
