@@ -72,18 +72,18 @@ pub enum UserMessageType {
 }
 
 #[derive(Debug)]
-pub enum UserMessage {
+pub enum UserMessage<'a> {
     SayText2(Box<SayText2Message>),
     Text(Box<TextMessage>),
     ResetHUD(ResetHudMessage),
     Train(TrainMessage),
     VoiceSubtitle(VoiceSubtitleMessage),
     Shake(ShakeMessage),
-    Unknown(UnknownUserMessage),
+    Unknown(UnknownUserMessage<'a>),
 }
 
-impl BitRead<LittleEndian> for UserMessage {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
+impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
+    fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
         let message_type =
             UserMessageType::try_from(stream.read::<u8>()?).unwrap_or(UserMessageType::Unknown);
         let length = stream.read_int(11)?;
@@ -122,7 +122,7 @@ pub enum ChatMessageKind {
     NameChange,
 }
 
-impl BitRead<LittleEndian> for ChatMessageKind {
+impl BitRead<'_, LittleEndian> for ChatMessageKind {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let raw: String = stream.read()?;
         Ok(match raw.as_str() {
@@ -146,7 +146,7 @@ pub struct SayText2Message {
     pub text: String,
 }
 
-impl BitRead<LittleEndian> for SayText2Message {
+impl BitRead<'_, LittleEndian> for SayText2Message {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let client = stream.read()?;
         let raw = stream.read()?;
@@ -250,12 +250,12 @@ pub struct ShakeMessage {
 }
 
 #[derive(Debug, Clone)]
-pub struct UnknownUserMessage {
-    data: Stream,
+pub struct UnknownUserMessage<'a> {
+    data: Stream<'a>,
 }
 
-impl BitRead<LittleEndian> for UnknownUserMessage {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
+impl<'a> BitRead<'a, LittleEndian> for UnknownUserMessage<'a> {
+    fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
         Ok(UnknownUserMessage {
             data: stream.read_bits(stream.bits_left())?,
         })

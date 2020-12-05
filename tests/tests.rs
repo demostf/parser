@@ -13,7 +13,7 @@ use tf_demo_parser::{Demo, DemoParser, MatchState};
 #[test_case("data/decal.dem", "data/decal.json"; "decal.dem")]
 fn snapshot_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
-    let demo = Demo::new(file);
+    let demo = Demo::new(&file);
     let (_, state) = DemoParser::new(demo.get_stream()).parse().unwrap();
 
     let expected: MatchState = serde_json::from_slice(
@@ -29,7 +29,7 @@ fn snapshot_test(input_file: &str, snapshot_file: &str) {
 #[test_case("data/gully.dem", "data/gully_game_state.json"; "gully.dem")]
 fn game_state_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
-    let demo = Demo::new(file);
+    let demo = Demo::new(&file);
     let (_, state) = DemoParser::new_with_analyser(demo.get_stream(), GameStateAnalyser::new())
         .parse()
         .unwrap();

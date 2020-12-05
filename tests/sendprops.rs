@@ -35,7 +35,7 @@ impl MessageHandler for SendPropAnalyser {
 #[test_case("data/gully.dem", "data/gully_props.json"; "gully.dem")]
 fn flatten_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
-    let demo = Demo::new(file);
+    let demo = Demo::new(&file);
     let (_, send_tables) =
         DemoParser::new_with_analyser(demo.get_stream(), SendPropAnalyser::new())
             .parse()

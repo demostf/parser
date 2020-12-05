@@ -93,7 +93,7 @@ impl PacketEntity {
     }
 }
 
-fn read_bit_var<T: BitReadSized<LittleEndian>>(stream: &mut Stream) -> ReadResult<T> {
+fn read_bit_var<'a, T: BitReadSized<'a, LittleEndian>>(stream: &mut Stream<'a>) -> ReadResult<T> {
     let ty: u8 = stream.read_sized(2)?;
 
     let bits = match ty {
@@ -116,7 +116,7 @@ pub struct PacketEntitiesMessage {
     pub updated_base_line: bool,
 }
 
-fn get_send_table(state: &ParserState, class: ClassId) -> Result<&SendTable> {
+fn get_send_table<'a, 'b>(state: &'b ParserState<'a>, class: ClassId) -> Result<&'b SendTable> {
     state
         .send_tables
         .get(usize::from(class))
@@ -144,7 +144,7 @@ fn get_entity_for_update(
     })
 }
 
-impl Parse for PacketEntitiesMessage {
+impl Parse<'_> for PacketEntitiesMessage {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let max_entries = stream.read_sized(11)?;
         let delta: Option<u32> = stream.read()?;
@@ -269,7 +269,7 @@ impl PacketEntitiesMessage {
     }
 }
 
-impl ParseBitSkip for PacketEntitiesMessage {
+impl ParseBitSkip<'_> for PacketEntitiesMessage {
     fn parse_skip(stream: &mut Stream) -> Result<()> {
         stream.skip_bits(11)?;
         if stream.read()? {

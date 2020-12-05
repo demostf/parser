@@ -23,7 +23,7 @@ fn main() -> Result<(), MainError> {
         .map(|arg| arg.as_str() == "all")
         .unwrap_or_default();
     let file = fs::read(path)?;
-    let demo = Demo::new(file);
+    let demo = Demo::new(&file);
     let parser = if all {
         DemoParser::new_all(demo.get_stream())
     } else {

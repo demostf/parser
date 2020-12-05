@@ -8,7 +8,7 @@ pub struct SetConVarMessage {
     vars: Vec<(String, String)>,
 }
 
-impl BitRead<LittleEndian> for SetConVarMessage {
+impl BitRead<'_, LittleEndian> for SetConVarMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let count: u8 = stream.read()?;
         let mut vars: Vec<(String, String)> = Vec::with_capacity(min(count, 128) as usize);

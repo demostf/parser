@@ -212,7 +212,7 @@ pub struct DataTablePacket {
     pub server_classes: Vec<ServerClass>,
 }
 
-impl Parse for DataTablePacket {
+impl Parse<'_> for DataTablePacket {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let tick = stream.read()?;
         let len = stream.read_int::<usize>(32)?;

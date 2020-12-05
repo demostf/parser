@@ -109,7 +109,7 @@ impl MessageHandler for EntityDumper {
 #[test_case("data/small.dem", "data/small_entities.json"; "small.dem")]
 fn entity_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
-    let demo = Demo::new(file);
+    let demo = Demo::new(&file);
     let (_, entities) = DemoParser::new_with_analyser(demo.get_stream(), EntityDumper::new())
         .parse()
         .unwrap();

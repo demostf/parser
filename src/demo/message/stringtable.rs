@@ -10,8 +10,8 @@ use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::cmp::min;
 
 #[derive(Debug)]
-pub struct CreateStringTableMessage {
-    pub table: Box<StringTable>,
+pub struct CreateStringTableMessage<'a> {
+    pub table: Box<StringTable<'a>>,
 }
 
 #[derive(Debug)]
@@ -20,7 +20,7 @@ pub struct StringTableMeta {
     pub fixed_userdata_size: Option<FixedUserDataSize>,
 }
 
-impl From<&StringTable> for StringTableMeta {
+impl From<&StringTable<'_>> for StringTableMeta {
     fn from(table: &StringTable) -> Self {
         StringTableMeta {
             max_entries: table.max_entries,
@@ -29,8 +29,8 @@ impl From<&StringTable> for StringTableMeta {
     }
 }
 
-impl Parse for CreateStringTableMessage {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
+    fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
         let name = stream.read()?;
         let max_entries: u16 = stream.read()?;
         let encode_bits = log_base2(max_entries);
@@ -67,7 +67,7 @@ impl Parse for CreateStringTableMessage {
                 });
             }
 
-            let buffer = BitReadBuffer::new(decompressed_data, LittleEndian);
+            let buffer = BitReadBuffer::new_owned(decompressed_data, LittleEndian);
             table_data = BitReadStream::new(buffer);
         }
 
@@ -92,8 +92,8 @@ impl Parse for CreateStringTableMessage {
     }
 }
 
-impl ParseBitSkip for CreateStringTableMessage {
-    fn parse_skip(stream: &mut Stream) -> Result<()> {
+impl<'a> ParseBitSkip<'a> for CreateStringTableMessage<'a> {
+    fn parse_skip(stream: &mut Stream<'a>) -> Result<()> {
         let _: String = stream.read()?;
         let max_entries: u16 = stream.read()?;
         let encode_bits = log_base2(max_entries);
@@ -109,13 +109,13 @@ impl ParseBitSkip for CreateStringTableMessage {
 }
 
 #[derive(Debug)]
-pub struct UpdateStringTableMessage {
-    pub entries: Vec<(u16, StringTableEntry)>,
+pub struct UpdateStringTableMessage<'a> {
+    pub entries: Vec<(u16, StringTableEntry<'a>)>,
     pub table_id: u8,
 }
 
-impl Parse for UpdateStringTableMessage {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+impl<'a> Parse<'a> for UpdateStringTableMessage<'a> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let table_id = stream.read_sized(5)?;
 
         let changed: u16 = if stream.read()? { stream.read()? } else { 1 };
@@ -132,8 +132,8 @@ impl Parse for UpdateStringTableMessage {
     }
 }
 
-impl ParseBitSkip for UpdateStringTableMessage {
-    fn parse_skip(stream: &mut Stream) -> Result<()> {
+impl<'a> ParseBitSkip<'a> for UpdateStringTableMessage<'a> {
+    fn parse_skip(stream: &mut Stream<'a>) -> Result<()> {
         let _: u8 = stream.read_sized(5)?;
 
         let _: u16 = if stream.read()? { stream.read()? } else { 1 };
@@ -142,12 +142,12 @@ impl ParseBitSkip for UpdateStringTableMessage {
     }
 }
 
-struct TableEntries {
-    entries: Vec<(u16, StringTableEntry)>,
+struct TableEntries<'a> {
+    entries: Vec<(u16, StringTableEntry<'a>)>,
     history: Vec<u16>,
 }
 
-impl TableEntries {
+impl<'a> TableEntries<'a> {
     pub fn new(count: usize) -> Self {
         TableEntries {
             entries: Vec::with_capacity(min(count, 128)),
@@ -155,7 +155,7 @@ impl TableEntries {
         }
     }
 
-    pub fn push(&mut self, entry: (u16, StringTableEntry)) {
+    pub fn push(&mut self, entry: (u16, StringTableEntry<'a>)) {
         if self.history.len() > 31 {
             self.history.remove(0);
         }
@@ -164,23 +164,23 @@ impl TableEntries {
         self.history.push(entry_index as u16);
     }
 
-    pub fn get_history(&self, index: usize) -> Option<&StringTableEntry> {
+    pub fn get_history(&self, index: usize) -> Option<&StringTableEntry<'a>> {
         self.history
             .get(index)
             .and_then(|entry_index| self.entries.get(*entry_index as usize))
             .map(|entry| &entry.1)
     }
 
-    pub fn into_entries(self) -> Vec<(u16, StringTableEntry)> {
+    pub fn into_entries(self) -> Vec<(u16, StringTableEntry<'a>)> {
         self.entries
     }
 }
 
-fn parse_string_table_update(
-    stream: &mut Stream,
+fn parse_string_table_update<'a>(
+    stream: &mut Stream<'a>,
     table_meta: &StringTableMeta,
     entry_count: u16,
-) -> ReadResult<Vec<(u16, StringTableEntry)>> {
+) -> ReadResult<Vec<(u16, StringTableEntry<'a>)>> {
     let entry_bits = log_base2(table_meta.max_entries);
     let mut entries = TableEntries::new(entry_count as usize);
 
@@ -202,11 +202,11 @@ fn parse_string_table_update(
     Ok(entries.into_entries())
 }
 
-fn parse_string_table_list(
-    stream: &mut Stream,
+fn parse_string_table_list<'a>(
+    stream: &mut Stream<'a>,
     table_meta: &StringTableMeta,
     entry_count: u16,
-) -> Result<Vec<(u16, StringTableEntry)>> {
+) -> Result<Vec<(u16, StringTableEntry<'a>)>> {
     let mut entries = TableEntries::new(entry_count as usize);
 
     for index in 0..entry_count {
@@ -223,11 +223,11 @@ fn parse_string_table_list(
     Ok(entries.into_entries())
 }
 
-fn read_table_entry(
-    stream: &mut Stream,
+fn read_table_entry<'a>(
+    stream: &mut Stream<'a>,
     table_meta: &StringTableMeta,
     history: &TableEntries,
-) -> ReadResult<StringTableEntry> {
+) -> ReadResult<StringTableEntry<'a>> {
     let text = if stream.read()? {
         // set value
         if stream.read()? {

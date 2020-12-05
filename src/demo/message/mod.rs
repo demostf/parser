@@ -61,7 +61,7 @@ pub enum MessageType {
     CmdKeyValues = 32,
 }
 
-impl Parse for MessageType {
+impl Parse<'_> for MessageType {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let raw = stream.read_int(6)?;
         MessageType::try_from(raw).map_err(|_| ParseError::InvalidMessageType(raw))
@@ -69,7 +69,7 @@ impl Parse for MessageType {
 }
 
 #[derive(Debug)]
-pub enum Message {
+pub enum Message<'a> {
     Empty,
     File(FileMessage),
     NetTick(NetTickMessage),
@@ -80,34 +80,34 @@ pub enum Message {
     ServerInfo(Box<ServerInfoMessage>),
     ClassInfo(ClassInfoMessage),
     SetPause(SetPauseMessage),
-    CreateStringTable(CreateStringTableMessage),
-    UpdateStringTable(UpdateStringTableMessage),
+    CreateStringTable(CreateStringTableMessage<'a>),
+    UpdateStringTable(UpdateStringTableMessage<'a>),
     VoiceInit(VoiceInitMessage),
-    VoiceData(VoiceDataMessage),
-    ParseSounds(ParseSoundsMessage),
+    VoiceData(VoiceDataMessage<'a>),
+    ParseSounds(ParseSoundsMessage<'a>),
     SetView(SetViewMessage),
     FixAngle(FixAngleMessage),
     BspDecal(BSPDecalMessage),
-    UserMessage(UserMessage),
-    EntityMessage(EntityMessage),
+    UserMessage(UserMessage<'a>),
+    EntityMessage(EntityMessage<'a>),
     GameEvent(GameEventMessage),
     PacketEntities(PacketEntitiesMessage),
     TempEntities(TempEntitiesMessage),
     PreFetch(PreFetchMessage),
-    Menu(MenuMessage),
+    Menu(MenuMessage<'a>),
     GameEventList(GameEventListMessage),
     GetCvarValue(GetCvarValueMessage),
-    CmdKeyValues(CmdKeyValuesMessage),
+    CmdKeyValues(CmdKeyValuesMessage<'a>),
 }
 
-impl Parse for Message {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+impl<'a> Parse<'a> for Message<'a> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let message_type = MessageType::parse(stream, state)?;
         Self::from_type(message_type, stream, state)
     }
 }
 
-impl Message {
+impl<'a> Message<'a> {
     pub fn get_message_type(&self) -> MessageType {
         match self {
             Message::Empty => MessageType::Empty,
@@ -143,7 +143,7 @@ impl Message {
 
     pub fn from_type(
         message_type: MessageType,
-        stream: &mut Stream,
+        stream: &mut Stream<'a>,
         state: &ParserState,
     ) -> Result<Self> {
         Ok(match message_type {

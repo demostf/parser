@@ -13,10 +13,10 @@ pub struct MessagePacketMeta {
 }
 
 #[derive(Debug)]
-pub struct MessagePacket {
+pub struct MessagePacket<'a> {
     pub tick: u32,
-    pub messages: Vec<Message>,
-    pub meta: LazyBitRead<MessagePacketMeta, LittleEndian>,
+    pub messages: Vec<Message<'a>>,
+    pub meta: LazyBitRead<'a, MessagePacketMeta, LittleEndian>,
 }
 
 #[derive(Clone, Debug)]
@@ -26,7 +26,7 @@ pub struct ViewAngles {
     pub local_angles: (Vector, Vector),
 }
 
-impl<E: Endianness> BitRead<E> for ViewAngles {
+impl<E: Endianness> BitRead<'_, E> for ViewAngles {
     fn read(stream: &mut bitbuffer::BitReadStream<E>) -> ReadResult<Self> {
         let view_origin_1 = Vector::read(stream)?;
         let view_angle_1 = Vector::read(stream)?;
@@ -46,8 +46,8 @@ impl<E: Endianness> BitRead<E> for ViewAngles {
     }
 }
 
-impl Parse for MessagePacket {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+impl<'a> Parse<'a> for MessagePacket<'a> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let tick = stream.read()?;
 
         let meta = stream.read()?;

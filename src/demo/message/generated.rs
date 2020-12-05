@@ -74,7 +74,7 @@ pub struct FixAngleMessage {
 
 #[derive(BitRead, Debug)]
 #[endianness = "LittleEndian"]
-pub struct EntityMessage {
+pub struct EntityMessage<'a> {
     #[size = 11]
     pub index: u16,
     #[size = 9]
@@ -82,7 +82,7 @@ pub struct EntityMessage {
     #[size = 11]
     pub length: u16,
     #[size = "length"]
-    pub data: Stream,
+    pub data: Stream<'a>,
 }
 
 #[derive(BitRead, Debug)]
@@ -93,11 +93,11 @@ pub struct PreFetchMessage {
 
 #[derive(BitRead, Debug)]
 #[endianness = "LittleEndian"]
-pub struct MenuMessage {
+pub struct MenuMessage<'a> {
     pub kind: u16,
     pub length: u16,
     #[size = "length.saturating_mul(8)"]
-    pub index: Stream,
+    pub index: Stream<'a>,
 }
 
 #[derive(BitRead, Debug)]
@@ -108,8 +108,8 @@ pub struct GetCvarValueMessage {
 
 #[derive(BitRead, Debug)]
 #[endianness = "LittleEndian"]
-pub struct CmdKeyValuesMessage {
+pub struct CmdKeyValuesMessage<'a> {
     pub length: u32,
     #[size = "length.saturating_mul(8)"]
-    pub data: Stream,
+    pub data: Stream<'a>,
 }

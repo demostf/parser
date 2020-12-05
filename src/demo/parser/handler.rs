@@ -24,26 +24,26 @@ pub trait BorrowMessageHandler: MessageHandler {
     fn borrow_output(&self, state: &ParserState) -> &Self::Output;
 }
 
-pub struct DemoHandler<T: MessageHandler> {
+pub struct DemoHandler<'a, T: MessageHandler> {
     pub tick: u32,
     string_table_names: Vec<String>,
     analyser: T,
-    state_handler: ParserState,
+    state_handler: ParserState<'a>,
 }
 
-impl DemoHandler<Analyser> {
+impl<'a> DemoHandler<'a, Analyser> {
     pub fn new() -> Self {
         Self::with_analyser(Analyser::new())
     }
 }
 
-impl Default for DemoHandler<Analyser> {
+impl<'a> Default for DemoHandler<'a, Analyser> {
     fn default() -> Self {
         DemoHandler::new()
     }
 }
 
-impl<T: MessageHandler> DemoHandler<T> {
+impl<'a, T: MessageHandler> DemoHandler<'a, T> {
     pub fn with_analyser(analyser: T) -> Self {
         let state_handler = ParserState::new(T::does_handle, false);
 
@@ -65,7 +65,7 @@ impl<T: MessageHandler> DemoHandler<T> {
         }
     }
 
-    pub fn handle_packet(&mut self, packet: Packet) {
+    pub fn handle_packet(&mut self, packet: Packet<'a>) {
         match packet {
             Packet::DataTables(packet) => {
                 self.handle_data_table(packet.tables, packet.server_classes);
@@ -94,7 +94,7 @@ impl<T: MessageHandler> DemoHandler<T> {
         }
     }
 
-    fn handle_string_table(&mut self, table: StringTable) {
+    fn handle_string_table(&mut self, table: StringTable<'a>) {
         self.state_handler
             .handle_string_table_meta(table.get_table_meta());
         for (entry_index, entry) in table.entries.into_iter() {
@@ -108,7 +108,7 @@ impl<T: MessageHandler> DemoHandler<T> {
         self.string_table_names.push(table.name);
     }
 
-    fn handle_table_update(&mut self, table_id: u8, entries: Vec<(u16, StringTableEntry)>) {
+    fn handle_table_update(&mut self, table_id: u8, entries: Vec<(u16, StringTableEntry<'a>)>) {
         if let Some(table_name) = self.string_table_names.get(table_id as usize) {
             for (index, entry) in entries {
                 let index = index as usize;
@@ -130,7 +130,7 @@ impl<T: MessageHandler> DemoHandler<T> {
             .handle_data_table(send_tables, server_classes);
     }
 
-    fn handle_message(&mut self, message: Message) {
+    fn handle_message(&mut self, message: Message<'a>) {
         let message_type = message.get_message_type();
         if T::does_handle(message_type) {
             self.analyser.handle_message(&message, self.tick);
@@ -142,12 +142,12 @@ impl<T: MessageHandler> DemoHandler<T> {
         self.analyser.into_output(&self.state_handler)
     }
 
-    pub fn get_parser_state(&self) -> &ParserState {
+    pub fn get_parser_state(&self) -> &ParserState<'a> {
         &self.state_handler
     }
 }
 
-impl<T: MessageHandler + BorrowMessageHandler> DemoHandler<T> {
+impl<'a, T: MessageHandler + BorrowMessageHandler> DemoHandler<'a, T> {
     pub fn borrow_output(&self) -> &T::Output {
         self.analyser.borrow_output(&self.state_handler)
     }

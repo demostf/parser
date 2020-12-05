@@ -8,7 +8,7 @@ pub struct ConsoleCmdPacket {
     command: String,
 }
 
-impl BitRead<LittleEndian> for ConsoleCmdPacket {
+impl BitRead<'_, LittleEndian> for ConsoleCmdPacket {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let tick = stream.read_int(32)?;
         let len = stream.read_int::<usize>(32)?;

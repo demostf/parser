@@ -21,51 +21,51 @@ mod state;
 pub use self::error::*;
 use crate::demo::parser::handler::BorrowMessageHandler;
 
-pub trait Parse: Sized {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self>;
+pub trait Parse<'a>: Sized {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self>;
 }
 
-impl<T: BitRead<LittleEndian>> Parse for T {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+impl<'a, T: BitRead<'a, LittleEndian>> Parse<'a> for T {
+    fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
         Self::read(stream).map_err(ParseError::from)
     }
 }
 
-pub trait ParseBitSkip {
-    fn parse_skip(stream: &mut Stream) -> Result<()>;
+pub trait ParseBitSkip<'a> {
+    fn parse_skip(stream: &mut Stream<'a>) -> Result<()>;
 }
 
-impl<T: BitRead<LittleEndian>> ParseBitSkip for T {
+impl<'a, T: BitRead<'a, LittleEndian>> ParseBitSkip<'a> for T {
     #[inline(always)]
-    fn parse_skip(stream: &mut Stream) -> Result<()> {
+    fn parse_skip(stream: &mut Stream<'a>) -> Result<()> {
         Self::skip(stream).map_err(ParseError::from)
     }
 }
 
-pub struct DemoParser<A: MessageHandler> {
-    handler: DemoHandler<A>,
-    stream: Stream,
+pub struct DemoParser<'a, A: MessageHandler> {
+    handler: DemoHandler<'a, A>,
+    stream: Stream<'a>,
 }
 
-impl DemoParser<Analyser> {
-    pub fn new(stream: Stream) -> DemoParser<Analyser> {
+impl<'a> DemoParser<'a, Analyser> {
+    pub fn new(stream: Stream<'a>) -> DemoParser<Analyser> {
         DemoParser::new_with_analyser(stream, Analyser::new())
     }
 
-    pub fn new_all(stream: Stream) -> DemoParser<Analyser> {
+    pub fn new_all(stream: Stream<'a>) -> DemoParser<Analyser> {
         DemoParser::new_all_with_analyser(stream, Analyser::new())
     }
 }
 
-impl<A: MessageHandler> DemoParser<A> {
-    pub fn new_with_analyser(stream: Stream, analyser: A) -> DemoParser<A> {
+impl<'a, A: MessageHandler> DemoParser<'a, A> {
+    pub fn new_with_analyser(stream: Stream<'a>, analyser: A) -> DemoParser<A> {
         DemoParser {
             handler: DemoHandler::with_analyser(analyser),
             stream,
         }
     }
 
-    pub fn new_all_with_analyser(stream: Stream, analyser: A) -> DemoParser<A> {
+    pub fn new_all_with_analyser(stream: Stream<'a>, analyser: A) -> DemoParser<A> {
         DemoParser {
             handler: DemoHandler::parse_all_with_analyser(analyser),
             stream,
@@ -82,7 +82,7 @@ impl<A: MessageHandler> DemoParser<A> {
 
     /// A Ticker provides a way to step trough the demo packet by packet
     /// while allowing to see the intermediate states
-    pub fn ticker(mut self) -> Result<(Header, DemoTicker<A>)> {
+    pub fn ticker(mut self) -> Result<(Header, DemoTicker<'a, A>)> {
         let header = Header::read(&mut self.stream)?;
         let ticker = DemoTicker {
             handler: self.handler,
@@ -92,20 +92,20 @@ impl<A: MessageHandler> DemoParser<A> {
     }
 }
 
-pub struct RawPacketStream {
-    stream: Stream,
+pub struct RawPacketStream<'a> {
+    stream: Stream<'a>,
     ended: bool,
 }
 
-impl RawPacketStream {
-    pub fn new(stream: Stream) -> Self {
+impl<'a> RawPacketStream<'a> {
+    pub fn new(stream: Stream<'a>) -> Self {
         RawPacketStream {
             stream,
             ended: false,
         }
     }
 
-    pub fn next(&mut self, state: &ParserState) -> Result<Option<Packet>> {
+    pub fn next(&mut self, state: &ParserState) -> Result<Option<Packet<'a>>> {
         if self.ended {
             Ok(None)
         } else {
@@ -124,12 +124,12 @@ impl RawPacketStream {
     }
 }
 
-pub struct DemoTicker<A: MessageHandler> {
-    handler: DemoHandler<A>,
-    packets: RawPacketStream,
+pub struct DemoTicker<'a, A: MessageHandler> {
+    handler: DemoHandler<'a, A>,
+    packets: RawPacketStream<'a>,
 }
 
-impl<A: MessageHandler> DemoTicker<A> {
+impl<'a, A: MessageHandler> DemoTicker<'a, A> {
     /// Process the next packet
     ///
     /// returns whether or not there are still packets left in the demo
@@ -150,7 +150,7 @@ impl<A: MessageHandler> DemoTicker<A> {
     }
 }
 
-impl<A: MessageHandler + BorrowMessageHandler> DemoTicker<A> {
+impl<A: MessageHandler + BorrowMessageHandler> DemoTicker<'_, A> {
     pub fn state(&self) -> &A::Output {
         self.handler.borrow_output()
     }

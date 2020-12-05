@@ -20,15 +20,15 @@ pub mod synctick;
 pub mod usercmd;
 
 #[derive(Debug)]
-pub enum Packet {
-    Sigon(MessagePacket),
-    Message(MessagePacket),
+pub enum Packet<'a> {
+    Sigon(MessagePacket<'a>),
+    Message(MessagePacket<'a>),
     SyncTick(SyncTickPacket),
     ConsoleCmd(ConsoleCmdPacket),
     UserCmd(UserCmdPacket),
     DataTables(DataTablePacket),
     Stop(StopPacket),
-    StringTables(StringTablePacket),
+    StringTables(StringTablePacket<'a>),
 }
 
 #[derive(BitRead, TryFromPrimitive, Debug, Clone, Copy)]
@@ -45,8 +45,8 @@ pub enum PacketType {
     StringTables = 8,
 }
 
-impl Parse for Packet {
-    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
+impl<'a> Parse<'a> for Packet<'a> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let packet_type = PacketType::read(stream)?;
         Ok(match packet_type {
             PacketType::Sigon => Packet::Sigon(MessagePacket::parse(stream, state)?),

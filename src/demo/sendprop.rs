@@ -293,7 +293,7 @@ impl SendPropFlags {
     }
 }
 
-impl BitRead<LittleEndian> for SendPropFlags {
+impl BitRead<'_, LittleEndian> for SendPropFlags {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         // since all 16 bits worth of flags are used there are no invalid flags
         Ok(SendPropFlags(BitFlags::from_bits_truncate(stream.read()?)))

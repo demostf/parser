@@ -13,7 +13,7 @@ pub struct BSPDecalMessage {
     pub low_priority: bool,
 }
 
-impl BitRead<LittleEndian> for BSPDecalMessage {
+impl BitRead<'_, LittleEndian> for BSPDecalMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let position = {
             let has_x = stream.read()?;

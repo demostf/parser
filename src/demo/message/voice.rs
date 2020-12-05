@@ -9,7 +9,7 @@ pub struct VoiceInitMessage {
     sampling_rate: u16,
 }
 
-impl BitRead<LittleEndian> for VoiceInitMessage {
+impl BitRead<'_, LittleEndian> for VoiceInitMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let codec = stream.read()?;
         let quality = stream.read()?;
@@ -32,24 +32,24 @@ impl BitRead<LittleEndian> for VoiceInitMessage {
 
 #[derive(BitRead, Debug, Clone)]
 #[endianness = "LittleEndian"]
-pub struct VoiceDataMessage {
+pub struct VoiceDataMessage<'a> {
     client: u8,
     proximity: u8,
     length: u16,
     #[size = "length"]
-    data: Stream,
+    data: Stream<'a>,
 }
 
 #[derive(Debug, Clone)]
-pub struct ParseSoundsMessage {
+pub struct ParseSoundsMessage<'a> {
     pub reliable: bool,
     pub num: u8,
     pub length: u16,
-    pub data: Stream,
+    pub data: Stream<'a>,
 }
 
-impl BitRead<LittleEndian> for ParseSoundsMessage {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
+impl<'a> BitRead<'a, LittleEndian> for ParseSoundsMessage<'a> {
+    fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
         let reliable = stream.read()?;
         let num = if reliable { 1u8 } else { stream.read()? };
         let length = if reliable {

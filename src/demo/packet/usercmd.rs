@@ -8,7 +8,7 @@ pub struct UserCmdPacket {
     sequence_out: u32,
 }
 
-impl BitRead<LittleEndian> for UserCmdPacket {
+impl BitRead<'_, LittleEndian> for UserCmdPacket {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let tick = stream.read()?;
         let sequence_out = stream.read()?;

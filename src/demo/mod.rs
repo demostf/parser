@@ -10,22 +10,22 @@ pub mod parser;
 pub mod sendprop;
 pub mod vector;
 
-pub type Buffer = BitReadBuffer<LittleEndian>;
-pub type Stream = BitReadStream<LittleEndian>;
+pub type Buffer<'a> = BitReadBuffer<'a, LittleEndian>;
+pub type Stream<'a> = BitReadStream<'a, LittleEndian>;
 
-pub struct Demo {
-    stream: Stream,
+pub struct Demo<'a> {
+    stream: Stream<'a>,
 }
 
-impl Demo {
-    pub fn new(vec: Vec<u8>) -> Self {
-        let data = Buffer::new(vec, LittleEndian);
+impl<'a> Demo<'a> {
+    pub fn new(byes: &'a [u8]) -> Self {
+        let data = Buffer::new(byes, LittleEndian);
         let stream = Stream::new(data);
         Demo { stream }
     }
 
     /// Get a new stream with the data of the demo
-    pub fn get_stream(&self) -> Stream {
+    pub fn get_stream(&self) -> Stream<'a> {
         self.stream.clone()
     }
 }

@@ -19,7 +19,7 @@ pub struct ClassInfoMessage {
     entries: Vec<ClassInfoEntry>,
 }
 
-impl BitRead<LittleEndian> for ClassInfoMessage {
+impl BitRead<'_, LittleEndian> for ClassInfoMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let count: u16 = stream.read()?;
         let create: bool = stream.read()?;

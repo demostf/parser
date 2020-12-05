@@ -30,7 +30,7 @@ pub struct GameEventMessage {
     pub event: Box<GameEvent>,
 }
 
-impl Parse for GameEventMessage {
+impl Parse<'_> for GameEventMessage {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let length: u16 = stream.read_sized(11)?;
         let mut data = stream.read_bits(length as usize)?;
@@ -71,7 +71,7 @@ impl Parse for GameEventMessage {
     }
 }
 
-impl ParseBitSkip for GameEventMessage {
+impl ParseBitSkip<'_> for GameEventMessage {
     fn parse_skip(stream: &mut Stream) -> Result<()> {
         let length: u16 = stream.read_sized(11)?;
         stream.skip_bits(length as usize).map_err(ParseError::from)
@@ -98,7 +98,7 @@ pub struct GameEventListMessage {
     pub event_list: Vec<GameEventDefinition>,
 }
 
-impl BitRead<LittleEndian> for GameEventDefinition {
+impl BitRead<'_, LittleEndian> for GameEventDefinition {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let event_type: GameEventTypeId = stream.read()?;
         let name: String = stream.read()?;
@@ -123,7 +123,7 @@ impl BitRead<LittleEndian> for GameEventDefinition {
     }
 }
 
-impl BitRead<LittleEndian> for GameEventListMessage {
+impl BitRead<'_, LittleEndian> for GameEventListMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let count: u16 = stream.read_sized(9)?;
         let length: u32 = stream.read_sized(20)?;

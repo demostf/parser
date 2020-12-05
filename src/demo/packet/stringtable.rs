@@ -15,16 +15,16 @@ pub struct FixedUserDataSize {
 }
 
 #[derive(Debug)]
-pub struct StringTable {
+pub struct StringTable<'a> {
     pub name: String,
-    pub entries: Vec<(u16, StringTableEntry)>,
+    pub entries: Vec<(u16, StringTableEntry<'a>)>,
     pub max_entries: u16,
     pub fixed_user_data_size: Option<FixedUserDataSize>,
-    pub client_entries: Option<Vec<StringTableEntry>>,
+    pub client_entries: Option<Vec<StringTableEntry<'a>>>,
     pub compressed: bool,
 }
 
-impl StringTable {
+impl StringTable<'_> {
     pub fn get_table_meta(&self) -> StringTableMeta {
         StringTableMeta {
             fixed_userdata_size: self.fixed_user_data_size,
@@ -33,8 +33,8 @@ impl StringTable {
     }
 }
 
-impl BitRead<LittleEndian> for StringTable {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
+impl<'a> BitRead<'a, LittleEndian> for StringTable<'a> {
+    fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
         let name = stream.read()?;
         let entry_count = stream.read_int(16)?;
         let mut entries = Vec::with_capacity(min(entry_count, 128) as usize);
@@ -63,33 +63,33 @@ impl BitRead<LittleEndian> for StringTable {
 
 #[derive(BitRead, Clone, Debug)]
 #[endianness = "LittleEndian"]
-pub struct ExtraData {
+pub struct ExtraData<'a> {
     pub byte_len: u16,
     #[size = "byte_len.saturating_mul(8)"]
-    pub data: Stream,
+    pub data: Stream<'a>,
 }
 
-impl ExtraData {
-    pub fn new(data: Stream) -> Self {
+impl<'a> ExtraData<'a> {
+    pub fn new(data: Stream<'a>) -> Self {
         let byte_len = (data.bit_len() / 8) as u16;
         ExtraData { byte_len, data }
     }
 }
 
 #[derive(Clone, Default)]
-pub struct StringTableEntry {
+pub struct StringTableEntry<'a> {
     pub text: Option<String>,
-    pub extra_data: Option<ExtraData>,
+    pub extra_data: Option<ExtraData<'a>>,
 }
 
-impl StringTableEntry {
+impl StringTableEntry<'_> {
     pub fn text(&self) -> &str {
         self.text.as_ref().map(|s| s.as_str()).unwrap_or("")
     }
 }
 
-impl BitRead<LittleEndian> for StringTableEntry {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
+impl<'a> BitRead<'a, LittleEndian> for StringTableEntry<'a> {
+    fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
         Ok(StringTableEntry {
             text: Some(stream.read()?),
             extra_data: stream.read()?,
@@ -97,7 +97,7 @@ impl BitRead<LittleEndian> for StringTableEntry {
     }
 }
 
-impl fmt::Debug for StringTableEntry {
+impl fmt::Debug for StringTableEntry<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.extra_data {
             None => write!(f, "StringTableEntry {{ text: \"{}\" }}", self.text()),
@@ -112,13 +112,13 @@ impl fmt::Debug for StringTableEntry {
 }
 
 #[derive(Debug)]
-pub struct StringTablePacket {
+pub struct StringTablePacket<'a> {
     pub tick: u32,
-    pub tables: Vec<StringTable>,
+    pub tables: Vec<StringTable<'a>>,
 }
 
-impl Parse for StringTablePacket {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
+impl<'a> Parse<'a> for StringTablePacket<'a> {
+    fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
         let tick = stream.read_int(32)?;
         let length: usize = stream.read_int(32)?;
         let mut packet_data = stream.read_bits(length.saturating_mul(8))?;
