@@ -7,3 +7,4 @@
 *.bench
 *.out
 heaptrack.*
+dhat.out.*

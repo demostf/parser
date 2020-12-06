@@ -3,6 +3,7 @@ use crate::demo::packet::datatable::{ParseSendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
+use crate::Result;
 
 use crate::ParserState;
 use std::borrow::Cow;
@@ -29,7 +30,7 @@ pub struct DemoHandler<'a, T: MessageHandler> {
     pub tick: u32,
     string_table_names: Vec<Cow<'a, str>>,
     analyser: T,
-    state_handler: ParserState<'a>,
+    pub state_handler: ParserState<'a>,
 }
 
 impl<'a> DemoHandler<'a, Analyser> {
@@ -66,7 +67,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         }
     }
 
-    pub fn handle_packet(&mut self, packet: Packet<'a>) {
+    pub fn handle_packet(&mut self, packet: Packet<'a>) -> Result<()> {
         match packet {
             Packet::DataTables(packet) => {
                 self.handle_data_table(packet.tables, packet.server_classes);
@@ -76,10 +77,10 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                     self.handle_string_table(table)
                 }
             }
-            Packet::Message(packet) | Packet::Sigon(packet) => {
+            Packet::Message(mut packet) | Packet::Sigon(mut packet) => {
                 //self.tick = packet.tick;
-                for message in packet.messages {
-                    match message {
+                while let Some(message) = packet.messages.next(&self.state_handler) {
+                    match message? {
                         Message::NetTick(message) => self.tick = message.tick,
                         Message::CreateStringTable(message) => {
                             self.handle_string_table(*message.table)
@@ -87,12 +88,13 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                         Message::UpdateStringTable(message) => {
                             self.handle_table_update(message.table_id, message.entries)
                         }
-                        _ => self.handle_message(message),
+                        message => self.handle_message(message),
                     }
                 }
             }
             _ => {}
-        }
+        };
+        Ok(())
     }
 
     fn handle_string_table(&mut self, table: StringTable<'a>) {
@@ -143,7 +145,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         self.analyser.into_output(&self.state_handler)
     }
 
-    pub fn get_parser_state(&self) -> &ParserState<'a> {
+    pub fn get_parser_state(&'a self) -> &ParserState<'a> {
         &self.state_handler
     }
 }

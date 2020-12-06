@@ -22,11 +22,11 @@ pub use self::error::*;
 use crate::demo::parser::handler::BorrowMessageHandler;
 
 pub trait Parse<'a>: Sized {
-    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self>;
+    fn parse(stream: &mut Stream<'a>, state: &ParserState<'a>) -> Result<Self>;
 }
 
 impl<'a, T: BitRead<'a, LittleEndian>> Parse<'a> for T {
-    fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream<'a>, _state: &ParserState<'a>) -> Result<Self> {
         Self::read(stream).map_err(ParseError::from)
     }
 }
@@ -105,7 +105,7 @@ impl<'a> RawPacketStream<'a> {
         }
     }
 
-    pub fn next(&mut self, state: &ParserState) -> Result<Option<Packet<'a>>> {
+    pub fn next(&mut self, state: &ParserState<'a>) -> Result<Option<Packet<'a>>> {
         if self.ended {
             Ok(None)
         } else {
@@ -135,8 +135,8 @@ impl<'a, A: MessageHandler> DemoTicker<'a, A> {
     /// returns whether or not there are still packets left in the demo
     pub fn tick(&mut self) -> Result<bool> {
         Ok(
-            if let Some(packet) = self.packets.next(self.handler.get_parser_state())? {
-                self.handler.handle_packet(packet);
+            if let Some(packet) = self.packets.next(&self.handler.state_handler)? {
+                self.handler.handle_packet(packet)?;
 
                 true
             } else {

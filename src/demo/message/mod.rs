@@ -101,7 +101,7 @@ pub enum Message<'a> {
 }
 
 impl<'a> Parse<'a> for Message<'a> {
-    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState<'a>) -> Result<Self> {
         let message_type = MessageType::parse(stream, state)?;
         Self::from_type(message_type, stream, state)
     }
@@ -144,7 +144,7 @@ impl<'a> Message<'a> {
     pub fn from_type(
         message_type: MessageType,
         stream: &mut Stream<'a>,
-        state: &ParserState,
+        state: &ParserState<'a>,
     ) -> Result<Self> {
         Ok(match message_type {
             MessageType::Empty => Message::Empty,

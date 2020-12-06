@@ -46,7 +46,7 @@ pub enum PacketType {
 }
 
 impl<'a> Parse<'a> for Packet<'a> {
-    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState<'a>) -> Result<Self> {
         let packet_type = PacketType::read(stream)?;
         Ok(match packet_type {
             PacketType::Sigon => Packet::Sigon(MessagePacket::parse(stream, state)?),
