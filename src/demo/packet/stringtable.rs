@@ -17,7 +17,7 @@ pub struct FixedUserDataSize {
 
 #[derive(Debug)]
 pub struct StringTable<'a> {
-    pub name: String,
+    pub name: Cow<'a, str>,
     pub entries: Vec<(u16, StringTableEntry<'a>)>,
     pub max_entries: u16,
     pub fixed_user_data_size: Option<FixedUserDataSize>,
