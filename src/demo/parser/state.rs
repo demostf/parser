@@ -23,8 +23,8 @@ pub struct DemoMeta {
     pub interval_per_tick: f32,
 }
 
-pub struct ParserState<'a> {
-    pub static_baselines: HashMap<ClassId, StaticBaseline<'a>, NullHasherBuilder>,
+pub struct ParserState {
+    pub static_baselines: HashMap<ClassId, StaticBaseline, NullHasherBuilder>,
     pub parsed_static_baselines: RefCell<HashMap<ClassId, Vec<SendProp>, NullHasherBuilder>>,
     pub event_definitions: Vec<GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
@@ -38,13 +38,13 @@ pub struct ParserState<'a> {
     parse_all: bool,
 }
 
-pub struct StaticBaseline<'a> {
+pub struct StaticBaseline {
     pub class_id: ClassId,
-    pub raw: Stream<'a>,
+    pub raw: Stream<'static>,
 }
 
-impl<'a> StaticBaseline<'a> {
-    fn new(class_id: ClassId, raw: Stream<'a>) -> Self {
+impl StaticBaseline {
+    fn new(class_id: ClassId, raw: Stream<'static>) -> Self {
         StaticBaseline { class_id, raw }
     }
 
@@ -55,7 +55,7 @@ impl<'a> StaticBaseline<'a> {
     }
 }
 
-impl<'a> ParserState<'a> {
+impl<'a> ParserState {
     pub fn new(analyser_handles: fn(message_type: MessageType) -> bool, parse_all: bool) -> Self {
         ParserState {
             static_baselines: HashMap::with_hasher(NullHasherBuilder),
@@ -205,7 +205,7 @@ impl<'a> ParserState<'a> {
         match table {
             "instancebaseline" => {
                 if let (Some(extra), Ok(class_id)) = (&entry.extra_data, entry.text().parse()) {
-                    let baseline = StaticBaseline::new(class_id, extra.data.clone());
+                    let baseline = StaticBaseline::new(class_id, extra.data.to_owned());
                     self.static_baselines.insert(class_id, baseline);
                 }
             }

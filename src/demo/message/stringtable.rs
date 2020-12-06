@@ -31,7 +31,7 @@ impl From<&StringTable<'_>> for StringTableMeta {
 }
 
 impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
-    fn parse(stream: &mut Stream<'a>, _state: &ParserState<'a>) -> Result<Self> {
+    fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
         let name = stream.read()?;
         let max_entries: u16 = stream.read()?;
         let encode_bits = log_base2(max_entries);
@@ -116,7 +116,7 @@ pub struct UpdateStringTableMessage<'a> {
 }
 
 impl<'a> Parse<'a> for UpdateStringTableMessage<'a> {
-    fn parse(stream: &mut Stream<'a>, state: &ParserState<'a>) -> Result<Self> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let table_id = stream.read_sized(5)?;
 
         let changed: u16 = if stream.read()? { stream.read()? } else { 1 };

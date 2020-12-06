@@ -116,7 +116,7 @@ pub struct PacketEntitiesMessage {
     pub updated_base_line: bool,
 }
 
-fn get_send_table<'a, 'b>(state: &'b ParserState<'a>, class: ClassId) -> Result<&'b SendTable> {
+fn get_send_table<'a, 'b>(state: &'b ParserState, class: ClassId) -> Result<&'b SendTable> {
     state
         .send_tables
         .get(usize::from(class))

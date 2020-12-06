@@ -82,7 +82,7 @@ impl<'a> MessageIterator<'a> {
         MessageIterator { packet_data }
     }
 
-    pub fn next(&mut self, state: &ParserState<'a>) -> Option<Result<Message<'a>>> {
+    pub fn next(&mut self, state: &ParserState) -> Option<Result<Message<'a>>> {
         while self.packet_data.bits_left() > 6 {
             let message_type = match MessageType::parse(&mut self.packet_data, state) {
                 Ok(message_type) => message_type,

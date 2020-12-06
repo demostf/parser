@@ -30,7 +30,7 @@ pub struct DemoHandler<'a, T: MessageHandler> {
     pub tick: u32,
     string_table_names: Vec<Cow<'a, str>>,
     analyser: T,
-    pub state_handler: ParserState<'a>,
+    pub state_handler: ParserState,
 }
 
 impl<'a> DemoHandler<'a, Analyser> {
@@ -145,7 +145,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         self.analyser.into_output(&self.state_handler)
     }
 
-    pub fn get_parser_state(&'a self) -> &ParserState<'a> {
+    pub fn get_parser_state(&'a self) -> &ParserState {
         &self.state_handler
     }
 }
