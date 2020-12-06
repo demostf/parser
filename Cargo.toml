@@ -21,7 +21,8 @@ name = "loop"
 path = "src/bin/loop.rs"
 
 [dependencies]
-bitbuffer = "0.8"
+#bitbuffer = "0.8"
+bitbuffer = { version = "0.8", path = "../../bitbuffer"}
 num_enum = "0.5"
 num-traits = "0.2"
 enumflags2 = "0.6"

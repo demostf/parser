@@ -7,6 +7,7 @@ use crate::demo::packet::stringtable::{
 };
 use crate::demo::parser::ParseBitSkip;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use std::borrow::Cow;
 use std::cmp::min;
 
 #[derive(Debug)]
@@ -50,7 +51,7 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
             let magic = table_data.read_string(Some(4))?;
 
             if magic != "SNAP" {
-                return Err(ParseError::UnexpectedCompressionType(magic));
+                return Err(ParseError::UnexpectedCompressionType(magic.into_owned()));
             }
 
             let compressed_data = table_data.read_bytes(compressed_size as usize - 4)?;
@@ -234,19 +235,19 @@ fn read_table_entry<'a>(
             // reuse from history
             let index: u16 = stream.read_sized(5)?;
             let bytes_to_copy: u32 = stream.read_sized(5)?;
-            let rest_of_string: String = stream.read()?;
+            let rest_of_string: Cow<str> = stream.read()?;
 
             Some(
                 match history
                     .get_history(index as usize)
                     .and_then(|entry| entry.text.as_ref())
                 {
-                    Some(text) => String::from_utf8({
+                    Some(text) => Cow::Owned(String::from_utf8({
                         text.bytes()
                             .take(bytes_to_copy as usize)
                             .chain(rest_of_string.bytes())
                             .collect()
-                    })?,
+                    })?),
                     None => rest_of_string, // best guess, happens in some pov demos but only for unimportant tables it seems
                 },
             )

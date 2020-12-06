@@ -4,6 +4,7 @@ use bitbuffer::{BitRead, LittleEndian};
 
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
+use std::borrow::{Borrow, Cow};
 use std::cmp::min;
 
 #[derive(BitRead, Clone, Copy, Debug)]
@@ -78,13 +79,16 @@ impl<'a> ExtraData<'a> {
 
 #[derive(Clone, Default)]
 pub struct StringTableEntry<'a> {
-    pub text: Option<String>,
+    pub text: Option<Cow<'a, str>>,
     pub extra_data: Option<ExtraData<'a>>,
 }
 
 impl StringTableEntry<'_> {
     pub fn text(&self) -> &str {
-        self.text.as_ref().map(|s| s.as_str()).unwrap_or("")
+        self.text
+            .as_ref()
+            .map(|text| text.borrow())
+            .unwrap_or_default()
     }
 }
 

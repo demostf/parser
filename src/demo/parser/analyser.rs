@@ -123,7 +123,10 @@ impl ClassList {
 #[test]
 fn test_classlist_sorted() {
     let list = ClassList([0, 1, 5, 0, 0, 3, 0, 0, 0, 0]);
-    assert_eq!(list.sorted().collect::<Vec<_>>(), &[(Class::Sniper, 5), (Class::Medic, 3), (Class::Scout, 1)])
+    assert_eq!(
+        list.sorted().collect::<Vec<_>>(),
+        &[(Class::Sniper, 5), (Class::Medic, 3), (Class::Scout, 1)]
+    )
 }
 
 impl Index<Class> for ClassList {
@@ -310,7 +313,7 @@ impl MessageHandler for Analyser {
         match table {
             "userinfo" => {
                 let _ = self.parse_user_info(
-                    entry.text.as_ref().map(|s| s.as_str()),
+                    entry.text.as_ref().map(|s| s.as_ref()),
                     entry.extra_data.as_ref().map(|data| data.data.clone()),
                 );
             }

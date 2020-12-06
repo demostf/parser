@@ -160,7 +160,7 @@ impl SendPropDefinition {
         index: SendPropDefinitionIndex,
     ) -> ReadResult<Self> {
         let prop_type = SendPropType::read(stream)?;
-        let name = stream.read_string(None)?.into();
+        let name = stream.read_string(None)?.to_string().into();
         let flags = SendPropFlags::read(stream)?;
         let mut table_name = None;
         let mut element_count = None;
