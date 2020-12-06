@@ -32,7 +32,7 @@ impl<'a> Demo<'a> {
 
 pub(crate) fn handle_utf8_error(error: BitError) -> ReadResult<String> {
     match error {
-        BitError::Utf8Error(_) => Ok("-- Malformed utf8 --".into()),
+        BitError::Utf8Error(_, _) => Ok("-- Malformed utf8 --".into()),
         _ => Err(error),
     }
 }

@@ -105,7 +105,7 @@ pub enum GameEventError {
 impl From<BitError> for ParseError {
     fn from(err: BitError) -> ParseError {
         match err {
-            BitError::Utf8Error(utf8_error) => ParseError::MalformedUTF8(utf8_error),
+            BitError::Utf8Error(utf8_error, _) => ParseError::MalformedUTF8(utf8_error),
             _ => ParseError::ReadError(err),
         }
     }
