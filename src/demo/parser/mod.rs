@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitError, BitRead, LittleEndian};
 
 pub use self::messagetypeanalyser::MessageTypeAnalyser;
 
@@ -95,6 +95,7 @@ impl<'a, A: MessageHandler> DemoParser<'a, A> {
 pub struct RawPacketStream<'a> {
     stream: Stream<'a>,
     ended: bool,
+    incomplete: bool,
 }
 
 impl<'a> RawPacketStream<'a> {
@@ -102,6 +103,7 @@ impl<'a> RawPacketStream<'a> {
         RawPacketStream {
             stream,
             ended: false,
+            incomplete: false,
         }
     }
 
@@ -115,6 +117,11 @@ impl<'a> RawPacketStream<'a> {
                     Ok(None)
                 }
                 Ok(packet) => Ok(Some(packet)),
+                Err(ParseError::ReadError(BitError::NotEnoughData { .. })) => {
+                    self.ended = true;
+                    self.incomplete = true;
+                    Ok(None)
+                }
                 Err(e) => {
                     self.ended = true;
                     Err(e)
