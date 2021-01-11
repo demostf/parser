@@ -132,6 +132,7 @@ impl<'a> RawPacketStream<'a> {
     }
 }
 
+#[derive(Clone)]
 pub struct DemoTicker<'a, A: MessageHandler> {
     handler: DemoHandler<'a, A>,
     packets: RawPacketStream<'a>,

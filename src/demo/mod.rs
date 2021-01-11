@@ -18,8 +18,8 @@ pub struct Demo<'a> {
 }
 
 impl<'a> Demo<'a> {
-    pub fn new(byes: &'a [u8]) -> Self {
-        let data = Buffer::new(byes, LittleEndian);
+    pub fn new(bytes: &'a [u8]) -> Self {
+        let data = Buffer::new(bytes, LittleEndian);
         let stream = Stream::new(data);
         Demo { stream }
     }
@@ -27,6 +27,14 @@ impl<'a> Demo<'a> {
     /// Get a new stream with the data of the demo
     pub fn get_stream(&self) -> Stream<'a> {
         self.stream.clone()
+    }
+}
+
+impl Demo<'static> {
+    pub fn owned(bytes: Vec<u8>) -> Self {
+        let data = Buffer::new_owned(bytes, LittleEndian);
+        let stream = Stream::new(data);
+        Demo { stream }
     }
 }
 
