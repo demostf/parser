@@ -37,7 +37,7 @@ impl MessageHandler for AllMessages {
 
 fn bench_all(input_file: &str, b: &mut Bencher) {
     let file = fs::read(input_file).expect("Unable to read file");
-    let demo = Demo::new(file);
+    let demo = Demo::new(&file);
     let stream = demo.get_stream();
     b.iter(|| {
         let _ = test::black_box(
