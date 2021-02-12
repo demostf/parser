@@ -7844,7 +7844,7 @@ impl GameEvent {
         })
     }
 }
-pub fn get_sizes() -> std::collections::hash_map::HashMap<&'static str, usize> {
+pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
     vec![
         ("ServerSpawn", std::mem::size_of::<ServerSpawnEvent>()),
         (

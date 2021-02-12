@@ -10,8 +10,8 @@ use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use parse_display::Display;
-use serde::export::TryFrom;
 use std::cmp::min;
+use std::convert::TryFrom;
 
 use std::fmt;
 use std::rc::Rc;

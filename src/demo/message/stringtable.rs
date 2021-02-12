@@ -1,6 +1,6 @@
 use bitbuffer::{BitReadBuffer, BitReadStream, LittleEndian};
 use num_traits::{PrimInt, Unsigned};
-use snap::Decoder;
+use snap::raw::Decoder;
 
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserDataSize, StringTable, StringTableEntry,
