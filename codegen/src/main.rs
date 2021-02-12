@@ -49,7 +49,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     }
     let path = args[1].clone();
     let file = fs::read(path).expect("Unable to read file");
-    let demo = Demo::new(file);
+    let demo = Demo::new(&file);
     let tokens = generate_game_events(demo);
     let code = tokens.to_string();
     let formatted = format(&code)?;

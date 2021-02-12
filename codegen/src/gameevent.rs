@@ -372,7 +372,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             }
         }
 
-        pub fn get_sizes() -> std::collections::hash_map::HashMap<&'static str, usize> {
+        pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             vec![
                 #(#sizes,)*
             ].into_iter().collect()
