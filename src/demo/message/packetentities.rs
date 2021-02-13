@@ -69,15 +69,13 @@ impl fmt::Display for PacketEntity {
 }
 
 impl PacketEntity {
-    fn get_prop_by_identifier(&mut self, identifier: &SendPropIdentifier) -> Option<&mut SendProp> {
-        self.props
-            .iter_mut()
-            .find(|prop| prop.identifier.index == identifier.index)
+    fn get_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
+        self.props.iter_mut().find(|prop| prop.index == *index)
     }
 
     pub fn apply_update(&mut self, props: Vec<SendProp>) {
         for prop in props {
-            match self.get_prop_by_identifier(&prop.identifier) {
+            match self.get_prop_by_identifier(&prop.index) {
                 Some(existing_prop) => existing_prop.value = prop.value,
                 None => self.props.push(prop),
             }
@@ -85,10 +83,8 @@ impl PacketEntity {
     }
 
     pub fn get_prop_by_name(&self, table_name: &str, name: &str) -> Option<&SendProp> {
-        self.props.iter().find(|prop| {
-            prop.identifier.owner_table.as_str() == table_name
-                && prop.identifier.name.as_str() == name
-        })
+        let identifier = SendPropIdentifier::new(table_name, name);
+        self.props.iter().find(|prop| prop.index == identifier)
     }
 }
 
@@ -249,9 +245,9 @@ impl PacketEntitiesMessage {
 
             match send_table.flattened_props.get(index as usize) {
                 Some(definition) => {
-                    let value = SendPropValue::parse(stream, definition)?;
+                    let value = SendPropValue::parse(stream, &definition.parse_definition)?;
                     props.push(SendProp {
-                        identifier: definition.identifier(),
+                        index: definition.identifier,
                         value,
                     });
                 }

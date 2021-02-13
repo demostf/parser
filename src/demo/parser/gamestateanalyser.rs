@@ -1,12 +1,13 @@
 use crate::demo::message::packetentities::{EntityId, PacketEntity};
 use crate::demo::message::Message;
-use crate::demo::packet::datatable::{ParseSendTable, ServerClass, ServerClassName};
+use crate::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass, ServerClassName};
 pub use crate::demo::parser::analyser::{Class, Team, UserId};
 use crate::demo::parser::handler::BorrowMessageHandler;
 use crate::demo::parser::MessageHandler;
-use crate::demo::sendprop::{SendProp, SendPropValue};
+use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropName, SendPropValue};
 use crate::demo::vector::{Vector, VectorXY};
 use crate::{MessageType, ParserState};
+use fnv::FnvHashMap;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::str::FromStr;
@@ -142,6 +143,7 @@ impl GameState {
 #[derive(Default, Debug)]
 pub struct GameStateAnalyser {
     pub state: GameState,
+    prop_names: FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
     class_names: Vec<ServerClassName>, // indexed by ClassId
 }
 
@@ -166,7 +168,20 @@ impl MessageHandler for GameStateAnalyser {
         }
     }
 
-    fn handle_data_tables(&mut self, _tables: &[ParseSendTable], server_classes: &[ServerClass]) {
+    fn handle_data_tables(
+        &mut self,
+        parse_tables: &[ParseSendTable],
+        server_classes: &[ServerClass],
+    ) {
+        for table in parse_tables {
+            for prop_def in &table.props {
+                self.prop_names.insert(
+                    prop_def.identifier(),
+                    (prop_def.owner_table.clone(), prop_def.name.clone()),
+                );
+            }
+        }
+
         self.class_names = server_classes
             .iter()
             .map(|class| &class.name)
@@ -206,27 +221,30 @@ impl GameStateAnalyser {
 
     pub fn handle_player_resource(&mut self, entity: &PacketEntity) {
         for prop in &entity.props {
-            if let Ok(player_id) = u32::from_str(prop.identifier.name.as_str()) {
-                let entity_id = EntityId::from(player_id);
-                if let Some(player) = self
-                    .state
-                    .players
-                    .iter_mut()
-                    .find(|player| player.entity == entity_id)
-                {
-                    match prop.identifier.owner_table.as_str() {
-                        "m_iTeam" => {
-                            player.team = Team::new(i64::try_from(&prop.value).unwrap_or_default())
+            if let Some((table_name, prop_name)) = self.prop_names.get(&prop.index) {
+                if let Ok(player_id) = u32::from_str(prop_name.as_str()) {
+                    let entity_id = EntityId::from(player_id);
+                    if let Some(player) = self
+                        .state
+                        .players
+                        .iter_mut()
+                        .find(|player| player.entity == entity_id)
+                    {
+                        match table_name.as_str() {
+                            "m_iTeam" => {
+                                player.team =
+                                    Team::new(i64::try_from(&prop.value).unwrap_or_default())
+                            }
+                            "m_iMaxHealth" => {
+                                player.max_health =
+                                    i64::try_from(&prop.value).unwrap_or_default() as u16
+                            }
+                            "m_iPlayerClass" => {
+                                player.class =
+                                    Class::new(i64::try_from(&prop.value).unwrap_or_default())
+                            }
+                            _ => {}
                         }
-                        "m_iMaxHealth" => {
-                            player.max_health =
-                                i64::try_from(&prop.value).unwrap_or_default() as u16
-                        }
-                        "m_iPlayerClass" => {
-                            player.class =
-                                Class::new(i64::try_from(&prop.value).unwrap_or_default())
-                        }
-                        _ => {}
                     }
                 }
             }
@@ -237,37 +255,40 @@ impl GameStateAnalyser {
         let player = self.state.get_or_create_player(entity.entity_index);
 
         for prop in &entity.props {
-            match prop.identifier.owner_table.as_str() {
-                "DT_BasePlayer" => match prop.identifier.name.as_str() {
-                    "m_iHealth" => {
-                        player.health = i64::try_from(&prop.value).unwrap_or_default() as u16
-                    }
-                    "m_iMaxHealth" => {
-                        player.max_health = i64::try_from(&prop.value).unwrap_or_default() as u16
-                    }
-                    "m_lifeState" => {
-                        player.state =
-                            PlayerState::new(i64::try_from(&prop.value).unwrap_or_default())
-                    }
-                    _ => {}
-                },
-                "DT_TFLocalPlayerExclusive" | "DT_TFNonLocalPlayerExclusive" => {
-                    match prop.identifier.name.as_str() {
-                        "m_vecOrigin" => {
-                            let pos_xy = VectorXY::try_from(&prop.value).unwrap_or_default();
-                            player.position.x = pos_xy.x;
-                            player.position.y = pos_xy.y;
+            if let Some((table_name, prop_name)) = self.prop_names.get(&prop.index) {
+                match table_name.as_str() {
+                    "DT_BasePlayer" => match prop_name.as_str() {
+                        "m_iHealth" => {
+                            player.health = i64::try_from(&prop.value).unwrap_or_default() as u16
                         }
-                        "m_vecOrigin[2]" => {
-                            player.position.z = f32::try_from(&prop.value).unwrap_or_default()
+                        "m_iMaxHealth" => {
+                            player.max_health =
+                                i64::try_from(&prop.value).unwrap_or_default() as u16
                         }
-                        "m_angEyeAngles[1]" => {
-                            player.view_angle = f32::try_from(&prop.value).unwrap_or_default()
+                        "m_lifeState" => {
+                            player.state =
+                                PlayerState::new(i64::try_from(&prop.value).unwrap_or_default())
                         }
                         _ => {}
+                    },
+                    "DT_TFLocalPlayerExclusive" | "DT_TFNonLocalPlayerExclusive" => {
+                        match prop_name.as_str() {
+                            "m_vecOrigin" => {
+                                let pos_xy = VectorXY::try_from(&prop.value).unwrap_or_default();
+                                player.position.x = pos_xy.x;
+                                player.position.y = pos_xy.y;
+                            }
+                            "m_vecOrigin[2]" => {
+                                player.position.z = f32::try_from(&prop.value).unwrap_or_default()
+                            }
+                            "m_angEyeAngles[1]" => {
+                                player.view_angle = f32::try_from(&prop.value).unwrap_or_default()
+                            }
+                            _ => {}
+                        }
                     }
+                    _ => {}
                 }
-                _ => {}
             }
         }
     }

@@ -48,7 +48,7 @@ fn flatten_test(input_file: &str, snapshot_file: &str) {
                 table
                     .flatten_props(&send_tables)
                     .into_iter()
-                    .map(|prop| format!("{}.{}", prop.identifier.owner_table, prop.identifier.name))
+                    .map(|prop| format!("{}.{}", prop.owner_table, prop.name))
                     .collect(),
             )
         })

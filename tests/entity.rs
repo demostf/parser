@@ -3,13 +3,16 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::fs::{self, File};
 use test_case::test_case;
 
+use fnv::FnvHashMap;
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
 use tf_demo_parser::demo::message::packetentities::{EntityId, PacketEntity, PVS};
 use tf_demo_parser::demo::message::Message;
-use tf_demo_parser::demo::packet::datatable::{ServerClass, ServerClassName};
+use tf_demo_parser::demo::packet::datatable::{
+    ParseSendTable, SendTableName, ServerClass, ServerClassName,
+};
 use tf_demo_parser::demo::parser::MessageHandler;
-use tf_demo_parser::demo::sendprop::SendPropValue;
+use tf_demo_parser::demo::sendprop::{SendPropIdentifier, SendPropName, SendPropValue};
 use tf_demo_parser::{Demo, DemoParser, MessageType, ParserState};
 
 /// Compatible serialization with the js parser entity dumps
@@ -44,7 +47,12 @@ struct EntityDump {
 }
 
 impl EntityDump {
-    pub fn from_entity(entity: PacketEntity, tick: u32, classes: &[ServerClass]) -> Self {
+    pub fn from_entity(
+        entity: PacketEntity,
+        tick: u32,
+        classes: &[ServerClass],
+        prop_names: &FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
+    ) -> Self {
         EntityDump {
             tick,
             server_class: classes[usize::from(entity.server_class)].name.clone(),
@@ -53,10 +61,8 @@ impl EntityDump {
                 .props
                 .into_iter()
                 .map(|prop| {
-                    (
-                        format!("{}.{}", prop.identifier.owner_table, prop.identifier.name),
-                        prop.value,
-                    )
+                    let (table_name, prop_name) = &prop_names[&prop.index];
+                    (format!("{}.{}", table_name, prop_name), prop.value)
                 })
                 .collect(),
             pvs: entity.pvs.into(),
@@ -66,12 +72,14 @@ impl EntityDump {
 
 struct EntityDumper {
     entities: Vec<(u32, PacketEntity)>,
+    prop_names: FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
 }
 
 impl EntityDumper {
     pub fn new() -> Self {
         EntityDumper {
             entities: Vec::with_capacity(128),
+            prop_names: FnvHashMap::default(),
         }
     }
 }
@@ -98,10 +106,24 @@ impl MessageHandler for EntityDumper {
         }
     }
 
+    fn handle_data_tables(&mut self, tables: &[ParseSendTable], _server_classes: &[ServerClass]) {
+        for table in tables {
+            for prop_def in &table.props {
+                self.prop_names.insert(
+                    prop_def.identifier(),
+                    (prop_def.owner_table.clone(), prop_def.name.clone()),
+                );
+            }
+        }
+    }
+
     fn into_output(self, state: &ParserState) -> Self::Output {
+        let prop_names = self.prop_names;
         self.entities
             .into_iter()
-            .map(|(tick, entity)| EntityDump::from_entity(entity, tick, &state.server_classes))
+            .map(|(tick, entity)| {
+                EntityDump::from_entity(entity, tick, &state.server_classes, &prop_names)
+            })
             .collect()
     }
 }

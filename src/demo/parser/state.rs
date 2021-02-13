@@ -119,7 +119,7 @@ impl<'a> ParserState {
                             needs_decoder: parse_table.needs_decoder,
                             flattened_props: flat
                                 .into_iter()
-                                .map(|raw| SendPropDefinition::try_from(raw.as_ref()))
+                                .map(|raw| SendPropDefinition::try_from(raw))
                                 .collect::<std::result::Result<Vec<_>, _>>()?,
                         },
                     ))
