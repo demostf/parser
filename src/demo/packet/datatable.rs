@@ -129,7 +129,7 @@ impl ParseSendTable {
         // sort often changed props before the others
         let mut start = 0;
         for i in 0..flat.len() {
-            if flat[i].changes_often {
+            if flat[i].parse_definition.changes_often() {
                 if i != start {
                     flat.swap(i, start);
                 }

@@ -16,7 +16,6 @@ use std::convert::{TryFrom, TryInto};
 use fnv::FnvHasher;
 use std::fmt;
 use std::hash::{Hash, Hasher};
-use std::num::NonZeroU64;
 use std::rc::Rc;
 
 #[derive(
@@ -348,7 +347,6 @@ impl FloatDefinition {
 
 #[derive(Debug, Clone)]
 pub struct SendPropDefinition {
-    pub changes_often: bool,
     pub identifier: SendPropIdentifier,
     pub parse_definition: SendPropParseDefinition,
 }
@@ -359,7 +357,6 @@ impl TryFrom<&RawSendPropDefinition> for SendPropDefinition {
     fn try_from(definition: &RawSendPropDefinition) -> std::result::Result<Self, Self::Error> {
         let parse_definition = definition.try_into()?;
         Ok(SendPropDefinition {
-            changes_often: definition.flags.contains(SendPropFlag::ChangesOften),
             parse_definition,
             identifier: definition.identifier(),
         })
@@ -369,51 +366,80 @@ impl TryFrom<&RawSendPropDefinition> for SendPropDefinition {
 #[derive(Debug, Clone)]
 pub enum SendPropParseDefinition {
     NormalVarInt {
+        changes_often: bool,
         unsigned: bool,
     },
     UnsignedInt {
+        changes_often: bool,
         bit_count: u8,
     },
     Int {
+        changes_often: bool,
         bit_count: u8,
     },
     Float {
+        changes_often: bool,
         definition: FloatDefinition,
     },
-    String,
+    String {
+        changes_often: bool,
+    },
     Vector {
+        changes_often: bool,
         definition: FloatDefinition,
     },
     VectorXY {
+        changes_often: bool,
         definition: FloatDefinition,
     },
     Array {
+        changes_often: bool,
         inner_definition: Box<SendPropParseDefinition>,
         count_bit_count: u16,
     },
+}
+
+impl SendPropParseDefinition {
+    pub fn changes_often(&self) -> bool {
+        match self {
+            SendPropParseDefinition::NormalVarInt { changes_often, .. } => *changes_often,
+            SendPropParseDefinition::UnsignedInt { changes_often, .. } => *changes_often,
+            SendPropParseDefinition::Int { changes_often, .. } => *changes_often,
+            SendPropParseDefinition::Float { changes_often, .. } => *changes_often,
+            SendPropParseDefinition::String { changes_often, .. } => *changes_often,
+            SendPropParseDefinition::Vector { changes_often, .. } => *changes_often,
+            SendPropParseDefinition::VectorXY { changes_often, .. } => *changes_often,
+            SendPropParseDefinition::Array { changes_often, .. } => *changes_often,
+        }
+    }
 }
 
 impl TryFrom<&RawSendPropDefinition> for SendPropParseDefinition {
     type Error = MalformedSendPropDefinitionError;
 
     fn try_from(definition: &RawSendPropDefinition) -> std::result::Result<Self, Self::Error> {
+        let changes_often = definition.flags.contains(SendPropFlag::ChangesOften);
         match definition.prop_type {
             SendPropType::Int => {
                 if definition.flags.contains(SendPropFlag::NormalVarInt) {
                     Ok(SendPropParseDefinition::NormalVarInt {
+                        changes_often,
                         unsigned: definition.flags.contains(SendPropFlag::Unsigned),
                     })
                 } else if definition.flags.contains(SendPropFlag::Unsigned) {
                     Ok(SendPropParseDefinition::UnsignedInt {
+                        changes_often,
                         bit_count: definition.bit_count.unwrap_or(32) as u8,
                     })
                 } else {
                     Ok(SendPropParseDefinition::Int {
+                        changes_often,
                         bit_count: definition.bit_count.unwrap_or(32) as u8,
                     })
                 }
             }
             SendPropType::Float => Ok(SendPropParseDefinition::Float {
+                changes_often,
                 definition: FloatDefinition::new(
                     definition.flags,
                     definition.bit_count,
@@ -421,8 +447,9 @@ impl TryFrom<&RawSendPropDefinition> for SendPropParseDefinition {
                     definition.low_value,
                 )?,
             }),
-            SendPropType::String => Ok(SendPropParseDefinition::String),
+            SendPropType::String => Ok(SendPropParseDefinition::String { changes_often }),
             SendPropType::Vector => Ok(SendPropParseDefinition::Vector {
+                changes_often,
                 definition: FloatDefinition::new(
                     definition.flags,
                     definition.bit_count,
@@ -431,6 +458,7 @@ impl TryFrom<&RawSendPropDefinition> for SendPropParseDefinition {
                 )?,
             }),
             SendPropType::VectorXY => Ok(SendPropParseDefinition::VectorXY {
+                changes_often,
                 definition: FloatDefinition::new(
                     definition.flags,
                     definition.bit_count,
@@ -450,6 +478,7 @@ impl TryFrom<&RawSendPropDefinition> for SendPropParseDefinition {
                     .as_deref()
                     .ok_or(MalformedSendPropDefinitionError::UntypedArray)?;
                 Ok(SendPropParseDefinition::Array {
+                    changes_often,
                     inner_definition: Box::new(SendPropParseDefinition::try_from(
                         child_definition,
                     )?),
