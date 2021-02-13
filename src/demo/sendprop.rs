@@ -16,6 +16,7 @@ use std::convert::{TryFrom, TryInto};
 use fnv::FnvHasher;
 use std::fmt;
 use std::hash::{Hash, Hasher};
+use std::num::NonZeroU64;
 use std::rc::Rc;
 
 #[derive(
@@ -347,16 +348,18 @@ impl FloatDefinition {
 
 #[derive(Debug, Clone)]
 pub struct SendPropDefinition {
+    pub changes_often: bool,
     pub identifier: SendPropIdentifier,
     pub parse_definition: SendPropParseDefinition,
 }
 
-impl TryFrom<RawSendPropDefinition> for SendPropDefinition {
+impl TryFrom<&RawSendPropDefinition> for SendPropDefinition {
     type Error = MalformedSendPropDefinitionError;
 
-    fn try_from(definition: RawSendPropDefinition) -> std::result::Result<Self, Self::Error> {
-        let parse_definition = (&definition).try_into()?;
+    fn try_from(definition: &RawSendPropDefinition) -> std::result::Result<Self, Self::Error> {
+        let parse_definition = definition.try_into()?;
         Ok(SendPropDefinition {
+            changes_often: definition.flags.contains(SendPropFlag::ChangesOften),
             parse_definition,
             identifier: definition.identifier(),
         })

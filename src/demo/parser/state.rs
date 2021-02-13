@@ -11,11 +11,10 @@ use crate::demo::packet::datatable::{
 };
 use crate::demo::packet::stringtable::StringTableEntry;
 
-use crate::demo::sendprop::{SendProp, SendPropDefinition};
+use crate::demo::sendprop::SendProp;
 use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
 use std::cell::RefCell;
-use std::convert::TryFrom;
 
 #[derive(Default, Clone)]
 pub struct DemoMeta {
@@ -106,25 +105,23 @@ impl<'a> ParserState {
             let flat_props: Vec<_> = parse_tables
                 .iter()
                 .map(|table| table.flatten_props(&parse_tables))
-                .collect();
+                .collect::<Result<Vec<_>>>()?;
 
             let mut send_tables: FnvHashMap<SendTableName, SendTable> = parse_tables
                 .into_iter()
                 .zip(flat_props.into_iter())
                 .map(|(parse_table, flat)| {
-                    Ok((
+                    (
                         parse_table.name.clone(),
                         SendTable {
                             name: parse_table.name,
                             needs_decoder: parse_table.needs_decoder,
-                            flattened_props: flat
-                                .into_iter()
-                                .map(|raw| SendPropDefinition::try_from(raw))
-                                .collect::<std::result::Result<Vec<_>, _>>()?,
+                            raw_props: parse_table.props,
+                            flattened_props: flat,
                         },
-                    ))
+                    )
                 })
-                .collect::<Result<_>>()?;
+                .collect();
 
             self.server_classes = server_classes;
 

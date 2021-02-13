@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 
 use std::cmp::min;
 
+use std::convert::TryFrom;
 use std::rc::Rc;
 
 #[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Display, FromStr)]
@@ -121,14 +122,14 @@ impl ParseSendTable {
 }
 
 impl ParseSendTable {
-    pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Vec<RawSendPropDefinition> {
+    pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Result<Vec<SendPropDefinition>> {
         let mut flat = Vec::with_capacity(32);
-        self.get_all_props(tables, &self.get_excludes(tables), &mut flat);
+        self.get_all_props(tables, &self.get_excludes(tables), &mut flat)?;
 
         // sort often changed props before the others
         let mut start = 0;
         for i in 0..flat.len() {
-            if flat[i].flags.contains(SendPropFlag::ChangesOften) {
+            if flat[i].changes_often {
                 if i != start {
                     flat.swap(i, start);
                 }
@@ -136,7 +137,7 @@ impl ParseSendTable {
             }
         }
 
-        flat
+        Ok(flat)
     }
 
     fn get_excludes<'a>(&'a self, tables: &'a [ParseSendTable]) -> Vec<SendPropIdentifier> {
@@ -161,36 +162,40 @@ impl ParseSendTable {
         &self,
         tables: &[ParseSendTable],
         excludes: &[SendPropIdentifier],
-        props: &mut Vec<RawSendPropDefinition>,
-    ) {
+        props: &mut Vec<SendPropDefinition>,
+    ) -> Result<()> {
         let mut local_props = Vec::new();
 
-        self.get_all_props_iterator_props(tables, excludes, &mut local_props, props);
+        self.get_all_props_iterator_props(tables, excludes, &mut local_props, props)?;
         props.extend_from_slice(&local_props);
+        Ok(())
     }
 
     fn get_all_props_iterator_props(
         &self,
         tables: &[ParseSendTable],
         excludes: &[SendPropIdentifier],
-        local_props: &mut Vec<RawSendPropDefinition>,
-        props: &mut Vec<RawSendPropDefinition>,
-    ) {
+        local_props: &mut Vec<SendPropDefinition>,
+        props: &mut Vec<SendPropDefinition>,
+    ) -> Result<()> {
         self.props
             .iter()
             .filter(|prop| !prop.is_exclude())
             .filter(|prop| !excludes.iter().any(|exclude| *exclude == prop.identifier()))
-            .for_each(|prop| {
+            .map(|prop| {
                 if let Some(table) = prop.get_data_table(tables) {
                     if prop.flags.contains(SendPropFlag::Collapsible) {
-                        table.get_all_props_iterator_props(tables, excludes, local_props, props);
+                        table.get_all_props_iterator_props(tables, excludes, local_props, props)?;
                     } else {
-                        table.get_all_props(tables, excludes, props);
+                        table.get_all_props(tables, excludes, props)?;
                     }
                 } else {
-                    local_props.push(prop.clone());
+                    local_props.push(SendPropDefinition::try_from(prop)?);
                 }
+                Ok(())
             })
+            .collect::<Result<()>>()?;
+        Ok(())
     }
 }
 
@@ -198,6 +203,7 @@ impl ParseSendTable {
 pub struct SendTable {
     pub name: SendTableName,
     pub needs_decoder: bool,
+    pub raw_props: Vec<RawSendPropDefinition>,
     pub flattened_props: Vec<SendPropDefinition>,
 }
 

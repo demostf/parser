@@ -1,34 +1,50 @@
 use std::fs;
 use test_case::test_case;
 
+use fnv::FnvHashMap;
 use std::collections::{HashMap, HashSet};
 use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass};
 use tf_demo_parser::demo::parser::MessageHandler;
+use tf_demo_parser::demo::sendprop::{SendPropIdentifier, SendPropName};
 use tf_demo_parser::{Demo, DemoParser, MessageType, ParserState};
 
+#[derive(Default)]
 pub struct SendPropAnalyser {
     tables: Vec<ParseSendTable>,
+    prop_names: FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
 }
 
 impl SendPropAnalyser {
     pub fn new() -> Self {
-        SendPropAnalyser { tables: Vec::new() }
+        SendPropAnalyser::default()
     }
 }
 
 impl MessageHandler for SendPropAnalyser {
-    type Output = Vec<ParseSendTable>;
+    type Output = (
+        Vec<ParseSendTable>,
+        FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
+    );
 
     fn does_handle(_message_type: MessageType) -> bool {
         false
     }
 
     fn handle_data_tables(&mut self, tables: &[ParseSendTable], _server_classes: &[ServerClass]) {
+        for table in tables {
+            for prop_def in &table.props {
+                self.prop_names.insert(
+                    prop_def.identifier(),
+                    (prop_def.owner_table.clone(), prop_def.name.clone()),
+                );
+            }
+        }
+
         self.tables = tables.to_vec()
     }
 
     fn into_output(self, _state: &ParserState) -> Self::Output {
-        self.tables
+        (self.tables, self.prop_names)
     }
 }
 
@@ -36,7 +52,7 @@ impl MessageHandler for SendPropAnalyser {
 fn flatten_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(&file);
-    let (_, send_tables) =
+    let (_, (send_tables, prop_names)) =
         DemoParser::new_with_analyser(demo.get_stream(), SendPropAnalyser::new())
             .parse()
             .expect("Failed to parse");
@@ -47,8 +63,12 @@ fn flatten_test(input_file: &str, snapshot_file: &str) {
                 table.name.clone(),
                 table
                     .flatten_props(&send_tables)
+                    .unwrap()
                     .into_iter()
-                    .map(|prop| format!("{}.{}", prop.owner_table, prop.name))
+                    .map(|prop| {
+                        let (table_name, prop_name) = &prop_names[&prop.identifier];
+                        format!("{}.{}", table_name, prop_name)
+                    })
                     .collect(),
             )
         })
