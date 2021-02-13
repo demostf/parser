@@ -11,10 +11,11 @@ use crate::demo::packet::datatable::{
 };
 use crate::demo::packet::stringtable::StringTableEntry;
 
-use crate::demo::sendprop::SendProp;
+use crate::demo::sendprop::{SendProp, SendPropDefinition};
 use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
 use std::cell::RefCell;
+use std::convert::TryFrom;
 
 #[derive(Default, Clone)]
 pub struct DemoMeta {
@@ -100,7 +101,7 @@ impl<'a> ParserState {
         &mut self,
         parse_tables: Vec<ParseSendTable>,
         server_classes: Vec<ServerClass>,
-    ) {
+    ) -> Result<()> {
         if self.handle_entities {
             let flat_props: Vec<_> = parse_tables
                 .iter()
@@ -111,17 +112,19 @@ impl<'a> ParserState {
                 .into_iter()
                 .zip(flat_props.into_iter())
                 .map(|(parse_table, flat)| {
-                    (
+                    Ok((
                         parse_table.name.clone(),
                         SendTable {
                             name: parse_table.name,
-                            props: parse_table.props,
                             needs_decoder: parse_table.needs_decoder,
-                            flattened_props: flat,
+                            flattened_props: flat
+                                .into_iter()
+                                .map(|raw| SendPropDefinition::try_from(raw.as_ref()))
+                                .collect::<std::result::Result<Vec<_>, _>>()?,
                         },
-                    )
+                    ))
                 })
-                .collect();
+                .collect::<Result<_>>()?;
 
             self.server_classes = server_classes;
 
@@ -133,6 +136,8 @@ impl<'a> ParserState {
                 }
             }
         }
+
+        Ok(())
     }
 
     pub fn handle_string_table_meta(&mut self, table: StringTableMeta) {

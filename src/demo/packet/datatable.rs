@@ -2,7 +2,8 @@ use bitbuffer::BitRead;
 
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{
-    SendPropDefinition, SendPropDefinitionIndex, SendPropFlag, SendPropName, SendPropType,
+    RawSendPropDefinition, SendPropDefinition, SendPropDefinitionIndex, SendPropFlag, SendPropName,
+    SendPropType,
 };
 use crate::{Parse, ParseError, ParserState, Result, Stream};
 use parse_display::{Display, FromStr};
@@ -50,7 +51,18 @@ pub struct ServerClass {
 }
 
 #[derive(
-    BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display, PartialOrd, Ord,
+    BitRead,
+    PartialEq,
+    Eq,
+    Hash,
+    Debug,
+    Serialize,
+    Deserialize,
+    Clone,
+    Display,
+    PartialOrd,
+    Ord,
+    Default,
 )]
 pub struct SendTableName(Rc<String>);
 
@@ -69,7 +81,7 @@ impl From<String> for SendTableName {
 #[derive(Debug, Clone)]
 pub struct ParseSendTable {
     pub name: SendTableName,
-    pub props: Vec<Rc<SendPropDefinition>>,
+    pub props: Vec<Rc<RawSendPropDefinition>>,
     pub needs_decoder: bool,
 }
 
@@ -85,8 +97,8 @@ impl ParseSendTable {
 
         for prop_index in 0..prop_count {
             let definition_index = SendPropDefinitionIndex::new(table_index, prop_index);
-            let prop: SendPropDefinition =
-                SendPropDefinition::read(stream, name.clone(), definition_index)?;
+            let prop: RawSendPropDefinition =
+                RawSendPropDefinition::read(stream, name.clone(), definition_index)?;
             if prop.flags.contains(SendPropFlag::InsideArray) {
                 if array_element_prop.is_some() || prop.flags.contains(SendPropFlag::ChangesOften) {
                     return Err(MalformedSendPropDefinitionError::ArrayChangesOften.into());
@@ -112,7 +124,7 @@ impl ParseSendTable {
 }
 
 impl ParseSendTable {
-    pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Vec<Rc<SendPropDefinition>> {
+    pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Vec<Rc<RawSendPropDefinition>> {
         let mut flat = Vec::with_capacity(32);
         self.get_all_props(tables, &self.get_excludes(tables), &mut flat);
 
@@ -137,7 +149,7 @@ impl ParseSendTable {
             if let Some(exclude_table) = prop.get_exclude_table() {
                 excludes.push(Exclude {
                     table: exclude_table,
-                    prop: &prop.name,
+                    prop: &prop.identifier.name,
                 })
             } else if let Some(table) = prop.get_data_table(tables) {
                 excludes.extend_from_slice(&table.get_excludes(tables));
@@ -152,7 +164,7 @@ impl ParseSendTable {
         &self,
         tables: &[ParseSendTable],
         excludes: &[Exclude],
-        props: &mut Vec<Rc<SendPropDefinition>>,
+        props: &mut Vec<Rc<RawSendPropDefinition>>,
     ) {
         let mut local_props = Vec::new();
 
@@ -164,8 +176,8 @@ impl ParseSendTable {
         &self,
         tables: &[ParseSendTable],
         excludes: &[Exclude],
-        local_props: &mut Vec<Rc<SendPropDefinition>>,
-        props: &mut Vec<Rc<SendPropDefinition>>,
+        local_props: &mut Vec<Rc<RawSendPropDefinition>>,
+        props: &mut Vec<Rc<RawSendPropDefinition>>,
     ) {
         self.props
             .iter()
@@ -192,17 +204,16 @@ struct Exclude<'a> {
 }
 
 impl<'a> Exclude<'a> {
-    pub fn matches(&self, prop: &SendPropDefinition) -> bool {
-        self.table == &prop.owner_table && *self.prop == prop.name
+    pub fn matches(&self, prop: &RawSendPropDefinition) -> bool {
+        self.table == &prop.identifier.owner_table && *self.prop == prop.identifier.name
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct SendTable {
     pub name: SendTableName,
-    pub props: Vec<Rc<SendPropDefinition>>,
     pub needs_decoder: bool,
-    pub flattened_props: Vec<Rc<SendPropDefinition>>,
+    pub flattened_props: Vec<SendPropDefinition>,
 }
 
 #[derive(Debug)]

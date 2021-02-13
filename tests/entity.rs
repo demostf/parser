@@ -54,7 +54,7 @@ impl EntityDump {
                 .into_iter()
                 .map(|prop| {
                     (
-                        format!("{}.{}", prop.definition.owner_table, prop.definition.name),
+                        format!("{}.{}", prop.identifier.owner_table, prop.identifier.name),
                         prop.value,
                     )
                 })

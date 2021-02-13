@@ -14,7 +14,7 @@ use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName};
 use tf_demo_parser::demo::packet::stringtable::StringTableEntry;
 use tf_demo_parser::demo::parser::MessageHandler;
-use tf_demo_parser::demo::sendprop::SendPropDefinition;
+use tf_demo_parser::demo::sendprop::RawSendPropDefinition;
 use tf_demo_parser::{Demo, DemoParser, MatchState, MessageType, MessageTypeAnalyser, ParserState};
 
 struct AllMessages;

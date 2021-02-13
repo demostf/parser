@@ -40,34 +40,32 @@ impl From<String> for SendPropName {
 }
 
 #[derive(Debug, Clone)]
-pub struct SendPropDefinition {
+pub struct RawSendPropDefinition {
     pub prop_type: SendPropType,
-    pub name: SendPropName,
+    pub identifier: Rc<SendPropIdentifier>,
     pub flags: SendPropFlags,
     pub table_name: Option<SendTableName>,
-    pub owner_table: SendTableName,
     pub low_value: Option<f32>,
     pub high_value: Option<f32>,
     pub bit_count: Option<u32>,
     pub element_count: Option<u16>,
-    pub array_property: Option<Box<SendPropDefinition>>,
-    pub index: SendPropDefinitionIndex,
+    pub array_property: Option<Box<RawSendPropDefinition>>,
 }
 
-impl PartialEq for SendPropDefinition {
+impl PartialEq for RawSendPropDefinition {
     fn eq(&self, other: &Self) -> bool {
-        self.index == other.index
+        self.identifier.index == other.identifier.index
     }
 }
 
-impl fmt::Display for SendPropDefinition {
+impl fmt::Display for RawSendPropDefinition {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.prop_type {
             SendPropType::Vector | SendPropType::VectorXY => write!(
                 f,
                 "{}::{}({})(flags: {}, low: {}, high: {}, bits: {})",
-                self.owner_table,
-                self.name,
+                self.identifier.owner_table,
+                self.identifier.name,
                 self.prop_type,
                 self.flags,
                 self.low_value.unwrap_or_default(),
@@ -77,8 +75,8 @@ impl fmt::Display for SendPropDefinition {
             SendPropType::Float => write!(
                 f,
                 "{}::{}({})(flags: {}, low: {}, high: {}, bits: {})",
-                self.owner_table,
-                self.name,
+                self.identifier.owner_table,
+                self.identifier.name,
                 self.prop_type,
                 self.flags,
                 self.low_value.unwrap_or_default(),
@@ -88,47 +86,55 @@ impl fmt::Display for SendPropDefinition {
             SendPropType::Int => write!(
                 f,
                 "{}::{}({})(flags: {}, bits: {})",
-                self.owner_table,
-                self.name,
+                self.identifier.owner_table,
+                self.identifier.name,
                 self.prop_type,
                 self.flags,
                 self.bit_count.unwrap_or(32)
             ),
             SendPropType::String => {
-                write!(f, "{}::{}({})", self.owner_table, self.name, self.prop_type)
+                write!(
+                    f,
+                    "{}::{}({})",
+                    self.identifier.owner_table, self.identifier.name, self.prop_type
+                )
             }
             SendPropType::Array => match &self.array_property {
                 Some(array_prop) => write!(
                     f,
                     "{}::{}([{}({})] * {})",
-                    self.owner_table,
-                    self.name,
+                    self.identifier.owner_table,
+                    self.identifier.name,
                     array_prop.prop_type,
                     array_prop.flags,
                     self.element_count.unwrap_or_default(),
                 ),
-                None => write!(f, "{}(Malformed array)", self.name),
+                None => write!(f, "{}(Malformed array)", self.identifier.name),
             },
             SendPropType::DataTable => match &self.table_name {
                 Some(sub_table) => write!(
                     f,
                     "{}::{}(DataTable = {})",
-                    self.owner_table, self.name, sub_table
+                    self.identifier.owner_table, self.identifier.name, sub_table
                 ),
-                None => write!(f, "{}(Malformed DataTable)", self.name),
+                None => write!(f, "{}(Malformed DataTable)", self.identifier.name),
             },
             SendPropType::NumSendPropTypes => {
-                write!(f, "{}::{}(NumSendPropTypes)", self.owner_table, self.name)
+                write!(
+                    f,
+                    "{}::{}(NumSendPropTypes)",
+                    self.identifier.owner_table, self.identifier.name
+                )
             }
         }
     }
 }
 
-impl SendPropDefinition {
+impl RawSendPropDefinition {
     pub fn with_array_property(self, array_property: Self) -> Self {
-        SendPropDefinition {
+        RawSendPropDefinition {
             prop_type: self.prop_type,
-            name: self.name,
+            identifier: self.identifier,
             flags: self.flags,
             table_name: self.table_name,
             low_value: self.low_value,
@@ -136,8 +142,6 @@ impl SendPropDefinition {
             bit_count: self.bit_count,
             element_count: self.element_count,
             array_property: Some(Box::new(array_property)),
-            owner_table: self.owner_table,
-            index: self.index,
         }
     }
 
@@ -187,9 +191,13 @@ impl SendPropDefinition {
             }
         }
 
-        Ok(SendPropDefinition {
+        Ok(RawSendPropDefinition {
             prop_type,
-            name,
+            identifier: Rc::new(SendPropIdentifier {
+                index,
+                name,
+                owner_table,
+            }),
             flags,
             table_name,
             low_value,
@@ -197,8 +205,6 @@ impl SendPropDefinition {
             bit_count,
             element_count,
             array_property: None,
-            owner_table,
-            index,
         })
     }
 
@@ -304,6 +310,173 @@ impl BitRead<'_, LittleEndian> for SendPropFlags {
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum FloatDefinition {
+    Coord,
+    CoordMP,
+    CoordMPLowPrecision,
+    CoordMPIntegral,
+    FloatNoScale,
+    NormalVarFloat,
+    Scaled { bit_count: u8, high: f32, low: f32 },
+}
+
+impl FloatDefinition {
+    pub fn new(
+        flags: SendPropFlags,
+        bit_count: Option<u32>,
+        high: Option<f32>,
+        low: Option<f32>,
+    ) -> std::result::Result<Self, MalformedSendPropDefinitionError> {
+        if flags.contains(SendPropFlag::Coord) {
+            Ok(FloatDefinition::Coord)
+        } else if flags.contains(SendPropFlag::CoordMP) {
+            Ok(FloatDefinition::CoordMP)
+        } else if flags.contains(SendPropFlag::CoordMPLowPrecision) {
+            Ok(FloatDefinition::CoordMPLowPrecision)
+        } else if flags.contains(SendPropFlag::CoordMPIntegral) {
+            Ok(FloatDefinition::CoordMPIntegral)
+        } else if flags.contains(SendPropFlag::NoScale) {
+            Ok(FloatDefinition::FloatNoScale)
+        } else if flags.contains(SendPropFlag::NormalVarInt) {
+            Ok(FloatDefinition::NormalVarFloat)
+        } else if let (Some(bit_count), Some(high), Some(low)) = (bit_count, high, low) {
+            Ok(FloatDefinition::Scaled {
+                bit_count: bit_count as u8,
+                high,
+                low,
+            })
+        } else {
+            Err(MalformedSendPropDefinitionError::UnsizedFloat)
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum SendPropDefinition {
+    NormalVarInt {
+        identifier: Rc<SendPropIdentifier>,
+        unsigned: bool,
+    },
+    UnsignedInt {
+        identifier: Rc<SendPropIdentifier>,
+        bit_count: u8,
+    },
+    Int {
+        identifier: Rc<SendPropIdentifier>,
+        bit_count: u8,
+    },
+    Float {
+        identifier: Rc<SendPropIdentifier>,
+        definition: FloatDefinition,
+    },
+    String {
+        identifier: Rc<SendPropIdentifier>,
+    },
+    Vector {
+        identifier: Rc<SendPropIdentifier>,
+        definition: FloatDefinition,
+    },
+    VectorXY {
+        identifier: Rc<SendPropIdentifier>,
+        definition: FloatDefinition,
+    },
+    Array {
+        identifier: Rc<SendPropIdentifier>,
+        inner_definition: Box<SendPropDefinition>,
+        count_bit_count: u16,
+    },
+}
+
+impl SendPropDefinition {
+    pub fn identifier(&self) -> Rc<SendPropIdentifier> {
+        match self {
+            SendPropDefinition::NormalVarInt { identifier, .. } => identifier.clone(),
+            SendPropDefinition::UnsignedInt { identifier, .. } => identifier.clone(),
+            SendPropDefinition::Int { identifier, .. } => identifier.clone(),
+            SendPropDefinition::Float { identifier, .. } => identifier.clone(),
+            SendPropDefinition::String { identifier, .. } => identifier.clone(),
+            SendPropDefinition::Vector { identifier, .. } => identifier.clone(),
+            SendPropDefinition::VectorXY { identifier, .. } => identifier.clone(),
+            SendPropDefinition::Array { identifier, .. } => identifier.clone(),
+        }
+    }
+}
+
+impl TryFrom<&RawSendPropDefinition> for SendPropDefinition {
+    type Error = MalformedSendPropDefinitionError;
+
+    fn try_from(definition: &RawSendPropDefinition) -> std::result::Result<Self, Self::Error> {
+        let identifier = definition.identifier.clone();
+        match definition.prop_type {
+            SendPropType::Int => {
+                if definition.flags.contains(SendPropFlag::NormalVarInt) {
+                    Ok(SendPropDefinition::NormalVarInt {
+                        identifier,
+                        unsigned: definition.flags.contains(SendPropFlag::Unsigned),
+                    })
+                } else if definition.flags.contains(SendPropFlag::Unsigned) {
+                    Ok(SendPropDefinition::UnsignedInt {
+                        identifier,
+                        bit_count: definition.bit_count.unwrap_or(32) as u8,
+                    })
+                } else {
+                    Ok(SendPropDefinition::Int {
+                        identifier,
+                        bit_count: definition.bit_count.unwrap_or(32) as u8,
+                    })
+                }
+            }
+            SendPropType::Float => Ok(SendPropDefinition::Float {
+                identifier,
+                definition: FloatDefinition::new(
+                    definition.flags,
+                    definition.bit_count,
+                    definition.high_value,
+                    definition.low_value,
+                )?,
+            }),
+            SendPropType::String => Ok(SendPropDefinition::String { identifier }),
+            SendPropType::Vector => Ok(SendPropDefinition::Vector {
+                identifier,
+                definition: FloatDefinition::new(
+                    definition.flags,
+                    definition.bit_count,
+                    definition.high_value,
+                    definition.low_value,
+                )?,
+            }),
+            SendPropType::VectorXY => Ok(SendPropDefinition::VectorXY {
+                identifier,
+                definition: FloatDefinition::new(
+                    definition.flags,
+                    definition.bit_count,
+                    definition.high_value,
+                    definition.low_value,
+                )?,
+            }),
+            SendPropType::Array => {
+                let count_bit_count = log_base2(
+                    definition
+                        .element_count
+                        .ok_or(MalformedSendPropDefinitionError::UnsizedArray)?,
+                ) as u16
+                    + 1;
+                let child_definition = definition
+                    .array_property
+                    .as_deref()
+                    .ok_or(MalformedSendPropDefinitionError::UntypedArray)?;
+                Ok(SendPropDefinition::Array {
+                    identifier,
+                    inner_definition: Box::new(SendPropDefinition::try_from(child_definition)?),
+                    count_bit_count,
+                })
+            }
+            _ => Err(MalformedSendPropDefinitionError::InvalidPropType),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum SendPropValue {
@@ -385,106 +558,88 @@ impl fmt::Display for SendPropValue {
 
 impl SendPropValue {
     pub fn parse(stream: &mut Stream, definition: &SendPropDefinition) -> Result<Self> {
-        match definition.prop_type {
-            SendPropType::Int => Self::read_int(stream, definition).map(SendPropValue::from),
-            SendPropType::Float => Self::read_float(stream, definition).map(SendPropValue::from),
-            SendPropType::String => Self::read_string(stream, definition).map(SendPropValue::from),
-            SendPropType::Vector => Self::read_vector(stream, definition).map(SendPropValue::from),
-            SendPropType::VectorXY => {
-                Self::read_vector_xy(stream, definition).map(SendPropValue::from)
-            }
-            SendPropType::Array => Self::read_array(stream, definition).map(SendPropValue::from),
-            _ => Err(MalformedSendPropDefinitionError::InvalidPropType.into()),
-        }
-    }
-
-    fn read_int(stream: &mut Stream, definition: &SendPropDefinition) -> Result<i64> {
-        if definition.flags.contains(SendPropFlag::NormalVarInt) {
-            read_var_int(stream, !definition.flags.contains(SendPropFlag::Unsigned))
+        match definition {
+            SendPropDefinition::NormalVarInt { unsigned, .. } => read_var_int(stream, !*unsigned)
                 .map_err(ParseError::from)
                 .map(|int| int as i64)
-        } else if definition.flags.contains(SendPropFlag::Unsigned) {
-            let unsigned: u32 = stream.read_sized(definition.bit_count.unwrap_or(32) as usize)?;
-            Ok(unsigned as i64)
-        } else {
-            stream
-                .read_int(definition.bit_count.unwrap_or(32) as usize)
+                .map(SendPropValue::from),
+            SendPropDefinition::UnsignedInt { bit_count, .. } => {
+                Ok((stream.read_sized::<u32>(*bit_count as usize)? as i64).into())
+            }
+            SendPropDefinition::Int { bit_count, .. } => stream
+                .read_int::<i32>((*bit_count) as usize)
                 .map_err(ParseError::from)
+                .map(SendPropValue::from),
+            SendPropDefinition::Float {
+                definition: float_definition,
+                ..
+            } => Self::read_float(stream, float_definition).map(SendPropValue::from),
+            SendPropDefinition::String { .. } => {
+                let length = stream.read_int(9)?;
+                stream
+                    .read_sized::<String>(length)
+                    .map_err(ParseError::from)
+                    .map(SendPropValue::from)
+            }
+            SendPropDefinition::Vector {
+                definition: float_definition,
+                ..
+            } => Ok(Vector {
+                x: Self::read_float(stream, float_definition)?,
+                y: Self::read_float(stream, float_definition)?,
+                z: Self::read_float(stream, float_definition)?,
+            }
+            .into()),
+            SendPropDefinition::VectorXY {
+                definition: float_definition,
+                ..
+            } => Ok(VectorXY {
+                x: Self::read_float(stream, float_definition)?,
+                y: Self::read_float(stream, float_definition)?,
+            }
+            .into()),
+            SendPropDefinition::Array {
+                count_bit_count,
+                inner_definition,
+                ..
+            } => {
+                let count = stream.read_int(*count_bit_count as usize)?;
+                let mut values = Vec::with_capacity(min(count, 128));
+
+                for _ in 0..count {
+                    values.push(Self::parse(stream, inner_definition)?);
+                }
+
+                Ok(values.into())
+            }
         }
     }
 
-    fn read_array(
-        stream: &mut Stream,
-        definition: &SendPropDefinition,
-    ) -> Result<Vec<SendPropValue>> {
-        let num_bits = log_base2(
-            definition
-                .element_count
-                .ok_or(MalformedSendPropDefinitionError::UnsizedArray)?,
-        ) + 1;
-
-        let count = stream.read_int(num_bits as usize)?;
-        let mut values = Vec::with_capacity(min(count, 128));
-
-        let child_definition = definition
-            .array_property
-            .as_ref()
-            .ok_or(MalformedSendPropDefinitionError::UntypedArray)?;
-
-        for _ in 0..count {
-            values.push(Self::parse(stream, child_definition)?);
-        }
-
-        Ok(values)
-    }
-
-    fn read_string(stream: &mut Stream, _definition: &SendPropDefinition) -> Result<String> {
-        let length = stream.read_int(9)?;
-        stream.read_sized(length).map_err(ParseError::from)
-    }
-
-    fn read_vector(stream: &mut Stream, definition: &SendPropDefinition) -> Result<Vector> {
-        Ok(Vector {
-            x: Self::read_float(stream, definition)?,
-            y: Self::read_float(stream, definition)?,
-            z: Self::read_float(stream, definition)?,
-        })
-    }
-
-    fn read_vector_xy(stream: &mut Stream, definition: &SendPropDefinition) -> Result<VectorXY> {
-        Ok(VectorXY {
-            x: Self::read_float(stream, definition)?,
-            y: Self::read_float(stream, definition)?,
-        })
-    }
-
-    fn read_float(stream: &mut Stream, definition: &SendPropDefinition) -> Result<f32> {
-        if definition.flags.contains(SendPropFlag::Coord) {
-            read_bit_coord(stream).map_err(ParseError::from)
-        } else if definition.flags.contains(SendPropFlag::CoordMP) {
-            read_bit_coord_mp(stream, false, false).map_err(ParseError::from)
-        } else if definition.flags.contains(SendPropFlag::CoordMPLowPrecision) {
-            read_bit_coord_mp(stream, false, true).map_err(ParseError::from)
-        } else if definition.flags.contains(SendPropFlag::CoordMPIntegral) {
-            read_bit_coord_mp(stream, true, false).map_err(ParseError::from)
-        } else if definition.flags.contains(SendPropFlag::NoScale) {
-            stream.read().map_err(ParseError::from)
-        } else if definition.flags.contains(SendPropFlag::NormalVarInt) {
-            read_bit_normal(stream).map_err(ParseError::from)
-        } else {
-            let bit_count = definition
-                .bit_count
-                .ok_or(MalformedSendPropDefinitionError::UnsizedFloat)?;
-            let high = definition
-                .high_value
-                .ok_or(MalformedSendPropDefinitionError::UnsizedFloat)?;
-            let low = definition
-                .low_value
-                .ok_or(MalformedSendPropDefinitionError::UnsizedFloat)?;
-            let raw: u32 = stream.read_int(bit_count as usize)?;
-            // is this -1 correct?, it is consistent with the js version but seems weird
-            let percentage = (raw as f32) / ((1i32.wrapping_shl(bit_count)) as f32 - 1.0);
-            Ok(low + ((high - low) * percentage))
+    fn read_float(stream: &mut Stream, definition: &FloatDefinition) -> Result<f32> {
+        match definition {
+            FloatDefinition::Coord => read_bit_coord(stream).map_err(ParseError::from),
+            FloatDefinition::CoordMP => {
+                read_bit_coord_mp(stream, false, false).map_err(ParseError::from)
+            }
+            FloatDefinition::CoordMPLowPrecision => {
+                read_bit_coord_mp(stream, false, true).map_err(ParseError::from)
+            }
+            FloatDefinition::CoordMPIntegral => {
+                read_bit_coord_mp(stream, true, false).map_err(ParseError::from)
+            }
+            FloatDefinition::FloatNoScale => stream.read().map_err(ParseError::from),
+            FloatDefinition::NormalVarFloat => read_bit_normal(stream).map_err(ParseError::from),
+            FloatDefinition::Scaled {
+                bit_count,
+                low,
+                high,
+            } => {
+                let raw: u32 = stream.read_int(*bit_count as usize)?;
+                // is this -1 correct?, it is consistent with the js version but seems weird
+                let percentage =
+                    (raw as f32) / ((1i32.wrapping_shl(*bit_count as u32)) as f32 - 1.0);
+                Ok(low + ((high - low) * percentage))
+            }
         }
     }
 }
@@ -601,10 +756,18 @@ impl SendPropDefinitionIndex {
     }
 }
 
+#[derive(Debug, Display)]
+#[display("{owner_table}::{name}")]
+pub struct SendPropIdentifier {
+    pub index: SendPropDefinitionIndex,
+    pub name: SendPropName,
+    pub owner_table: SendTableName,
+}
+
 #[derive(Debug, Clone, Display)]
-#[display("{definition.owner_table}::{definition.name} = {value}")]
+#[display("{identifier} = {value}")]
 pub struct SendProp {
-    pub definition: Rc<SendPropDefinition>,
+    pub identifier: Rc<SendPropIdentifier>,
     pub value: SendPropValue,
 }
 

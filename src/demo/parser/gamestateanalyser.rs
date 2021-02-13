@@ -206,7 +206,7 @@ impl GameStateAnalyser {
 
     pub fn handle_player_resource(&mut self, entity: &PacketEntity) {
         for prop in &entity.props {
-            if let Ok(player_id) = u32::from_str(prop.definition.name.as_str()) {
+            if let Ok(player_id) = u32::from_str(prop.identifier.name.as_str()) {
                 let entity_id = EntityId::from(player_id);
                 if let Some(player) = self
                     .state
@@ -214,7 +214,7 @@ impl GameStateAnalyser {
                     .iter_mut()
                     .find(|player| player.entity == entity_id)
                 {
-                    match prop.definition.owner_table.as_str() {
+                    match prop.identifier.owner_table.as_str() {
                         "m_iTeam" => {
                             player.team = Team::new(i64::try_from(&prop.value).unwrap_or_default())
                         }
@@ -237,8 +237,8 @@ impl GameStateAnalyser {
         let player = self.state.get_or_create_player(entity.entity_index);
 
         for prop in &entity.props {
-            match prop.definition.owner_table.as_str() {
-                "DT_BasePlayer" => match prop.definition.name.as_str() {
+            match prop.identifier.owner_table.as_str() {
+                "DT_BasePlayer" => match prop.identifier.name.as_str() {
                     "m_iHealth" => {
                         player.health = i64::try_from(&prop.value).unwrap_or_default() as u16
                     }
@@ -252,7 +252,7 @@ impl GameStateAnalyser {
                     _ => {}
                 },
                 "DT_TFLocalPlayerExclusive" | "DT_TFNonLocalPlayerExclusive" => {
-                    match prop.definition.name.as_str() {
+                    match prop.identifier.name.as_str() {
                         "m_vecOrigin" => {
                             let pos_xy = VectorXY::try_from(&prop.value).unwrap_or_default();
                             player.position.x = pos_xy.x;

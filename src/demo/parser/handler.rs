@@ -71,7 +71,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
     pub fn handle_packet(&mut self, packet: Packet<'a>) -> Result<()> {
         match packet {
             Packet::DataTables(packet) => {
-                self.handle_data_table(packet.tables, packet.server_classes);
+                self.handle_data_table(packet.tables, packet.server_classes)?;
             }
             Packet::StringTables(packet) => {
                 for table in packet.tables.into_iter() {
@@ -127,11 +127,11 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         &mut self,
         send_tables: Vec<ParseSendTable>,
         server_classes: Vec<ServerClass>,
-    ) {
+    ) -> Result<()> {
         self.analyser
             .handle_data_tables(&send_tables, &server_classes);
         self.state_handler
-            .handle_data_table(send_tables, server_classes);
+            .handle_data_table(send_tables, server_classes)
     }
 
     fn handle_message(&mut self, message: Message<'a>) {

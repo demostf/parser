@@ -5,7 +5,7 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::{ClassId, SendTable};
 use crate::demo::parser::ParseBitSkip;
-use crate::demo::sendprop::{SendProp, SendPropDefinition, SendPropValue};
+use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropValue};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
 use std::cmp::min;
@@ -13,7 +13,6 @@ use std::cmp::min;
 use std::fmt;
 use std::hint::unreachable_unchecked;
 use std::num::NonZeroU32;
-use std::rc::Rc;
 
 #[derive(
     Debug,
@@ -70,15 +69,15 @@ impl fmt::Display for PacketEntity {
 }
 
 impl PacketEntity {
-    fn get_prop_by_definition(&mut self, definition: &SendPropDefinition) -> Option<&mut SendProp> {
+    fn get_prop_by_identifier(&mut self, identifier: &SendPropIdentifier) -> Option<&mut SendProp> {
         self.props
             .iter_mut()
-            .find(|prop| prop.definition.index == definition.index)
+            .find(|prop| prop.identifier.index == identifier.index)
     }
 
     pub fn apply_update(&mut self, props: Vec<SendProp>) {
         for prop in props {
-            match self.get_prop_by_definition(&prop.definition) {
+            match self.get_prop_by_identifier(&prop.identifier) {
                 Some(existing_prop) => existing_prop.value = prop.value,
                 None => self.props.push(prop),
             }
@@ -87,8 +86,8 @@ impl PacketEntity {
 
     pub fn get_prop_by_name(&self, table_name: &str, name: &str) -> Option<&SendProp> {
         self.props.iter().find(|prop| {
-            prop.definition.owner_table.as_str() == table_name
-                && prop.definition.name.as_str() == name
+            prop.identifier.owner_table.as_str() == table_name
+                && prop.identifier.name.as_str() == name
         })
     }
 }
@@ -252,7 +251,7 @@ impl PacketEntitiesMessage {
                 Some(definition) => {
                     let value = SendPropValue::parse(stream, definition)?;
                     props.push(SendProp {
-                        definition: Rc::clone(definition),
+                        identifier: definition.identifier(),
                         value,
                     });
                 }
