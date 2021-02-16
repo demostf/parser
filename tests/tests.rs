@@ -11,6 +11,7 @@ use tf_demo_parser::{Demo, DemoParser, MatchState};
 #[test_case("data/unicode-saytext.dem", "data/unicode-saytext.json"; "unicode-saytext.dem")]
 #[test_case("data/nousers.dem", "data/nousers.json"; "nousers.dem")]
 #[test_case("data/decal.dem", "data/decal.json"; "decal.dem")]
+#[test_case("data/saytext2.dem", "data/saytext2.json"; "saytext2.dem")]
 fn snapshot_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(&file);
