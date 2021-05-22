@@ -1,5 +1,5 @@
 use bitbuffer::{BitRead, LittleEndian};
-use enumflags2::BitFlags;
+use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
 
 use crate::{ParseError, ReadResult, Result, Stream};
@@ -227,7 +227,8 @@ pub enum SendPropType {
     NumSendPropTypes = 7,
 }
 
-#[derive(BitFlags, Copy, Clone, PartialEq, Debug)]
+#[bitflags]
+#[derive(Copy, Clone, PartialEq, Debug)]
 #[repr(u16)]
 pub enum SendPropFlag {
     // Unsigned integer data.
