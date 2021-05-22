@@ -48,6 +48,12 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
             let decompressed_size: u32 = table_data.read()?;
             let compressed_size: u32 = table_data.read()?;
 
+            if compressed_size < 4 {
+                return Err(ParseError::InvalidDemo(
+                    "Invalid compressed string table size",
+                ));
+            }
+
             let magic = table_data.read_string(Some(4))?;
 
             if magic != "SNAP" {
