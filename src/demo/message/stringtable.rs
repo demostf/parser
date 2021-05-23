@@ -1,6 +1,6 @@
 use bitbuffer::{BitReadBuffer, BitReadStream, LittleEndian};
 use num_traits::{PrimInt, Unsigned};
-use snap::raw::Decoder;
+use snap::raw::{decompress_len, Decoder};
 
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserDataSize, StringTable, StringTableEntry,
@@ -48,9 +48,15 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
             let decompressed_size: u32 = table_data.read()?;
             let compressed_size: u32 = table_data.read()?;
 
-            if compressed_size < 4 {
+            if compressed_size < 4 || compressed_size > 10 * 1024 * 1024 {
                 return Err(ParseError::InvalidDemo(
                     "Invalid compressed string table size",
+                ));
+            }
+
+            if decompressed_size > 100 * 1024 * 1024 {
+                return Err(ParseError::InvalidDemo(
+                    "Invalid decompressed string table size",
                 ));
             }
 
@@ -63,16 +69,20 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
             let compressed_data = table_data.read_bytes(compressed_size as usize - 4)?;
 
             let mut decoder = Decoder::new();
-            let decompressed_data = decoder
-                .decompress_vec(&compressed_data)
-                .map_err(ParseError::from)?;
 
-            if decompressed_data.len() != decompressed_size as usize {
+            let decompressed_size_from_header = decompress_len(&compressed_data)?;
+
+            if decompressed_size_from_header != decompressed_size as usize {
                 return Err(ParseError::UnexpectedDecompressedSize {
                     expected: decompressed_size,
-                    size: decompressed_data.len() as u32,
+                    size: decompressed_size_from_header as u32,
                 });
             }
+
+            let mut decompressed_data = vec![0; decompressed_size_from_header];
+            decoder
+                .decompress(&compressed_data, &mut decompressed_data)
+                .map_err(ParseError::from)?;
 
             let buffer = BitReadBuffer::new_owned(decompressed_data, LittleEndian);
             table_data = BitReadStream::new(buffer);
