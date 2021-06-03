@@ -120,6 +120,7 @@ pub enum ChatMessageKind {
     #[serde(rename = "TF_Chat_AllSpec")]
     ChatAllSpec,
     NameChange,
+    Empty,
 }
 
 impl BitRead<'_, LittleEndian> for ChatMessageKind {
@@ -153,6 +154,17 @@ impl BitRead<'_, LittleEndian> for SayText2Message {
         let (kind, from, text): (ChatMessageKind, Option<String>, String) =
             if stream.read::<u8>()? == 1 {
                 let first = stream.read::<u8>()?;
+
+                if stream.bits_left() == 0 {
+                    return Ok(SayText2Message {
+                        client,
+                        raw,
+                        kind: ChatMessageKind::Empty,
+                        from: None,
+                        text: String::new(),
+                    });
+                }
+
                 if first == 7 {
                     let _color = stream.read_string(Some(6))?;
                 } else {
