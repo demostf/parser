@@ -387,7 +387,7 @@ impl Analyser {
             let steam_id: String = data.read()?;
 
             match text
-                .map(|text| text.parse())
+                .map(|text| text.parse::<u32>().map(|id| (id + 1).into()))
                 .unwrap_or_else(|| Ok((user_id.0 as u32).into()))
             {
                 Ok(entity_id) if !steam_id.is_empty() => {
