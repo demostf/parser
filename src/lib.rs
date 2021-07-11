@@ -9,5 +9,6 @@ pub use crate::demo::{
     Demo, Stream,
 };
 
+pub(crate) mod consthash;
 pub mod demo;
 mod nullhasher;

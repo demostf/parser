@@ -6,16 +6,15 @@ use crate::{ParseError, ReadResult, Result, Stream};
 
 use super::packet::datatable::ParseSendTable;
 use super::vector::{Vector, VectorXY};
+use crate::consthash::ConstFnvHash;
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use parse_display::Display;
 use std::cmp::min;
 use std::convert::{TryFrom, TryInto};
-
-use fnv::FnvHasher;
 use std::fmt;
-use std::hash::{Hash, Hasher};
+use std::hash::Hash;
 use std::rc::Rc;
 
 #[derive(
@@ -766,10 +765,8 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
 pub struct SendPropIdentifier(u64);
 
 impl SendPropIdentifier {
-    pub fn new(table: &str, prop: &str) -> Self {
-        let mut hasher = FnvHasher::default();
-        table.hash(&mut hasher);
-        prop.hash(&mut hasher);
+    pub const fn new(table: &str, prop: &str) -> Self {
+        let hasher = ConstFnvHash::new().push_string(table).push_string(prop);
         SendPropIdentifier(hasher.finish())
     }
 }
