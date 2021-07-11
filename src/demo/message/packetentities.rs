@@ -69,13 +69,17 @@ impl fmt::Display for PacketEntity {
 }
 
 impl PacketEntity {
-    pub fn get_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
+    pub fn mut_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
         self.props.iter_mut().find(|prop| prop.index == *index)
+    }
+
+    pub fn get_prop_by_identifier(&self, index: &SendPropIdentifier) -> Option<&SendProp> {
+        self.props.iter().find(|prop| prop.index == *index)
     }
 
     pub fn apply_update(&mut self, props: Vec<SendProp>) {
         for prop in props {
-            match self.get_prop_by_identifier(&prop.index) {
+            match self.mut_prop_by_identifier(&prop.index) {
                 Some(existing_prop) => existing_prop.value = prop.value,
                 None => self.props.push(prop),
             }
@@ -84,7 +88,7 @@ impl PacketEntity {
 
     pub fn get_prop_by_name(&self, table_name: &str, name: &str) -> Option<&SendProp> {
         let identifier = SendPropIdentifier::new(table_name, name);
-        self.props.iter().find(|prop| prop.index == identifier)
+        self.get_prop_by_identifier(&identifier)
     }
 }
 
