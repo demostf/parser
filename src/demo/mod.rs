@@ -1,6 +1,7 @@
 use crate::ReadResult;
 use bitbuffer::{BitError, BitReadBuffer, BitReadStream, LittleEndian};
 
+pub mod data;
 pub mod gameevent_gen;
 pub mod gamevent;
 pub mod header;

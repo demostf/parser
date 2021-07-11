@@ -175,7 +175,7 @@ impl From<HashMap<Class, u8>> for ClassList {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
-pub struct UserId(u8);
+pub struct UserId(pub u8);
 
 impl From<u32> for UserId {
     fn from(int: u32) -> Self {
@@ -218,6 +218,19 @@ pub struct UserInfo {
     #[serde(skip)]
     pub entity_id: EntityId,
     pub team: Team,
+}
+
+impl From<crate::demo::data::UserInfo> for UserInfo {
+    fn from(info: crate::demo::data::UserInfo) -> Self {
+        UserInfo {
+            classes: ClassList::default(),
+            name: info.name,
+            user_id: info.user_id,
+            steam_id: info.steam_id,
+            entity_id: info.entity_id,
+            team: Team::default(),
+        }
+    }
 }
 
 impl PartialEq for UserInfo {
@@ -379,35 +392,14 @@ impl Analyser {
     }
 
     fn parse_user_info(&mut self, text: Option<&str>, data: Option<Stream>) -> ReadResult<()> {
-        if let Some(mut data) = data {
-            let name: String = data
-                .read_sized(32)
-                .unwrap_or_else(|_| "Malformed Name".into());
-            let user_id: UserId = data.read::<u32>()?.into();
-            let steam_id: String = data.read()?;
-
-            match text
-                .map(|text| text.parse::<u32>().map(|id| (id + 1).into()))
-                .unwrap_or_else(|| Ok((user_id.0 as u32).into()))
-            {
-                Ok(entity_id) if !steam_id.is_empty() => {
-                    self.state
-                        .users
-                        .entry(user_id)
-                        .and_modify(|info| {
-                            info.entity_id = entity_id;
-                        })
-                        .or_insert_with(|| UserInfo {
-                            classes: ClassList::default(),
-                            team: Team::Other,
-                            steam_id,
-                            user_id,
-                            name,
-                            entity_id,
-                        });
-                }
-                _ => {}
-            }
+        if let Some(user_info) = crate::demo::data::UserInfo::parse_from_string_table(text, data)? {
+            self.state
+                .users
+                .entry(user_info.user_id)
+                .and_modify(|info| {
+                    info.entity_id = user_info.entity_id;
+                })
+                .or_insert_with(|| user_info.into());
         }
 
         Ok(())
