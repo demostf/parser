@@ -4,15 +4,15 @@ use test_case::test_case;
 use tf_demo_parser::demo::parser::gamestateanalyser::{GameState, GameStateAnalyser};
 use tf_demo_parser::{Demo, DemoParser, MatchState};
 
-#[test_case("data/small.dem", "data/small.json"; "small.dem")]
-#[test_case("data/gully.dem", "data/gully.json"; "gully.dem")]
-#[test_case("data/comp.dem", "data/comp.json"; "comp.dem")]
-#[test_case("data/malformed_cvar.dem", "data/malformed_cvar.json"; "malformed_cvar.dem")]
-#[test_case("data/unicode-saytext.dem", "data/unicode-saytext.json"; "unicode-saytext.dem")]
-#[test_case("data/nousers.dem", "data/nousers.json"; "nousers.dem")]
-#[test_case("data/decal.dem", "data/decal.json"; "decal.dem")]
-#[test_case("data/saytext2.dem", "data/saytext2.json"; "saytext2.dem")]
-#[test_case("data/emptysaytext.dem", "data/emptysaytext.json"; "emptysaytext.dem")]
+#[test_case("test_data/small.dem", "test_data/small.json"; "small.dem")]
+#[test_case("test_data/gully.dem", "test_data/gully.json"; "gully.dem")]
+#[test_case("test_data/comp.dem", "test_data/comp.json"; "comp.dem")]
+#[test_case("test_data/malformed_cvar.dem", "test_data/malformed_cvar.json"; "malformed_cvar.dem")]
+#[test_case("test_data/unicode-saytext.dem", "test_data/unicode-saytext.json"; "unicode-saytext.dem")]
+#[test_case("test_data/nousers.dem", "test_data/nousers.json"; "nousers.dem")]
+#[test_case("test_data/decal.dem", "test_data/decal.json"; "decal.dem")]
+#[test_case("test_data/saytext2.dem", "test_data/saytext2.json"; "saytext2.dem")]
+#[test_case("test_data/emptysaytext.dem", "test_data/emptysaytext.json"; "emptysaytext.dem")]
 fn snapshot_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(&file);
@@ -27,8 +27,8 @@ fn snapshot_test(input_file: &str, snapshot_file: &str) {
     pretty_assertions::assert_eq!(expected, state);
 }
 
-#[test_case("data/small.dem", "data/small_game_state.json"; "small.dem")]
-#[test_case("data/gully.dem", "data/gully_game_state.json"; "gully.dem")]
+#[test_case("test_data/small.dem", "test_data/small_game_state.json"; "small.dem")]
+#[test_case("test_data/gully.dem", "test_data/gully_game_state.json"; "gully.dem")]
 fn game_state_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(&file);

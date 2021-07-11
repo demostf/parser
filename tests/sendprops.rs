@@ -48,7 +48,7 @@ impl MessageHandler for SendPropAnalyser {
     }
 }
 
-#[test_case("data/gully.dem", "data/gully_props.json"; "gully.dem")]
+#[test_case("test_data/gully.dem", "test_data/gully_props.json"; "gully.dem")]
 fn flatten_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(&file);

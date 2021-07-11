@@ -20,10 +20,10 @@ fn bench_file(input_file: &str, b: &mut Bencher) {
 
 #[bench]
 fn bench_gully(b: &mut Bencher) {
-    bench_file("data/gully.dem", b);
+    bench_file("test_data/gully.dem", b);
 }
 
 #[bench]
 fn bench_comp(b: &mut Bencher) {
-    bench_file("data/comp.dem", b);
+    bench_file("test_data/comp.dem", b);
 }

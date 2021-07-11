@@ -6,7 +6,7 @@ authors = ["Robin Appelman <robin@icewind.nl>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/demostf/parser"
-exclude = [ "tests/fuzz", "data" ]
+exclude = [ "tests/fuzz", "test_data" ]
 
 [lib]
 name = "tf_demo_parser"

@@ -23,7 +23,7 @@ impl MessageHandler for AllMessages {
 }
 
 fn bench_all() {
-    let file = fs::read("data/gully.dem").expect("Unable to read file");
+    let file = fs::read("test_data/gully.dem").expect("Unable to read file");
     let demo = Demo::new(&file);
     let stream = demo.get_stream();
     black_box(

@@ -57,5 +57,5 @@ fn flatten_bench(input_file: &str, b: &mut Bencher) {
 
 #[bench]
 fn sendprop_test_gully(b: &mut Bencher) {
-    flatten_bench("data/gully.dem", b);
+    flatten_bench("test_data/gully.dem", b);
 }

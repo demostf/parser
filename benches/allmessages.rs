@@ -50,5 +50,5 @@ fn bench_all(input_file: &str, b: &mut Bencher) {
 
 #[bench]
 fn all_test_gully(b: &mut Bencher) {
-    bench_all("data/gully.dem", b);
+    bench_all("test_data/gully.dem", b);
 }
