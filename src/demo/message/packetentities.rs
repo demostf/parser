@@ -69,7 +69,7 @@ impl fmt::Display for PacketEntity {
 }
 
 impl PacketEntity {
-    fn get_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
+    pub fn get_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
         self.props.iter_mut().find(|prop| prop.index == *index)
     }
 

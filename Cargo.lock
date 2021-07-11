@@ -634,7 +634,7 @@ dependencies = [
 
 [[package]]
 name = "tf-demo-parser"
-version = "0.2.3"
+version = "0.2.4"
 dependencies = [
  "better-panic",
  "bitbuffer",
