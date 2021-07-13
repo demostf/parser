@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 
 use crate::{ReadResult, Stream};
 
@@ -67,7 +67,7 @@ pub struct VoiceDataMessage<'a> {
     data: Stream<'a>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ParseSoundsMessage<'a> {
     pub reliable: bool,
     pub num: u8,
@@ -93,4 +93,42 @@ impl<'a> BitRead<'a, LittleEndian> for ParseSoundsMessage<'a> {
             data,
         })
     }
+}
+
+impl<'a> BitWrite<LittleEndian> for ParseSoundsMessage<'a> {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.reliable.write(stream)?;
+        if !self.reliable {
+            self.num.write(stream)?;
+        }
+
+        if self.reliable {
+            self.length.write_sized(stream, 8)?;
+        } else {
+            self.length.write(stream)?;
+        }
+
+        self.data.write(stream)?;
+
+        Ok(())
+    }
+}
+
+#[test]
+fn test_parse_sounds_roundtrip() {
+    use bitbuffer::BitReadBuffer;
+    let inner = BitReadBuffer::new(&[1, 2, 3, 4, 5, 6], LittleEndian);
+
+    crate::test_roundtrip_encode(ParseSoundsMessage {
+        reliable: false,
+        num: 0,
+        length: inner.bit_len() as u16,
+        data: inner.clone().into(),
+    });
+    crate::test_roundtrip_encode(ParseSoundsMessage {
+        reliable: true,
+        num: 1,
+        length: inner.bit_len() as u16,
+        data: inner.into(),
+    });
 }
