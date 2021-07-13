@@ -1,4 +1,4 @@
-use bitbuffer::BitRead;
+use bitbuffer::{BitRead, BitWrite};
 
 use crate::{ParseError, Result};
 
@@ -41,7 +41,7 @@ pub struct GameEventEntry {
     pub kind: GameEventValueType,
 }
 
-#[derive(BitRead, Debug, Clone, Copy, PartialEq, Display)]
+#[derive(BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Display)]
 #[discriminant_bits = 3]
 pub enum GameEventValueType {
     None = 0,

@@ -1,10 +1,10 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 
-use crate::demo::sendprop::read_bit_coord;
+use crate::demo::sendprop::{read_bit_coord, write_bit_coord};
 use crate::demo::vector::Vector;
 use crate::{ReadResult, Stream};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BSPDecalMessage {
     pub position: Vector,
     pub texture_index: u16,
@@ -16,9 +16,7 @@ pub struct BSPDecalMessage {
 impl BitRead<'_, LittleEndian> for BSPDecalMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let position = {
-            let has_x = stream.read()?;
-            let has_y = stream.read()?;
-            let has_z = stream.read()?;
+            let (has_x, has_y, has_z) = stream.read()?;
 
             Vector {
                 x: if has_x { read_bit_coord(stream)? } else { 0f32 },
@@ -43,4 +41,56 @@ impl BitRead<'_, LittleEndian> for BSPDecalMessage {
             low_priority,
         })
     }
+}
+
+impl BitWrite<LittleEndian> for BSPDecalMessage {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        let has_x = self.position.x != 0.0;
+        let has_y = self.position.y != 0.0;
+        let has_z = self.position.z != 0.0;
+        (has_x, has_y, has_z).write(stream)?;
+
+        if has_x {
+            write_bit_coord(self.position.x, stream)?;
+        }
+        if has_y {
+            write_bit_coord(self.position.y, stream)?;
+        }
+        if has_z {
+            write_bit_coord(self.position.z, stream)?;
+        }
+        self.texture_index.write_sized(stream, 9)?;
+        if self.ent_index != 0 || self.model_index != 0 {
+            true.write(stream)?;
+            self.ent_index.write_sized(stream, 12)?;
+            self.model_index.write_sized(stream, 12)?;
+        } else {
+            false.write(stream)?;
+        }
+        self.low_priority.write(stream)?;
+
+        Ok(())
+    }
+}
+
+#[test]
+fn test_decal_roundtrip() {
+    crate::test_roundtrip_encode(BSPDecalMessage {
+        position: Vector::default(),
+        texture_index: 0,
+        ent_index: 0,
+        model_index: 0,
+        low_priority: false,
+    });
+    crate::test_roundtrip_encode(BSPDecalMessage {
+        position: Vector {
+            x: 1.0,
+            y: 0.5,
+            z: 0.0,
+        },
+        texture_index: 12,
+        ent_index: 15,
+        model_index: 2,
+        low_priority: true,
+    });
 }

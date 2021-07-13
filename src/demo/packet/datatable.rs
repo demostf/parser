@@ -1,4 +1,4 @@
-use bitbuffer::BitRead;
+use bitbuffer::{BitRead, BitWrite};
 
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{
@@ -11,9 +11,10 @@ use serde::{Deserialize, Serialize};
 use std::cmp::min;
 
 use std::convert::TryFrom;
-use std::rc::Rc;
 
-#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Display, FromStr)]
+#[derive(
+    BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Display, FromStr,
+)]
 pub struct ClassId(u16);
 
 impl From<u16> for ClassId {
@@ -28,8 +29,8 @@ impl From<ClassId> for usize {
     }
 }
 
-#[derive(BitRead, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
-pub struct ServerClassName(Rc<String>);
+#[derive(BitRead, BitWrite, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
+pub struct ServerClassName(String);
 
 impl ServerClassName {
     pub fn as_str(&self) -> &str {
@@ -39,11 +40,11 @@ impl ServerClassName {
 
 impl From<String> for ServerClassName {
     fn from(value: String) -> Self {
-        Self(Rc::new(value))
+        Self(value)
     }
 }
 
-#[derive(BitRead, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone)]
 pub struct ServerClass {
     pub id: ClassId,
     pub name: ServerClassName,
@@ -52,6 +53,7 @@ pub struct ServerClass {
 
 #[derive(
     BitRead,
+    BitWrite,
     PartialEq,
     Eq,
     Hash,
@@ -64,7 +66,7 @@ pub struct ServerClass {
     Ord,
     Default,
 )]
-pub struct SendTableName(Rc<String>);
+pub struct SendTableName(String);
 
 impl SendTableName {
     pub fn as_str(&self) -> &str {
@@ -74,7 +76,7 @@ impl SendTableName {
 
 impl From<String> for SendTableName {
     fn from(value: String) -> Self {
-        Self(Rc::new(value))
+        Self(value)
     }
 }
 

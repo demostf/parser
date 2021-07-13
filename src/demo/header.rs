@@ -1,6 +1,6 @@
-use bitbuffer::BitRead;
+use bitbuffer::{BitRead, BitWrite};
 
-#[derive(BitRead, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq)]
 pub struct Header {
     #[size = 8]
     pub demo_type: String,

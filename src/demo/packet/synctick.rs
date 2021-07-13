@@ -1,6 +1,6 @@
-use bitbuffer::BitRead;
+use bitbuffer::{BitRead, BitWrite};
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct SyncTickPacket {
     pub tick: u32,
 }

@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
 
@@ -10,6 +10,7 @@ use crate::consthash::ConstFnvHash;
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
 use crate::demo::parser::MalformedSendPropDefinitionError;
+use num_traits::Signed;
 use parse_display::Display;
 use std::cmp::min;
 use std::convert::{TryFrom, TryInto};
@@ -814,6 +815,52 @@ pub fn read_bit_coord(stream: &mut Stream) -> ReadResult<f32> {
     } else {
         0f32
     })
+}
+
+pub fn write_bit_coord(val: f32, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+    let has_int = val.abs() >= 1.0;
+    has_int.write(stream)?;
+    let has_frac = val.fract() != 0.0;
+    has_frac.write(stream)?;
+
+    if has_frac || has_int {
+        let sign = val.is_negative();
+        sign.write(stream)?;
+    }
+    let abs = val.abs();
+    if has_int {
+        (abs as u16 - 1).write_sized(stream, 14)?;
+    }
+    if has_frac {
+        let frac_val = (abs.fract() / get_frac_factor(5)) as u8;
+        frac_val.write_sized(stream, 5)?;
+    }
+    Ok(())
+}
+
+#[test]
+fn bit_coord_roundtrip() {
+    use bitbuffer::BitReadBuffer;
+
+    let mut write = BitWriteStream::new(LittleEndian);
+    write_bit_coord(0.0, &mut write).unwrap();
+    let pos1 = write.bit_len();
+    write_bit_coord(123.0, &mut write).unwrap();
+    let pos2 = write.bit_len();
+    write_bit_coord(123.4375, &mut write).unwrap();
+    let pos3 = write.bit_len();
+    write_bit_coord(-0.4375, &mut write).unwrap();
+    let pos4 = write.bit_len();
+
+    let mut read = Stream::from(BitReadBuffer::new_owned(write.finish(), LittleEndian));
+    assert_eq!(0.0, read_bit_coord(&mut read).unwrap());
+    assert_eq!(pos1, read.pos());
+    assert_eq!(123.0, read_bit_coord(&mut read).unwrap());
+    assert_eq!(pos2, read.pos());
+    assert_eq!(123.4375, read_bit_coord(&mut read).unwrap());
+    assert_eq!(pos3, read.pos());
+    assert_eq!(-0.4375, read_bit_coord(&mut read).unwrap());
+    assert_eq!(pos4, read.pos());
 }
 
 fn get_frac_factor(bits: usize) -> f32 {

@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteSized, LittleEndian};
 
 use crate::{ReadResult, Stream};
 
@@ -15,5 +15,15 @@ impl BitRead<'_, LittleEndian> for ConsoleCmdPacket {
         let mut packet_data = stream.read_bits(len * 8)?;
         let command = packet_data.read_sized(len)?;
         Ok(ConsoleCmdPacket { tick, command })
+    }
+}
+
+impl BitWrite<LittleEndian> for ConsoleCmdPacket {
+    fn write(&self, stream: &mut bitbuffer::BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.tick.write(stream)?;
+        let len = self.command.len() as u32;
+        len.write(stream)?;
+        self.command.write_sized(stream, len as usize)?;
+        Ok(())
     }
 }

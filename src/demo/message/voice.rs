@@ -1,8 +1,8 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 
 use crate::{ReadResult, Stream};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct VoiceInitMessage {
     codec: String,
     quality: u8,
@@ -30,7 +30,34 @@ impl BitRead<'_, LittleEndian> for VoiceInitMessage {
     }
 }
 
-#[derive(BitRead, Debug, Clone)]
+impl BitWrite<LittleEndian> for VoiceInitMessage {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.codec.write(stream)?;
+        self.quality.write(stream)?;
+
+        if self.quality == 255 {
+            self.sampling_rate.write(stream)?;
+        }
+
+        Ok(())
+    }
+}
+
+#[test]
+fn test_voice_init_roundtrip() {
+    crate::test_roundtrip_encode(VoiceInitMessage {
+        codec: "foo".into(),
+        quality: 0,
+        sampling_rate: 0,
+    });
+    crate::test_roundtrip_encode(VoiceInitMessage {
+        codec: "foo".into(),
+        quality: 255,
+        sampling_rate: 12,
+    });
+}
+
+#[derive(BitRead, BitWrite, Debug, Clone)]
 #[endianness = "LittleEndian"]
 pub struct VoiceDataMessage<'a> {
     client: u8,

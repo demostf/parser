@@ -1,20 +1,12 @@
-use bitbuffer::{BitRead, LittleEndian};
+use crate::Stream;
+use bitbuffer::{BitRead, BitWrite, LittleEndian};
 
-use crate::{ReadResult, Stream};
-
-#[derive(Debug)]
-pub struct UserCmdPacket {
+#[derive(Debug, BitRead, BitWrite)]
+#[endianness = "LittleEndian"]
+pub struct UserCmdPacket<'a> {
     tick: u32,
     sequence_out: u32,
-}
-
-impl BitRead<'_, LittleEndian> for UserCmdPacket {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let tick = stream.read()?;
-        let sequence_out = stream.read()?;
-        let len: u32 = stream.read()?;
-        stream.skip_bits(len as usize * 8)?;
-        // TODO parse the packet data
-        Ok(UserCmdPacket { tick, sequence_out })
-    }
+    len: u32,
+    #[size = "len.saturating_mul(8)"]
+    data: Stream<'a>,
 }

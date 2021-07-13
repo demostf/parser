@@ -1,13 +1,13 @@
 use std::fmt;
 
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, LittleEndian};
 
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::borrow::{Borrow, Cow};
 use std::cmp::min;
 
-#[derive(BitRead, Clone, Copy, Debug)]
+#[derive(BitRead, BitWrite, Clone, Copy, Debug)]
 pub struct FixedUserDataSize {
     #[size = 12]
     pub size: u16,
@@ -62,7 +62,7 @@ impl<'a> BitRead<'a, LittleEndian> for StringTable<'a> {
     }
 }
 
-#[derive(BitRead, Clone, Debug)]
+#[derive(BitRead, BitWrite, Clone, Debug)]
 #[endianness = "LittleEndian"]
 pub struct ExtraData<'a> {
     pub byte_len: u16,

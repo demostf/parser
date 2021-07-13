@@ -1,38 +1,38 @@
 use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, LittleEndian};
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct FileMessage {
     pub transfer_id: u32,
     pub file_name: String,
     pub requested: bool,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct NetTickMessage {
     pub tick: u32,
     pub frame_time: u16,
     pub std_dev: u16,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct StringCmdMessage {
     pub command: String,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct SigOnStateMessage {
     pub state: u8,
     pub count: u32,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct PrintMessage {
     pub value: String,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct ServerInfoMessage {
     pub version: u16,
     pub server_count: u32,
@@ -53,18 +53,18 @@ pub struct ServerInfoMessage {
     pub replay: bool,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct SetPauseMessage {
     pub pause: bool,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct SetViewMessage {
     #[size = 11]
     pub index: u16,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct FixAngleMessage {
     pub relative: bool,
     pub x: u16,
@@ -72,7 +72,7 @@ pub struct FixAngleMessage {
     pub z: u16,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 #[endianness = "LittleEndian"]
 pub struct EntityMessage<'a> {
     #[size = 11]
@@ -85,13 +85,13 @@ pub struct EntityMessage<'a> {
     pub data: Stream<'a>,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct PreFetchMessage {
     #[size = 14]
     pub index: u16,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 #[endianness = "LittleEndian"]
 pub struct MenuMessage<'a> {
     pub kind: u16,
@@ -100,13 +100,13 @@ pub struct MenuMessage<'a> {
     pub index: Stream<'a>,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 pub struct GetCvarValueMessage {
     pub cookie: u32,
     pub value: String,
 }
 
-#[derive(BitRead, Debug)]
+#[derive(BitRead, BitWrite, Debug)]
 #[endianness = "LittleEndian"]
 pub struct CmdKeyValuesMessage<'a> {
     pub length: u32,

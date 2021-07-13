@@ -1,12 +1,4 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite};
 
-use crate::{ReadResult, Stream};
-
-#[derive(Debug)]
+#[derive(Debug, BitRead, BitWrite)]
 pub struct StopPacket;
-
-impl BitRead<'_, LittleEndian> for StopPacket {
-    fn read(_stream: &mut Stream) -> ReadResult<Self> {
-        Ok(StopPacket)
-    }
-}
