@@ -1,26 +1,28 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitReadStream, Endianness};
 
-use crate::{ReadResult, Stream};
-use std::cmp::min;
+use crate::ReadResult;
 
 #[derive(Debug)]
-pub struct SetConVarMessage {
-    vars: Vec<(String, String)>,
+pub struct ConVar {
+    key: String,
+    value: String,
 }
 
-impl BitRead<'_, LittleEndian> for SetConVarMessage {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let count: u8 = stream.read()?;
-        let mut vars: Vec<(String, String)> = Vec::with_capacity(min(count, 128) as usize);
-        for _ in 0..count {
-            let key = stream
-                .read()
-                .unwrap_or_else(|_| "Malformed cvar name".to_string());
-            let value = stream
-                .read()
-                .unwrap_or_else(|_| "Malformed cvar value".to_string());
-            vars.push((key, value));
-        }
-        Ok(SetConVarMessage { vars })
+impl<E: Endianness> BitRead<'_, E> for ConVar {
+    fn read(stream: &mut BitReadStream<'_, E>) -> ReadResult<Self> {
+        let key = stream
+            .read()
+            .unwrap_or_else(|_| "Malformed cvar name".to_string());
+        let value = stream
+            .read()
+            .unwrap_or_else(|_| "Malformed cvar value".to_string());
+        Ok(ConVar { key, value })
     }
+}
+
+#[derive(Debug, BitRead)]
+pub struct SetConVarMessage {
+    length: u8,
+    #[size = "length"]
+    vars: Vec<ConVar>,
 }

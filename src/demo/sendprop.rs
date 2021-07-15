@@ -842,7 +842,8 @@ pub fn write_bit_coord(val: f32, stream: &mut BitWriteStream<LittleEndian>) -> R
 fn bit_coord_roundtrip() {
     use bitbuffer::BitReadBuffer;
 
-    let mut write = BitWriteStream::new(LittleEndian);
+    let mut data = Vec::with_capacity(128);
+    let mut write = BitWriteStream::new(&mut data, LittleEndian);
     write_bit_coord(0.0, &mut write).unwrap();
     let pos1 = write.bit_len();
     write_bit_coord(123.0, &mut write).unwrap();
@@ -852,7 +853,7 @@ fn bit_coord_roundtrip() {
     write_bit_coord(-0.4375, &mut write).unwrap();
     let pos4 = write.bit_len();
 
-    let mut read = Stream::from(BitReadBuffer::new_owned(write.finish(), LittleEndian));
+    let mut read = Stream::from(BitReadBuffer::new(&data, LittleEndian));
     assert_eq!(0.0, read_bit_coord(&mut read).unwrap());
     assert_eq!(pos1, read.pos());
     assert_eq!(123.0, read_bit_coord(&mut read).unwrap());

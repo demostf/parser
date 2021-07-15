@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
@@ -79,7 +79,21 @@ pub enum UserMessage<'a> {
     Train(TrainMessage),
     VoiceSubtitle(VoiceSubtitleMessage),
     Shake(ShakeMessage),
-    Unknown(UnknownUserMessage<'a>),
+    Unknown(UserMessageType, UnknownUserMessage<'a>),
+}
+
+impl UserMessage<'_> {
+    pub fn message_type(&self) -> UserMessageType {
+        match self {
+            UserMessage::SayText2(_) => UserMessageType::SayText2,
+            UserMessage::Text(_) => UserMessageType::TextMsg,
+            UserMessage::ResetHUD(_) => UserMessageType::ResetHUD,
+            UserMessage::Train(_) => UserMessageType::Train,
+            UserMessage::VoiceSubtitle(_) => UserMessageType::VoiceSubtitle,
+            UserMessage::Shake(_) => UserMessageType::Shake,
+            UserMessage::Unknown(ty, _) => *ty,
+        }
+    }
 }
 
 impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
@@ -95,7 +109,7 @@ impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
             UserMessageType::Train => UserMessage::Train(data.read()?),
             UserMessageType::VoiceSubtitle => UserMessage::VoiceSubtitle(data.read()?),
             UserMessageType::Shake => UserMessage::Shake(data.read()?),
-            _ => UserMessage::Unknown(data.read()?),
+            _ => UserMessage::Unknown(message_type, data.read()?),
         };
         Ok(message)
     }
@@ -104,6 +118,23 @@ impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
         stream.skip_bits(8)?;
         let length: u32 = stream.read_int(11)?;
         stream.skip_bits(length as usize)
+    }
+}
+
+impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        (self.message_type() as u8).write(stream)?;
+        stream.reserve_length(11, |stream| match self {
+            UserMessage::SayText2(body) => stream.write(body),
+            UserMessage::Text(body) => stream.write(body),
+            UserMessage::ResetHUD(body) => stream.write(body),
+            UserMessage::Train(body) => stream.write(body),
+            UserMessage::VoiceSubtitle(body) => stream.write(body),
+            UserMessage::Shake(body) => stream.write(body),
+            UserMessage::Unknown(_, body) => stream.write(body),
+        })?;
+
+        Ok(())
     }
 }
 
@@ -135,6 +166,21 @@ impl BitRead<'_, LittleEndian> for ChatMessageKind {
             "TF_Chat_AllSpec" => ChatMessageKind::ChatAllSpec,
             _ => ChatMessageKind::ChatAll,
         })
+    }
+}
+
+impl BitWrite<LittleEndian> for ChatMessageKind {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        match self {
+            ChatMessageKind::ChatAll => "TF_Chat_All",
+            ChatMessageKind::ChatTeam => "TF_Chat_Team",
+            ChatMessageKind::ChatAllDead => "TF_Chat_AllDead",
+            ChatMessageKind::ChatTeamDead => "TF_Chat_Team_Dead",
+            ChatMessageKind::ChatAllSpec => "TF_Chat_AllSpec",
+            ChatMessageKind::NameChange => "#TF_Name_Change",
+            ChatMessageKind::Empty => "",
+        }
+        .write(stream)
     }
 }
 
@@ -218,7 +264,26 @@ impl BitRead<'_, LittleEndian> for SayText2Message {
     }
 }
 
-#[derive(BitRead, Debug, Clone)]
+impl BitWrite<LittleEndian> for SayText2Message {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.client.write(stream)?;
+        self.raw.write(stream)?;
+
+        let from = self.from.as_deref().unwrap_or_default();
+        if self.kind == ChatMessageKind::ChatAllDead {
+            let raw = format!("*DEAD* \x03${}\x01:    {}", from, self.text);
+            raw.write(stream)?;
+        } else {
+            self.kind.write(stream)?;
+            from.write(stream)?;
+            self.text.write(stream)?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(BitRead, BitWrite, Debug, Clone)]
 #[discriminant_bits = 8]
 pub enum HudTextLocation {
     PrintNotify = 1,
@@ -227,32 +292,31 @@ pub enum HudTextLocation {
     PrintCenter,
 }
 
-#[derive(BitRead, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone)]
 pub struct TextMessage {
     pub location: HudTextLocation,
     pub text: String,
-    #[size = 4]
-    pub substitute: Vec<String>,
+    pub substitute: [String; 4],
 }
 
-#[derive(BitRead, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone)]
 pub struct ResetHudMessage {
     pub data: u8,
 }
 
-#[derive(BitRead, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone)]
 pub struct TrainMessage {
     pub data: u8,
 }
 
-#[derive(BitRead, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone)]
 pub struct VoiceSubtitleMessage {
     client: u8,
     menu: u8,
     item: u8,
 }
 
-#[derive(BitRead, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone)]
 pub struct ShakeMessage {
     command: u8,
     amplitude: f32,
@@ -270,5 +334,11 @@ impl<'a> BitRead<'a, LittleEndian> for UnknownUserMessage<'a> {
         Ok(UnknownUserMessage {
             data: stream.read_bits(stream.bits_left())?,
         })
+    }
+}
+
+impl<'a> BitWrite<LittleEndian> for UnknownUserMessage<'a> {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.data.write(stream)
     }
 }
