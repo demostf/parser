@@ -21,13 +21,13 @@ name = "loop"
 path = "src/bin/loop.rs"
 
 [dependencies]
-bitbuffer = "0.8"
+bitbuffer = "0.9"
 num_enum = "0.5"
 num-traits = "0.2"
 enumflags2 = "0.7"
 snap = "1.0"
-serde = { version = "1.0", features = ["derive", "rc"] }
-serde_json = "1.0"
+serde = { version = "1", features = ["derive", "rc"] }
+serde_json = "1"
 serde_repr = "0.1"
 err-derive = "0.3"
 parse-display = "0.5"
@@ -35,11 +35,11 @@ main_error = "0.1"
 jemallocator = { version = "0.3", optional = true }
 better-panic = { version = "0.2", optional = true }
 no-panic = { version = "0.1", optional = true }
-fnv = "1.0"
+fnv = "1"
 
 [dev-dependencies]
 pretty_assertions = "0.7"
-test-case = "1.0.0"
+test-case = "1"
 iai = "0.1"
 
 [profile.release]
