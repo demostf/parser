@@ -843,15 +843,18 @@ fn bit_coord_roundtrip() {
     use bitbuffer::BitReadBuffer;
 
     let mut data = Vec::with_capacity(128);
-    let mut write = BitWriteStream::new(&mut data, LittleEndian);
-    write_bit_coord(0.0, &mut write).unwrap();
-    let pos1 = write.bit_len();
-    write_bit_coord(123.0, &mut write).unwrap();
-    let pos2 = write.bit_len();
-    write_bit_coord(123.4375, &mut write).unwrap();
-    let pos3 = write.bit_len();
-    write_bit_coord(-0.4375, &mut write).unwrap();
-    let pos4 = write.bit_len();
+    let (pos1, pos2, pos3, pos4) = {
+        let mut write = BitWriteStream::new(&mut data, LittleEndian);
+        write_bit_coord(0.0, &mut write).unwrap();
+        let pos1 = write.bit_len();
+        write_bit_coord(123.0, &mut write).unwrap();
+        let pos2 = write.bit_len();
+        write_bit_coord(123.4375, &mut write).unwrap();
+        let pos3 = write.bit_len();
+        write_bit_coord(-0.4375, &mut write).unwrap();
+        let pos4 = write.bit_len();
+        (pos1, pos2, pos3, pos4)
+    };
 
     let mut read = Stream::from(BitReadBuffer::new(&data, LittleEndian));
     assert_eq!(0.0, read_bit_coord(&mut read).unwrap());

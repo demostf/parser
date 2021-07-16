@@ -26,11 +26,21 @@ fn test_roundtrip_encode<
 ) {
     let mut data = Vec::with_capacity(128);
     use bitbuffer::{BitReadBuffer, BitReadStream, BitWriteStream, LittleEndian};
-    let mut stream = BitWriteStream::new(&mut data, LittleEndian);
-    val.write(&mut stream).unwrap();
-    let pos = stream.bit_len();
+    let pos = {
+        let mut stream = BitWriteStream::new(&mut data, LittleEndian);
+        val.write(&mut stream).unwrap();
+        stream.bit_len()
+    };
 
     let mut read = BitReadStream::new(BitReadBuffer::new_owned(data, LittleEndian));
-    assert_eq!(val, read.read().unwrap());
-    assert_eq!(pos, read.pos());
+    assert_eq!(
+        val,
+        read.read().unwrap(),
+        "Failed to assert the parsed message is equal to the original"
+    );
+    assert_eq!(
+        pos,
+        read.pos(),
+        "Failed to assert that all encoded bytes are used for decoding"
+    );
 }

@@ -7,7 +7,7 @@ use crate::demo::handle_utf8_error;
 
 use crate::{ReadResult, Stream};
 
-#[derive(TryFromPrimitive, Clone, Copy, Debug)]
+#[derive(TryFromPrimitive, Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub enum UserMessageType {
     Geiger = 0,
@@ -71,7 +71,7 @@ pub enum UserMessageType {
     Unknown = 255,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum UserMessage<'a> {
     SayText2(Box<SayText2Message>),
     Text(Box<TextMessage>),
@@ -138,6 +138,18 @@ impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
     }
 }
 
+#[test]
+fn test_user_message_roundtrip() {
+    crate::test_roundtrip_encode(UserMessage::Train(TrainMessage { data: 12 }));
+    crate::test_roundtrip_encode(UserMessage::SayText2(Box::new(SayText2Message {
+        client: 3,
+        raw: 1,
+        kind: ChatMessageKind::ChatTeamDead,
+        from: Some("Old Billy Riley".into()),
+        text: "[P-REC] Stop record.".into(),
+    })));
+}
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub enum ChatMessageKind {
     #[serde(rename = "TF_Chat_All")]
@@ -184,7 +196,7 @@ impl BitWrite<LittleEndian> for ChatMessageKind {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct SayText2Message {
     pub client: u8,
     pub raw: u8,
@@ -283,7 +295,18 @@ impl BitWrite<LittleEndian> for SayText2Message {
     }
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone)]
+#[test]
+fn test_say_text2_roundtrip() {
+    crate::test_roundtrip_encode(SayText2Message {
+        client: 3,
+        raw: 1,
+        kind: ChatMessageKind::ChatTeamDead,
+        from: Some("Old Billy Riley".into()),
+        text: "[P-REC] Stop record.".into(),
+    });
+}
+
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
 #[discriminant_bits = 8]
 pub enum HudTextLocation {
     PrintNotify = 1,
@@ -292,31 +315,31 @@ pub enum HudTextLocation {
     PrintCenter,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
 pub struct TextMessage {
     pub location: HudTextLocation,
     pub text: String,
     pub substitute: [String; 4],
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
 pub struct ResetHudMessage {
     pub data: u8,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
 pub struct TrainMessage {
     pub data: u8,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
 pub struct VoiceSubtitleMessage {
     client: u8,
     menu: u8,
     item: u8,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
 pub struct ShakeMessage {
     command: u8,
     amplitude: f32,
@@ -324,7 +347,7 @@ pub struct ShakeMessage {
     duration: f32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct UnknownUserMessage<'a> {
     data: Stream<'a>,
 }
