@@ -1,10 +1,10 @@
-use bitbuffer::{BitRead, BitReadSized, LittleEndian};
+use bitbuffer::{BitRead, BitReadSized, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 
 use crate::demo::message::stringtable::log_base2;
 use crate::{ReadResult, Stream};
 use std::cmp::min;
 
-#[derive(BitReadSized, Debug)]
+#[derive(BitReadSized, BitWriteSized, Debug, PartialEq)]
 pub struct ClassInfoEntry {
     #[size = "input_size"]
     class_id: u16,
@@ -12,7 +12,7 @@ pub struct ClassInfoEntry {
     table_name: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct ClassInfoMessage {
     count: u16,
     create: bool,
@@ -25,7 +25,7 @@ impl BitRead<'_, LittleEndian> for ClassInfoMessage {
         let create: bool = stream.read()?;
         let entries = if !create {
             let mut entries = Vec::with_capacity(min(count, 128) as usize);
-            let bits = log_base2(count);
+            let bits = log_base2(count) + 1;
             for _ in 0..count {
                 entries.push(stream.read_sized(bits as usize)?);
             }
@@ -40,4 +40,49 @@ impl BitRead<'_, LittleEndian> for ClassInfoMessage {
             entries,
         })
     }
+}
+
+impl BitWrite<LittleEndian> for ClassInfoMessage {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.count.write(stream)?;
+        self.create.write(stream)?;
+        if !self.create {
+            let bits = log_base2(self.entries.len()) as usize + 1;
+            for entry in self.entries.iter() {
+                entry.write_sized(stream, bits)?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
+#[test]
+fn test_say_text2_roundtrip() {
+    crate::test_roundtrip_encode(ClassInfoMessage {
+        count: 8,
+        create: true,
+        entries: Vec::new(),
+    });
+    crate::test_roundtrip_encode(ClassInfoMessage {
+        count: 3,
+        create: false,
+        entries: vec![
+            ClassInfoEntry {
+                class_id: 0,
+                class_name: "foo1".to_string(),
+                table_name: "bar1".to_string(),
+            },
+            ClassInfoEntry {
+                class_id: 1,
+                class_name: "foo2".to_string(),
+                table_name: "bar2".to_string(),
+            },
+            ClassInfoEntry {
+                class_id: 2,
+                class_name: "foo3".to_string(),
+                table_name: "bar3".to_string(),
+            },
+        ],
+    });
 }
