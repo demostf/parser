@@ -1,5 +1,27 @@
-use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
-use crate::Result;
+use super::gamevent::{FromGameEventValue, GameEventDefinition, GameEventEntry, RawGameEvent};
+use crate::demo::Stream;
+use crate::{ParseError, Result};
+use bitbuffer::{BitRead, LittleEndian};
+fn read_value<'a, T: FromGameEventValue + BitRead<'a, LittleEndian> + Default>(
+    stream: &mut Stream<'a>,
+    entry: Option<&GameEventEntry>,
+    name: &'static str,
+) -> Result<T> {
+    let entry = match entry {
+        Some(entry) => entry,
+        None => {
+            return Ok(T::default());
+        }
+    };
+    if T::value_type() != entry.kind {
+        return Err(ParseError::InvalidGameEvent {
+            expected_type: T::value_type(),
+            name,
+            found_type: entry.kind,
+        });
+    }
+    Ok(T::read(stream)?)
+}
 #[derive(Debug)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
@@ -13,20 +35,21 @@ pub struct ServerSpawnEvent {
     pub dedicated: bool,
     pub password: bool,
 }
-impl FromRawGameEvent for ServerSpawnEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ServerSpawnEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ServerSpawnEvent {
-            hostname: String::from_value(iter.next(), "hostname")?,
-            address: String::from_value(iter.next(), "address")?,
-            ip: u32::from_value(iter.next(), "ip")?,
-            port: u16::from_value(iter.next(), "port")?,
-            game: String::from_value(iter.next(), "game")?,
-            map_name: String::from_value(iter.next(), "map_name")?,
-            max_players: u32::from_value(iter.next(), "max_players")?,
-            os: String::from_value(iter.next(), "os")?,
-            dedicated: bool::from_value(iter.next(), "dedicated")?,
-            password: bool::from_value(iter.next(), "password")?,
+            hostname: read_value::<String>(stream, iter.next(), "hostname")?,
+            address: read_value::<String>(stream, iter.next(), "address")?,
+            ip: read_value::<u32>(stream, iter.next(), "ip")?,
+            port: read_value::<u16>(stream, iter.next(), "port")?,
+            game: read_value::<String>(stream, iter.next(), "game")?,
+            map_name: read_value::<String>(stream, iter.next(), "map_name")?,
+            max_players: read_value::<u32>(stream, iter.next(), "max_players")?,
+            os: read_value::<String>(stream, iter.next(), "os")?,
+            dedicated: read_value::<bool>(stream, iter.next(), "dedicated")?,
+            password: read_value::<bool>(stream, iter.next(), "password")?,
         })
     }
 }
@@ -34,11 +57,12 @@ impl FromRawGameEvent for ServerSpawnEvent {
 pub struct ServerChangeLevelFailedEvent {
     pub level_name: String,
 }
-impl FromRawGameEvent for ServerChangeLevelFailedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ServerChangeLevelFailedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ServerChangeLevelFailedEvent {
-            level_name: String::from_value(iter.next(), "level_name")?,
+            level_name: read_value::<String>(stream, iter.next(), "level_name")?,
         })
     }
 }
@@ -46,11 +70,12 @@ impl FromRawGameEvent for ServerChangeLevelFailedEvent {
 pub struct ServerShutdownEvent {
     pub reason: String,
 }
-impl FromRawGameEvent for ServerShutdownEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ServerShutdownEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ServerShutdownEvent {
-            reason: String::from_value(iter.next(), "reason")?,
+            reason: read_value::<String>(stream, iter.next(), "reason")?,
         })
     }
 }
@@ -59,12 +84,13 @@ pub struct ServerCvarEvent {
     pub cvar_name: String,
     pub cvar_value: String,
 }
-impl FromRawGameEvent for ServerCvarEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ServerCvarEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ServerCvarEvent {
-            cvar_name: String::from_value(iter.next(), "cvar_name")?,
-            cvar_value: String::from_value(iter.next(), "cvar_value")?,
+            cvar_name: read_value::<String>(stream, iter.next(), "cvar_name")?,
+            cvar_value: read_value::<String>(stream, iter.next(), "cvar_value")?,
         })
     }
 }
@@ -72,11 +98,12 @@ impl FromRawGameEvent for ServerCvarEvent {
 pub struct ServerMessageEvent {
     pub text: String,
 }
-impl FromRawGameEvent for ServerMessageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ServerMessageEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ServerMessageEvent {
-            text: String::from_value(iter.next(), "text")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
         })
     }
 }
@@ -90,17 +117,18 @@ pub struct ServerAddBanEvent {
     pub by: String,
     pub kicked: bool,
 }
-impl FromRawGameEvent for ServerAddBanEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ServerAddBanEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ServerAddBanEvent {
-            name: String::from_value(iter.next(), "name")?,
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            network_id: String::from_value(iter.next(), "network_id")?,
-            ip: String::from_value(iter.next(), "ip")?,
-            duration: String::from_value(iter.next(), "duration")?,
-            by: String::from_value(iter.next(), "by")?,
-            kicked: bool::from_value(iter.next(), "kicked")?,
+            name: read_value::<String>(stream, iter.next(), "name")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            network_id: read_value::<String>(stream, iter.next(), "network_id")?,
+            ip: read_value::<String>(stream, iter.next(), "ip")?,
+            duration: read_value::<String>(stream, iter.next(), "duration")?,
+            by: read_value::<String>(stream, iter.next(), "by")?,
+            kicked: read_value::<bool>(stream, iter.next(), "kicked")?,
         })
     }
 }
@@ -110,13 +138,14 @@ pub struct ServerRemoveBanEvent {
     pub ip: String,
     pub by: String,
 }
-impl FromRawGameEvent for ServerRemoveBanEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ServerRemoveBanEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ServerRemoveBanEvent {
-            network_id: String::from_value(iter.next(), "network_id")?,
-            ip: String::from_value(iter.next(), "ip")?,
-            by: String::from_value(iter.next(), "by")?,
+            network_id: read_value::<String>(stream, iter.next(), "network_id")?,
+            ip: read_value::<String>(stream, iter.next(), "ip")?,
+            by: read_value::<String>(stream, iter.next(), "by")?,
         })
     }
 }
@@ -129,16 +158,17 @@ pub struct PlayerConnectEvent {
     pub address: String,
     pub bot: u16,
 }
-impl FromRawGameEvent for PlayerConnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerConnectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerConnectEvent {
-            name: String::from_value(iter.next(), "name")?,
-            index: u8::from_value(iter.next(), "index")?,
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            network_id: String::from_value(iter.next(), "network_id")?,
-            address: String::from_value(iter.next(), "address")?,
-            bot: u16::from_value(iter.next(), "bot")?,
+            name: read_value::<String>(stream, iter.next(), "name")?,
+            index: read_value::<u8>(stream, iter.next(), "index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            network_id: read_value::<String>(stream, iter.next(), "network_id")?,
+            address: read_value::<String>(stream, iter.next(), "address")?,
+            bot: read_value::<u16>(stream, iter.next(), "bot")?,
         })
     }
 }
@@ -150,15 +180,16 @@ pub struct PlayerConnectClientEvent {
     pub network_id: String,
     pub bot: u16,
 }
-impl FromRawGameEvent for PlayerConnectClientEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerConnectClientEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerConnectClientEvent {
-            name: String::from_value(iter.next(), "name")?,
-            index: u8::from_value(iter.next(), "index")?,
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            network_id: String::from_value(iter.next(), "network_id")?,
-            bot: u16::from_value(iter.next(), "bot")?,
+            name: read_value::<String>(stream, iter.next(), "name")?,
+            index: read_value::<u8>(stream, iter.next(), "index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            network_id: read_value::<String>(stream, iter.next(), "network_id")?,
+            bot: read_value::<u16>(stream, iter.next(), "bot")?,
         })
     }
 }
@@ -170,15 +201,16 @@ pub struct PlayerInfoEvent {
     pub network_id: String,
     pub bot: bool,
 }
-impl FromRawGameEvent for PlayerInfoEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerInfoEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerInfoEvent {
-            name: String::from_value(iter.next(), "name")?,
-            index: u8::from_value(iter.next(), "index")?,
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            network_id: String::from_value(iter.next(), "network_id")?,
-            bot: bool::from_value(iter.next(), "bot")?,
+            name: read_value::<String>(stream, iter.next(), "name")?,
+            index: read_value::<u8>(stream, iter.next(), "index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            network_id: read_value::<String>(stream, iter.next(), "network_id")?,
+            bot: read_value::<bool>(stream, iter.next(), "bot")?,
         })
     }
 }
@@ -190,15 +222,16 @@ pub struct PlayerDisconnectEvent {
     pub network_id: String,
     pub bot: u16,
 }
-impl FromRawGameEvent for PlayerDisconnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerDisconnectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerDisconnectEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            reason: String::from_value(iter.next(), "reason")?,
-            name: String::from_value(iter.next(), "name")?,
-            network_id: String::from_value(iter.next(), "network_id")?,
-            bot: u16::from_value(iter.next(), "bot")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            reason: read_value::<String>(stream, iter.next(), "reason")?,
+            name: read_value::<String>(stream, iter.next(), "name")?,
+            network_id: read_value::<String>(stream, iter.next(), "network_id")?,
+            bot: read_value::<u16>(stream, iter.next(), "bot")?,
         })
     }
 }
@@ -206,11 +239,12 @@ impl FromRawGameEvent for PlayerDisconnectEvent {
 pub struct PlayerActivateEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for PlayerActivateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerActivateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerActivateEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -219,12 +253,13 @@ pub struct PlayerSayEvent {
     pub user_id: u16,
     pub text: String,
 }
-impl FromRawGameEvent for PlayerSayEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerSayEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerSayEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            text: String::from_value(iter.next(), "text")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
         })
     }
 }
@@ -232,11 +267,12 @@ impl FromRawGameEvent for PlayerSayEvent {
 pub struct ClientDisconnectEvent {
     pub message: String,
 }
-impl FromRawGameEvent for ClientDisconnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ClientDisconnectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ClientDisconnectEvent {
-            message: String::from_value(iter.next(), "message")?,
+            message: read_value::<String>(stream, iter.next(), "message")?,
         })
     }
 }
@@ -247,14 +283,15 @@ pub struct ClientBeginConnectEvent {
     pub port: u16,
     pub source: String,
 }
-impl FromRawGameEvent for ClientBeginConnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ClientBeginConnectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ClientBeginConnectEvent {
-            address: String::from_value(iter.next(), "address")?,
-            ip: u32::from_value(iter.next(), "ip")?,
-            port: u16::from_value(iter.next(), "port")?,
-            source: String::from_value(iter.next(), "source")?,
+            address: read_value::<String>(stream, iter.next(), "address")?,
+            ip: read_value::<u32>(stream, iter.next(), "ip")?,
+            port: read_value::<u16>(stream, iter.next(), "port")?,
+            source: read_value::<String>(stream, iter.next(), "source")?,
         })
     }
 }
@@ -264,13 +301,14 @@ pub struct ClientConnectedEvent {
     pub ip: u32,
     pub port: u16,
 }
-impl FromRawGameEvent for ClientConnectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ClientConnectedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ClientConnectedEvent {
-            address: String::from_value(iter.next(), "address")?,
-            ip: u32::from_value(iter.next(), "ip")?,
-            port: u16::from_value(iter.next(), "port")?,
+            address: read_value::<String>(stream, iter.next(), "address")?,
+            ip: read_value::<u32>(stream, iter.next(), "ip")?,
+            port: read_value::<u16>(stream, iter.next(), "port")?,
         })
     }
 }
@@ -280,20 +318,22 @@ pub struct ClientFullConnectEvent {
     pub ip: u32,
     pub port: u16,
 }
-impl FromRawGameEvent for ClientFullConnectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ClientFullConnectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ClientFullConnectEvent {
-            address: String::from_value(iter.next(), "address")?,
-            ip: u32::from_value(iter.next(), "ip")?,
-            port: u16::from_value(iter.next(), "port")?,
+            address: read_value::<String>(stream, iter.next(), "address")?,
+            ip: read_value::<u32>(stream, iter.next(), "ip")?,
+            port: read_value::<u16>(stream, iter.next(), "port")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct HostQuitEvent {}
-impl FromRawGameEvent for HostQuitEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl HostQuitEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(HostQuitEvent {})
     }
 }
@@ -302,12 +342,13 @@ pub struct TeamInfoEvent {
     pub team_id: u8,
     pub team_name: String,
 }
-impl FromRawGameEvent for TeamInfoEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamInfoEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamInfoEvent {
-            team_id: u8::from_value(iter.next(), "team_id")?,
-            team_name: String::from_value(iter.next(), "team_name")?,
+            team_id: read_value::<u8>(stream, iter.next(), "team_id")?,
+            team_name: read_value::<String>(stream, iter.next(), "team_name")?,
         })
     }
 }
@@ -316,12 +357,13 @@ pub struct TeamScoreEvent {
     pub team_id: u8,
     pub score: u16,
 }
-impl FromRawGameEvent for TeamScoreEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamScoreEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamScoreEvent {
-            team_id: u8::from_value(iter.next(), "team_id")?,
-            score: u16::from_value(iter.next(), "score")?,
+            team_id: read_value::<u8>(stream, iter.next(), "team_id")?,
+            score: read_value::<u16>(stream, iter.next(), "score")?,
         })
     }
 }
@@ -331,13 +373,14 @@ pub struct TeamPlayBroadcastAudioEvent {
     pub sound: String,
     pub additional_flags: u16,
 }
-impl FromRawGameEvent for TeamPlayBroadcastAudioEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayBroadcastAudioEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayBroadcastAudioEvent {
-            team: u8::from_value(iter.next(), "team")?,
-            sound: String::from_value(iter.next(), "sound")?,
-            additional_flags: u16::from_value(iter.next(), "additional_flags")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            sound: read_value::<String>(stream, iter.next(), "sound")?,
+            additional_flags: read_value::<u16>(stream, iter.next(), "additional_flags")?,
         })
     }
 }
@@ -351,17 +394,18 @@ pub struct PlayerTeamEvent {
     pub silent: bool,
     pub name: String,
 }
-impl FromRawGameEvent for PlayerTeamEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerTeamEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerTeamEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            team: u8::from_value(iter.next(), "team")?,
-            old_team: u8::from_value(iter.next(), "old_team")?,
-            disconnect: bool::from_value(iter.next(), "disconnect")?,
-            auto_team: bool::from_value(iter.next(), "auto_team")?,
-            silent: bool::from_value(iter.next(), "silent")?,
-            name: String::from_value(iter.next(), "name")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            old_team: read_value::<u8>(stream, iter.next(), "old_team")?,
+            disconnect: read_value::<bool>(stream, iter.next(), "disconnect")?,
+            auto_team: read_value::<bool>(stream, iter.next(), "auto_team")?,
+            silent: read_value::<bool>(stream, iter.next(), "silent")?,
+            name: read_value::<String>(stream, iter.next(), "name")?,
         })
     }
 }
@@ -370,12 +414,13 @@ pub struct PlayerClassEvent {
     pub user_id: u16,
     pub class: String,
 }
-impl FromRawGameEvent for PlayerClassEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerClassEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerClassEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            class: String::from_value(iter.next(), "class")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            class: read_value::<String>(stream, iter.next(), "class")?,
         })
     }
 }
@@ -408,36 +453,45 @@ pub struct PlayerDeathEvent {
     pub weapon_def_index: u32,
     pub crit_type: u16,
 }
-impl FromRawGameEvent for PlayerDeathEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerDeathEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerDeathEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            weapon: String::from_value(iter.next(), "weapon")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
-            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
-            assister: u16::from_value(iter.next(), "assister")?,
-            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
-            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
-            death_flags: u16::from_value(iter.next(), "death_flags")?,
-            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
-            player_penetrate_count: u16::from_value(iter.next(), "player_penetrate_count")?,
-            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
-            kill_streak_total: u16::from_value(iter.next(), "kill_streak_total")?,
-            kill_streak_wep: u16::from_value(iter.next(), "kill_streak_wep")?,
-            kill_streak_assist: u16::from_value(iter.next(), "kill_streak_assist")?,
-            kill_streak_victim: u16::from_value(iter.next(), "kill_streak_victim")?,
-            ducks_streaked: u16::from_value(iter.next(), "ducks_streaked")?,
-            duck_streak_total: u16::from_value(iter.next(), "duck_streak_total")?,
-            duck_streak_assist: u16::from_value(iter.next(), "duck_streak_assist")?,
-            duck_streak_victim: u16::from_value(iter.next(), "duck_streak_victim")?,
-            rocket_jump: bool::from_value(iter.next(), "rocket_jump")?,
-            weapon_def_index: u32::from_value(iter.next(), "weapon_def_index")?,
-            crit_type: u16::from_value(iter.next(), "crit_type")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            weapon: read_value::<String>(stream, iter.next(), "weapon")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
+            custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
+            assister: read_value::<u16>(stream, iter.next(), "assister")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
+            stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
+            death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
+            silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
+            player_penetrate_count: read_value::<u16>(
+                stream,
+                iter.next(),
+                "player_penetrate_count",
+            )?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
+            kill_streak_total: read_value::<u16>(stream, iter.next(), "kill_streak_total")?,
+            kill_streak_wep: read_value::<u16>(stream, iter.next(), "kill_streak_wep")?,
+            kill_streak_assist: read_value::<u16>(stream, iter.next(), "kill_streak_assist")?,
+            kill_streak_victim: read_value::<u16>(stream, iter.next(), "kill_streak_victim")?,
+            ducks_streaked: read_value::<u16>(stream, iter.next(), "ducks_streaked")?,
+            duck_streak_total: read_value::<u16>(stream, iter.next(), "duck_streak_total")?,
+            duck_streak_assist: read_value::<u16>(stream, iter.next(), "duck_streak_assist")?,
+            duck_streak_victim: read_value::<u16>(stream, iter.next(), "duck_streak_victim")?,
+            rocket_jump: read_value::<bool>(stream, iter.next(), "rocket_jump")?,
+            weapon_def_index: read_value::<u32>(stream, iter.next(), "weapon_def_index")?,
+            crit_type: read_value::<u16>(stream, iter.next(), "crit_type")?,
         })
     }
 }
@@ -455,21 +509,22 @@ pub struct PlayerHurtEvent {
     pub weapon_id: u16,
     pub bonus_effect: u8,
 }
-impl FromRawGameEvent for PlayerHurtEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHurtEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHurtEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            health: u16::from_value(iter.next(), "health")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            damage_amount: u16::from_value(iter.next(), "damage_amount")?,
-            custom: u16::from_value(iter.next(), "custom")?,
-            show_disguised_crit: bool::from_value(iter.next(), "show_disguised_crit")?,
-            crit: bool::from_value(iter.next(), "crit")?,
-            mini_crit: bool::from_value(iter.next(), "mini_crit")?,
-            all_see_crit: bool::from_value(iter.next(), "all_see_crit")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            bonus_effect: u8::from_value(iter.next(), "bonus_effect")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            health: read_value::<u16>(stream, iter.next(), "health")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            damage_amount: read_value::<u16>(stream, iter.next(), "damage_amount")?,
+            custom: read_value::<u16>(stream, iter.next(), "custom")?,
+            show_disguised_crit: read_value::<bool>(stream, iter.next(), "show_disguised_crit")?,
+            crit: read_value::<bool>(stream, iter.next(), "crit")?,
+            mini_crit: read_value::<bool>(stream, iter.next(), "mini_crit")?,
+            all_see_crit: read_value::<bool>(stream, iter.next(), "all_see_crit")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            bonus_effect: read_value::<u8>(stream, iter.next(), "bonus_effect")?,
         })
     }
 }
@@ -479,13 +534,14 @@ pub struct PlayerChatEvent {
     pub user_id: u16,
     pub text: String,
 }
-impl FromRawGameEvent for PlayerChatEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerChatEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerChatEvent {
-            team_only: bool::from_value(iter.next(), "team_only")?,
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            text: String::from_value(iter.next(), "text")?,
+            team_only: read_value::<bool>(stream, iter.next(), "team_only")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
         })
     }
 }
@@ -496,14 +552,15 @@ pub struct PlayerScoreEvent {
     pub deaths: u16,
     pub score: u16,
 }
-impl FromRawGameEvent for PlayerScoreEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerScoreEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerScoreEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            kills: u16::from_value(iter.next(), "kills")?,
-            deaths: u16::from_value(iter.next(), "deaths")?,
-            score: u16::from_value(iter.next(), "score")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            kills: read_value::<u16>(stream, iter.next(), "kills")?,
+            deaths: read_value::<u16>(stream, iter.next(), "deaths")?,
+            score: read_value::<u16>(stream, iter.next(), "score")?,
         })
     }
 }
@@ -513,13 +570,14 @@ pub struct PlayerSpawnEvent {
     pub team: u16,
     pub class: u16,
 }
-impl FromRawGameEvent for PlayerSpawnEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerSpawnEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerSpawnEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            team: u16::from_value(iter.next(), "team")?,
-            class: u16::from_value(iter.next(), "class")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            team: read_value::<u16>(stream, iter.next(), "team")?,
+            class: read_value::<u16>(stream, iter.next(), "class")?,
         })
     }
 }
@@ -529,13 +587,14 @@ pub struct PlayerShootEvent {
     pub weapon: u8,
     pub mode: u8,
 }
-impl FromRawGameEvent for PlayerShootEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerShootEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerShootEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            weapon: u8::from_value(iter.next(), "weapon")?,
-            mode: u8::from_value(iter.next(), "mode")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            weapon: read_value::<u8>(stream, iter.next(), "weapon")?,
+            mode: read_value::<u8>(stream, iter.next(), "mode")?,
         })
     }
 }
@@ -544,12 +603,13 @@ pub struct PlayerUseEvent {
     pub user_id: u16,
     pub entity: u16,
 }
-impl FromRawGameEvent for PlayerUseEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerUseEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerUseEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            entity: u16::from_value(iter.next(), "entity")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            entity: read_value::<u16>(stream, iter.next(), "entity")?,
         })
     }
 }
@@ -559,13 +619,14 @@ pub struct PlayerChangeNameEvent {
     pub old_name: String,
     pub new_name: String,
 }
-impl FromRawGameEvent for PlayerChangeNameEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerChangeNameEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerChangeNameEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            old_name: String::from_value(iter.next(), "old_name")?,
-            new_name: String::from_value(iter.next(), "new_name")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            old_name: read_value::<String>(stream, iter.next(), "old_name")?,
+            new_name: read_value::<String>(stream, iter.next(), "new_name")?,
         })
     }
 }
@@ -573,11 +634,12 @@ impl FromRawGameEvent for PlayerChangeNameEvent {
 pub struct PlayerHintMessageEvent {
     pub hint_message: String,
 }
-impl FromRawGameEvent for PlayerHintMessageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHintMessageEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHintMessageEvent {
-            hint_message: String::from_value(iter.next(), "hint_message")?,
+            hint_message: read_value::<String>(stream, iter.next(), "hint_message")?,
         })
     }
 }
@@ -585,18 +647,20 @@ impl FromRawGameEvent for PlayerHintMessageEvent {
 pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
 }
-impl FromRawGameEvent for BasePlayerTeleportedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl BasePlayerTeleportedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(BasePlayerTeleportedEvent {
-            ent_index: u16::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u16>(stream, iter.next(), "ent_index")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct GameInitEvent {}
-impl FromRawGameEvent for GameInitEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl GameInitEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GameInitEvent {})
     }
 }
@@ -604,11 +668,12 @@ impl FromRawGameEvent for GameInitEvent {
 pub struct GameNewMapEvent {
     pub map_name: String,
 }
-impl FromRawGameEvent for GameNewMapEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl GameNewMapEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(GameNewMapEvent {
-            map_name: String::from_value(iter.next(), "map_name")?,
+            map_name: read_value::<String>(stream, iter.next(), "map_name")?,
         })
     }
 }
@@ -619,14 +684,15 @@ pub struct GameStartEvent {
     pub frag_limit: u32,
     pub objective: String,
 }
-impl FromRawGameEvent for GameStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl GameStartEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(GameStartEvent {
-            rounds_limit: u32::from_value(iter.next(), "rounds_limit")?,
-            time_limit: u32::from_value(iter.next(), "time_limit")?,
-            frag_limit: u32::from_value(iter.next(), "frag_limit")?,
-            objective: String::from_value(iter.next(), "objective")?,
+            rounds_limit: read_value::<u32>(stream, iter.next(), "rounds_limit")?,
+            time_limit: read_value::<u32>(stream, iter.next(), "time_limit")?,
+            frag_limit: read_value::<u32>(stream, iter.next(), "frag_limit")?,
+            objective: read_value::<String>(stream, iter.next(), "objective")?,
         })
     }
 }
@@ -634,11 +700,12 @@ impl FromRawGameEvent for GameStartEvent {
 pub struct GameEndEvent {
     pub winner: u8,
 }
-impl FromRawGameEvent for GameEndEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl GameEndEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(GameEndEvent {
-            winner: u8::from_value(iter.next(), "winner")?,
+            winner: read_value::<u8>(stream, iter.next(), "winner")?,
         })
     }
 }
@@ -648,13 +715,14 @@ pub struct RoundStartEvent {
     pub frag_limit: u32,
     pub objective: String,
 }
-impl FromRawGameEvent for RoundStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RoundStartEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RoundStartEvent {
-            time_limit: u32::from_value(iter.next(), "time_limit")?,
-            frag_limit: u32::from_value(iter.next(), "frag_limit")?,
-            objective: String::from_value(iter.next(), "objective")?,
+            time_limit: read_value::<u32>(stream, iter.next(), "time_limit")?,
+            frag_limit: read_value::<u32>(stream, iter.next(), "frag_limit")?,
+            objective: read_value::<String>(stream, iter.next(), "objective")?,
         })
     }
 }
@@ -664,13 +732,14 @@ pub struct RoundEndEvent {
     pub reason: u8,
     pub message: String,
 }
-impl FromRawGameEvent for RoundEndEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RoundEndEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RoundEndEvent {
-            winner: u8::from_value(iter.next(), "winner")?,
-            reason: u8::from_value(iter.next(), "reason")?,
-            message: String::from_value(iter.next(), "message")?,
+            winner: read_value::<u8>(stream, iter.next(), "winner")?,
+            reason: read_value::<u8>(stream, iter.next(), "reason")?,
+            message: read_value::<String>(stream, iter.next(), "message")?,
         })
     }
 }
@@ -679,12 +748,13 @@ pub struct GameMessageEvent {
     pub target: u8,
     pub text: String,
 }
-impl FromRawGameEvent for GameMessageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl GameMessageEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(GameMessageEvent {
-            target: u8::from_value(iter.next(), "target")?,
-            text: String::from_value(iter.next(), "text")?,
+            target: read_value::<u8>(stream, iter.next(), "target")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
         })
     }
 }
@@ -694,13 +764,14 @@ pub struct BreakBreakableEvent {
     pub user_id: u16,
     pub material: u8,
 }
-impl FromRawGameEvent for BreakBreakableEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl BreakBreakableEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(BreakBreakableEvent {
-            ent_index: u32::from_value(iter.next(), "ent_index")?,
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            material: u8::from_value(iter.next(), "material")?,
+            ent_index: read_value::<u32>(stream, iter.next(), "ent_index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            material: read_value::<u8>(stream, iter.next(), "material")?,
         })
     }
 }
@@ -709,12 +780,13 @@ pub struct BreakPropEvent {
     pub ent_index: u32,
     pub user_id: u16,
 }
-impl FromRawGameEvent for BreakPropEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl BreakPropEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(BreakPropEvent {
-            ent_index: u32::from_value(iter.next(), "ent_index")?,
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            ent_index: read_value::<u32>(stream, iter.next(), "ent_index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -725,14 +797,15 @@ pub struct EntityKilledEvent {
     pub ent_index_inflictor: u32,
     pub damage_bits: u32,
 }
-impl FromRawGameEvent for EntityKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EntityKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EntityKilledEvent {
-            ent_index_killed: u32::from_value(iter.next(), "ent_index_killed")?,
-            ent_index_attacker: u32::from_value(iter.next(), "ent_index_attacker")?,
-            ent_index_inflictor: u32::from_value(iter.next(), "ent_index_inflictor")?,
-            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
+            ent_index_killed: read_value::<u32>(stream, iter.next(), "ent_index_killed")?,
+            ent_index_attacker: read_value::<u32>(stream, iter.next(), "ent_index_attacker")?,
+            ent_index_inflictor: read_value::<u32>(stream, iter.next(), "ent_index_inflictor")?,
+            damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
         })
     }
 }
@@ -743,14 +816,15 @@ pub struct BonusUpdatedEvent {
     pub num_silver: u16,
     pub num_gold: u16,
 }
-impl FromRawGameEvent for BonusUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl BonusUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(BonusUpdatedEvent {
-            num_advanced: u16::from_value(iter.next(), "num_advanced")?,
-            num_bronze: u16::from_value(iter.next(), "num_bronze")?,
-            num_silver: u16::from_value(iter.next(), "num_silver")?,
-            num_gold: u16::from_value(iter.next(), "num_gold")?,
+            num_advanced: read_value::<u16>(stream, iter.next(), "num_advanced")?,
+            num_bronze: read_value::<u16>(stream, iter.next(), "num_bronze")?,
+            num_silver: read_value::<u16>(stream, iter.next(), "num_silver")?,
+            num_gold: read_value::<u16>(stream, iter.next(), "num_gold")?,
         })
     }
 }
@@ -760,13 +834,14 @@ pub struct AchievementEventEvent {
     pub cur_val: u16,
     pub max_val: u16,
 }
-impl FromRawGameEvent for AchievementEventEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl AchievementEventEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(AchievementEventEvent {
-            achievement_name: String::from_value(iter.next(), "achievement_name")?,
-            cur_val: u16::from_value(iter.next(), "cur_val")?,
-            max_val: u16::from_value(iter.next(), "max_val")?,
+            achievement_name: read_value::<String>(stream, iter.next(), "achievement_name")?,
+            cur_val: read_value::<u16>(stream, iter.next(), "cur_val")?,
+            max_val: read_value::<u16>(stream, iter.next(), "max_val")?,
         })
     }
 }
@@ -776,13 +851,14 @@ pub struct AchievementIncrementEvent {
     pub cur_val: u16,
     pub max_val: u16,
 }
-impl FromRawGameEvent for AchievementIncrementEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl AchievementIncrementEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(AchievementIncrementEvent {
-            achievement_id: u32::from_value(iter.next(), "achievement_id")?,
-            cur_val: u16::from_value(iter.next(), "cur_val")?,
-            max_val: u16::from_value(iter.next(), "max_val")?,
+            achievement_id: read_value::<u32>(stream, iter.next(), "achievement_id")?,
+            cur_val: read_value::<u16>(stream, iter.next(), "cur_val")?,
+            max_val: read_value::<u16>(stream, iter.next(), "max_val")?,
         })
     }
 }
@@ -790,11 +866,12 @@ impl FromRawGameEvent for AchievementIncrementEvent {
 pub struct PhysgunPickupEvent {
     pub ent_index: u32,
 }
-impl FromRawGameEvent for PhysgunPickupEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PhysgunPickupEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PhysgunPickupEvent {
-            ent_index: u32::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u32>(stream, iter.next(), "ent_index")?,
         })
     }
 }
@@ -802,25 +879,28 @@ impl FromRawGameEvent for PhysgunPickupEvent {
 pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
 }
-impl FromRawGameEvent for FlareIgniteNpcEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl FlareIgniteNpcEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(FlareIgniteNpcEvent {
-            ent_index: u32::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u32>(stream, iter.next(), "ent_index")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct HelicopterGrenadePuntMissEvent {}
-impl FromRawGameEvent for HelicopterGrenadePuntMissEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl HelicopterGrenadePuntMissEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
 #[derive(Debug)]
 pub struct UserDataDownloadedEvent {}
-impl FromRawGameEvent for UserDataDownloadedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl UserDataDownloadedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(UserDataDownloadedEvent {})
     }
 }
@@ -828,11 +908,12 @@ impl FromRawGameEvent for UserDataDownloadedEvent {
 pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
 }
-impl FromRawGameEvent for RagdollDissolvedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RagdollDissolvedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RagdollDissolvedEvent {
-            ent_index: u32::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u32>(stream, iter.next(), "ent_index")?,
         })
     }
 }
@@ -842,13 +923,14 @@ pub struct HLTVChangedModeEvent {
     pub new_mode: u16,
     pub obs_target: u16,
 }
-impl FromRawGameEvent for HLTVChangedModeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVChangedModeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVChangedModeEvent {
-            old_mode: u16::from_value(iter.next(), "old_mode")?,
-            new_mode: u16::from_value(iter.next(), "new_mode")?,
-            obs_target: u16::from_value(iter.next(), "obs_target")?,
+            old_mode: read_value::<u16>(stream, iter.next(), "old_mode")?,
+            new_mode: read_value::<u16>(stream, iter.next(), "new_mode")?,
+            obs_target: read_value::<u16>(stream, iter.next(), "obs_target")?,
         })
     }
 }
@@ -858,20 +940,22 @@ pub struct HLTVChangedTargetEvent {
     pub old_target: u16,
     pub obs_target: u16,
 }
-impl FromRawGameEvent for HLTVChangedTargetEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVChangedTargetEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVChangedTargetEvent {
-            mode: u16::from_value(iter.next(), "mode")?,
-            old_target: u16::from_value(iter.next(), "old_target")?,
-            obs_target: u16::from_value(iter.next(), "obs_target")?,
+            mode: read_value::<u16>(stream, iter.next(), "mode")?,
+            old_target: read_value::<u16>(stream, iter.next(), "old_target")?,
+            obs_target: read_value::<u16>(stream, iter.next(), "obs_target")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct VoteEndedEvent {}
-impl FromRawGameEvent for VoteEndedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl VoteEndedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(VoteEndedEvent {})
     }
 }
@@ -882,14 +966,15 @@ pub struct VoteStartedEvent {
     pub team: u8,
     pub initiator: u32,
 }
-impl FromRawGameEvent for VoteStartedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl VoteStartedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(VoteStartedEvent {
-            issue: String::from_value(iter.next(), "issue")?,
-            param_1: String::from_value(iter.next(), "param_1")?,
-            team: u8::from_value(iter.next(), "team")?,
-            initiator: u32::from_value(iter.next(), "initiator")?,
+            issue: read_value::<String>(stream, iter.next(), "issue")?,
+            param_1: read_value::<String>(stream, iter.next(), "param_1")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            initiator: read_value::<u32>(stream, iter.next(), "initiator")?,
         })
     }
 }
@@ -902,16 +987,17 @@ pub struct VoteChangedEvent {
     pub vote_option_5: u8,
     pub potential_votes: u8,
 }
-impl FromRawGameEvent for VoteChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl VoteChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(VoteChangedEvent {
-            vote_option_1: u8::from_value(iter.next(), "vote_option_1")?,
-            vote_option_2: u8::from_value(iter.next(), "vote_option_2")?,
-            vote_option_3: u8::from_value(iter.next(), "vote_option_3")?,
-            vote_option_4: u8::from_value(iter.next(), "vote_option_4")?,
-            vote_option_5: u8::from_value(iter.next(), "vote_option_5")?,
-            potential_votes: u8::from_value(iter.next(), "potential_votes")?,
+            vote_option_1: read_value::<u8>(stream, iter.next(), "vote_option_1")?,
+            vote_option_2: read_value::<u8>(stream, iter.next(), "vote_option_2")?,
+            vote_option_3: read_value::<u8>(stream, iter.next(), "vote_option_3")?,
+            vote_option_4: read_value::<u8>(stream, iter.next(), "vote_option_4")?,
+            vote_option_5: read_value::<u8>(stream, iter.next(), "vote_option_5")?,
+            potential_votes: read_value::<u8>(stream, iter.next(), "potential_votes")?,
         })
     }
 }
@@ -921,13 +1007,14 @@ pub struct VotePassedEvent {
     pub param_1: String,
     pub team: u8,
 }
-impl FromRawGameEvent for VotePassedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl VotePassedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(VotePassedEvent {
-            details: String::from_value(iter.next(), "details")?,
-            param_1: String::from_value(iter.next(), "param_1")?,
-            team: u8::from_value(iter.next(), "team")?,
+            details: read_value::<String>(stream, iter.next(), "details")?,
+            param_1: read_value::<String>(stream, iter.next(), "param_1")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
         })
     }
 }
@@ -935,11 +1022,12 @@ impl FromRawGameEvent for VotePassedEvent {
 pub struct VoteFailedEvent {
     pub team: u8,
 }
-impl FromRawGameEvent for VoteFailedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl VoteFailedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(VoteFailedEvent {
-            team: u8::from_value(iter.next(), "team")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
         })
     }
 }
@@ -949,13 +1037,14 @@ pub struct VoteCastEvent {
     pub team: u16,
     pub entity_id: u32,
 }
-impl FromRawGameEvent for VoteCastEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl VoteCastEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(VoteCastEvent {
-            vote_option: u8::from_value(iter.next(), "vote_option")?,
-            team: u16::from_value(iter.next(), "team")?,
-            entity_id: u32::from_value(iter.next(), "entity_id")?,
+            vote_option: read_value::<u8>(stream, iter.next(), "vote_option")?,
+            team: read_value::<u16>(stream, iter.next(), "team")?,
+            entity_id: read_value::<u32>(stream, iter.next(), "entity_id")?,
         })
     }
 }
@@ -968,37 +1057,41 @@ pub struct VoteOptionsEvent {
     pub option_4: String,
     pub option_5: String,
 }
-impl FromRawGameEvent for VoteOptionsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl VoteOptionsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(VoteOptionsEvent {
-            count: u8::from_value(iter.next(), "count")?,
-            option_1: String::from_value(iter.next(), "option_1")?,
-            option_2: String::from_value(iter.next(), "option_2")?,
-            option_3: String::from_value(iter.next(), "option_3")?,
-            option_4: String::from_value(iter.next(), "option_4")?,
-            option_5: String::from_value(iter.next(), "option_5")?,
+            count: read_value::<u8>(stream, iter.next(), "count")?,
+            option_1: read_value::<String>(stream, iter.next(), "option_1")?,
+            option_2: read_value::<String>(stream, iter.next(), "option_2")?,
+            option_3: read_value::<String>(stream, iter.next(), "option_3")?,
+            option_4: read_value::<String>(stream, iter.next(), "option_4")?,
+            option_5: read_value::<String>(stream, iter.next(), "option_5")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct ReplaySavedEvent {}
-impl FromRawGameEvent for ReplaySavedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ReplaySavedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ReplaySavedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct EnteredPerformanceModeEvent {}
-impl FromRawGameEvent for EnteredPerformanceModeEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl EnteredPerformanceModeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
 #[derive(Debug)]
 pub struct BrowseReplaysEvent {}
-impl FromRawGameEvent for BrowseReplaysEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl BrowseReplaysEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(BrowseReplaysEvent {})
     }
 }
@@ -1008,62 +1101,70 @@ pub struct ReplayYoutubeStatsEvent {
     pub likes: u32,
     pub favorited: u32,
 }
-impl FromRawGameEvent for ReplayYoutubeStatsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ReplayYoutubeStatsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ReplayYoutubeStatsEvent {
-            views: u32::from_value(iter.next(), "views")?,
-            likes: u32::from_value(iter.next(), "likes")?,
-            favorited: u32::from_value(iter.next(), "favorited")?,
+            views: read_value::<u32>(stream, iter.next(), "views")?,
+            likes: read_value::<u32>(stream, iter.next(), "likes")?,
+            favorited: read_value::<u32>(stream, iter.next(), "favorited")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct InventoryUpdatedEvent {}
-impl FromRawGameEvent for InventoryUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl InventoryUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(InventoryUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct CartUpdatedEvent {}
-impl FromRawGameEvent for CartUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl CartUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(CartUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct StorePriceSheetUpdatedEvent {}
-impl FromRawGameEvent for StorePriceSheetUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl StorePriceSheetUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct EconInventoryConnectedEvent {}
-impl FromRawGameEvent for EconInventoryConnectedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl EconInventoryConnectedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(EconInventoryConnectedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ItemSchemaInitializedEvent {}
-impl FromRawGameEvent for ItemSchemaInitializedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ItemSchemaInitializedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct GcNewSessionEvent {}
-impl FromRawGameEvent for GcNewSessionEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl GcNewSessionEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GcNewSessionEvent {})
     }
 }
 #[derive(Debug)]
 pub struct GcLostSessionEvent {}
-impl FromRawGameEvent for GcLostSessionEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl GcLostSessionEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GcLostSessionEvent {})
     }
 }
@@ -1071,11 +1172,12 @@ impl FromRawGameEvent for GcLostSessionEvent {
 pub struct IntroFinishEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for IntroFinishEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl IntroFinishEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(IntroFinishEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -1083,11 +1185,12 @@ impl FromRawGameEvent for IntroFinishEvent {
 pub struct IntroNextCameraEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for IntroNextCameraEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl IntroNextCameraEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(IntroNextCameraEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -1096,12 +1199,13 @@ pub struct PlayerChangeClassEvent {
     pub user_id: u16,
     pub class: u16,
 }
-impl FromRawGameEvent for PlayerChangeClassEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerChangeClassEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerChangeClassEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            class: u16::from_value(iter.next(), "class")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            class: read_value::<u16>(stream, iter.next(), "class")?,
         })
     }
 }
@@ -1109,11 +1213,12 @@ impl FromRawGameEvent for PlayerChangeClassEvent {
 pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
 }
-impl FromRawGameEvent for TfMapTimeRemainingEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TfMapTimeRemainingEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TfMapTimeRemainingEvent {
-            seconds: u32::from_value(iter.next(), "seconds")?,
+            seconds: read_value::<u32>(stream, iter.next(), "seconds")?,
         })
     }
 }
@@ -1121,11 +1226,12 @@ impl FromRawGameEvent for TfMapTimeRemainingEvent {
 pub struct TfGameOverEvent {
     pub reason: String,
 }
-impl FromRawGameEvent for TfGameOverEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TfGameOverEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TfGameOverEvent {
-            reason: String::from_value(iter.next(), "reason")?,
+            reason: read_value::<String>(stream, iter.next(), "reason")?,
         })
     }
 }
@@ -1134,19 +1240,21 @@ pub struct CtfFlagCapturedEvent {
     pub capping_team: u16,
     pub capping_team_score: u16,
 }
-impl FromRawGameEvent for CtfFlagCapturedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl CtfFlagCapturedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(CtfFlagCapturedEvent {
-            capping_team: u16::from_value(iter.next(), "capping_team")?,
-            capping_team_score: u16::from_value(iter.next(), "capping_team_score")?,
+            capping_team: read_value::<u16>(stream, iter.next(), "capping_team")?,
+            capping_team_score: read_value::<u16>(stream, iter.next(), "capping_team_score")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct ControlPointInitializedEvent {}
-impl FromRawGameEvent for ControlPointInitializedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ControlPointInitializedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ControlPointInitializedEvent {})
     }
 }
@@ -1154,11 +1262,12 @@ impl FromRawGameEvent for ControlPointInitializedEvent {
 pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for ControlPointUpdateImagesEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointUpdateImagesEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointUpdateImagesEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1166,11 +1275,12 @@ impl FromRawGameEvent for ControlPointUpdateImagesEvent {
 pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for ControlPointUpdateLayoutEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointUpdateLayoutEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointUpdateLayoutEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1178,11 +1288,12 @@ impl FromRawGameEvent for ControlPointUpdateLayoutEvent {
 pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for ControlPointUpdateCappingEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointUpdateCappingEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointUpdateCappingEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1190,11 +1301,12 @@ impl FromRawGameEvent for ControlPointUpdateCappingEvent {
 pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for ControlPointUpdateOwnerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointUpdateOwnerEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointUpdateOwnerEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1203,12 +1315,13 @@ pub struct ControlPointStartTouchEvent {
     pub player: u16,
     pub area: u16,
 }
-impl FromRawGameEvent for ControlPointStartTouchEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointStartTouchEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointStartTouchEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            area: u16::from_value(iter.next(), "area")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            area: read_value::<u16>(stream, iter.next(), "area")?,
         })
     }
 }
@@ -1217,12 +1330,13 @@ pub struct ControlPointEndTouchEvent {
     pub player: u16,
     pub area: u16,
 }
-impl FromRawGameEvent for ControlPointEndTouchEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointEndTouchEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointEndTouchEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            area: u16::from_value(iter.next(), "area")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            area: read_value::<u16>(stream, iter.next(), "area")?,
         })
     }
 }
@@ -1230,11 +1344,12 @@ impl FromRawGameEvent for ControlPointEndTouchEvent {
 pub struct ControlPointPulseElementEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for ControlPointPulseElementEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointPulseElementEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointPulseElementEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -1243,12 +1358,13 @@ pub struct ControlPointFakeCaptureEvent {
     pub player: u16,
     pub int_data: u16,
 }
-impl FromRawGameEvent for ControlPointFakeCaptureEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointFakeCaptureEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointFakeCaptureEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            int_data: u16::from_value(iter.next(), "int_data")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            int_data: read_value::<u16>(stream, iter.next(), "int_data")?,
         })
     }
 }
@@ -1257,12 +1373,13 @@ pub struct ControlPointFakeCaptureMultiplierEvent {
     pub player: u16,
     pub int_data: u16,
 }
-impl FromRawGameEvent for ControlPointFakeCaptureMultiplierEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointFakeCaptureMultiplierEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointFakeCaptureMultiplierEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            int_data: u16::from_value(iter.next(), "int_data")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            int_data: read_value::<u16>(stream, iter.next(), "int_data")?,
         })
     }
 }
@@ -1270,11 +1387,12 @@ impl FromRawGameEvent for ControlPointFakeCaptureMultiplierEvent {
 pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
 }
-impl FromRawGameEvent for TeamPlayRoundSelectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayRoundSelectedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayRoundSelectedEvent {
-            round: String::from_value(iter.next(), "round")?,
+            round: read_value::<String>(stream, iter.next(), "round")?,
         })
     }
 }
@@ -1282,53 +1400,60 @@ impl FromRawGameEvent for TeamPlayRoundSelectedEvent {
 pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
 }
-impl FromRawGameEvent for TeamPlayRoundStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayRoundStartEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayRoundStartEvent {
-            full_reset: bool::from_value(iter.next(), "full_reset")?,
+            full_reset: read_value::<bool>(stream, iter.next(), "full_reset")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayRoundActiveEvent {}
-impl FromRawGameEvent for TeamPlayRoundActiveEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayRoundActiveEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayWaitingBeginsEvent {}
-impl FromRawGameEvent for TeamPlayWaitingBeginsEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayWaitingBeginsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayWaitingEndsEvent {}
-impl FromRawGameEvent for TeamPlayWaitingEndsEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayWaitingEndsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
-impl FromRawGameEvent for TeamPlayWaitingAboutToEndEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayWaitingAboutToEndEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayRestartRoundEvent {}
-impl FromRawGameEvent for TeamPlayRestartRoundEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayRestartRoundEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayReadyRestartEvent {}
-impl FromRawGameEvent for TeamPlayReadyRestartEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayReadyRestartEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
@@ -1336,11 +1461,12 @@ impl FromRawGameEvent for TeamPlayReadyRestartEvent {
 pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
 }
-impl FromRawGameEvent for TeamPlayRoundRestartSecondsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayRoundRestartSecondsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayRoundRestartSecondsEvent {
-            seconds: u16::from_value(iter.next(), "seconds")?,
+            seconds: read_value::<u16>(stream, iter.next(), "seconds")?,
         })
     }
 }
@@ -1348,11 +1474,12 @@ impl FromRawGameEvent for TeamPlayRoundRestartSecondsEvent {
 pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
 }
-impl FromRawGameEvent for TeamPlayTeamReadyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayTeamReadyEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayTeamReadyEvent {
-            team: u8::from_value(iter.next(), "team")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
         })
     }
 }
@@ -1366,24 +1493,26 @@ pub struct TeamPlayRoundWinEvent {
     pub losing_team_num_caps: u16,
     pub was_sudden_death: u8,
 }
-impl FromRawGameEvent for TeamPlayRoundWinEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayRoundWinEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayRoundWinEvent {
-            team: u8::from_value(iter.next(), "team")?,
-            win_reason: u8::from_value(iter.next(), "win_reason")?,
-            flag_cap_limit: u16::from_value(iter.next(), "flag_cap_limit")?,
-            full_round: u16::from_value(iter.next(), "full_round")?,
-            round_time: f32::from_value(iter.next(), "round_time")?,
-            losing_team_num_caps: u16::from_value(iter.next(), "losing_team_num_caps")?,
-            was_sudden_death: u8::from_value(iter.next(), "was_sudden_death")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            win_reason: read_value::<u8>(stream, iter.next(), "win_reason")?,
+            flag_cap_limit: read_value::<u16>(stream, iter.next(), "flag_cap_limit")?,
+            full_round: read_value::<u16>(stream, iter.next(), "full_round")?,
+            round_time: read_value::<f32>(stream, iter.next(), "round_time")?,
+            losing_team_num_caps: read_value::<u16>(stream, iter.next(), "losing_team_num_caps")?,
+            was_sudden_death: read_value::<u8>(stream, iter.next(), "was_sudden_death")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayUpdateTimerEvent {}
-impl FromRawGameEvent for TeamPlayUpdateTimerEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayUpdateTimerEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
@@ -1391,39 +1520,44 @@ impl FromRawGameEvent for TeamPlayUpdateTimerEvent {
 pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
 }
-impl FromRawGameEvent for TeamPlayRoundStalemateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayRoundStalemateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayRoundStalemateEvent {
-            reason: u8::from_value(iter.next(), "reason")?,
+            reason: read_value::<u8>(stream, iter.next(), "reason")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayOvertimeBeginEvent {}
-impl FromRawGameEvent for TeamPlayOvertimeBeginEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayOvertimeBeginEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlayOvertimeEndEvent {}
-impl FromRawGameEvent for TeamPlayOvertimeEndEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlayOvertimeEndEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
-impl FromRawGameEvent for TeamPlaySuddenDeathBeginEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlaySuddenDeathBeginEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamPlaySuddenDeathEndEvent {}
-impl FromRawGameEvent for TeamPlaySuddenDeathEndEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlaySuddenDeathEndEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
@@ -1431,11 +1565,12 @@ impl FromRawGameEvent for TeamPlaySuddenDeathEndEvent {
 pub struct TeamPlayGameOverEvent {
     pub reason: String,
 }
-impl FromRawGameEvent for TeamPlayGameOverEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayGameOverEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayGameOverEvent {
-            reason: String::from_value(iter.next(), "reason")?,
+            reason: read_value::<String>(stream, iter.next(), "reason")?,
         })
     }
 }
@@ -1443,11 +1578,12 @@ impl FromRawGameEvent for TeamPlayGameOverEvent {
 pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
 }
-impl FromRawGameEvent for TeamPlayMapTimeRemainingEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayMapTimeRemainingEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayMapTimeRemainingEvent {
-            seconds: u16::from_value(iter.next(), "seconds")?,
+            seconds: read_value::<u16>(stream, iter.next(), "seconds")?,
         })
     }
 }
@@ -1455,11 +1591,12 @@ impl FromRawGameEvent for TeamPlayMapTimeRemainingEvent {
 pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
 }
-impl FromRawGameEvent for TeamPlayTimerFlashEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayTimerFlashEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayTimerFlashEvent {
-            time_remaining: u16::from_value(iter.next(), "time_remaining")?,
+            time_remaining: read_value::<u16>(stream, iter.next(), "time_remaining")?,
         })
     }
 }
@@ -1468,12 +1605,13 @@ pub struct TeamPlayTimerTimeAddedEvent {
     pub timer: u16,
     pub seconds_added: u16,
 }
-impl FromRawGameEvent for TeamPlayTimerTimeAddedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayTimerTimeAddedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayTimerTimeAddedEvent {
-            timer: u16::from_value(iter.next(), "timer")?,
-            seconds_added: u16::from_value(iter.next(), "seconds_added")?,
+            timer: read_value::<u16>(stream, iter.next(), "timer")?,
+            seconds_added: read_value::<u16>(stream, iter.next(), "seconds_added")?,
         })
     }
 }
@@ -1486,16 +1624,17 @@ pub struct TeamPlayPointStartCaptureEvent {
     pub cappers: String,
     pub cap_time: f32,
 }
-impl FromRawGameEvent for TeamPlayPointStartCaptureEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayPointStartCaptureEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayPointStartCaptureEvent {
-            cp: u8::from_value(iter.next(), "cp")?,
-            cp_name: String::from_value(iter.next(), "cp_name")?,
-            team: u8::from_value(iter.next(), "team")?,
-            cap_team: u8::from_value(iter.next(), "cap_team")?,
-            cappers: String::from_value(iter.next(), "cappers")?,
-            cap_time: f32::from_value(iter.next(), "cap_time")?,
+            cp: read_value::<u8>(stream, iter.next(), "cp")?,
+            cp_name: read_value::<String>(stream, iter.next(), "cp_name")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            cap_team: read_value::<u8>(stream, iter.next(), "cap_team")?,
+            cappers: read_value::<String>(stream, iter.next(), "cappers")?,
+            cap_time: read_value::<f32>(stream, iter.next(), "cap_time")?,
         })
     }
 }
@@ -1506,14 +1645,15 @@ pub struct TeamPlayPointCapturedEvent {
     pub team: u8,
     pub cappers: String,
 }
-impl FromRawGameEvent for TeamPlayPointCapturedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayPointCapturedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayPointCapturedEvent {
-            cp: u8::from_value(iter.next(), "cp")?,
-            cp_name: String::from_value(iter.next(), "cp_name")?,
-            team: u8::from_value(iter.next(), "team")?,
-            cappers: String::from_value(iter.next(), "cappers")?,
+            cp: read_value::<u8>(stream, iter.next(), "cp")?,
+            cp_name: read_value::<String>(stream, iter.next(), "cp_name")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            cappers: read_value::<String>(stream, iter.next(), "cappers")?,
         })
     }
 }
@@ -1523,13 +1663,14 @@ pub struct TeamPlayPointLockedEvent {
     pub cp_name: String,
     pub team: u8,
 }
-impl FromRawGameEvent for TeamPlayPointLockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayPointLockedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayPointLockedEvent {
-            cp: u8::from_value(iter.next(), "cp")?,
-            cp_name: String::from_value(iter.next(), "cp_name")?,
-            team: u8::from_value(iter.next(), "team")?,
+            cp: read_value::<u8>(stream, iter.next(), "cp")?,
+            cp_name: read_value::<String>(stream, iter.next(), "cp_name")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
         })
     }
 }
@@ -1539,13 +1680,14 @@ pub struct TeamPlayPointUnlockedEvent {
     pub cp_name: String,
     pub team: u8,
 }
-impl FromRawGameEvent for TeamPlayPointUnlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayPointUnlockedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayPointUnlockedEvent {
-            cp: u8::from_value(iter.next(), "cp")?,
-            cp_name: String::from_value(iter.next(), "cp_name")?,
-            team: u8::from_value(iter.next(), "team")?,
+            cp: read_value::<u8>(stream, iter.next(), "cp")?,
+            cp_name: read_value::<String>(stream, iter.next(), "cp_name")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
         })
     }
 }
@@ -1555,13 +1697,14 @@ pub struct TeamPlayCaptureBrokenEvent {
     pub cp_name: String,
     pub time_remaining: f32,
 }
-impl FromRawGameEvent for TeamPlayCaptureBrokenEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayCaptureBrokenEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayCaptureBrokenEvent {
-            cp: u8::from_value(iter.next(), "cp")?,
-            cp_name: String::from_value(iter.next(), "cp_name")?,
-            time_remaining: f32::from_value(iter.next(), "time_remaining")?,
+            cp: read_value::<u8>(stream, iter.next(), "cp")?,
+            cp_name: read_value::<String>(stream, iter.next(), "cp_name")?,
+            time_remaining: read_value::<f32>(stream, iter.next(), "time_remaining")?,
         })
     }
 }
@@ -1572,14 +1715,15 @@ pub struct TeamPlayCaptureBlockedEvent {
     pub blocker: u8,
     pub victim: u8,
 }
-impl FromRawGameEvent for TeamPlayCaptureBlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayCaptureBlockedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayCaptureBlockedEvent {
-            cp: u8::from_value(iter.next(), "cp")?,
-            cp_name: String::from_value(iter.next(), "cp_name")?,
-            blocker: u8::from_value(iter.next(), "blocker")?,
-            victim: u8::from_value(iter.next(), "victim")?,
+            cp: read_value::<u8>(stream, iter.next(), "cp")?,
+            cp_name: read_value::<String>(stream, iter.next(), "cp_name")?,
+            blocker: read_value::<u8>(stream, iter.next(), "blocker")?,
+            victim: read_value::<u8>(stream, iter.next(), "victim")?,
         })
     }
 }
@@ -1591,15 +1735,16 @@ pub struct TeamPlayFlagEventEvent {
     pub home: u8,
     pub team: u8,
 }
-impl FromRawGameEvent for TeamPlayFlagEventEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayFlagEventEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayFlagEventEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            carrier: u16::from_value(iter.next(), "carrier")?,
-            event_type: u16::from_value(iter.next(), "event_type")?,
-            home: u8::from_value(iter.next(), "home")?,
-            team: u8::from_value(iter.next(), "team")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            carrier: read_value::<u16>(stream, iter.next(), "carrier")?,
+            event_type: read_value::<u16>(stream, iter.next(), "event_type")?,
+            home: read_value::<u8>(stream, iter.next(), "home")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
         })
     }
 }
@@ -1626,30 +1771,35 @@ pub struct TeamPlayWinPanelEvent {
     pub kill_stream_player_1_count: u16,
     pub game_over: u8,
 }
-impl FromRawGameEvent for TeamPlayWinPanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayWinPanelEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayWinPanelEvent {
-            panel_style: u8::from_value(iter.next(), "panel_style")?,
-            winning_team: u8::from_value(iter.next(), "winning_team")?,
-            win_reason: u8::from_value(iter.next(), "win_reason")?,
-            cappers: String::from_value(iter.next(), "cappers")?,
-            flag_cap_limit: u16::from_value(iter.next(), "flag_cap_limit")?,
-            blue_score: u16::from_value(iter.next(), "blue_score")?,
-            red_score: u16::from_value(iter.next(), "red_score")?,
-            blue_score_prev: u16::from_value(iter.next(), "blue_score_prev")?,
-            red_score_prev: u16::from_value(iter.next(), "red_score_prev")?,
-            round_complete: u16::from_value(iter.next(), "round_complete")?,
-            rounds_remaining: u16::from_value(iter.next(), "rounds_remaining")?,
-            player_1: u16::from_value(iter.next(), "player_1")?,
-            player_1_points: u16::from_value(iter.next(), "player_1_points")?,
-            player_2: u16::from_value(iter.next(), "player_2")?,
-            player_2_points: u16::from_value(iter.next(), "player_2_points")?,
-            player_3: u16::from_value(iter.next(), "player_3")?,
-            player_3_points: u16::from_value(iter.next(), "player_3_points")?,
-            kill_stream_player_1: u16::from_value(iter.next(), "kill_stream_player_1")?,
-            kill_stream_player_1_count: u16::from_value(iter.next(), "kill_stream_player_1_count")?,
-            game_over: u8::from_value(iter.next(), "game_over")?,
+            panel_style: read_value::<u8>(stream, iter.next(), "panel_style")?,
+            winning_team: read_value::<u8>(stream, iter.next(), "winning_team")?,
+            win_reason: read_value::<u8>(stream, iter.next(), "win_reason")?,
+            cappers: read_value::<String>(stream, iter.next(), "cappers")?,
+            flag_cap_limit: read_value::<u16>(stream, iter.next(), "flag_cap_limit")?,
+            blue_score: read_value::<u16>(stream, iter.next(), "blue_score")?,
+            red_score: read_value::<u16>(stream, iter.next(), "red_score")?,
+            blue_score_prev: read_value::<u16>(stream, iter.next(), "blue_score_prev")?,
+            red_score_prev: read_value::<u16>(stream, iter.next(), "red_score_prev")?,
+            round_complete: read_value::<u16>(stream, iter.next(), "round_complete")?,
+            rounds_remaining: read_value::<u16>(stream, iter.next(), "rounds_remaining")?,
+            player_1: read_value::<u16>(stream, iter.next(), "player_1")?,
+            player_1_points: read_value::<u16>(stream, iter.next(), "player_1_points")?,
+            player_2: read_value::<u16>(stream, iter.next(), "player_2")?,
+            player_2_points: read_value::<u16>(stream, iter.next(), "player_2_points")?,
+            player_3: read_value::<u16>(stream, iter.next(), "player_3")?,
+            player_3_points: read_value::<u16>(stream, iter.next(), "player_3_points")?,
+            kill_stream_player_1: read_value::<u16>(stream, iter.next(), "kill_stream_player_1")?,
+            kill_stream_player_1_count: read_value::<u16>(
+                stream,
+                iter.next(),
+                "kill_stream_player_1_count",
+            )?,
+            game_over: read_value::<u8>(stream, iter.next(), "game_over")?,
         })
     }
 }
@@ -1658,19 +1808,21 @@ pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
     pub team: u8,
 }
-impl FromRawGameEvent for TeamPlayTeamBalancedPlayerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayTeamBalancedPlayerEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayTeamBalancedPlayerEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            team: u8::from_value(iter.next(), "team")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct TeamPlaySetupFinishedEvent {}
-impl FromRawGameEvent for TeamPlaySetupFinishedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamPlaySetupFinishedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
@@ -1678,11 +1830,12 @@ impl FromRawGameEvent for TeamPlaySetupFinishedEvent {
 pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
 }
-impl FromRawGameEvent for TeamPlayAlertEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayAlertEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayAlertEvent {
-            alert_type: u16::from_value(iter.next(), "alert_type")?,
+            alert_type: read_value::<u16>(stream, iter.next(), "alert_type")?,
         })
     }
 }
@@ -1692,13 +1845,14 @@ pub struct TrainingCompleteEvent {
     pub map: String,
     pub text: String,
 }
-impl FromRawGameEvent for TrainingCompleteEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TrainingCompleteEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TrainingCompleteEvent {
-            next_map: String::from_value(iter.next(), "next_map")?,
-            map: String::from_value(iter.next(), "map")?,
-            text: String::from_value(iter.next(), "text")?,
+            next_map: read_value::<String>(stream, iter.next(), "next_map")?,
+            map: read_value::<String>(stream, iter.next(), "map")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
         })
     }
 }
@@ -1706,32 +1860,36 @@ impl FromRawGameEvent for TrainingCompleteEvent {
 pub struct ShowFreezePanelEvent {
     pub killer: u16,
 }
-impl FromRawGameEvent for ShowFreezePanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ShowFreezePanelEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ShowFreezePanelEvent {
-            killer: u16::from_value(iter.next(), "killer")?,
+            killer: read_value::<u16>(stream, iter.next(), "killer")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct HideFreezePanelEvent {}
-impl FromRawGameEvent for HideFreezePanelEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl HideFreezePanelEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(HideFreezePanelEvent {})
     }
 }
 #[derive(Debug)]
 pub struct FreezeCamStartedEvent {}
-impl FromRawGameEvent for FreezeCamStartedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl FreezeCamStartedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(FreezeCamStartedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerChangeTeamEvent {}
-impl FromRawGameEvent for LocalPlayerChangeTeamEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl LocalPlayerChangeTeamEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
@@ -1739,25 +1897,28 @@ impl FromRawGameEvent for LocalPlayerChangeTeamEvent {
 pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
 }
-impl FromRawGameEvent for LocalPlayerScoreChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl LocalPlayerScoreChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(LocalPlayerScoreChangedEvent {
-            score: u16::from_value(iter.next(), "score")?,
+            score: read_value::<u16>(stream, iter.next(), "score")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerChangeClassEvent {}
-impl FromRawGameEvent for LocalPlayerChangeClassEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl LocalPlayerChangeClassEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerRespawnEvent {}
-impl FromRawGameEvent for LocalPlayerRespawnEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl LocalPlayerRespawnEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
@@ -1767,13 +1928,14 @@ pub struct BuildingInfoChangedEvent {
     pub object_mode: u8,
     pub remove: u8,
 }
-impl FromRawGameEvent for BuildingInfoChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl BuildingInfoChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(BuildingInfoChangedEvent {
-            building_type: u8::from_value(iter.next(), "building_type")?,
-            object_mode: u8::from_value(iter.next(), "object_mode")?,
-            remove: u8::from_value(iter.next(), "remove")?,
+            building_type: read_value::<u8>(stream, iter.next(), "building_type")?,
+            object_mode: read_value::<u8>(stream, iter.next(), "object_mode")?,
+            remove: read_value::<u8>(stream, iter.next(), "remove")?,
         })
     }
 }
@@ -1781,11 +1943,12 @@ impl FromRawGameEvent for BuildingInfoChangedEvent {
 pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
 }
-impl FromRawGameEvent for LocalPlayerChangeDisguiseEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl LocalPlayerChangeDisguiseEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(LocalPlayerChangeDisguiseEvent {
-            disguised: bool::from_value(iter.next(), "disguised")?,
+            disguised: read_value::<bool>(stream, iter.next(), "disguised")?,
         })
     }
 }
@@ -1794,19 +1957,21 @@ pub struct PlayerAccountChangedEvent {
     pub old_value: u16,
     pub new_value: u16,
 }
-impl FromRawGameEvent for PlayerAccountChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerAccountChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerAccountChangedEvent {
-            old_value: u16::from_value(iter.next(), "old_value")?,
-            new_value: u16::from_value(iter.next(), "new_value")?,
+            old_value: read_value::<u16>(stream, iter.next(), "old_value")?,
+            new_value: read_value::<u16>(stream, iter.next(), "new_value")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct SpyPdaResetEvent {}
-impl FromRawGameEvent for SpyPdaResetEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl SpyPdaResetEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(SpyPdaResetEvent {})
     }
 }
@@ -1815,12 +1980,13 @@ pub struct FlagStatusUpdateEvent {
     pub user_id: u16,
     pub ent_index: u32,
 }
-impl FromRawGameEvent for FlagStatusUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl FlagStatusUpdateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(FlagStatusUpdateEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            ent_index: u32::from_value(iter.next(), "ent_index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            ent_index: read_value::<u32>(stream, iter.next(), "ent_index")?,
         })
     }
 }
@@ -1828,18 +1994,20 @@ impl FromRawGameEvent for FlagStatusUpdateEvent {
 pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
 }
-impl FromRawGameEvent for PlayerStatsUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerStatsUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerStatsUpdatedEvent {
-            force_upload: bool::from_value(iter.next(), "force_upload")?,
+            force_upload: read_value::<bool>(stream, iter.next(), "force_upload")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct PlayingCommentaryEvent {}
-impl FromRawGameEvent for PlayingCommentaryEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PlayingCommentaryEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PlayingCommentaryEvent {})
     }
 }
@@ -1848,12 +2016,13 @@ pub struct PlayerChargeDeployedEvent {
     pub user_id: u16,
     pub target_id: u16,
 }
-impl FromRawGameEvent for PlayerChargeDeployedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerChargeDeployedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerChargeDeployedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            target_id: u16::from_value(iter.next(), "target_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            target_id: read_value::<u16>(stream, iter.next(), "target_id")?,
         })
     }
 }
@@ -1863,13 +2032,14 @@ pub struct PlayerBuiltObjectEvent {
     pub object: u16,
     pub index: u16,
 }
-impl FromRawGameEvent for PlayerBuiltObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerBuiltObjectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerBuiltObjectEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            object: u16::from_value(iter.next(), "object")?,
-            index: u16::from_value(iter.next(), "index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            object: read_value::<u16>(stream, iter.next(), "object")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1880,14 +2050,15 @@ pub struct PlayerUpgradedObjectEvent {
     pub index: u16,
     pub is_builder: bool,
 }
-impl FromRawGameEvent for PlayerUpgradedObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerUpgradedObjectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerUpgradedObjectEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            object: u16::from_value(iter.next(), "object")?,
-            index: u16::from_value(iter.next(), "index")?,
-            is_builder: bool::from_value(iter.next(), "is_builder")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            object: read_value::<u16>(stream, iter.next(), "object")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
+            is_builder: read_value::<bool>(stream, iter.next(), "is_builder")?,
         })
     }
 }
@@ -1897,13 +2068,14 @@ pub struct PlayerCarryObjectEvent {
     pub object: u16,
     pub index: u16,
 }
-impl FromRawGameEvent for PlayerCarryObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerCarryObjectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerCarryObjectEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            object: u16::from_value(iter.next(), "object")?,
-            index: u16::from_value(iter.next(), "index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            object: read_value::<u16>(stream, iter.next(), "object")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1913,13 +2085,14 @@ pub struct PlayerDropObjectEvent {
     pub object: u16,
     pub index: u16,
 }
-impl FromRawGameEvent for PlayerDropObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerDropObjectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerDropObjectEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            object: u16::from_value(iter.next(), "object")?,
-            index: u16::from_value(iter.next(), "index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            object: read_value::<u16>(stream, iter.next(), "object")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1929,13 +2102,14 @@ pub struct ObjectRemovedEvent {
     pub object_type: u16,
     pub index: u16,
 }
-impl FromRawGameEvent for ObjectRemovedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ObjectRemovedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ObjectRemovedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            object_type: u16::from_value(iter.next(), "object_type")?,
-            index: u16::from_value(iter.next(), "index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            object_type: read_value::<u16>(stream, iter.next(), "object_type")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1950,18 +2124,19 @@ pub struct ObjectDestroyedEvent {
     pub index: u16,
     pub was_building: bool,
 }
-impl FromRawGameEvent for ObjectDestroyedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ObjectDestroyedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ObjectDestroyedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            assister: u16::from_value(iter.next(), "assister")?,
-            weapon: String::from_value(iter.next(), "weapon")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            object_type: u16::from_value(iter.next(), "object_type")?,
-            index: u16::from_value(iter.next(), "index")?,
-            was_building: bool::from_value(iter.next(), "was_building")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            assister: read_value::<u16>(stream, iter.next(), "assister")?,
+            weapon: read_value::<String>(stream, iter.next(), "weapon")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            object_type: read_value::<u16>(stream, iter.next(), "object_type")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
+            was_building: read_value::<bool>(stream, iter.next(), "was_building")?,
         })
     }
 }
@@ -1971,13 +2146,14 @@ pub struct ObjectDetonatedEvent {
     pub object_type: u16,
     pub index: u16,
 }
-impl FromRawGameEvent for ObjectDetonatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ObjectDetonatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ObjectDetonatedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            object_type: u16::from_value(iter.next(), "object_type")?,
-            index: u16::from_value(iter.next(), "index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            object_type: read_value::<u16>(stream, iter.next(), "object_type")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -1986,19 +2162,21 @@ pub struct AchievementEarnedEvent {
     pub player: u8,
     pub achievement: u16,
 }
-impl FromRawGameEvent for AchievementEarnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl AchievementEarnedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(AchievementEarnedEvent {
-            player: u8::from_value(iter.next(), "player")?,
-            achievement: u16::from_value(iter.next(), "achievement")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
+            achievement: read_value::<u16>(stream, iter.next(), "achievement")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct SpecTargetUpdatedEvent {}
-impl FromRawGameEvent for SpecTargetUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl SpecTargetUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
@@ -2009,21 +2187,23 @@ pub struct TournamentStateUpdateEvent {
     pub ready_state: u16,
     pub new_name: String,
 }
-impl FromRawGameEvent for TournamentStateUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TournamentStateUpdateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TournamentStateUpdateEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            name_change: bool::from_value(iter.next(), "name_change")?,
-            ready_state: u16::from_value(iter.next(), "ready_state")?,
-            new_name: String::from_value(iter.next(), "new_name")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            name_change: read_value::<bool>(stream, iter.next(), "name_change")?,
+            ready_state: read_value::<u16>(stream, iter.next(), "ready_state")?,
+            new_name: read_value::<String>(stream, iter.next(), "new_name")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct TournamentEnableCountdownEvent {}
-impl FromRawGameEvent for TournamentEnableCountdownEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TournamentEnableCountdownEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
@@ -2031,11 +2211,12 @@ impl FromRawGameEvent for TournamentEnableCountdownEvent {
 pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for PlayerCalledForMedicEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerCalledForMedicEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerCalledForMedicEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -2043,18 +2224,20 @@ impl FromRawGameEvent for PlayerCalledForMedicEvent {
 pub struct PlayerAskedForBallEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for PlayerAskedForBallEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerAskedForBallEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerAskedForBallEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerBecameObserverEvent {}
-impl FromRawGameEvent for LocalPlayerBecameObserverEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl LocalPlayerBecameObserverEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
@@ -2064,13 +2247,14 @@ pub struct PlayerIgnitedInvEvent {
     pub victim_ent_index: u8,
     pub medic_ent_index: u8,
 }
-impl FromRawGameEvent for PlayerIgnitedInvEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerIgnitedInvEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerIgnitedInvEvent {
-            pyro_ent_index: u8::from_value(iter.next(), "pyro_ent_index")?,
-            victim_ent_index: u8::from_value(iter.next(), "victim_ent_index")?,
-            medic_ent_index: u8::from_value(iter.next(), "medic_ent_index")?,
+            pyro_ent_index: read_value::<u8>(stream, iter.next(), "pyro_ent_index")?,
+            victim_ent_index: read_value::<u8>(stream, iter.next(), "victim_ent_index")?,
+            medic_ent_index: read_value::<u8>(stream, iter.next(), "medic_ent_index")?,
         })
     }
 }
@@ -2080,13 +2264,14 @@ pub struct PlayerIgnitedEvent {
     pub victim_ent_index: u8,
     pub weapon_id: u8,
 }
-impl FromRawGameEvent for PlayerIgnitedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerIgnitedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerIgnitedEvent {
-            pyro_ent_index: u8::from_value(iter.next(), "pyro_ent_index")?,
-            victim_ent_index: u8::from_value(iter.next(), "victim_ent_index")?,
-            weapon_id: u8::from_value(iter.next(), "weapon_id")?,
+            pyro_ent_index: read_value::<u8>(stream, iter.next(), "pyro_ent_index")?,
+            victim_ent_index: read_value::<u8>(stream, iter.next(), "victim_ent_index")?,
+            weapon_id: read_value::<u8>(stream, iter.next(), "weapon_id")?,
         })
     }
 }
@@ -2096,13 +2281,14 @@ pub struct PlayerExtinguishedEvent {
     pub healer: u8,
     pub item_definition_index: u16,
 }
-impl FromRawGameEvent for PlayerExtinguishedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerExtinguishedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerExtinguishedEvent {
-            victim: u8::from_value(iter.next(), "victim")?,
-            healer: u8::from_value(iter.next(), "healer")?,
-            item_definition_index: u16::from_value(iter.next(), "item_definition_index")?,
+            victim: read_value::<u8>(stream, iter.next(), "victim")?,
+            healer: read_value::<u8>(stream, iter.next(), "healer")?,
+            item_definition_index: read_value::<u16>(stream, iter.next(), "item_definition_index")?,
         })
     }
 }
@@ -2112,13 +2298,14 @@ pub struct PlayerTeleportedEvent {
     pub builder_id: u16,
     pub dist: f32,
 }
-impl FromRawGameEvent for PlayerTeleportedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerTeleportedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerTeleportedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            builder_id: u16::from_value(iter.next(), "builder_id")?,
-            dist: f32::from_value(iter.next(), "dist")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            builder_id: read_value::<u16>(stream, iter.next(), "builder_id")?,
+            dist: read_value::<f32>(stream, iter.next(), "dist")?,
         })
     }
 }
@@ -2126,25 +2313,28 @@ impl FromRawGameEvent for PlayerTeleportedEvent {
 pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for PlayerHealedMedicCallEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHealedMedicCallEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHealedMedicCallEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerChargeReadyEvent {}
-impl FromRawGameEvent for LocalPlayerChargeReadyEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl LocalPlayerChargeReadyEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerWindDownEvent {}
-impl FromRawGameEvent for LocalPlayerWindDownEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl LocalPlayerWindDownEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
@@ -2153,12 +2343,13 @@ pub struct PlayerInvulnedEvent {
     pub user_id: u16,
     pub medic_user_id: u16,
 }
-impl FromRawGameEvent for PlayerInvulnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerInvulnedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerInvulnedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            medic_user_id: u16::from_value(iter.next(), "medic_user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            medic_user_id: read_value::<u16>(stream, iter.next(), "medic_user_id")?,
         })
     }
 }
@@ -2168,13 +2359,14 @@ pub struct EscortSpeedEvent {
     pub speed: u8,
     pub players: u8,
 }
-impl FromRawGameEvent for EscortSpeedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EscortSpeedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EscortSpeedEvent {
-            team: u8::from_value(iter.next(), "team")?,
-            speed: u8::from_value(iter.next(), "speed")?,
-            players: u8::from_value(iter.next(), "players")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            speed: read_value::<u8>(stream, iter.next(), "speed")?,
+            players: read_value::<u8>(stream, iter.next(), "players")?,
         })
     }
 }
@@ -2184,13 +2376,14 @@ pub struct EscortProgressEvent {
     pub progress: f32,
     pub reset: bool,
 }
-impl FromRawGameEvent for EscortProgressEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EscortProgressEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EscortProgressEvent {
-            team: u8::from_value(iter.next(), "team")?,
-            progress: f32::from_value(iter.next(), "progress")?,
-            reset: bool::from_value(iter.next(), "reset")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            progress: read_value::<f32>(stream, iter.next(), "progress")?,
+            reset: read_value::<bool>(stream, iter.next(), "reset")?,
         })
     }
 }
@@ -2199,26 +2392,29 @@ pub struct EscortRecedeEvent {
     pub team: u8,
     pub recede_time: f32,
 }
-impl FromRawGameEvent for EscortRecedeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EscortRecedeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EscortRecedeEvent {
-            team: u8::from_value(iter.next(), "team")?,
-            recede_time: f32::from_value(iter.next(), "recede_time")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            recede_time: read_value::<f32>(stream, iter.next(), "recede_time")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct GameUIActivatedEvent {}
-impl FromRawGameEvent for GameUIActivatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl GameUIActivatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GameUIActivatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct GameUIHiddenEvent {}
-impl FromRawGameEvent for GameUIHiddenEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl GameUIHiddenEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GameUIHiddenEvent {})
     }
 }
@@ -2227,12 +2423,13 @@ pub struct PlayerEscortScoreEvent {
     pub player: u8,
     pub points: u8,
 }
-impl FromRawGameEvent for PlayerEscortScoreEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerEscortScoreEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerEscortScoreEvent {
-            player: u8::from_value(iter.next(), "player")?,
-            points: u8::from_value(iter.next(), "points")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
+            points: read_value::<u8>(stream, iter.next(), "points")?,
         })
     }
 }
@@ -2242,13 +2439,14 @@ pub struct PlayerHealOnHitEvent {
     pub ent_index: u8,
     pub weapon_def_index: u32,
 }
-impl FromRawGameEvent for PlayerHealOnHitEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHealOnHitEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHealOnHitEvent {
-            amount: u16::from_value(iter.next(), "amount")?,
-            ent_index: u8::from_value(iter.next(), "ent_index")?,
-            weapon_def_index: u32::from_value(iter.next(), "weapon_def_index")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
+            ent_index: read_value::<u8>(stream, iter.next(), "ent_index")?,
+            weapon_def_index: read_value::<u32>(stream, iter.next(), "weapon_def_index")?,
         })
     }
 }
@@ -2257,12 +2455,13 @@ pub struct PlayerStealSandvichEvent {
     pub owner: u16,
     pub target: u16,
 }
-impl FromRawGameEvent for PlayerStealSandvichEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerStealSandvichEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerStealSandvichEvent {
-            owner: u16::from_value(iter.next(), "owner")?,
-            target: u16::from_value(iter.next(), "target")?,
+            owner: read_value::<u16>(stream, iter.next(), "owner")?,
+            target: read_value::<u16>(stream, iter.next(), "target")?,
         })
     }
 }
@@ -2270,11 +2469,12 @@ impl FromRawGameEvent for PlayerStealSandvichEvent {
 pub struct ShowClassLayoutEvent {
     pub show: bool,
 }
-impl FromRawGameEvent for ShowClassLayoutEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ShowClassLayoutEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ShowClassLayoutEvent {
-            show: bool::from_value(iter.next(), "show")?,
+            show: read_value::<bool>(stream, iter.next(), "show")?,
         })
     }
 }
@@ -2282,11 +2482,12 @@ impl FromRawGameEvent for ShowClassLayoutEvent {
 pub struct ShowVsPanelEvent {
     pub show: bool,
 }
-impl FromRawGameEvent for ShowVsPanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ShowVsPanelEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ShowVsPanelEvent {
-            show: bool::from_value(iter.next(), "show")?,
+            show: read_value::<bool>(stream, iter.next(), "show")?,
         })
     }
 }
@@ -2295,12 +2496,13 @@ pub struct PlayerDamagedEvent {
     pub amount: u16,
     pub kind: u32,
 }
-impl FromRawGameEvent for PlayerDamagedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerDamagedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerDamagedEvent {
-            amount: u16::from_value(iter.next(), "amount")?,
-            kind: u32::from_value(iter.next(), "kind")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
+            kind: read_value::<u32>(stream, iter.next(), "kind")?,
         })
     }
 }
@@ -2309,12 +2511,13 @@ pub struct ArenaPlayerNotificationEvent {
     pub player: u8,
     pub message: u8,
 }
-impl FromRawGameEvent for ArenaPlayerNotificationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ArenaPlayerNotificationEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ArenaPlayerNotificationEvent {
-            player: u8::from_value(iter.next(), "player")?,
-            message: u8::from_value(iter.next(), "message")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
+            message: read_value::<u8>(stream, iter.next(), "message")?,
         })
     }
 }
@@ -2323,19 +2526,21 @@ pub struct ArenaMatchMaxStreakEvent {
     pub team: u8,
     pub streak: u8,
 }
-impl FromRawGameEvent for ArenaMatchMaxStreakEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ArenaMatchMaxStreakEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ArenaMatchMaxStreakEvent {
-            team: u8::from_value(iter.next(), "team")?,
-            streak: u8::from_value(iter.next(), "streak")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            streak: read_value::<u8>(stream, iter.next(), "streak")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct ArenaRoundStartEvent {}
-impl FromRawGameEvent for ArenaRoundStartEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ArenaRoundStartEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ArenaRoundStartEvent {})
     }
 }
@@ -2382,50 +2587,51 @@ pub struct ArenaWinPanelEvent {
     pub player_6_lifetime: u16,
     pub player_6_kills: u16,
 }
-impl FromRawGameEvent for ArenaWinPanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ArenaWinPanelEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ArenaWinPanelEvent {
-            panel_style: u8::from_value(iter.next(), "panel_style")?,
-            winning_team: u8::from_value(iter.next(), "winning_team")?,
-            win_reason: u8::from_value(iter.next(), "win_reason")?,
-            cappers: String::from_value(iter.next(), "cappers")?,
-            flag_cap_limit: u16::from_value(iter.next(), "flag_cap_limit")?,
-            blue_score: u16::from_value(iter.next(), "blue_score")?,
-            red_score: u16::from_value(iter.next(), "red_score")?,
-            blue_score_prev: u16::from_value(iter.next(), "blue_score_prev")?,
-            red_score_prev: u16::from_value(iter.next(), "red_score_prev")?,
-            round_complete: u16::from_value(iter.next(), "round_complete")?,
-            player_1: u16::from_value(iter.next(), "player_1")?,
-            player_1_damage: u16::from_value(iter.next(), "player_1_damage")?,
-            player_1_healing: u16::from_value(iter.next(), "player_1_healing")?,
-            player_1_lifetime: u16::from_value(iter.next(), "player_1_lifetime")?,
-            player_1_kills: u16::from_value(iter.next(), "player_1_kills")?,
-            player_2: u16::from_value(iter.next(), "player_2")?,
-            player_2_damage: u16::from_value(iter.next(), "player_2_damage")?,
-            player_2_healing: u16::from_value(iter.next(), "player_2_healing")?,
-            player_2_lifetime: u16::from_value(iter.next(), "player_2_lifetime")?,
-            player_2_kills: u16::from_value(iter.next(), "player_2_kills")?,
-            player_3: u16::from_value(iter.next(), "player_3")?,
-            player_3_damage: u16::from_value(iter.next(), "player_3_damage")?,
-            player_3_healing: u16::from_value(iter.next(), "player_3_healing")?,
-            player_3_lifetime: u16::from_value(iter.next(), "player_3_lifetime")?,
-            player_3_kills: u16::from_value(iter.next(), "player_3_kills")?,
-            player_4: u16::from_value(iter.next(), "player_4")?,
-            player_4_damage: u16::from_value(iter.next(), "player_4_damage")?,
-            player_4_healing: u16::from_value(iter.next(), "player_4_healing")?,
-            player_4_lifetime: u16::from_value(iter.next(), "player_4_lifetime")?,
-            player_4_kills: u16::from_value(iter.next(), "player_4_kills")?,
-            player_5: u16::from_value(iter.next(), "player_5")?,
-            player_5_damage: u16::from_value(iter.next(), "player_5_damage")?,
-            player_5_healing: u16::from_value(iter.next(), "player_5_healing")?,
-            player_5_lifetime: u16::from_value(iter.next(), "player_5_lifetime")?,
-            player_5_kills: u16::from_value(iter.next(), "player_5_kills")?,
-            player_6: u16::from_value(iter.next(), "player_6")?,
-            player_6_damage: u16::from_value(iter.next(), "player_6_damage")?,
-            player_6_healing: u16::from_value(iter.next(), "player_6_healing")?,
-            player_6_lifetime: u16::from_value(iter.next(), "player_6_lifetime")?,
-            player_6_kills: u16::from_value(iter.next(), "player_6_kills")?,
+            panel_style: read_value::<u8>(stream, iter.next(), "panel_style")?,
+            winning_team: read_value::<u8>(stream, iter.next(), "winning_team")?,
+            win_reason: read_value::<u8>(stream, iter.next(), "win_reason")?,
+            cappers: read_value::<String>(stream, iter.next(), "cappers")?,
+            flag_cap_limit: read_value::<u16>(stream, iter.next(), "flag_cap_limit")?,
+            blue_score: read_value::<u16>(stream, iter.next(), "blue_score")?,
+            red_score: read_value::<u16>(stream, iter.next(), "red_score")?,
+            blue_score_prev: read_value::<u16>(stream, iter.next(), "blue_score_prev")?,
+            red_score_prev: read_value::<u16>(stream, iter.next(), "red_score_prev")?,
+            round_complete: read_value::<u16>(stream, iter.next(), "round_complete")?,
+            player_1: read_value::<u16>(stream, iter.next(), "player_1")?,
+            player_1_damage: read_value::<u16>(stream, iter.next(), "player_1_damage")?,
+            player_1_healing: read_value::<u16>(stream, iter.next(), "player_1_healing")?,
+            player_1_lifetime: read_value::<u16>(stream, iter.next(), "player_1_lifetime")?,
+            player_1_kills: read_value::<u16>(stream, iter.next(), "player_1_kills")?,
+            player_2: read_value::<u16>(stream, iter.next(), "player_2")?,
+            player_2_damage: read_value::<u16>(stream, iter.next(), "player_2_damage")?,
+            player_2_healing: read_value::<u16>(stream, iter.next(), "player_2_healing")?,
+            player_2_lifetime: read_value::<u16>(stream, iter.next(), "player_2_lifetime")?,
+            player_2_kills: read_value::<u16>(stream, iter.next(), "player_2_kills")?,
+            player_3: read_value::<u16>(stream, iter.next(), "player_3")?,
+            player_3_damage: read_value::<u16>(stream, iter.next(), "player_3_damage")?,
+            player_3_healing: read_value::<u16>(stream, iter.next(), "player_3_healing")?,
+            player_3_lifetime: read_value::<u16>(stream, iter.next(), "player_3_lifetime")?,
+            player_3_kills: read_value::<u16>(stream, iter.next(), "player_3_kills")?,
+            player_4: read_value::<u16>(stream, iter.next(), "player_4")?,
+            player_4_damage: read_value::<u16>(stream, iter.next(), "player_4_damage")?,
+            player_4_healing: read_value::<u16>(stream, iter.next(), "player_4_healing")?,
+            player_4_lifetime: read_value::<u16>(stream, iter.next(), "player_4_lifetime")?,
+            player_4_kills: read_value::<u16>(stream, iter.next(), "player_4_kills")?,
+            player_5: read_value::<u16>(stream, iter.next(), "player_5")?,
+            player_5_damage: read_value::<u16>(stream, iter.next(), "player_5_damage")?,
+            player_5_healing: read_value::<u16>(stream, iter.next(), "player_5_healing")?,
+            player_5_lifetime: read_value::<u16>(stream, iter.next(), "player_5_lifetime")?,
+            player_5_kills: read_value::<u16>(stream, iter.next(), "player_5_kills")?,
+            player_6: read_value::<u16>(stream, iter.next(), "player_6")?,
+            player_6_damage: read_value::<u16>(stream, iter.next(), "player_6_damage")?,
+            player_6_healing: read_value::<u16>(stream, iter.next(), "player_6_healing")?,
+            player_6_lifetime: read_value::<u16>(stream, iter.next(), "player_6_lifetime")?,
+            player_6_kills: read_value::<u16>(stream, iter.next(), "player_6_kills")?,
         })
     }
 }
@@ -2435,13 +2641,14 @@ pub struct PveWinPanelEvent {
     pub winning_team: u8,
     pub win_reason: u8,
 }
-impl FromRawGameEvent for PveWinPanelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PveWinPanelEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PveWinPanelEvent {
-            panel_style: u8::from_value(iter.next(), "panel_style")?,
-            winning_team: u8::from_value(iter.next(), "winning_team")?,
-            win_reason: u8::from_value(iter.next(), "win_reason")?,
+            panel_style: read_value::<u8>(stream, iter.next(), "panel_style")?,
+            winning_team: read_value::<u8>(stream, iter.next(), "winning_team")?,
+            win_reason: read_value::<u8>(stream, iter.next(), "win_reason")?,
         })
     }
 }
@@ -2449,11 +2656,12 @@ impl FromRawGameEvent for PveWinPanelEvent {
 pub struct AirDashEvent {
     pub player: u8,
 }
-impl FromRawGameEvent for AirDashEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl AirDashEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(AirDashEvent {
-            player: u8::from_value(iter.next(), "player")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -2461,11 +2669,12 @@ impl FromRawGameEvent for AirDashEvent {
 pub struct LandedEvent {
     pub player: u8,
 }
-impl FromRawGameEvent for LandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl LandedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(LandedEvent {
-            player: u8::from_value(iter.next(), "player")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -2473,11 +2682,12 @@ impl FromRawGameEvent for LandedEvent {
 pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
 }
-impl FromRawGameEvent for PlayerDamageDodgedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerDamageDodgedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerDamageDodgedEvent {
-            damage: u16::from_value(iter.next(), "damage")?,
+            damage: read_value::<u16>(stream, iter.next(), "damage")?,
         })
     }
 }
@@ -2488,14 +2698,15 @@ pub struct PlayerStunnedEvent {
     pub victim_capping: bool,
     pub big_stun: bool,
 }
-impl FromRawGameEvent for PlayerStunnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerStunnedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerStunnedEvent {
-            stunner: u16::from_value(iter.next(), "stunner")?,
-            victim: u16::from_value(iter.next(), "victim")?,
-            victim_capping: bool::from_value(iter.next(), "victim_capping")?,
-            big_stun: bool::from_value(iter.next(), "big_stun")?,
+            stunner: read_value::<u16>(stream, iter.next(), "stunner")?,
+            victim: read_value::<u16>(stream, iter.next(), "victim")?,
+            victim_capping: read_value::<bool>(stream, iter.next(), "victim_capping")?,
+            big_stun: read_value::<bool>(stream, iter.next(), "big_stun")?,
         })
     }
 }
@@ -2504,12 +2715,13 @@ pub struct ScoutGrandSlamEvent {
     pub scout_id: u16,
     pub target_id: u16,
 }
-impl FromRawGameEvent for ScoutGrandSlamEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ScoutGrandSlamEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ScoutGrandSlamEvent {
-            scout_id: u16::from_value(iter.next(), "scout_id")?,
-            target_id: u16::from_value(iter.next(), "target_id")?,
+            scout_id: read_value::<u16>(stream, iter.next(), "scout_id")?,
+            target_id: read_value::<u16>(stream, iter.next(), "target_id")?,
         })
     }
 }
@@ -2520,14 +2732,15 @@ pub struct ScoutSlamdollLandedEvent {
     pub y: f32,
     pub z: f32,
 }
-impl FromRawGameEvent for ScoutSlamdollLandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ScoutSlamdollLandedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ScoutSlamdollLandedEvent {
-            target_index: u16::from_value(iter.next(), "target_index")?,
-            x: f32::from_value(iter.next(), "x")?,
-            y: f32::from_value(iter.next(), "y")?,
-            z: f32::from_value(iter.next(), "z")?,
+            target_index: read_value::<u16>(stream, iter.next(), "target_index")?,
+            x: read_value::<f32>(stream, iter.next(), "x")?,
+            y: read_value::<f32>(stream, iter.next(), "y")?,
+            z: read_value::<f32>(stream, iter.next(), "z")?,
         })
     }
 }
@@ -2545,21 +2758,22 @@ pub struct ArrowImpactEvent {
     pub projectile_type: u16,
     pub is_crit: bool,
 }
-impl FromRawGameEvent for ArrowImpactEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ArrowImpactEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ArrowImpactEvent {
-            attached_entity: u16::from_value(iter.next(), "attached_entity")?,
-            shooter: u16::from_value(iter.next(), "shooter")?,
-            bone_index_attached: u16::from_value(iter.next(), "bone_index_attached")?,
-            bone_position_x: f32::from_value(iter.next(), "bone_position_x")?,
-            bone_position_y: f32::from_value(iter.next(), "bone_position_y")?,
-            bone_position_z: f32::from_value(iter.next(), "bone_position_z")?,
-            bone_angles_x: f32::from_value(iter.next(), "bone_angles_x")?,
-            bone_angles_y: f32::from_value(iter.next(), "bone_angles_y")?,
-            bone_angles_z: f32::from_value(iter.next(), "bone_angles_z")?,
-            projectile_type: u16::from_value(iter.next(), "projectile_type")?,
-            is_crit: bool::from_value(iter.next(), "is_crit")?,
+            attached_entity: read_value::<u16>(stream, iter.next(), "attached_entity")?,
+            shooter: read_value::<u16>(stream, iter.next(), "shooter")?,
+            bone_index_attached: read_value::<u16>(stream, iter.next(), "bone_index_attached")?,
+            bone_position_x: read_value::<f32>(stream, iter.next(), "bone_position_x")?,
+            bone_position_y: read_value::<f32>(stream, iter.next(), "bone_position_y")?,
+            bone_position_z: read_value::<f32>(stream, iter.next(), "bone_position_z")?,
+            bone_angles_x: read_value::<f32>(stream, iter.next(), "bone_angles_x")?,
+            bone_angles_y: read_value::<f32>(stream, iter.next(), "bone_angles_y")?,
+            bone_angles_z: read_value::<f32>(stream, iter.next(), "bone_angles_z")?,
+            projectile_type: read_value::<u16>(stream, iter.next(), "projectile_type")?,
+            is_crit: read_value::<bool>(stream, iter.next(), "is_crit")?,
         })
     }
 }
@@ -2568,12 +2782,13 @@ pub struct PlayerJaratedEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
 }
-impl FromRawGameEvent for PlayerJaratedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerJaratedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerJaratedEvent {
-            thrower_ent_index: u8::from_value(iter.next(), "thrower_ent_index")?,
-            victim_ent_index: u8::from_value(iter.next(), "victim_ent_index")?,
+            thrower_ent_index: read_value::<u8>(stream, iter.next(), "thrower_ent_index")?,
+            victim_ent_index: read_value::<u8>(stream, iter.next(), "victim_ent_index")?,
         })
     }
 }
@@ -2582,12 +2797,13 @@ pub struct PlayerJaratedFadeEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
 }
-impl FromRawGameEvent for PlayerJaratedFadeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerJaratedFadeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerJaratedFadeEvent {
-            thrower_ent_index: u8::from_value(iter.next(), "thrower_ent_index")?,
-            victim_ent_index: u8::from_value(iter.next(), "victim_ent_index")?,
+            thrower_ent_index: read_value::<u8>(stream, iter.next(), "thrower_ent_index")?,
+            victim_ent_index: read_value::<u8>(stream, iter.next(), "victim_ent_index")?,
         })
     }
 }
@@ -2596,12 +2812,13 @@ pub struct PlayerShieldBlockedEvent {
     pub attacker_ent_index: u8,
     pub blocker_ent_index: u8,
 }
-impl FromRawGameEvent for PlayerShieldBlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerShieldBlockedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerShieldBlockedEvent {
-            attacker_ent_index: u8::from_value(iter.next(), "attacker_ent_index")?,
-            blocker_ent_index: u8::from_value(iter.next(), "blocker_ent_index")?,
+            attacker_ent_index: read_value::<u8>(stream, iter.next(), "attacker_ent_index")?,
+            blocker_ent_index: read_value::<u8>(stream, iter.next(), "blocker_ent_index")?,
         })
     }
 }
@@ -2609,11 +2826,12 @@ impl FromRawGameEvent for PlayerShieldBlockedEvent {
 pub struct PlayerPinnedEvent {
     pub pinned: u8,
 }
-impl FromRawGameEvent for PlayerPinnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerPinnedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerPinnedEvent {
-            pinned: u8::from_value(iter.next(), "pinned")?,
+            pinned: read_value::<u8>(stream, iter.next(), "pinned")?,
         })
     }
 }
@@ -2621,11 +2839,12 @@ impl FromRawGameEvent for PlayerPinnedEvent {
 pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
 }
-impl FromRawGameEvent for PlayerHealedByMedicEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHealedByMedicEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHealedByMedicEvent {
-            medic: u8::from_value(iter.next(), "medic")?,
+            medic: read_value::<u8>(stream, iter.next(), "medic")?,
         })
     }
 }
@@ -2636,14 +2855,15 @@ pub struct PlayerSappedObjectEvent {
     pub object: u8,
     pub sapper_id: u16,
 }
-impl FromRawGameEvent for PlayerSappedObjectEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerSappedObjectEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerSappedObjectEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            owner_id: u16::from_value(iter.next(), "owner_id")?,
-            object: u8::from_value(iter.next(), "object")?,
-            sapper_id: u16::from_value(iter.next(), "sapper_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            owner_id: read_value::<u16>(stream, iter.next(), "owner_id")?,
+            object: read_value::<u8>(stream, iter.next(), "object")?,
+            sapper_id: read_value::<u16>(stream, iter.next(), "sapper_id")?,
         })
     }
 }
@@ -2657,17 +2877,18 @@ pub struct ItemFoundEvent {
     pub is_unusual: u8,
     pub wear: f32,
 }
-impl FromRawGameEvent for ItemFoundEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ItemFoundEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ItemFoundEvent {
-            player: u8::from_value(iter.next(), "player")?,
-            quality: u8::from_value(iter.next(), "quality")?,
-            method: u8::from_value(iter.next(), "method")?,
-            item_def: u32::from_value(iter.next(), "item_def")?,
-            is_strange: u8::from_value(iter.next(), "is_strange")?,
-            is_unusual: u8::from_value(iter.next(), "is_unusual")?,
-            wear: f32::from_value(iter.next(), "wear")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
+            quality: read_value::<u8>(stream, iter.next(), "quality")?,
+            method: read_value::<u8>(stream, iter.next(), "method")?,
+            item_def: read_value::<u32>(stream, iter.next(), "item_def")?,
+            is_strange: read_value::<u8>(stream, iter.next(), "is_strange")?,
+            is_unusual: read_value::<u8>(stream, iter.next(), "is_unusual")?,
+            wear: read_value::<f32>(stream, iter.next(), "wear")?,
         })
     }
 }
@@ -2688,24 +2909,25 @@ pub struct ShowAnnotationEvent {
     pub play_sound: String,
     pub show_effect: bool,
 }
-impl FromRawGameEvent for ShowAnnotationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ShowAnnotationEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ShowAnnotationEvent {
-            world_pos_x: f32::from_value(iter.next(), "world_pos_x")?,
-            world_pos_y: f32::from_value(iter.next(), "world_pos_y")?,
-            world_pos_z: f32::from_value(iter.next(), "world_pos_z")?,
-            world_normal_x: f32::from_value(iter.next(), "world_normal_x")?,
-            world_normal_y: f32::from_value(iter.next(), "world_normal_y")?,
-            world_normal_z: f32::from_value(iter.next(), "world_normal_z")?,
-            id: u32::from_value(iter.next(), "id")?,
-            text: String::from_value(iter.next(), "text")?,
-            lifetime: f32::from_value(iter.next(), "lifetime")?,
-            visibility_bit_field: u32::from_value(iter.next(), "visibility_bit_field")?,
-            follow_ent_index: u32::from_value(iter.next(), "follow_ent_index")?,
-            show_distance: bool::from_value(iter.next(), "show_distance")?,
-            play_sound: String::from_value(iter.next(), "play_sound")?,
-            show_effect: bool::from_value(iter.next(), "show_effect")?,
+            world_pos_x: read_value::<f32>(stream, iter.next(), "world_pos_x")?,
+            world_pos_y: read_value::<f32>(stream, iter.next(), "world_pos_y")?,
+            world_pos_z: read_value::<f32>(stream, iter.next(), "world_pos_z")?,
+            world_normal_x: read_value::<f32>(stream, iter.next(), "world_normal_x")?,
+            world_normal_y: read_value::<f32>(stream, iter.next(), "world_normal_y")?,
+            world_normal_z: read_value::<f32>(stream, iter.next(), "world_normal_z")?,
+            id: read_value::<u32>(stream, iter.next(), "id")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
+            lifetime: read_value::<f32>(stream, iter.next(), "lifetime")?,
+            visibility_bit_field: read_value::<u32>(stream, iter.next(), "visibility_bit_field")?,
+            follow_ent_index: read_value::<u32>(stream, iter.next(), "follow_ent_index")?,
+            show_distance: read_value::<bool>(stream, iter.next(), "show_distance")?,
+            play_sound: read_value::<String>(stream, iter.next(), "play_sound")?,
+            show_effect: read_value::<bool>(stream, iter.next(), "show_effect")?,
         })
     }
 }
@@ -2713,11 +2935,12 @@ impl FromRawGameEvent for ShowAnnotationEvent {
 pub struct HideAnnotationEvent {
     pub id: u32,
 }
-impl FromRawGameEvent for HideAnnotationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HideAnnotationEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HideAnnotationEvent {
-            id: u32::from_value(iter.next(), "id")?,
+            id: read_value::<u32>(stream, iter.next(), "id")?,
         })
     }
 }
@@ -2725,11 +2948,12 @@ impl FromRawGameEvent for HideAnnotationEvent {
 pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for PostInventoryApplicationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PostInventoryApplicationEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PostInventoryApplicationEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -2738,12 +2962,13 @@ pub struct ControlPointUnlockUpdatedEvent {
     pub index: u16,
     pub time: f32,
 }
-impl FromRawGameEvent for ControlPointUnlockUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointUnlockUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointUnlockUpdatedEvent {
-            index: u16::from_value(iter.next(), "index")?,
-            time: f32::from_value(iter.next(), "time")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
+            time: read_value::<f32>(stream, iter.next(), "time")?,
         })
     }
 }
@@ -2752,12 +2977,13 @@ pub struct DeployBuffBannerEvent {
     pub buff_type: u8,
     pub buff_owner: u16,
 }
-impl FromRawGameEvent for DeployBuffBannerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DeployBuffBannerEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DeployBuffBannerEvent {
-            buff_type: u8::from_value(iter.next(), "buff_type")?,
-            buff_owner: u16::from_value(iter.next(), "buff_owner")?,
+            buff_type: read_value::<u8>(stream, iter.next(), "buff_type")?,
+            buff_owner: read_value::<u16>(stream, iter.next(), "buff_owner")?,
         })
     }
 }
@@ -2767,13 +2993,14 @@ pub struct PlayerBuffEvent {
     pub buff_owner: u16,
     pub buff_type: u8,
 }
-impl FromRawGameEvent for PlayerBuffEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerBuffEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerBuffEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            buff_owner: u16::from_value(iter.next(), "buff_owner")?,
-            buff_type: u8::from_value(iter.next(), "buff_type")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            buff_owner: read_value::<u16>(stream, iter.next(), "buff_owner")?,
+            buff_type: read_value::<u8>(stream, iter.next(), "buff_type")?,
         })
     }
 }
@@ -2784,28 +3011,31 @@ pub struct MedicDeathEvent {
     pub healing: u16,
     pub charged: bool,
 }
-impl FromRawGameEvent for MedicDeathEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MedicDeathEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MedicDeathEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            healing: u16::from_value(iter.next(), "healing")?,
-            charged: bool::from_value(iter.next(), "charged")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            healing: read_value::<u16>(stream, iter.next(), "healing")?,
+            charged: read_value::<bool>(stream, iter.next(), "charged")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct OvertimeNagEvent {}
-impl FromRawGameEvent for OvertimeNagEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl OvertimeNagEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(OvertimeNagEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TeamsChangedEvent {}
-impl FromRawGameEvent for TeamsChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TeamsChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamsChangedEvent {})
     }
 }
@@ -2813,11 +3043,12 @@ impl FromRawGameEvent for TeamsChangedEvent {
 pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for HalloweenPumpkinGrabEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HalloweenPumpkinGrabEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HalloweenPumpkinGrabEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -2826,12 +3057,13 @@ pub struct RocketJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
 }
-impl FromRawGameEvent for RocketJumpEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RocketJumpEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RocketJumpEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            play_sound: bool::from_value(iter.next(), "play_sound")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            play_sound: read_value::<bool>(stream, iter.next(), "play_sound")?,
         })
     }
 }
@@ -2839,11 +3071,12 @@ impl FromRawGameEvent for RocketJumpEvent {
 pub struct RocketJumpLandedEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for RocketJumpLandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RocketJumpLandedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RocketJumpLandedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -2852,12 +3085,13 @@ pub struct StickyJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
 }
-impl FromRawGameEvent for StickyJumpEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl StickyJumpEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(StickyJumpEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            play_sound: bool::from_value(iter.next(), "play_sound")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            play_sound: read_value::<bool>(stream, iter.next(), "play_sound")?,
         })
     }
 }
@@ -2865,11 +3099,12 @@ impl FromRawGameEvent for StickyJumpEvent {
 pub struct StickyJumpLandedEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for StickyJumpLandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl StickyJumpLandedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(StickyJumpLandedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -2878,12 +3113,13 @@ pub struct RocketPackLaunchEvent {
     pub user_id: u16,
     pub play_sound: bool,
 }
-impl FromRawGameEvent for RocketPackLaunchEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RocketPackLaunchEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RocketPackLaunchEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            play_sound: bool::from_value(iter.next(), "play_sound")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            play_sound: read_value::<bool>(stream, iter.next(), "play_sound")?,
         })
     }
 }
@@ -2891,11 +3127,12 @@ impl FromRawGameEvent for RocketPackLaunchEvent {
 pub struct RocketPackLandedEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for RocketPackLandedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RocketPackLandedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RocketPackLandedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -2904,12 +3141,13 @@ pub struct MedicDefendedEvent {
     pub user_id: u16,
     pub medic: u16,
 }
-impl FromRawGameEvent for MedicDefendedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MedicDefendedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MedicDefendedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            medic: u16::from_value(iter.next(), "medic")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            medic: read_value::<u16>(stream, iter.next(), "medic")?,
         })
     }
 }
@@ -2917,11 +3155,12 @@ impl FromRawGameEvent for MedicDefendedEvent {
 pub struct LocalPlayerHealedEvent {
     pub amount: u16,
 }
-impl FromRawGameEvent for LocalPlayerHealedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl LocalPlayerHealedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(LocalPlayerHealedEvent {
-            amount: u16::from_value(iter.next(), "amount")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
         })
     }
 }
@@ -2929,11 +3168,12 @@ impl FromRawGameEvent for LocalPlayerHealedEvent {
 pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for PlayerDestroyedPipeBombEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerDestroyedPipeBombEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerDestroyedPipeBombEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -2944,14 +3184,15 @@ pub struct ObjectDeflectedEvent {
     pub weapon_id: u16,
     pub object_ent_index: u16,
 }
-impl FromRawGameEvent for ObjectDeflectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ObjectDeflectedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ObjectDeflectedEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            owner_id: u16::from_value(iter.next(), "owner_id")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            object_ent_index: u16::from_value(iter.next(), "object_ent_index")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            owner_id: read_value::<u16>(stream, iter.next(), "owner_id")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            object_ent_index: read_value::<u16>(stream, iter.next(), "object_ent_index")?,
         })
     }
 }
@@ -2959,25 +3200,28 @@ impl FromRawGameEvent for ObjectDeflectedEvent {
 pub struct PlayerMvpEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for PlayerMvpEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerMvpEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerMvpEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct RaidSpawnMobEvent {}
-impl FromRawGameEvent for RaidSpawnMobEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl RaidSpawnMobEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RaidSpawnMobEvent {})
     }
 }
 #[derive(Debug)]
 pub struct RaidSpawnSquadEvent {}
-impl FromRawGameEvent for RaidSpawnSquadEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl RaidSpawnSquadEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RaidSpawnSquadEvent {})
     }
 }
@@ -2986,12 +3230,13 @@ pub struct NavBlockedEvent {
     pub area: u32,
     pub blocked: bool,
 }
-impl FromRawGameEvent for NavBlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl NavBlockedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(NavBlockedEvent {
-            area: u32::from_value(iter.next(), "area")?,
-            blocked: bool::from_value(iter.next(), "blocked")?,
+            area: read_value::<u32>(stream, iter.next(), "area")?,
+            blocked: read_value::<bool>(stream, iter.next(), "blocked")?,
         })
     }
 }
@@ -2999,11 +3244,12 @@ impl FromRawGameEvent for NavBlockedEvent {
 pub struct PathTrackPassedEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for PathTrackPassedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PathTrackPassedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PathTrackPassedEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -3012,19 +3258,21 @@ pub struct NumCappersChangedEvent {
     pub index: u16,
     pub count: u8,
 }
-impl FromRawGameEvent for NumCappersChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl NumCappersChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(NumCappersChangedEvent {
-            index: u16::from_value(iter.next(), "index")?,
-            count: u8::from_value(iter.next(), "count")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
+            count: read_value::<u8>(stream, iter.next(), "count")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct PlayerRegenerateEvent {}
-impl FromRawGameEvent for PlayerRegenerateEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PlayerRegenerateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PlayerRegenerateEvent {})
     }
 }
@@ -3033,33 +3281,37 @@ pub struct UpdateStatusItemEvent {
     pub index: u8,
     pub object: u8,
 }
-impl FromRawGameEvent for UpdateStatusItemEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl UpdateStatusItemEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(UpdateStatusItemEvent {
-            index: u8::from_value(iter.next(), "index")?,
-            object: u8::from_value(iter.next(), "object")?,
+            index: read_value::<u8>(stream, iter.next(), "index")?,
+            object: read_value::<u8>(stream, iter.next(), "object")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct StatsResetRoundEvent {}
-impl FromRawGameEvent for StatsResetRoundEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl StatsResetRoundEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(StatsResetRoundEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
-impl FromRawGameEvent for ScoreStatsAccumulatedUpdateEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ScoreStatsAccumulatedUpdateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ScoreStatsAccumulatedResetEvent {}
-impl FromRawGameEvent for ScoreStatsAccumulatedResetEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ScoreStatsAccumulatedResetEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
@@ -3067,11 +3319,12 @@ impl FromRawGameEvent for ScoreStatsAccumulatedResetEvent {
 pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
 }
-impl FromRawGameEvent for AchievementEarnedLocalEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl AchievementEarnedLocalEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(AchievementEarnedLocalEvent {
-            achievement: u16::from_value(iter.next(), "achievement")?,
+            achievement: read_value::<u16>(stream, iter.next(), "achievement")?,
         })
     }
 }
@@ -3081,13 +3334,14 @@ pub struct PlayerHealedEvent {
     pub healer: u16,
     pub amount: u16,
 }
-impl FromRawGameEvent for PlayerHealedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHealedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHealedEvent {
-            patient: u16::from_value(iter.next(), "patient")?,
-            healer: u16::from_value(iter.next(), "healer")?,
-            amount: u16::from_value(iter.next(), "amount")?,
+            patient: read_value::<u16>(stream, iter.next(), "patient")?,
+            healer: read_value::<u16>(stream, iter.next(), "healer")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
         })
     }
 }
@@ -3097,13 +3351,14 @@ pub struct BuildingHealedEvent {
     pub healer: u16,
     pub amount: u16,
 }
-impl FromRawGameEvent for BuildingHealedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl BuildingHealedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(BuildingHealedEvent {
-            building: u16::from_value(iter.next(), "building")?,
-            healer: u16::from_value(iter.next(), "healer")?,
-            amount: u16::from_value(iter.next(), "amount")?,
+            building: read_value::<u16>(stream, iter.next(), "building")?,
+            healer: read_value::<u16>(stream, iter.next(), "healer")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
         })
     }
 }
@@ -3112,12 +3367,13 @@ pub struct ItemPickupEvent {
     pub user_id: u16,
     pub item: String,
 }
-impl FromRawGameEvent for ItemPickupEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ItemPickupEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ItemPickupEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            item: String::from_value(iter.next(), "item")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            item: read_value::<String>(stream, iter.next(), "item")?,
         })
     }
 }
@@ -3130,16 +3386,17 @@ pub struct DuelStatusEvent {
     pub initiator_score: u16,
     pub target_score: u16,
 }
-impl FromRawGameEvent for DuelStatusEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DuelStatusEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DuelStatusEvent {
-            killer: u16::from_value(iter.next(), "killer")?,
-            score_type: u16::from_value(iter.next(), "score_type")?,
-            initiator: u16::from_value(iter.next(), "initiator")?,
-            target: u16::from_value(iter.next(), "target")?,
-            initiator_score: u16::from_value(iter.next(), "initiator_score")?,
-            target_score: u16::from_value(iter.next(), "target_score")?,
+            killer: read_value::<u16>(stream, iter.next(), "killer")?,
+            score_type: read_value::<u16>(stream, iter.next(), "score_type")?,
+            initiator: read_value::<u16>(stream, iter.next(), "initiator")?,
+            target: read_value::<u16>(stream, iter.next(), "target")?,
+            initiator_score: read_value::<u16>(stream, iter.next(), "initiator_score")?,
+            target_score: read_value::<u16>(stream, iter.next(), "target_score")?,
         })
     }
 }
@@ -3160,24 +3417,29 @@ pub struct FishNoticeEvent {
     pub silent_kill: bool,
     pub assister_fallback: String,
 }
-impl FromRawGameEvent for FishNoticeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl FishNoticeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(FishNoticeEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            weapon: String::from_value(iter.next(), "weapon")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
-            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
-            assister: u16::from_value(iter.next(), "assister")?,
-            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
-            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
-            death_flags: u16::from_value(iter.next(), "death_flags")?,
-            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
-            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            weapon: read_value::<String>(stream, iter.next(), "weapon")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
+            custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
+            assister: read_value::<u16>(stream, iter.next(), "assister")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
+            stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
+            death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
+            silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
         })
     }
 }
@@ -3198,24 +3460,29 @@ pub struct FishNoticeArmEvent {
     pub silent_kill: bool,
     pub assister_fallback: String,
 }
-impl FromRawGameEvent for FishNoticeArmEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl FishNoticeArmEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(FishNoticeArmEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            weapon: String::from_value(iter.next(), "weapon")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
-            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
-            assister: u16::from_value(iter.next(), "assister")?,
-            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
-            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
-            death_flags: u16::from_value(iter.next(), "death_flags")?,
-            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
-            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            weapon: read_value::<String>(stream, iter.next(), "weapon")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
+            custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
+            assister: read_value::<u16>(stream, iter.next(), "assister")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
+            stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
+            death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
+            silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
         })
     }
 }
@@ -3236,24 +3503,29 @@ pub struct SlapNoticeEvent {
     pub silent_kill: bool,
     pub assister_fallback: String,
 }
-impl FromRawGameEvent for SlapNoticeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl SlapNoticeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(SlapNoticeEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            weapon: String::from_value(iter.next(), "weapon")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
-            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
-            assister: u16::from_value(iter.next(), "assister")?,
-            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
-            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
-            death_flags: u16::from_value(iter.next(), "death_flags")?,
-            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
-            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            weapon: read_value::<String>(stream, iter.next(), "weapon")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
+            custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
+            assister: read_value::<u16>(stream, iter.next(), "assister")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
+            stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
+            death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
+            silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
         })
     }
 }
@@ -3275,39 +3547,46 @@ pub struct ThrowableHitEvent {
     pub assister_fallback: String,
     pub total_hits: u16,
 }
-impl FromRawGameEvent for ThrowableHitEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ThrowableHitEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ThrowableHitEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            weapon: String::from_value(iter.next(), "weapon")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
-            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
-            assister: u16::from_value(iter.next(), "assister")?,
-            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
-            stun_flags: u16::from_value(iter.next(), "stun_flags")?,
-            death_flags: u16::from_value(iter.next(), "death_flags")?,
-            silent_kill: bool::from_value(iter.next(), "silent_kill")?,
-            assister_fallback: String::from_value(iter.next(), "assister_fallback")?,
-            total_hits: u16::from_value(iter.next(), "total_hits")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            weapon: read_value::<String>(stream, iter.next(), "weapon")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
+            custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
+            assister: read_value::<u16>(stream, iter.next(), "assister")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
+            stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
+            death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
+            silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
+            total_hits: read_value::<u16>(stream, iter.next(), "total_hits")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct PumpkinLordSummonedEvent {}
-impl FromRawGameEvent for PumpkinLordSummonedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PumpkinLordSummonedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct PumpkinLordKilledEvent {}
-impl FromRawGameEvent for PumpkinLordKilledEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PumpkinLordKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PumpkinLordKilledEvent {})
     }
 }
@@ -3315,11 +3594,12 @@ impl FromRawGameEvent for PumpkinLordKilledEvent {
 pub struct MerasmusSummonedEvent {
     pub level: u16,
 }
-impl FromRawGameEvent for MerasmusSummonedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MerasmusSummonedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MerasmusSummonedEvent {
-            level: u16::from_value(iter.next(), "level")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
         })
     }
 }
@@ -3327,11 +3607,12 @@ impl FromRawGameEvent for MerasmusSummonedEvent {
 pub struct MerasmusKilledEvent {
     pub level: u16,
 }
-impl FromRawGameEvent for MerasmusKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MerasmusKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MerasmusKilledEvent {
-            level: u16::from_value(iter.next(), "level")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
         })
     }
 }
@@ -3340,12 +3621,13 @@ pub struct MerasmusEscapeWarningEvent {
     pub level: u16,
     pub time_remaining: u8,
 }
-impl FromRawGameEvent for MerasmusEscapeWarningEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MerasmusEscapeWarningEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MerasmusEscapeWarningEvent {
-            level: u16::from_value(iter.next(), "level")?,
-            time_remaining: u8::from_value(iter.next(), "time_remaining")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
+            time_remaining: read_value::<u8>(stream, iter.next(), "time_remaining")?,
         })
     }
 }
@@ -3353,11 +3635,12 @@ impl FromRawGameEvent for MerasmusEscapeWarningEvent {
 pub struct MerasmusEscapedEvent {
     pub level: u16,
 }
-impl FromRawGameEvent for MerasmusEscapedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MerasmusEscapedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MerasmusEscapedEvent {
-            level: u16::from_value(iter.next(), "level")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
         })
     }
 }
@@ -3365,11 +3648,12 @@ impl FromRawGameEvent for MerasmusEscapedEvent {
 pub struct EyeballBossSummonedEvent {
     pub level: u16,
 }
-impl FromRawGameEvent for EyeballBossSummonedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EyeballBossSummonedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EyeballBossSummonedEvent {
-            level: u16::from_value(iter.next(), "level")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
         })
     }
 }
@@ -3378,12 +3662,13 @@ pub struct EyeballBossStunnedEvent {
     pub level: u16,
     pub player_ent_index: u8,
 }
-impl FromRawGameEvent for EyeballBossStunnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EyeballBossStunnedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EyeballBossStunnedEvent {
-            level: u16::from_value(iter.next(), "level")?,
-            player_ent_index: u8::from_value(iter.next(), "player_ent_index")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
+            player_ent_index: read_value::<u8>(stream, iter.next(), "player_ent_index")?,
         })
     }
 }
@@ -3391,11 +3676,12 @@ impl FromRawGameEvent for EyeballBossStunnedEvent {
 pub struct EyeballBossKilledEvent {
     pub level: u16,
 }
-impl FromRawGameEvent for EyeballBossKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EyeballBossKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EyeballBossKilledEvent {
-            level: u16::from_value(iter.next(), "level")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
         })
     }
 }
@@ -3404,12 +3690,13 @@ pub struct EyeballBossKillerEvent {
     pub level: u16,
     pub player_ent_index: u8,
 }
-impl FromRawGameEvent for EyeballBossKillerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EyeballBossKillerEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EyeballBossKillerEvent {
-            level: u16::from_value(iter.next(), "level")?,
-            player_ent_index: u8::from_value(iter.next(), "player_ent_index")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
+            player_ent_index: read_value::<u8>(stream, iter.next(), "player_ent_index")?,
         })
     }
 }
@@ -3418,12 +3705,13 @@ pub struct EyeballBossEscapeImminentEvent {
     pub level: u16,
     pub time_remaining: u8,
 }
-impl FromRawGameEvent for EyeballBossEscapeImminentEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EyeballBossEscapeImminentEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EyeballBossEscapeImminentEvent {
-            level: u16::from_value(iter.next(), "level")?,
-            time_remaining: u8::from_value(iter.next(), "time_remaining")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
+            time_remaining: read_value::<u8>(stream, iter.next(), "time_remaining")?,
         })
     }
 }
@@ -3431,11 +3719,12 @@ impl FromRawGameEvent for EyeballBossEscapeImminentEvent {
 pub struct EyeballBossEscapedEvent {
     pub level: u16,
 }
-impl FromRawGameEvent for EyeballBossEscapedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EyeballBossEscapedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EyeballBossEscapedEvent {
-            level: u16::from_value(iter.next(), "level")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
         })
     }
 }
@@ -3449,17 +3738,18 @@ pub struct NpcHurtEvent {
     pub crit: bool,
     pub boss: u16,
 }
-impl FromRawGameEvent for NpcHurtEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl NpcHurtEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(NpcHurtEvent {
-            ent_index: u16::from_value(iter.next(), "ent_index")?,
-            health: u16::from_value(iter.next(), "health")?,
-            attacker_player: u16::from_value(iter.next(), "attacker_player")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            damage_amount: u16::from_value(iter.next(), "damage_amount")?,
-            crit: bool::from_value(iter.next(), "crit")?,
-            boss: u16::from_value(iter.next(), "boss")?,
+            ent_index: read_value::<u16>(stream, iter.next(), "ent_index")?,
+            health: read_value::<u16>(stream, iter.next(), "health")?,
+            attacker_player: read_value::<u16>(stream, iter.next(), "attacker_player")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            damage_amount: read_value::<u16>(stream, iter.next(), "damage_amount")?,
+            crit: read_value::<bool>(stream, iter.next(), "crit")?,
+            boss: read_value::<u16>(stream, iter.next(), "boss")?,
         })
     }
 }
@@ -3468,12 +3758,13 @@ pub struct ControlPointTimerUpdatedEvent {
     pub index: u16,
     pub time: f32,
 }
-impl FromRawGameEvent for ControlPointTimerUpdatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ControlPointTimerUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ControlPointTimerUpdatedEvent {
-            index: u16::from_value(iter.next(), "index")?,
-            time: f32::from_value(iter.next(), "time")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
+            time: read_value::<f32>(stream, iter.next(), "time")?,
         })
     }
 }
@@ -3481,11 +3772,12 @@ impl FromRawGameEvent for ControlPointTimerUpdatedEvent {
 pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
 }
-impl FromRawGameEvent for PlayerHighFiveStartEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHighFiveStartEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHighFiveStartEvent {
-            ent_index: u8::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u8>(stream, iter.next(), "ent_index")?,
         })
     }
 }
@@ -3493,11 +3785,12 @@ impl FromRawGameEvent for PlayerHighFiveStartEvent {
 pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
 }
-impl FromRawGameEvent for PlayerHighFiveCancelEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHighFiveCancelEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHighFiveCancelEvent {
-            ent_index: u8::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u8>(stream, iter.next(), "ent_index")?,
         })
     }
 }
@@ -3506,12 +3799,13 @@ pub struct PlayerHighFiveSuccessEvent {
     pub initiator_ent_index: u8,
     pub partner_ent_index: u8,
 }
-impl FromRawGameEvent for PlayerHighFiveSuccessEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerHighFiveSuccessEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerHighFiveSuccessEvent {
-            initiator_ent_index: u8::from_value(iter.next(), "initiator_ent_index")?,
-            partner_ent_index: u8::from_value(iter.next(), "partner_ent_index")?,
+            initiator_ent_index: read_value::<u8>(stream, iter.next(), "initiator_ent_index")?,
+            partner_ent_index: read_value::<u8>(stream, iter.next(), "partner_ent_index")?,
         })
     }
 }
@@ -3521,20 +3815,22 @@ pub struct PlayerBonusPointsEvent {
     pub player_ent_index: u16,
     pub source_ent_index: u16,
 }
-impl FromRawGameEvent for PlayerBonusPointsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerBonusPointsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerBonusPointsEvent {
-            points: u16::from_value(iter.next(), "points")?,
-            player_ent_index: u16::from_value(iter.next(), "player_ent_index")?,
-            source_ent_index: u16::from_value(iter.next(), "source_ent_index")?,
+            points: read_value::<u16>(stream, iter.next(), "points")?,
+            player_ent_index: read_value::<u16>(stream, iter.next(), "player_ent_index")?,
+            source_ent_index: read_value::<u16>(stream, iter.next(), "source_ent_index")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct PlayerUpgradedEvent {}
-impl FromRawGameEvent for PlayerUpgradedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PlayerUpgradedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PlayerUpgradedEvent {})
     }
 }
@@ -3543,12 +3839,13 @@ pub struct PlayerBuybackEvent {
     pub player: u16,
     pub cost: u16,
 }
-impl FromRawGameEvent for PlayerBuybackEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerBuybackEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerBuybackEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            cost: u16::from_value(iter.next(), "cost")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            cost: read_value::<u16>(stream, iter.next(), "cost")?,
         })
     }
 }
@@ -3558,13 +3855,14 @@ pub struct PlayerUsedPowerUpBottleEvent {
     pub kind: u16,
     pub time: f32,
 }
-impl FromRawGameEvent for PlayerUsedPowerUpBottleEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerUsedPowerUpBottleEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerUsedPowerUpBottleEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            kind: u16::from_value(iter.next(), "kind")?,
-            time: f32::from_value(iter.next(), "time")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            kind: read_value::<u16>(stream, iter.next(), "kind")?,
+            time: read_value::<f32>(stream, iter.next(), "time")?,
         })
     }
 }
@@ -3572,11 +3870,12 @@ impl FromRawGameEvent for PlayerUsedPowerUpBottleEvent {
 pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for ChristmasGiftGrabEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ChristmasGiftGrabEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ChristmasGiftGrabEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -3586,41 +3885,46 @@ pub struct PlayerKilledAchievementZoneEvent {
     pub victim: u16,
     pub zone_id: u16,
 }
-impl FromRawGameEvent for PlayerKilledAchievementZoneEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerKilledAchievementZoneEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerKilledAchievementZoneEvent {
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            victim: u16::from_value(iter.next(), "victim")?,
-            zone_id: u16::from_value(iter.next(), "zone_id")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            victim: read_value::<u16>(stream, iter.next(), "victim")?,
+            zone_id: read_value::<u16>(stream, iter.next(), "zone_id")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct PartyUpdatedEvent {}
-impl FromRawGameEvent for PartyUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PartyUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PartyUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct PartyPrefChangedEvent {}
-impl FromRawGameEvent for PartyPrefChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PartyPrefChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PartyPrefChangedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct PartyCriteriaChangedEvent {}
-impl FromRawGameEvent for PartyCriteriaChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PartyCriteriaChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PartyCriteriaChangedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct PartyInvitesChangedEvent {}
-impl FromRawGameEvent for PartyInvitesChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PartyInvitesChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PartyInvitesChangedEvent {})
     }
 }
@@ -3628,11 +3932,12 @@ impl FromRawGameEvent for PartyInvitesChangedEvent {
 pub struct PartyQueueStateChangedEvent {
     pub match_group: u16,
 }
-impl FromRawGameEvent for PartyQueueStateChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PartyQueueStateChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PartyQueueStateChangedEvent {
-            match_group: u16::from_value(iter.next(), "match_group")?,
+            match_group: read_value::<u16>(stream, iter.next(), "match_group")?,
         })
     }
 }
@@ -3642,13 +3947,14 @@ pub struct PartyChatEvent {
     pub text: String,
     pub kind: u16,
 }
-impl FromRawGameEvent for PartyChatEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PartyChatEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PartyChatEvent {
-            steam_id: String::from_value(iter.next(), "steam_id")?,
-            text: String::from_value(iter.next(), "text")?,
-            kind: u16::from_value(iter.next(), "kind")?,
+            steam_id: read_value::<String>(stream, iter.next(), "steam_id")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
+            kind: read_value::<u16>(stream, iter.next(), "kind")?,
         })
     }
 }
@@ -3656,11 +3962,12 @@ impl FromRawGameEvent for PartyChatEvent {
 pub struct PartyMemberJoinEvent {
     pub steam_id: String,
 }
-impl FromRawGameEvent for PartyMemberJoinEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PartyMemberJoinEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PartyMemberJoinEvent {
-            steam_id: String::from_value(iter.next(), "steam_id")?,
+            steam_id: read_value::<String>(stream, iter.next(), "steam_id")?,
         })
     }
 }
@@ -3668,25 +3975,28 @@ impl FromRawGameEvent for PartyMemberJoinEvent {
 pub struct PartyMemberLeaveEvent {
     pub steam_id: String,
 }
-impl FromRawGameEvent for PartyMemberLeaveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PartyMemberLeaveEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PartyMemberLeaveEvent {
-            steam_id: String::from_value(iter.next(), "steam_id")?,
+            steam_id: read_value::<String>(stream, iter.next(), "steam_id")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct MatchInvitesUpdatedEvent {}
-impl FromRawGameEvent for MatchInvitesUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MatchInvitesUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MatchInvitesUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LobbyUpdatedEvent {}
-impl FromRawGameEvent for LobbyUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl LobbyUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LobbyUpdatedEvent {})
     }
 }
@@ -3695,19 +4005,21 @@ pub struct MvmMissionUpdateEvent {
     pub class: u16,
     pub count: u16,
 }
-impl FromRawGameEvent for MvmMissionUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmMissionUpdateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmMissionUpdateEvent {
-            class: u16::from_value(iter.next(), "class")?,
-            count: u16::from_value(iter.next(), "count")?,
+            class: read_value::<u16>(stream, iter.next(), "class")?,
+            count: read_value::<u16>(stream, iter.next(), "count")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct RecalculateHolidaysEvent {}
-impl FromRawGameEvent for RecalculateHolidaysEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl RecalculateHolidaysEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RecalculateHolidaysEvent {})
     }
 }
@@ -3715,11 +4027,12 @@ impl FromRawGameEvent for RecalculateHolidaysEvent {
 pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
 }
-impl FromRawGameEvent for PlayerCurrencyChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerCurrencyChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerCurrencyChangedEvent {
-            currency: u16::from_value(iter.next(), "currency")?,
+            currency: read_value::<u16>(stream, iter.next(), "currency")?,
         })
     }
 }
@@ -3727,11 +4040,12 @@ impl FromRawGameEvent for PlayerCurrencyChangedEvent {
 pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
 }
-impl FromRawGameEvent for DoomsdayRocketOpenEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DoomsdayRocketOpenEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DoomsdayRocketOpenEvent {
-            team: u8::from_value(iter.next(), "team")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
         })
     }
 }
@@ -3739,32 +4053,36 @@ impl FromRawGameEvent for DoomsdayRocketOpenEvent {
 pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for RemoveNemesisRelationshipsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RemoveNemesisRelationshipsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RemoveNemesisRelationshipsEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct MvmCreditBonusWaveEvent {}
-impl FromRawGameEvent for MvmCreditBonusWaveEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmCreditBonusWaveEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MvmCreditBonusAllEvent {}
-impl FromRawGameEvent for MvmCreditBonusAllEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmCreditBonusAllEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
-impl FromRawGameEvent for MvmCreditBonusAllAdvancedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmCreditBonusAllAdvancedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
@@ -3772,18 +4090,20 @@ impl FromRawGameEvent for MvmCreditBonusAllAdvancedEvent {
 pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for MvmQuickSentryUpgradeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmQuickSentryUpgradeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmQuickSentryUpgradeEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct MvmTankDestroyedByPlayersEvent {}
-impl FromRawGameEvent for MvmTankDestroyedByPlayersEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmTankDestroyedByPlayersEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
@@ -3791,11 +4111,12 @@ impl FromRawGameEvent for MvmTankDestroyedByPlayersEvent {
 pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for MvmKillRobotDeliveringBombEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmKillRobotDeliveringBombEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmKillRobotDeliveringBombEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -3804,12 +4125,13 @@ pub struct MvmPickupCurrencyEvent {
     pub player: u16,
     pub currency: u16,
 }
-impl FromRawGameEvent for MvmPickupCurrencyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmPickupCurrencyEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmPickupCurrencyEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            currency: u16::from_value(iter.next(), "currency")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            currency: read_value::<u16>(stream, iter.next(), "currency")?,
         })
     }
 }
@@ -3817,11 +4139,12 @@ impl FromRawGameEvent for MvmPickupCurrencyEvent {
 pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
 }
-impl FromRawGameEvent for MvmBombCarrierKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmBombCarrierKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmBombCarrierKilledEvent {
-            level: u16::from_value(iter.next(), "level")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
         })
     }
 }
@@ -3832,14 +4155,15 @@ pub struct MvmSentryBusterDetonateEvent {
     pub det_y: f32,
     pub det_z: f32,
 }
-impl FromRawGameEvent for MvmSentryBusterDetonateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmSentryBusterDetonateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmSentryBusterDetonateEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            det_x: f32::from_value(iter.next(), "det_x")?,
-            det_y: f32::from_value(iter.next(), "det_y")?,
-            det_z: f32::from_value(iter.next(), "det_z")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            det_x: read_value::<f32>(stream, iter.next(), "det_x")?,
+            det_y: read_value::<f32>(stream, iter.next(), "det_y")?,
+            det_z: read_value::<f32>(stream, iter.next(), "det_z")?,
         })
     }
 }
@@ -3847,11 +4171,12 @@ impl FromRawGameEvent for MvmSentryBusterDetonateEvent {
 pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for MvmScoutMarkedForDeathEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmScoutMarkedForDeathEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmScoutMarkedForDeathEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -3859,11 +4184,12 @@ impl FromRawGameEvent for MvmScoutMarkedForDeathEvent {
 pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for MvmMedicPowerUpSharedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmMedicPowerUpSharedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmMedicPowerUpSharedEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -3873,13 +4199,14 @@ pub struct MvmBeginWaveEvent {
     pub max_waves: u16,
     pub advanced: u16,
 }
-impl FromRawGameEvent for MvmBeginWaveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmBeginWaveEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmBeginWaveEvent {
-            wave_index: u16::from_value(iter.next(), "wave_index")?,
-            max_waves: u16::from_value(iter.next(), "max_waves")?,
-            advanced: u16::from_value(iter.next(), "advanced")?,
+            wave_index: read_value::<u16>(stream, iter.next(), "wave_index")?,
+            max_waves: read_value::<u16>(stream, iter.next(), "max_waves")?,
+            advanced: read_value::<u16>(stream, iter.next(), "advanced")?,
         })
     }
 }
@@ -3887,11 +4214,12 @@ impl FromRawGameEvent for MvmBeginWaveEvent {
 pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
 }
-impl FromRawGameEvent for MvmWaveCompleteEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmWaveCompleteEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmWaveCompleteEvent {
-            advanced: bool::from_value(iter.next(), "advanced")?,
+            advanced: read_value::<bool>(stream, iter.next(), "advanced")?,
         })
     }
 }
@@ -3899,11 +4227,12 @@ impl FromRawGameEvent for MvmWaveCompleteEvent {
 pub struct MvmMissionCompleteEvent {
     pub mission: String,
 }
-impl FromRawGameEvent for MvmMissionCompleteEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmMissionCompleteEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmMissionCompleteEvent {
-            mission: String::from_value(iter.next(), "mission")?,
+            mission: read_value::<String>(stream, iter.next(), "mission")?,
         })
     }
 }
@@ -3911,18 +4240,20 @@ impl FromRawGameEvent for MvmMissionCompleteEvent {
 pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for MvmBombResetByPlayerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmBombResetByPlayerEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmBombResetByPlayerEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct MvmBombAlarmTriggeredEvent {}
-impl FromRawGameEvent for MvmBombAlarmTriggeredEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmBombAlarmTriggeredEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
@@ -3930,25 +4261,28 @@ impl FromRawGameEvent for MvmBombAlarmTriggeredEvent {
 pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for MvmBombDeployResetByPlayerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmBombDeployResetByPlayerEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmBombDeployResetByPlayerEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct MvmWaveFailedEvent {}
-impl FromRawGameEvent for MvmWaveFailedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmWaveFailedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmWaveFailedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MvmResetStatsEvent {}
-impl FromRawGameEvent for MvmResetStatsEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmResetStatsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmResetStatsEvent {})
     }
 }
@@ -3956,11 +4290,12 @@ impl FromRawGameEvent for MvmResetStatsEvent {
 pub struct DamageResistedEvent {
     pub ent_index: u8,
 }
-impl FromRawGameEvent for DamageResistedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DamageResistedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DamageResistedEvent {
-            ent_index: u8::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u8>(stream, iter.next(), "ent_index")?,
         })
     }
 }
@@ -3969,12 +4304,13 @@ pub struct RevivePlayerNotifyEvent {
     pub ent_index: u16,
     pub marker_ent_index: u16,
 }
-impl FromRawGameEvent for RevivePlayerNotifyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RevivePlayerNotifyEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RevivePlayerNotifyEvent {
-            ent_index: u16::from_value(iter.next(), "ent_index")?,
-            marker_ent_index: u16::from_value(iter.next(), "marker_ent_index")?,
+            ent_index: read_value::<u16>(stream, iter.next(), "ent_index")?,
+            marker_ent_index: read_value::<u16>(stream, iter.next(), "marker_ent_index")?,
         })
     }
 }
@@ -3982,11 +4318,12 @@ impl FromRawGameEvent for RevivePlayerNotifyEvent {
 pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
 }
-impl FromRawGameEvent for RevivePlayerStoppedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RevivePlayerStoppedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RevivePlayerStoppedEvent {
-            ent_index: u16::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u16>(stream, iter.next(), "ent_index")?,
         })
     }
 }
@@ -3994,11 +4331,12 @@ impl FromRawGameEvent for RevivePlayerStoppedEvent {
 pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
 }
-impl FromRawGameEvent for RevivePlayerCompleteEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RevivePlayerCompleteEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RevivePlayerCompleteEvent {
-            ent_index: u16::from_value(iter.next(), "ent_index")?,
+            ent_index: read_value::<u16>(stream, iter.next(), "ent_index")?,
         })
     }
 }
@@ -4006,11 +4344,12 @@ impl FromRawGameEvent for RevivePlayerCompleteEvent {
 pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
 }
-impl FromRawGameEvent for PlayerTurnedToGhostEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerTurnedToGhostEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerTurnedToGhostEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
         })
     }
 }
@@ -4019,12 +4358,13 @@ pub struct MedigunShieldBlockedDamageEvent {
     pub user_id: u16,
     pub damage: f32,
 }
-impl FromRawGameEvent for MedigunShieldBlockedDamageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MedigunShieldBlockedDamageEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MedigunShieldBlockedDamageEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            damage: f32::from_value(iter.next(), "damage")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            damage: read_value::<f32>(stream, iter.next(), "damage")?,
         })
     }
 }
@@ -4032,11 +4372,12 @@ impl FromRawGameEvent for MedigunShieldBlockedDamageEvent {
 pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for MvmAdvWaveCompleteNoGatesEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmAdvWaveCompleteNoGatesEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmAdvWaveCompleteNoGatesEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -4045,33 +4386,37 @@ pub struct MvmSniperHeadshotCurrencyEvent {
     pub user_id: u16,
     pub currency: u16,
 }
-impl FromRawGameEvent for MvmSniperHeadshotCurrencyEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmSniperHeadshotCurrencyEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmSniperHeadshotCurrencyEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            currency: u16::from_value(iter.next(), "currency")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            currency: read_value::<u16>(stream, iter.next(), "currency")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct MvmMannhattanPitEvent {}
-impl FromRawGameEvent for MvmMannhattanPitEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmMannhattanPitEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmMannhattanPitEvent {})
     }
 }
 #[derive(Debug)]
 pub struct FlagCarriedInDetectionZoneEvent {}
-impl FromRawGameEvent for FlagCarriedInDetectionZoneEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl FlagCarriedInDetectionZoneEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
-impl FromRawGameEvent for MvmAdvWaveKilledStunRadioEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MvmAdvWaveKilledStunRadioEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
@@ -4080,12 +4425,13 @@ pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
     pub victim: u16,
 }
-impl FromRawGameEvent for PlayerDirectHitStunEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerDirectHitStunEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerDirectHitStunEvent {
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            victim: u16::from_value(iter.next(), "victim")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            victim: read_value::<u16>(stream, iter.next(), "victim")?,
         })
     }
 }
@@ -4093,11 +4439,12 @@ impl FromRawGameEvent for PlayerDirectHitStunEvent {
 pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
 }
-impl FromRawGameEvent for MvmSentryBusterKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MvmSentryBusterKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MvmSentryBusterKilledEvent {
-            sentry_buster: u16::from_value(iter.next(), "sentry_buster")?,
+            sentry_buster: read_value::<u16>(stream, iter.next(), "sentry_buster")?,
         })
     }
 }
@@ -4105,11 +4452,12 @@ impl FromRawGameEvent for MvmSentryBusterKilledEvent {
 pub struct UpgradesFileChangedEvent {
     pub path: String,
 }
-impl FromRawGameEvent for UpgradesFileChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl UpgradesFileChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(UpgradesFileChangedEvent {
-            path: String::from_value(iter.next(), "path")?,
+            path: read_value::<String>(stream, iter.next(), "path")?,
         })
     }
 }
@@ -4119,20 +4467,22 @@ pub struct RdTeamPointsChangedEvent {
     pub team: u8,
     pub method: u8,
 }
-impl FromRawGameEvent for RdTeamPointsChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RdTeamPointsChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RdTeamPointsChangedEvent {
-            points: u16::from_value(iter.next(), "points")?,
-            team: u8::from_value(iter.next(), "team")?,
-            method: u8::from_value(iter.next(), "method")?,
+            points: read_value::<u16>(stream, iter.next(), "points")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            method: read_value::<u8>(stream, iter.next(), "method")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct RdRulesStateChangedEvent {}
-impl FromRawGameEvent for RdRulesStateChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl RdRulesStateChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RdRulesStateChangedEvent {})
     }
 }
@@ -4148,19 +4498,24 @@ pub struct RdRobotKilledEvent {
     pub custom_kill: u16,
     pub weapon_log_class_name: String,
 }
-impl FromRawGameEvent for RdRobotKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RdRobotKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RdRobotKilledEvent {
-            user_id: u16::from_value(iter.next(), "user_id")?,
-            victim_ent_index: u32::from_value(iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: u32::from_value(iter.next(), "inflictor_ent_index")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
-            weapon: String::from_value(iter.next(), "weapon")?,
-            weapon_id: u16::from_value(iter.next(), "weapon_id")?,
-            damage_bits: u32::from_value(iter.next(), "damage_bits")?,
-            custom_kill: u16::from_value(iter.next(), "custom_kill")?,
-            weapon_log_class_name: String::from_value(iter.next(), "weapon_log_class_name")?,
+            user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
+            weapon: read_value::<String>(stream, iter.next(), "weapon")?,
+            weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
+            damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
+            custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
         })
     }
 }
@@ -4171,14 +4526,15 @@ pub struct RdRobotImpactEvent {
     pub impulse_y: f32,
     pub impulse_z: f32,
 }
-impl FromRawGameEvent for RdRobotImpactEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RdRobotImpactEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RdRobotImpactEvent {
-            ent_index: u16::from_value(iter.next(), "ent_index")?,
-            impulse_x: f32::from_value(iter.next(), "impulse_x")?,
-            impulse_y: f32::from_value(iter.next(), "impulse_y")?,
-            impulse_z: f32::from_value(iter.next(), "impulse_z")?,
+            ent_index: read_value::<u16>(stream, iter.next(), "ent_index")?,
+            impulse_x: read_value::<f32>(stream, iter.next(), "impulse_x")?,
+            impulse_y: read_value::<f32>(stream, iter.next(), "impulse_y")?,
+            impulse_z: read_value::<f32>(stream, iter.next(), "impulse_z")?,
         })
     }
 }
@@ -4186,11 +4542,12 @@ impl FromRawGameEvent for RdRobotImpactEvent {
 pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
 }
-impl FromRawGameEvent for TeamPlayPreRoundTimeLeftEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamPlayPreRoundTimeLeftEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamPlayPreRoundTimeLeftEvent {
-            time: u16::from_value(iter.next(), "time")?,
+            time: read_value::<u16>(stream, iter.next(), "time")?,
         })
     }
 }
@@ -4198,11 +4555,12 @@ impl FromRawGameEvent for TeamPlayPreRoundTimeLeftEvent {
 pub struct ParachuteDeployEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for ParachuteDeployEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ParachuteDeployEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ParachuteDeployEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -4210,11 +4568,12 @@ impl FromRawGameEvent for ParachuteDeployEvent {
 pub struct ParachuteHolsterEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for ParachuteHolsterEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ParachuteHolsterEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ParachuteHolsterEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -4222,11 +4581,12 @@ impl FromRawGameEvent for ParachuteHolsterEvent {
 pub struct KillRefillsMeterEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for KillRefillsMeterEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl KillRefillsMeterEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(KillRefillsMeterEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -4237,14 +4597,15 @@ pub struct RpsTauntEventEvent {
     pub loser: u16,
     pub loser_rps: u8,
 }
-impl FromRawGameEvent for RpsTauntEventEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RpsTauntEventEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RpsTauntEventEvent {
-            winner: u16::from_value(iter.next(), "winner")?,
-            winner_rps: u8::from_value(iter.next(), "winner_rps")?,
-            loser: u16::from_value(iter.next(), "loser")?,
-            loser_rps: u8::from_value(iter.next(), "loser_rps")?,
+            winner: read_value::<u16>(stream, iter.next(), "winner")?,
+            winner_rps: read_value::<u8>(stream, iter.next(), "winner_rps")?,
+            loser: read_value::<u16>(stream, iter.next(), "loser")?,
+            loser_rps: read_value::<u8>(stream, iter.next(), "loser_rps")?,
         })
     }
 }
@@ -4252,11 +4613,12 @@ impl FromRawGameEvent for RpsTauntEventEvent {
 pub struct CongaKillEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for CongaKillEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl CongaKillEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(CongaKillEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -4264,18 +4626,20 @@ impl FromRawGameEvent for CongaKillEvent {
 pub struct PlayerInitialSpawnEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for PlayerInitialSpawnEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerInitialSpawnEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerInitialSpawnEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct CompetitiveVictoryEvent {}
-impl FromRawGameEvent for CompetitiveVictoryEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl CompetitiveVictoryEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(CompetitiveVictoryEvent {})
     }
 }
@@ -4288,16 +4652,17 @@ pub struct CompetitiveStatsUpdateEvent {
     pub healing_rank: u8,
     pub support_rank: u8,
 }
-impl FromRawGameEvent for CompetitiveStatsUpdateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl CompetitiveStatsUpdateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(CompetitiveStatsUpdateEvent {
-            index: u16::from_value(iter.next(), "index")?,
-            kills_rank: u8::from_value(iter.next(), "kills_rank")?,
-            score_rank: u8::from_value(iter.next(), "score_rank")?,
-            damage_rank: u8::from_value(iter.next(), "damage_rank")?,
-            healing_rank: u8::from_value(iter.next(), "healing_rank")?,
-            support_rank: u8::from_value(iter.next(), "support_rank")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
+            kills_rank: read_value::<u8>(stream, iter.next(), "kills_rank")?,
+            score_rank: read_value::<u8>(stream, iter.next(), "score_rank")?,
+            damage_rank: read_value::<u8>(stream, iter.next(), "damage_rank")?,
+            healing_rank: read_value::<u8>(stream, iter.next(), "healing_rank")?,
+            support_rank: read_value::<u8>(stream, iter.next(), "support_rank")?,
         })
     }
 }
@@ -4306,12 +4671,13 @@ pub struct MiniGameWinEvent {
     pub team: u8,
     pub kind: u8,
 }
-impl FromRawGameEvent for MiniGameWinEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MiniGameWinEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MiniGameWinEvent {
-            team: u8::from_value(iter.next(), "team")?,
-            kind: u8::from_value(iter.next(), "kind")?,
+            team: read_value::<u8>(stream, iter.next(), "team")?,
+            kind: read_value::<u8>(stream, iter.next(), "kind")?,
         })
     }
 }
@@ -4319,11 +4685,12 @@ impl FromRawGameEvent for MiniGameWinEvent {
 pub struct SentryOnGoActiveEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for SentryOnGoActiveEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl SentryOnGoActiveEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(SentryOnGoActiveEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -4331,32 +4698,36 @@ impl FromRawGameEvent for SentryOnGoActiveEvent {
 pub struct DuckXpLevelUpEvent {
     pub level: u16,
 }
-impl FromRawGameEvent for DuckXpLevelUpEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DuckXpLevelUpEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DuckXpLevelUpEvent {
-            level: u16::from_value(iter.next(), "level")?,
+            level: read_value::<u16>(stream, iter.next(), "level")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct QuestLogOpenedEvent {}
-impl FromRawGameEvent for QuestLogOpenedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl QuestLogOpenedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(QuestLogOpenedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct SchemaUpdatedEvent {}
-impl FromRawGameEvent for SchemaUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl SchemaUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(SchemaUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct LocalPlayerPickupWeaponEvent {}
-impl FromRawGameEvent for LocalPlayerPickupWeaponEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl LocalPlayerPickupWeaponEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerPickupWeaponEvent {})
     }
 }
@@ -4366,13 +4737,14 @@ pub struct RdPlayerScorePointsEvent {
     pub method: u16,
     pub amount: u16,
 }
-impl FromRawGameEvent for RdPlayerScorePointsEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RdPlayerScorePointsEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RdPlayerScorePointsEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            method: u16::from_value(iter.next(), "method")?,
-            amount: u16::from_value(iter.next(), "amount")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            method: read_value::<u16>(stream, iter.next(), "method")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
         })
     }
 }
@@ -4380,11 +4752,12 @@ impl FromRawGameEvent for RdPlayerScorePointsEvent {
 pub struct DemomanDetStickiesEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for DemomanDetStickiesEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DemomanDetStickiesEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DemomanDetStickiesEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4395,14 +4768,15 @@ pub struct QuestObjectiveCompletedEvent {
     pub quest_objective_id: u32,
     pub scorer_user_id: u16,
 }
-impl FromRawGameEvent for QuestObjectiveCompletedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl QuestObjectiveCompletedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(QuestObjectiveCompletedEvent {
-            quest_item_id_low: u32::from_value(iter.next(), "quest_item_id_low")?,
-            quest_item_id_hi: u32::from_value(iter.next(), "quest_item_id_hi")?,
-            quest_objective_id: u32::from_value(iter.next(), "quest_objective_id")?,
-            scorer_user_id: u16::from_value(iter.next(), "scorer_user_id")?,
+            quest_item_id_low: read_value::<u32>(stream, iter.next(), "quest_item_id_low")?,
+            quest_item_id_hi: read_value::<u32>(stream, iter.next(), "quest_item_id_hi")?,
+            quest_objective_id: read_value::<u32>(stream, iter.next(), "quest_objective_id")?,
+            scorer_user_id: read_value::<u16>(stream, iter.next(), "scorer_user_id")?,
         })
     }
 }
@@ -4411,12 +4785,13 @@ pub struct PlayerScoreChangedEvent {
     pub player: u8,
     pub delta: u16,
 }
-impl FromRawGameEvent for PlayerScoreChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerScoreChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerScoreChangedEvent {
-            player: u8::from_value(iter.next(), "player")?,
-            delta: u16::from_value(iter.next(), "delta")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
+            delta: read_value::<u16>(stream, iter.next(), "delta")?,
         })
     }
 }
@@ -4427,14 +4802,15 @@ pub struct KilledCappingPlayerEvent {
     pub victim: u8,
     pub assister: u8,
 }
-impl FromRawGameEvent for KilledCappingPlayerEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl KilledCappingPlayerEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(KilledCappingPlayerEvent {
-            cp: u8::from_value(iter.next(), "cp")?,
-            killer: u8::from_value(iter.next(), "killer")?,
-            victim: u8::from_value(iter.next(), "victim")?,
-            assister: u8::from_value(iter.next(), "assister")?,
+            cp: read_value::<u8>(stream, iter.next(), "cp")?,
+            killer: read_value::<u8>(stream, iter.next(), "killer")?,
+            victim: read_value::<u8>(stream, iter.next(), "victim")?,
+            assister: read_value::<u8>(stream, iter.next(), "assister")?,
         })
     }
 }
@@ -4443,12 +4819,13 @@ pub struct EnvironmentalDeathEvent {
     pub killer: u8,
     pub victim: u8,
 }
-impl FromRawGameEvent for EnvironmentalDeathEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EnvironmentalDeathEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EnvironmentalDeathEvent {
-            killer: u8::from_value(iter.next(), "killer")?,
-            victim: u8::from_value(iter.next(), "victim")?,
+            killer: read_value::<u8>(stream, iter.next(), "killer")?,
+            victim: read_value::<u8>(stream, iter.next(), "victim")?,
         })
     }
 }
@@ -4458,13 +4835,14 @@ pub struct ProjectileDirectHitEvent {
     pub victim: u8,
     pub weapon_def_index: u32,
 }
-impl FromRawGameEvent for ProjectileDirectHitEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ProjectileDirectHitEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ProjectileDirectHitEvent {
-            attacker: u8::from_value(iter.next(), "attacker")?,
-            victim: u8::from_value(iter.next(), "victim")?,
-            weapon_def_index: u32::from_value(iter.next(), "weapon_def_index")?,
+            attacker: read_value::<u8>(stream, iter.next(), "attacker")?,
+            victim: read_value::<u8>(stream, iter.next(), "victim")?,
+            weapon_def_index: read_value::<u32>(stream, iter.next(), "weapon_def_index")?,
         })
     }
 }
@@ -4472,11 +4850,12 @@ impl FromRawGameEvent for ProjectileDirectHitEvent {
 pub struct PassGetEvent {
     pub owner: u16,
 }
-impl FromRawGameEvent for PassGetEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PassGetEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PassGetEvent {
-            owner: u16::from_value(iter.next(), "owner")?,
+            owner: read_value::<u16>(stream, iter.next(), "owner")?,
         })
     }
 }
@@ -4486,13 +4865,14 @@ pub struct PassScoreEvent {
     pub assister: u16,
     pub points: u8,
 }
-impl FromRawGameEvent for PassScoreEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PassScoreEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PassScoreEvent {
-            scorer: u16::from_value(iter.next(), "scorer")?,
-            assister: u16::from_value(iter.next(), "assister")?,
-            points: u8::from_value(iter.next(), "points")?,
+            scorer: read_value::<u16>(stream, iter.next(), "scorer")?,
+            assister: read_value::<u16>(stream, iter.next(), "assister")?,
+            points: read_value::<u8>(stream, iter.next(), "points")?,
         })
     }
 }
@@ -4501,12 +4881,13 @@ pub struct PassFreeEvent {
     pub owner: u16,
     pub attacker: u16,
 }
-impl FromRawGameEvent for PassFreeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PassFreeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PassFreeEvent {
-            owner: u16::from_value(iter.next(), "owner")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
+            owner: read_value::<u16>(stream, iter.next(), "owner")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
         })
     }
 }
@@ -4517,14 +4898,15 @@ pub struct PassPassCaughtEvent {
     pub dist: f32,
     pub duration: f32,
 }
-impl FromRawGameEvent for PassPassCaughtEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PassPassCaughtEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PassPassCaughtEvent {
-            passer: u16::from_value(iter.next(), "passer")?,
-            catcher: u16::from_value(iter.next(), "catcher")?,
-            dist: f32::from_value(iter.next(), "dist")?,
-            duration: f32::from_value(iter.next(), "duration")?,
+            passer: read_value::<u16>(stream, iter.next(), "passer")?,
+            catcher: read_value::<u16>(stream, iter.next(), "catcher")?,
+            dist: read_value::<f32>(stream, iter.next(), "dist")?,
+            duration: read_value::<f32>(stream, iter.next(), "duration")?,
         })
     }
 }
@@ -4533,12 +4915,13 @@ pub struct PassBallStolenEvent {
     pub victim: u16,
     pub attacker: u16,
 }
-impl FromRawGameEvent for PassBallStolenEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PassBallStolenEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PassBallStolenEvent {
-            victim: u16::from_value(iter.next(), "victim")?,
-            attacker: u16::from_value(iter.next(), "attacker")?,
+            victim: read_value::<u16>(stream, iter.next(), "victim")?,
+            attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
         })
     }
 }
@@ -4547,12 +4930,13 @@ pub struct PassBallBlockedEvent {
     pub owner: u16,
     pub blocker: u16,
 }
-impl FromRawGameEvent for PassBallBlockedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PassBallBlockedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PassBallBlockedEvent {
-            owner: u16::from_value(iter.next(), "owner")?,
-            blocker: u16::from_value(iter.next(), "blocker")?,
+            owner: read_value::<u16>(stream, iter.next(), "owner")?,
+            blocker: read_value::<u16>(stream, iter.next(), "blocker")?,
         })
     }
 }
@@ -4563,14 +4947,15 @@ pub struct DamagePreventedEvent {
     pub amount: u16,
     pub condition: u16,
 }
-impl FromRawGameEvent for DamagePreventedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DamagePreventedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DamagePreventedEvent {
-            preventor: u16::from_value(iter.next(), "preventor")?,
-            victim: u16::from_value(iter.next(), "victim")?,
-            amount: u16::from_value(iter.next(), "amount")?,
-            condition: u16::from_value(iter.next(), "condition")?,
+            preventor: read_value::<u16>(stream, iter.next(), "preventor")?,
+            victim: read_value::<u16>(stream, iter.next(), "victim")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
+            condition: read_value::<u16>(stream, iter.next(), "condition")?,
         })
     }
 }
@@ -4579,12 +4964,13 @@ pub struct HalloweenBossKilledEvent {
     pub boss: u16,
     pub killer: u16,
 }
-impl FromRawGameEvent for HalloweenBossKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HalloweenBossKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HalloweenBossKilledEvent {
-            boss: u16::from_value(iter.next(), "boss")?,
-            killer: u16::from_value(iter.next(), "killer")?,
+            boss: read_value::<u16>(stream, iter.next(), "boss")?,
+            killer: read_value::<u16>(stream, iter.next(), "killer")?,
         })
     }
 }
@@ -4592,11 +4978,12 @@ impl FromRawGameEvent for HalloweenBossKilledEvent {
 pub struct EscapedLootIslandEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for EscapedLootIslandEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EscapedLootIslandEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EscapedLootIslandEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4604,11 +4991,12 @@ impl FromRawGameEvent for EscapedLootIslandEvent {
 pub struct TaggedPlayerAsItEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for TaggedPlayerAsItEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TaggedPlayerAsItEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TaggedPlayerAsItEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4616,11 +5004,12 @@ impl FromRawGameEvent for TaggedPlayerAsItEvent {
 pub struct MerasmusStunnedEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for MerasmusStunnedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MerasmusStunnedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MerasmusStunnedEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4628,11 +5017,12 @@ impl FromRawGameEvent for MerasmusStunnedEvent {
 pub struct MerasmusPropFoundEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for MerasmusPropFoundEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MerasmusPropFoundEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MerasmusPropFoundEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4640,11 +5030,12 @@ impl FromRawGameEvent for MerasmusPropFoundEvent {
 pub struct HalloweenSkeletonKilledEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for HalloweenSkeletonKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HalloweenSkeletonKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HalloweenSkeletonKilledEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4652,11 +5043,12 @@ impl FromRawGameEvent for HalloweenSkeletonKilledEvent {
 pub struct EscapeHellEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for EscapeHellEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl EscapeHellEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(EscapeHellEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4664,11 +5056,12 @@ impl FromRawGameEvent for EscapeHellEvent {
 pub struct CrossSpectralBridgeEvent {
     pub player: u16,
 }
-impl FromRawGameEvent for CrossSpectralBridgeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl CrossSpectralBridgeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(CrossSpectralBridgeEvent {
-            player: u16::from_value(iter.next(), "player")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4677,12 +5070,13 @@ pub struct MiniGameWonEvent {
     pub player: u16,
     pub game: u16,
 }
-impl FromRawGameEvent for MiniGameWonEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl MiniGameWonEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(MiniGameWonEvent {
-            player: u16::from_value(iter.next(), "player")?,
-            game: u16::from_value(iter.next(), "game")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+            game: read_value::<u16>(stream, iter.next(), "game")?,
         })
     }
 }
@@ -4691,12 +5085,13 @@ pub struct RespawnGhostEvent {
     pub reviver: u16,
     pub ghost: u16,
 }
-impl FromRawGameEvent for RespawnGhostEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RespawnGhostEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RespawnGhostEvent {
-            reviver: u16::from_value(iter.next(), "reviver")?,
-            ghost: u16::from_value(iter.next(), "ghost")?,
+            reviver: read_value::<u16>(stream, iter.next(), "reviver")?,
+            ghost: read_value::<u16>(stream, iter.next(), "ghost")?,
         })
     }
 }
@@ -4705,12 +5100,13 @@ pub struct KillInHellEvent {
     pub killer: u16,
     pub victim: u16,
 }
-impl FromRawGameEvent for KillInHellEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl KillInHellEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(KillInHellEvent {
-            killer: u16::from_value(iter.next(), "killer")?,
-            victim: u16::from_value(iter.next(), "victim")?,
+            killer: read_value::<u16>(stream, iter.next(), "killer")?,
+            victim: read_value::<u16>(stream, iter.next(), "victim")?,
         })
     }
 }
@@ -4718,11 +5114,12 @@ impl FromRawGameEvent for KillInHellEvent {
 pub struct HalloweenDuckCollectedEvent {
     pub collector: u16,
 }
-impl FromRawGameEvent for HalloweenDuckCollectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HalloweenDuckCollectedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HalloweenDuckCollectedEvent {
-            collector: u16::from_value(iter.next(), "collector")?,
+            collector: read_value::<u16>(stream, iter.next(), "collector")?,
         })
     }
 }
@@ -4730,11 +5127,12 @@ impl FromRawGameEvent for HalloweenDuckCollectedEvent {
 pub struct SpecialScoreEvent {
     pub player: u8,
 }
-impl FromRawGameEvent for SpecialScoreEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl SpecialScoreEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(SpecialScoreEvent {
-            player: u8::from_value(iter.next(), "player")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -4743,12 +5141,13 @@ pub struct TeamLeaderKilledEvent {
     pub killer: u8,
     pub victim: u8,
 }
-impl FromRawGameEvent for TeamLeaderKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl TeamLeaderKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(TeamLeaderKilledEvent {
-            killer: u8::from_value(iter.next(), "killer")?,
-            victim: u8::from_value(iter.next(), "victim")?,
+            killer: read_value::<u8>(stream, iter.next(), "killer")?,
+            victim: read_value::<u8>(stream, iter.next(), "victim")?,
         })
     }
 }
@@ -4758,20 +5157,22 @@ pub struct HalloweenSoulCollectedEvent {
     pub collecting_player: u8,
     pub soul_count: u8,
 }
-impl FromRawGameEvent for HalloweenSoulCollectedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HalloweenSoulCollectedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HalloweenSoulCollectedEvent {
-            intended_target: u8::from_value(iter.next(), "intended_target")?,
-            collecting_player: u8::from_value(iter.next(), "collecting_player")?,
-            soul_count: u8::from_value(iter.next(), "soul_count")?,
+            intended_target: read_value::<u8>(stream, iter.next(), "intended_target")?,
+            collecting_player: read_value::<u8>(stream, iter.next(), "collecting_player")?,
+            soul_count: read_value::<u8>(stream, iter.next(), "soul_count")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct RecalculateTruceEvent {}
-impl FromRawGameEvent for RecalculateTruceEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl RecalculateTruceEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RecalculateTruceEvent {})
     }
 }
@@ -4780,12 +5181,13 @@ pub struct DeadRingerCheatDeathEvent {
     pub spy: u8,
     pub attacker: u8,
 }
-impl FromRawGameEvent for DeadRingerCheatDeathEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DeadRingerCheatDeathEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DeadRingerCheatDeathEvent {
-            spy: u8::from_value(iter.next(), "spy")?,
-            attacker: u8::from_value(iter.next(), "attacker")?,
+            spy: read_value::<u8>(stream, iter.next(), "spy")?,
+            attacker: read_value::<u8>(stream, iter.next(), "attacker")?,
         })
     }
 }
@@ -4795,13 +5197,14 @@ pub struct CrossbowHealEvent {
     pub target: u8,
     pub amount: u16,
 }
-impl FromRawGameEvent for CrossbowHealEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl CrossbowHealEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(CrossbowHealEvent {
-            healer: u8::from_value(iter.next(), "healer")?,
-            target: u8::from_value(iter.next(), "target")?,
-            amount: u16::from_value(iter.next(), "amount")?,
+            healer: read_value::<u8>(stream, iter.next(), "healer")?,
+            target: read_value::<u8>(stream, iter.next(), "target")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
         })
     }
 }
@@ -4812,14 +5215,15 @@ pub struct DamageMitigatedEvent {
     pub amount: u16,
     pub item_definition_index: u16,
 }
-impl FromRawGameEvent for DamageMitigatedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DamageMitigatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DamageMitigatedEvent {
-            mitigator: u8::from_value(iter.next(), "mitigator")?,
-            damaged: u8::from_value(iter.next(), "damaged")?,
-            amount: u16::from_value(iter.next(), "amount")?,
-            item_definition_index: u16::from_value(iter.next(), "item_definition_index")?,
+            mitigator: read_value::<u8>(stream, iter.next(), "mitigator")?,
+            damaged: read_value::<u8>(stream, iter.next(), "damaged")?,
+            amount: read_value::<u16>(stream, iter.next(), "amount")?,
+            item_definition_index: read_value::<u16>(stream, iter.next(), "item_definition_index")?,
         })
     }
 }
@@ -4828,12 +5232,13 @@ pub struct PayloadPushedEvent {
     pub pusher: u8,
     pub distance: u16,
 }
-impl FromRawGameEvent for PayloadPushedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PayloadPushedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PayloadPushedEvent {
-            pusher: u8::from_value(iter.next(), "pusher")?,
-            distance: u16::from_value(iter.next(), "distance")?,
+            pusher: read_value::<u8>(stream, iter.next(), "pusher")?,
+            distance: read_value::<u16>(stream, iter.next(), "distance")?,
         })
     }
 }
@@ -4841,11 +5246,12 @@ impl FromRawGameEvent for PayloadPushedEvent {
 pub struct PlayerAbandonedMatchEvent {
     pub game_over: bool,
 }
-impl FromRawGameEvent for PlayerAbandonedMatchEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerAbandonedMatchEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerAbandonedMatchEvent {
-            game_over: bool::from_value(iter.next(), "game_over")?,
+            game_over: read_value::<bool>(stream, iter.next(), "game_over")?,
         })
     }
 }
@@ -4857,15 +5263,16 @@ pub struct ClDrawlineEvent {
     pub x: f32,
     pub y: f32,
 }
-impl FromRawGameEvent for ClDrawlineEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ClDrawlineEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ClDrawlineEvent {
-            player: u8::from_value(iter.next(), "player")?,
-            panel: u8::from_value(iter.next(), "panel")?,
-            line: u8::from_value(iter.next(), "line")?,
-            x: f32::from_value(iter.next(), "x")?,
-            y: f32::from_value(iter.next(), "y")?,
+            player: read_value::<u8>(stream, iter.next(), "player")?,
+            panel: read_value::<u8>(stream, iter.next(), "panel")?,
+            line: read_value::<u8>(stream, iter.next(), "line")?,
+            x: read_value::<f32>(stream, iter.next(), "x")?,
+            y: read_value::<f32>(stream, iter.next(), "y")?,
         })
     }
 }
@@ -4873,60 +5280,68 @@ impl FromRawGameEvent for ClDrawlineEvent {
 pub struct RestartTimerTimeEvent {
     pub time: u8,
 }
-impl FromRawGameEvent for RestartTimerTimeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RestartTimerTimeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RestartTimerTimeEvent {
-            time: u8::from_value(iter.next(), "time")?,
+            time: read_value::<u8>(stream, iter.next(), "time")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct WinLimitChangedEvent {}
-impl FromRawGameEvent for WinLimitChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl WinLimitChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(WinLimitChangedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct WinPanelShowScoresEvent {}
-impl FromRawGameEvent for WinPanelShowScoresEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl WinPanelShowScoresEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(WinPanelShowScoresEvent {})
     }
 }
 #[derive(Debug)]
 pub struct TopStreamsRequestFinishedEvent {}
-impl FromRawGameEvent for TopStreamsRequestFinishedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl TopStreamsRequestFinishedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TopStreamsRequestFinishedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct CompetitiveStateChangedEvent {}
-impl FromRawGameEvent for CompetitiveStateChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl CompetitiveStateChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(CompetitiveStateChangedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct GlobalWarDataUpdatedEvent {}
-impl FromRawGameEvent for GlobalWarDataUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl GlobalWarDataUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GlobalWarDataUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct StopWatchChangedEvent {}
-impl FromRawGameEvent for StopWatchChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl StopWatchChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(StopWatchChangedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct DsStopEvent {}
-impl FromRawGameEvent for DsStopEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl DsStopEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(DsStopEvent {})
     }
 }
@@ -4934,39 +5349,44 @@ impl FromRawGameEvent for DsStopEvent {
 pub struct DsScreenshotEvent {
     pub delay: f32,
 }
-impl FromRawGameEvent for DsScreenshotEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl DsScreenshotEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(DsScreenshotEvent {
-            delay: f32::from_value(iter.next(), "delay")?,
+            delay: read_value::<f32>(stream, iter.next(), "delay")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct ShowMatchSummaryEvent {}
-impl FromRawGameEvent for ShowMatchSummaryEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ShowMatchSummaryEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ShowMatchSummaryEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ExperienceChangedEvent {}
-impl FromRawGameEvent for ExperienceChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ExperienceChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ExperienceChangedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct BeginXpLerpEvent {}
-impl FromRawGameEvent for BeginXpLerpEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl BeginXpLerpEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(BeginXpLerpEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MatchmakerStatsUpdatedEvent {}
-impl FromRawGameEvent for MatchmakerStatsUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MatchmakerStatsUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MatchmakerStatsUpdatedEvent {})
     }
 }
@@ -4974,39 +5394,44 @@ impl FromRawGameEvent for MatchmakerStatsUpdatedEvent {
 pub struct RematchVotePeriodOverEvent {
     pub success: bool,
 }
-impl FromRawGameEvent for RematchVotePeriodOverEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl RematchVotePeriodOverEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(RematchVotePeriodOverEvent {
-            success: bool::from_value(iter.next(), "success")?,
+            success: read_value::<bool>(stream, iter.next(), "success")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct RematchFailedToCreateEvent {}
-impl FromRawGameEvent for RematchFailedToCreateEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl RematchFailedToCreateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RematchFailedToCreateEvent {})
     }
 }
 #[derive(Debug)]
 pub struct PlayerRematchChangeEvent {}
-impl FromRawGameEvent for PlayerRematchChangeEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PlayerRematchChangeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PlayerRematchChangeEvent {})
     }
 }
 #[derive(Debug)]
 pub struct PingUpdatedEvent {}
-impl FromRawGameEvent for PingUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl PingUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PingUpdatedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct MMStatsUpdatedEvent {}
-impl FromRawGameEvent for MMStatsUpdatedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MMStatsUpdatedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MMStatsUpdatedEvent {})
     }
 }
@@ -5015,19 +5440,21 @@ pub struct PlayerNextMapVoteChangeEvent {
     pub map_index: u8,
     pub vote: u8,
 }
-impl FromRawGameEvent for PlayerNextMapVoteChangeEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerNextMapVoteChangeEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerNextMapVoteChangeEvent {
-            map_index: u8::from_value(iter.next(), "map_index")?,
-            vote: u8::from_value(iter.next(), "vote")?,
+            map_index: read_value::<u8>(stream, iter.next(), "map_index")?,
+            vote: read_value::<u8>(stream, iter.next(), "vote")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct VoteMapsChangedEvent {}
-impl FromRawGameEvent for VoteMapsChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl VoteMapsChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(VoteMapsChangedEvent {})
     }
 }
@@ -5039,15 +5466,16 @@ pub struct ProtoDefChangedEvent {
     pub deleted: bool,
     pub erase_history: bool,
 }
-impl FromRawGameEvent for ProtoDefChangedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ProtoDefChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ProtoDefChangedEvent {
-            kind: u8::from_value(iter.next(), "kind")?,
-            definition_index: u32::from_value(iter.next(), "definition_index")?,
-            created: bool::from_value(iter.next(), "created")?,
-            deleted: bool::from_value(iter.next(), "deleted")?,
-            erase_history: bool::from_value(iter.next(), "erase_history")?,
+            kind: read_value::<u8>(stream, iter.next(), "kind")?,
+            definition_index: read_value::<u32>(stream, iter.next(), "definition_index")?,
+            created: read_value::<bool>(stream, iter.next(), "created")?,
+            deleted: read_value::<bool>(stream, iter.next(), "deleted")?,
+            erase_history: read_value::<bool>(stream, iter.next(), "erase_history")?,
         })
     }
 }
@@ -5057,13 +5485,14 @@ pub struct PlayerDominationEvent {
     pub dominated: u16,
     pub dominations: u16,
 }
-impl FromRawGameEvent for PlayerDominationEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerDominationEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerDominationEvent {
-            dominator: u16::from_value(iter.next(), "dominator")?,
-            dominated: u16::from_value(iter.next(), "dominated")?,
-            dominations: u16::from_value(iter.next(), "dominations")?,
+            dominator: read_value::<u16>(stream, iter.next(), "dominator")?,
+            dominated: read_value::<u16>(stream, iter.next(), "dominated")?,
+            dominations: read_value::<u16>(stream, iter.next(), "dominations")?,
         })
     }
 }
@@ -5072,12 +5501,13 @@ pub struct PlayerRocketPackPushedEvent {
     pub pusher: u16,
     pub pushed: u16,
 }
-impl FromRawGameEvent for PlayerRocketPackPushedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl PlayerRocketPackPushedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(PlayerRocketPackPushedEvent {
-            pusher: u16::from_value(iter.next(), "pusher")?,
-            pushed: u16::from_value(iter.next(), "pushed")?,
+            pusher: read_value::<u16>(stream, iter.next(), "pusher")?,
+            pushed: read_value::<u16>(stream, iter.next(), "pushed")?,
         })
     }
 }
@@ -5086,12 +5516,13 @@ pub struct QuestRequestEvent {
     pub request: u32,
     pub msg: String,
 }
-impl FromRawGameEvent for QuestRequestEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl QuestRequestEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(QuestRequestEvent {
-            request: u32::from_value(iter.next(), "request")?,
-            msg: String::from_value(iter.next(), "msg")?,
+            request: read_value::<u32>(stream, iter.next(), "request")?,
+            msg: read_value::<String>(stream, iter.next(), "msg")?,
         })
     }
 }
@@ -5101,13 +5532,14 @@ pub struct QuestResponseEvent {
     pub success: bool,
     pub msg: String,
 }
-impl FromRawGameEvent for QuestResponseEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl QuestResponseEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(QuestResponseEvent {
-            request: u32::from_value(iter.next(), "request")?,
-            success: bool::from_value(iter.next(), "success")?,
-            msg: String::from_value(iter.next(), "msg")?,
+            request: read_value::<u32>(stream, iter.next(), "request")?,
+            success: read_value::<bool>(stream, iter.next(), "success")?,
+            msg: read_value::<String>(stream, iter.next(), "msg")?,
         })
     }
 }
@@ -5119,15 +5551,20 @@ pub struct QuestProgressEvent {
     pub completed: bool,
     pub quest_definition_index: u32,
 }
-impl FromRawGameEvent for QuestProgressEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl QuestProgressEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(QuestProgressEvent {
-            owner: u16::from_value(iter.next(), "owner")?,
-            scorer: u16::from_value(iter.next(), "scorer")?,
-            kind: u8::from_value(iter.next(), "kind")?,
-            completed: bool::from_value(iter.next(), "completed")?,
-            quest_definition_index: u32::from_value(iter.next(), "quest_definition_index")?,
+            owner: read_value::<u16>(stream, iter.next(), "owner")?,
+            scorer: read_value::<u16>(stream, iter.next(), "scorer")?,
+            kind: read_value::<u8>(stream, iter.next(), "kind")?,
+            completed: read_value::<bool>(stream, iter.next(), "completed")?,
+            quest_definition_index: read_value::<u32>(
+                stream,
+                iter.next(),
+                "quest_definition_index",
+            )?,
         })
     }
 }
@@ -5138,21 +5575,23 @@ pub struct ProjectileRemovedEvent {
     pub num_hit: u8,
     pub num_direct_hit: u8,
 }
-impl FromRawGameEvent for ProjectileRemovedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ProjectileRemovedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ProjectileRemovedEvent {
-            attacker: u8::from_value(iter.next(), "attacker")?,
-            weapon_def_index: u32::from_value(iter.next(), "weapon_def_index")?,
-            num_hit: u8::from_value(iter.next(), "num_hit")?,
-            num_direct_hit: u8::from_value(iter.next(), "num_direct_hit")?,
+            attacker: read_value::<u8>(stream, iter.next(), "attacker")?,
+            weapon_def_index: read_value::<u32>(stream, iter.next(), "weapon_def_index")?,
+            num_hit: read_value::<u8>(stream, iter.next(), "num_hit")?,
+            num_direct_hit: read_value::<u8>(stream, iter.next(), "num_direct_hit")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct QuestMapDataChangedEvent {}
-impl FromRawGameEvent for QuestMapDataChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl QuestMapDataChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(QuestMapDataChangedEvent {})
     }
 }
@@ -5162,13 +5601,14 @@ pub struct GasDousedPlayerIgnitedEvent {
     pub douser: u16,
     pub victim: u16,
 }
-impl FromRawGameEvent for GasDousedPlayerIgnitedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl GasDousedPlayerIgnitedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(GasDousedPlayerIgnitedEvent {
-            igniter: u16::from_value(iter.next(), "igniter")?,
-            douser: u16::from_value(iter.next(), "douser")?,
-            victim: u16::from_value(iter.next(), "victim")?,
+            igniter: read_value::<u16>(stream, iter.next(), "igniter")?,
+            douser: read_value::<u16>(stream, iter.next(), "douser")?,
+            victim: read_value::<u16>(stream, iter.next(), "victim")?,
         })
     }
 }
@@ -5176,18 +5616,20 @@ impl FromRawGameEvent for GasDousedPlayerIgnitedEvent {
 pub struct QuestTurnInStateEvent {
     pub state: u16,
 }
-impl FromRawGameEvent for QuestTurnInStateEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl QuestTurnInStateEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(QuestTurnInStateEvent {
-            state: u16::from_value(iter.next(), "state")?,
+            state: read_value::<u16>(stream, iter.next(), "state")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct ItemsAcknowledgedEvent {}
-impl FromRawGameEvent for ItemsAcknowledgedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ItemsAcknowledgedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ItemsAcknowledgedEvent {})
     }
 }
@@ -5196,26 +5638,29 @@ pub struct CapperKilledEvent {
     pub blocker: u16,
     pub victim: u16,
 }
-impl FromRawGameEvent for CapperKilledEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl CapperKilledEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(CapperKilledEvent {
-            blocker: u16::from_value(iter.next(), "blocker")?,
-            victim: u16::from_value(iter.next(), "victim")?,
+            blocker: read_value::<u16>(stream, iter.next(), "blocker")?,
+            victim: read_value::<u16>(stream, iter.next(), "victim")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct MainMenuStabilizedEvent {}
-impl FromRawGameEvent for MainMenuStabilizedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl MainMenuStabilizedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MainMenuStabilizedEvent {})
     }
 }
 #[derive(Debug)]
 pub struct WorldStatusChangedEvent {}
-impl FromRawGameEvent for WorldStatusChangedEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl WorldStatusChangedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(WorldStatusChangedEvent {})
     }
 }
@@ -5226,14 +5671,15 @@ pub struct HLTVStatusEvent {
     pub proxies: u16,
     pub master: String,
 }
-impl FromRawGameEvent for HLTVStatusEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVStatusEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVStatusEvent {
-            clients: u32::from_value(iter.next(), "clients")?,
-            slots: u32::from_value(iter.next(), "slots")?,
-            proxies: u16::from_value(iter.next(), "proxies")?,
-            master: String::from_value(iter.next(), "master")?,
+            clients: read_value::<u32>(stream, iter.next(), "clients")?,
+            slots: read_value::<u32>(stream, iter.next(), "slots")?,
+            proxies: read_value::<u16>(stream, iter.next(), "proxies")?,
+            master: read_value::<String>(stream, iter.next(), "master")?,
         })
     }
 }
@@ -5241,11 +5687,12 @@ impl FromRawGameEvent for HLTVStatusEvent {
 pub struct HLTVCameramanEvent {
     pub index: u16,
 }
-impl FromRawGameEvent for HLTVCameramanEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVCameramanEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVCameramanEvent {
-            index: u16::from_value(iter.next(), "index")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
         })
     }
 }
@@ -5255,13 +5702,14 @@ pub struct HLTVRankCameraEvent {
     pub rank: f32,
     pub target: u16,
 }
-impl FromRawGameEvent for HLTVRankCameraEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVRankCameraEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVRankCameraEvent {
-            index: u8::from_value(iter.next(), "index")?,
-            rank: f32::from_value(iter.next(), "rank")?,
-            target: u16::from_value(iter.next(), "target")?,
+            index: read_value::<u8>(stream, iter.next(), "index")?,
+            rank: read_value::<f32>(stream, iter.next(), "rank")?,
+            target: read_value::<u16>(stream, iter.next(), "target")?,
         })
     }
 }
@@ -5271,13 +5719,14 @@ pub struct HLTVRankEntityEvent {
     pub rank: f32,
     pub target: u16,
 }
-impl FromRawGameEvent for HLTVRankEntityEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVRankEntityEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVRankEntityEvent {
-            index: u16::from_value(iter.next(), "index")?,
-            rank: f32::from_value(iter.next(), "rank")?,
-            target: u16::from_value(iter.next(), "target")?,
+            index: read_value::<u16>(stream, iter.next(), "index")?,
+            rank: read_value::<f32>(stream, iter.next(), "rank")?,
+            target: read_value::<u16>(stream, iter.next(), "target")?,
         })
     }
 }
@@ -5292,18 +5741,19 @@ pub struct HLTVFixedEvent {
     pub fov: f32,
     pub target: u16,
 }
-impl FromRawGameEvent for HLTVFixedEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVFixedEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVFixedEvent {
-            pos_x: u32::from_value(iter.next(), "pos_x")?,
-            pos_y: u32::from_value(iter.next(), "pos_y")?,
-            pos_z: u32::from_value(iter.next(), "pos_z")?,
-            theta: u16::from_value(iter.next(), "theta")?,
-            phi: u16::from_value(iter.next(), "phi")?,
-            offset: u16::from_value(iter.next(), "offset")?,
-            fov: f32::from_value(iter.next(), "fov")?,
-            target: u16::from_value(iter.next(), "target")?,
+            pos_x: read_value::<u32>(stream, iter.next(), "pos_x")?,
+            pos_y: read_value::<u32>(stream, iter.next(), "pos_y")?,
+            pos_z: read_value::<u32>(stream, iter.next(), "pos_z")?,
+            theta: read_value::<u16>(stream, iter.next(), "theta")?,
+            phi: read_value::<u16>(stream, iter.next(), "phi")?,
+            offset: read_value::<u16>(stream, iter.next(), "offset")?,
+            fov: read_value::<f32>(stream, iter.next(), "fov")?,
+            target: read_value::<u16>(stream, iter.next(), "target")?,
         })
     }
 }
@@ -5317,17 +5767,18 @@ pub struct HLTVChaseEvent {
     pub inertia: u8,
     pub in_eye: u8,
 }
-impl FromRawGameEvent for HLTVChaseEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVChaseEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVChaseEvent {
-            target_1: u16::from_value(iter.next(), "target_1")?,
-            target_2: u16::from_value(iter.next(), "target_2")?,
-            distance: u16::from_value(iter.next(), "distance")?,
-            theta: u16::from_value(iter.next(), "theta")?,
-            phi: u16::from_value(iter.next(), "phi")?,
-            inertia: u8::from_value(iter.next(), "inertia")?,
-            in_eye: u8::from_value(iter.next(), "in_eye")?,
+            target_1: read_value::<u16>(stream, iter.next(), "target_1")?,
+            target_2: read_value::<u16>(stream, iter.next(), "target_2")?,
+            distance: read_value::<u16>(stream, iter.next(), "distance")?,
+            theta: read_value::<u16>(stream, iter.next(), "theta")?,
+            phi: read_value::<u16>(stream, iter.next(), "phi")?,
+            inertia: read_value::<u8>(stream, iter.next(), "inertia")?,
+            in_eye: read_value::<u8>(stream, iter.next(), "in_eye")?,
         })
     }
 }
@@ -5335,11 +5786,12 @@ impl FromRawGameEvent for HLTVChaseEvent {
 pub struct HLTVMessageEvent {
     pub text: String,
 }
-impl FromRawGameEvent for HLTVMessageEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVMessageEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVMessageEvent {
-            text: String::from_value(iter.next(), "text")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
         })
     }
 }
@@ -5347,11 +5799,12 @@ impl FromRawGameEvent for HLTVMessageEvent {
 pub struct HLTVTitleEvent {
     pub text: String,
 }
-impl FromRawGameEvent for HLTVTitleEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVTitleEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVTitleEvent {
-            text: String::from_value(iter.next(), "text")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
         })
     }
 }
@@ -5359,18 +5812,20 @@ impl FromRawGameEvent for HLTVTitleEvent {
 pub struct HLTVChatEvent {
     pub text: String,
 }
-impl FromRawGameEvent for HLTVChatEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl HLTVChatEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(HLTVChatEvent {
-            text: String::from_value(iter.next(), "text")?,
+            text: read_value::<String>(stream, iter.next(), "text")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct ReplayStartRecordEvent {}
-impl FromRawGameEvent for ReplayStartRecordEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ReplayStartRecordEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ReplayStartRecordEvent {})
     }
 }
@@ -5381,28 +5836,31 @@ pub struct ReplaySessionInfoEvent {
     pub cb: u32,
     pub st: u32,
 }
-impl FromRawGameEvent for ReplaySessionInfoEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ReplaySessionInfoEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ReplaySessionInfoEvent {
-            sn: String::from_value(iter.next(), "sn")?,
-            di: u8::from_value(iter.next(), "di")?,
-            cb: u32::from_value(iter.next(), "cb")?,
-            st: u32::from_value(iter.next(), "st")?,
+            sn: read_value::<String>(stream, iter.next(), "sn")?,
+            di: read_value::<u8>(stream, iter.next(), "di")?,
+            cb: read_value::<u32>(stream, iter.next(), "cb")?,
+            st: read_value::<u32>(stream, iter.next(), "st")?,
         })
     }
 }
 #[derive(Debug)]
 pub struct ReplayEndRecordEvent {}
-impl FromRawGameEvent for ReplayEndRecordEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ReplayEndRecordEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ReplayEndRecordEvent {})
     }
 }
 #[derive(Debug)]
 pub struct ReplayReplaysAvailableEvent {}
-impl FromRawGameEvent for ReplayReplaysAvailableEvent {
-    fn from_raw_event(_values: Vec<GameEventValue>) -> Result<Self> {
+impl ReplayReplaysAvailableEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
@@ -5410,11 +5868,12 @@ impl FromRawGameEvent for ReplayReplaysAvailableEvent {
 pub struct ReplayServerErrorEvent {
     pub error: String,
 }
-impl FromRawGameEvent for ReplayServerErrorEvent {
-    fn from_raw_event(values: Vec<GameEventValue>) -> Result<Self> {
-        let mut iter = values.into_iter();
+impl ReplayServerErrorEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
         Ok(ReplayServerErrorEvent {
-            error: String::from_value(iter.next(), "error")?,
+            error: read_value::<String>(stream, iter.next(), "error")?,
         })
     }
 }
@@ -7043,1210 +7502,1202 @@ impl GameEventType {
     }
 }
 impl GameEvent {
-    pub fn from_raw_event(event: RawGameEvent) -> Result<Self> {
-        Ok(match event.event_type {
+    pub fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        Ok(match definition.event_type {
             GameEventType::ServerSpawn => {
-                GameEvent::ServerSpawn(<Box<ServerSpawnEvent>>::from_raw_event(event.values)?)
+                GameEvent::ServerSpawn(Box::new(<ServerSpawnEvent>::read(stream, definition)?))
             }
             GameEventType::ServerChangeLevelFailed => GameEvent::ServerChangeLevelFailed(
-                ServerChangeLevelFailedEvent::from_raw_event(event.values)?,
+                ServerChangeLevelFailedEvent::read(stream, definition)?,
             ),
             GameEventType::ServerShutdown => {
-                GameEvent::ServerShutdown(ServerShutdownEvent::from_raw_event(event.values)?)
+                GameEvent::ServerShutdown(ServerShutdownEvent::read(stream, definition)?)
             }
             GameEventType::ServerCvar => {
-                GameEvent::ServerCvar(ServerCvarEvent::from_raw_event(event.values)?)
+                GameEvent::ServerCvar(ServerCvarEvent::read(stream, definition)?)
             }
             GameEventType::ServerMessage => {
-                GameEvent::ServerMessage(ServerMessageEvent::from_raw_event(event.values)?)
+                GameEvent::ServerMessage(ServerMessageEvent::read(stream, definition)?)
             }
             GameEventType::ServerAddBan => {
-                GameEvent::ServerAddBan(<Box<ServerAddBanEvent>>::from_raw_event(event.values)?)
+                GameEvent::ServerAddBan(Box::new(<ServerAddBanEvent>::read(stream, definition)?))
             }
             GameEventType::ServerRemoveBan => {
-                GameEvent::ServerRemoveBan(ServerRemoveBanEvent::from_raw_event(event.values)?)
+                GameEvent::ServerRemoveBan(ServerRemoveBanEvent::read(stream, definition)?)
             }
             GameEventType::PlayerConnect => {
-                GameEvent::PlayerConnect(PlayerConnectEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerConnect(PlayerConnectEvent::read(stream, definition)?)
             }
-            GameEventType::PlayerConnectClient => GameEvent::PlayerConnectClient(
-                PlayerConnectClientEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerConnectClient => {
+                GameEvent::PlayerConnectClient(PlayerConnectClientEvent::read(stream, definition)?)
+            }
             GameEventType::PlayerInfo => {
-                GameEvent::PlayerInfo(PlayerInfoEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerInfo(PlayerInfoEvent::read(stream, definition)?)
             }
             GameEventType::PlayerDisconnect => {
-                GameEvent::PlayerDisconnect(PlayerDisconnectEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerDisconnect(PlayerDisconnectEvent::read(stream, definition)?)
             }
             GameEventType::PlayerActivate => {
-                GameEvent::PlayerActivate(PlayerActivateEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerActivate(PlayerActivateEvent::read(stream, definition)?)
             }
             GameEventType::PlayerSay => {
-                GameEvent::PlayerSay(PlayerSayEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerSay(PlayerSayEvent::read(stream, definition)?)
             }
             GameEventType::ClientDisconnect => {
-                GameEvent::ClientDisconnect(ClientDisconnectEvent::from_raw_event(event.values)?)
+                GameEvent::ClientDisconnect(ClientDisconnectEvent::read(stream, definition)?)
             }
-            GameEventType::ClientBeginConnect => GameEvent::ClientBeginConnect(
-                ClientBeginConnectEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::ClientBeginConnect => {
+                GameEvent::ClientBeginConnect(ClientBeginConnectEvent::read(stream, definition)?)
+            }
             GameEventType::ClientConnected => {
-                GameEvent::ClientConnected(ClientConnectedEvent::from_raw_event(event.values)?)
+                GameEvent::ClientConnected(ClientConnectedEvent::read(stream, definition)?)
             }
             GameEventType::ClientFullConnect => {
-                GameEvent::ClientFullConnect(ClientFullConnectEvent::from_raw_event(event.values)?)
+                GameEvent::ClientFullConnect(ClientFullConnectEvent::read(stream, definition)?)
             }
             GameEventType::HostQuit => {
-                GameEvent::HostQuit(HostQuitEvent::from_raw_event(event.values)?)
+                GameEvent::HostQuit(HostQuitEvent::read(stream, definition)?)
             }
             GameEventType::TeamInfo => {
-                GameEvent::TeamInfo(TeamInfoEvent::from_raw_event(event.values)?)
+                GameEvent::TeamInfo(TeamInfoEvent::read(stream, definition)?)
             }
             GameEventType::TeamScore => {
-                GameEvent::TeamScore(TeamScoreEvent::from_raw_event(event.values)?)
+                GameEvent::TeamScore(TeamScoreEvent::read(stream, definition)?)
             }
             GameEventType::TeamPlayBroadcastAudio => GameEvent::TeamPlayBroadcastAudio(
-                TeamPlayBroadcastAudioEvent::from_raw_event(event.values)?,
+                TeamPlayBroadcastAudioEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerTeam => {
-                GameEvent::PlayerTeam(PlayerTeamEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerTeam(PlayerTeamEvent::read(stream, definition)?)
             }
             GameEventType::PlayerClass => {
-                GameEvent::PlayerClass(PlayerClassEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerClass(PlayerClassEvent::read(stream, definition)?)
             }
             GameEventType::PlayerDeath => {
-                GameEvent::PlayerDeath(<Box<PlayerDeathEvent>>::from_raw_event(event.values)?)
+                GameEvent::PlayerDeath(Box::new(<PlayerDeathEvent>::read(stream, definition)?))
             }
             GameEventType::PlayerHurt => {
-                GameEvent::PlayerHurt(PlayerHurtEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerHurt(PlayerHurtEvent::read(stream, definition)?)
             }
             GameEventType::PlayerChat => {
-                GameEvent::PlayerChat(PlayerChatEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerChat(PlayerChatEvent::read(stream, definition)?)
             }
             GameEventType::PlayerScore => {
-                GameEvent::PlayerScore(PlayerScoreEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerScore(PlayerScoreEvent::read(stream, definition)?)
             }
             GameEventType::PlayerSpawn => {
-                GameEvent::PlayerSpawn(PlayerSpawnEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerSpawn(PlayerSpawnEvent::read(stream, definition)?)
             }
             GameEventType::PlayerShoot => {
-                GameEvent::PlayerShoot(PlayerShootEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerShoot(PlayerShootEvent::read(stream, definition)?)
             }
             GameEventType::PlayerUse => {
-                GameEvent::PlayerUse(PlayerUseEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerUse(PlayerUseEvent::read(stream, definition)?)
             }
             GameEventType::PlayerChangeName => {
-                GameEvent::PlayerChangeName(PlayerChangeNameEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerChangeName(PlayerChangeNameEvent::read(stream, definition)?)
             }
             GameEventType::PlayerHintMessage => {
-                GameEvent::PlayerHintMessage(PlayerHintMessageEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerHintMessage(PlayerHintMessageEvent::read(stream, definition)?)
             }
             GameEventType::BasePlayerTeleported => GameEvent::BasePlayerTeleported(
-                BasePlayerTeleportedEvent::from_raw_event(event.values)?,
+                BasePlayerTeleportedEvent::read(stream, definition)?,
             ),
             GameEventType::GameInit => {
-                GameEvent::GameInit(GameInitEvent::from_raw_event(event.values)?)
+                GameEvent::GameInit(GameInitEvent::read(stream, definition)?)
             }
             GameEventType::GameNewMap => {
-                GameEvent::GameNewMap(GameNewMapEvent::from_raw_event(event.values)?)
+                GameEvent::GameNewMap(GameNewMapEvent::read(stream, definition)?)
             }
             GameEventType::GameStart => {
-                GameEvent::GameStart(GameStartEvent::from_raw_event(event.values)?)
+                GameEvent::GameStart(GameStartEvent::read(stream, definition)?)
             }
-            GameEventType::GameEnd => {
-                GameEvent::GameEnd(GameEndEvent::from_raw_event(event.values)?)
-            }
+            GameEventType::GameEnd => GameEvent::GameEnd(GameEndEvent::read(stream, definition)?),
             GameEventType::RoundStart => {
-                GameEvent::RoundStart(RoundStartEvent::from_raw_event(event.values)?)
+                GameEvent::RoundStart(RoundStartEvent::read(stream, definition)?)
             }
             GameEventType::RoundEnd => {
-                GameEvent::RoundEnd(RoundEndEvent::from_raw_event(event.values)?)
+                GameEvent::RoundEnd(RoundEndEvent::read(stream, definition)?)
             }
             GameEventType::GameMessage => {
-                GameEvent::GameMessage(GameMessageEvent::from_raw_event(event.values)?)
+                GameEvent::GameMessage(GameMessageEvent::read(stream, definition)?)
             }
             GameEventType::BreakBreakable => {
-                GameEvent::BreakBreakable(BreakBreakableEvent::from_raw_event(event.values)?)
+                GameEvent::BreakBreakable(BreakBreakableEvent::read(stream, definition)?)
             }
             GameEventType::BreakProp => {
-                GameEvent::BreakProp(BreakPropEvent::from_raw_event(event.values)?)
+                GameEvent::BreakProp(BreakPropEvent::read(stream, definition)?)
             }
             GameEventType::EntityKilled => {
-                GameEvent::EntityKilled(EntityKilledEvent::from_raw_event(event.values)?)
+                GameEvent::EntityKilled(EntityKilledEvent::read(stream, definition)?)
             }
             GameEventType::BonusUpdated => {
-                GameEvent::BonusUpdated(BonusUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::BonusUpdated(BonusUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::AchievementEvent => {
-                GameEvent::AchievementEvent(AchievementEventEvent::from_raw_event(event.values)?)
+                GameEvent::AchievementEvent(AchievementEventEvent::read(stream, definition)?)
             }
             GameEventType::AchievementIncrement => GameEvent::AchievementIncrement(
-                AchievementIncrementEvent::from_raw_event(event.values)?,
+                AchievementIncrementEvent::read(stream, definition)?,
             ),
             GameEventType::PhysgunPickup => {
-                GameEvent::PhysgunPickup(PhysgunPickupEvent::from_raw_event(event.values)?)
+                GameEvent::PhysgunPickup(PhysgunPickupEvent::read(stream, definition)?)
             }
             GameEventType::FlareIgniteNpc => {
-                GameEvent::FlareIgniteNpc(FlareIgniteNpcEvent::from_raw_event(event.values)?)
+                GameEvent::FlareIgniteNpc(FlareIgniteNpcEvent::read(stream, definition)?)
             }
             GameEventType::HelicopterGrenadePuntMiss => GameEvent::HelicopterGrenadePuntMiss(
-                HelicopterGrenadePuntMissEvent::from_raw_event(event.values)?,
+                HelicopterGrenadePuntMissEvent::read(stream, definition)?,
             ),
-            GameEventType::UserDataDownloaded => GameEvent::UserDataDownloaded(
-                UserDataDownloadedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::UserDataDownloaded => {
+                GameEvent::UserDataDownloaded(UserDataDownloadedEvent::read(stream, definition)?)
+            }
             GameEventType::RagdollDissolved => {
-                GameEvent::RagdollDissolved(RagdollDissolvedEvent::from_raw_event(event.values)?)
+                GameEvent::RagdollDissolved(RagdollDissolvedEvent::read(stream, definition)?)
             }
             GameEventType::HLTVChangedMode => {
-                GameEvent::HLTVChangedMode(HLTVChangedModeEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVChangedMode(HLTVChangedModeEvent::read(stream, definition)?)
             }
             GameEventType::HLTVChangedTarget => {
-                GameEvent::HLTVChangedTarget(HLTVChangedTargetEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVChangedTarget(HLTVChangedTargetEvent::read(stream, definition)?)
             }
             GameEventType::VoteEnded => {
-                GameEvent::VoteEnded(VoteEndedEvent::from_raw_event(event.values)?)
+                GameEvent::VoteEnded(VoteEndedEvent::read(stream, definition)?)
             }
             GameEventType::VoteStarted => {
-                GameEvent::VoteStarted(VoteStartedEvent::from_raw_event(event.values)?)
+                GameEvent::VoteStarted(VoteStartedEvent::read(stream, definition)?)
             }
             GameEventType::VoteChanged => {
-                GameEvent::VoteChanged(VoteChangedEvent::from_raw_event(event.values)?)
+                GameEvent::VoteChanged(VoteChangedEvent::read(stream, definition)?)
             }
             GameEventType::VotePassed => {
-                GameEvent::VotePassed(VotePassedEvent::from_raw_event(event.values)?)
+                GameEvent::VotePassed(VotePassedEvent::read(stream, definition)?)
             }
             GameEventType::VoteFailed => {
-                GameEvent::VoteFailed(VoteFailedEvent::from_raw_event(event.values)?)
+                GameEvent::VoteFailed(VoteFailedEvent::read(stream, definition)?)
             }
             GameEventType::VoteCast => {
-                GameEvent::VoteCast(VoteCastEvent::from_raw_event(event.values)?)
+                GameEvent::VoteCast(VoteCastEvent::read(stream, definition)?)
             }
             GameEventType::VoteOptions => {
-                GameEvent::VoteOptions(<Box<VoteOptionsEvent>>::from_raw_event(event.values)?)
+                GameEvent::VoteOptions(Box::new(<VoteOptionsEvent>::read(stream, definition)?))
             }
             GameEventType::ReplaySaved => {
-                GameEvent::ReplaySaved(ReplaySavedEvent::from_raw_event(event.values)?)
+                GameEvent::ReplaySaved(ReplaySavedEvent::read(stream, definition)?)
             }
             GameEventType::EnteredPerformanceMode => GameEvent::EnteredPerformanceMode(
-                EnteredPerformanceModeEvent::from_raw_event(event.values)?,
+                EnteredPerformanceModeEvent::read(stream, definition)?,
             ),
             GameEventType::BrowseReplays => {
-                GameEvent::BrowseReplays(BrowseReplaysEvent::from_raw_event(event.values)?)
+                GameEvent::BrowseReplays(BrowseReplaysEvent::read(stream, definition)?)
             }
-            GameEventType::ReplayYoutubeStats => GameEvent::ReplayYoutubeStats(
-                ReplayYoutubeStatsEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::ReplayYoutubeStats => {
+                GameEvent::ReplayYoutubeStats(ReplayYoutubeStatsEvent::read(stream, definition)?)
+            }
             GameEventType::InventoryUpdated => {
-                GameEvent::InventoryUpdated(InventoryUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::InventoryUpdated(InventoryUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::CartUpdated => {
-                GameEvent::CartUpdated(CartUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::CartUpdated(CartUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::StorePriceSheetUpdated => GameEvent::StorePriceSheetUpdated(
-                StorePriceSheetUpdatedEvent::from_raw_event(event.values)?,
+                StorePriceSheetUpdatedEvent::read(stream, definition)?,
             ),
             GameEventType::EconInventoryConnected => GameEvent::EconInventoryConnected(
-                EconInventoryConnectedEvent::from_raw_event(event.values)?,
+                EconInventoryConnectedEvent::read(stream, definition)?,
             ),
             GameEventType::ItemSchemaInitialized => GameEvent::ItemSchemaInitialized(
-                ItemSchemaInitializedEvent::from_raw_event(event.values)?,
+                ItemSchemaInitializedEvent::read(stream, definition)?,
             ),
             GameEventType::GcNewSession => {
-                GameEvent::GcNewSession(GcNewSessionEvent::from_raw_event(event.values)?)
+                GameEvent::GcNewSession(GcNewSessionEvent::read(stream, definition)?)
             }
             GameEventType::GcLostSession => {
-                GameEvent::GcLostSession(GcLostSessionEvent::from_raw_event(event.values)?)
+                GameEvent::GcLostSession(GcLostSessionEvent::read(stream, definition)?)
             }
             GameEventType::IntroFinish => {
-                GameEvent::IntroFinish(IntroFinishEvent::from_raw_event(event.values)?)
+                GameEvent::IntroFinish(IntroFinishEvent::read(stream, definition)?)
             }
             GameEventType::IntroNextCamera => {
-                GameEvent::IntroNextCamera(IntroNextCameraEvent::from_raw_event(event.values)?)
+                GameEvent::IntroNextCamera(IntroNextCameraEvent::read(stream, definition)?)
             }
             GameEventType::PlayerChangeClass => {
-                GameEvent::PlayerChangeClass(PlayerChangeClassEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerChangeClass(PlayerChangeClassEvent::read(stream, definition)?)
             }
-            GameEventType::TfMapTimeRemaining => GameEvent::TfMapTimeRemaining(
-                TfMapTimeRemainingEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::TfMapTimeRemaining => {
+                GameEvent::TfMapTimeRemaining(TfMapTimeRemainingEvent::read(stream, definition)?)
+            }
             GameEventType::TfGameOver => {
-                GameEvent::TfGameOver(TfGameOverEvent::from_raw_event(event.values)?)
+                GameEvent::TfGameOver(TfGameOverEvent::read(stream, definition)?)
             }
             GameEventType::CtfFlagCaptured => {
-                GameEvent::CtfFlagCaptured(CtfFlagCapturedEvent::from_raw_event(event.values)?)
+                GameEvent::CtfFlagCaptured(CtfFlagCapturedEvent::read(stream, definition)?)
             }
             GameEventType::ControlPointInitialized => GameEvent::ControlPointInitialized(
-                ControlPointInitializedEvent::from_raw_event(event.values)?,
+                ControlPointInitializedEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointUpdateImages => GameEvent::ControlPointUpdateImages(
-                ControlPointUpdateImagesEvent::from_raw_event(event.values)?,
+                ControlPointUpdateImagesEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointUpdateLayout => GameEvent::ControlPointUpdateLayout(
-                ControlPointUpdateLayoutEvent::from_raw_event(event.values)?,
+                ControlPointUpdateLayoutEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointUpdateCapping => GameEvent::ControlPointUpdateCapping(
-                ControlPointUpdateCappingEvent::from_raw_event(event.values)?,
+                ControlPointUpdateCappingEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointUpdateOwner => GameEvent::ControlPointUpdateOwner(
-                ControlPointUpdateOwnerEvent::from_raw_event(event.values)?,
+                ControlPointUpdateOwnerEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointStartTouch => GameEvent::ControlPointStartTouch(
-                ControlPointStartTouchEvent::from_raw_event(event.values)?,
+                ControlPointStartTouchEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointEndTouch => GameEvent::ControlPointEndTouch(
-                ControlPointEndTouchEvent::from_raw_event(event.values)?,
+                ControlPointEndTouchEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointPulseElement => GameEvent::ControlPointPulseElement(
-                ControlPointPulseElementEvent::from_raw_event(event.values)?,
+                ControlPointPulseElementEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointFakeCapture => GameEvent::ControlPointFakeCapture(
-                ControlPointFakeCaptureEvent::from_raw_event(event.values)?,
+                ControlPointFakeCaptureEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointFakeCaptureMultiplier => {
                 GameEvent::ControlPointFakeCaptureMultiplier(
-                    ControlPointFakeCaptureMultiplierEvent::from_raw_event(event.values)?,
+                    ControlPointFakeCaptureMultiplierEvent::read(stream, definition)?,
                 )
             }
             GameEventType::TeamPlayRoundSelected => GameEvent::TeamPlayRoundSelected(
-                TeamPlayRoundSelectedEvent::from_raw_event(event.values)?,
+                TeamPlayRoundSelectedEvent::read(stream, definition)?,
             ),
-            GameEventType::TeamPlayRoundStart => GameEvent::TeamPlayRoundStart(
-                TeamPlayRoundStartEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::TeamPlayRoundActive => GameEvent::TeamPlayRoundActive(
-                TeamPlayRoundActiveEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::TeamPlayRoundStart => {
+                GameEvent::TeamPlayRoundStart(TeamPlayRoundStartEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayRoundActive => {
+                GameEvent::TeamPlayRoundActive(TeamPlayRoundActiveEvent::read(stream, definition)?)
+            }
             GameEventType::TeamPlayWaitingBegins => GameEvent::TeamPlayWaitingBegins(
-                TeamPlayWaitingBeginsEvent::from_raw_event(event.values)?,
+                TeamPlayWaitingBeginsEvent::read(stream, definition)?,
             ),
-            GameEventType::TeamPlayWaitingEnds => GameEvent::TeamPlayWaitingEnds(
-                TeamPlayWaitingEndsEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::TeamPlayWaitingEnds => {
+                GameEvent::TeamPlayWaitingEnds(TeamPlayWaitingEndsEvent::read(stream, definition)?)
+            }
             GameEventType::TeamPlayWaitingAboutToEnd => GameEvent::TeamPlayWaitingAboutToEnd(
-                TeamPlayWaitingAboutToEndEvent::from_raw_event(event.values)?,
+                TeamPlayWaitingAboutToEndEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayRestartRound => GameEvent::TeamPlayRestartRound(
-                TeamPlayRestartRoundEvent::from_raw_event(event.values)?,
+                TeamPlayRestartRoundEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayReadyRestart => GameEvent::TeamPlayReadyRestart(
-                TeamPlayReadyRestartEvent::from_raw_event(event.values)?,
+                TeamPlayReadyRestartEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayRoundRestartSeconds => GameEvent::TeamPlayRoundRestartSeconds(
-                TeamPlayRoundRestartSecondsEvent::from_raw_event(event.values)?,
+                TeamPlayRoundRestartSecondsEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayTeamReady => {
-                GameEvent::TeamPlayTeamReady(TeamPlayTeamReadyEvent::from_raw_event(event.values)?)
+                GameEvent::TeamPlayTeamReady(TeamPlayTeamReadyEvent::read(stream, definition)?)
             }
             GameEventType::TeamPlayRoundWin => {
-                GameEvent::TeamPlayRoundWin(TeamPlayRoundWinEvent::from_raw_event(event.values)?)
+                GameEvent::TeamPlayRoundWin(TeamPlayRoundWinEvent::read(stream, definition)?)
             }
-            GameEventType::TeamPlayUpdateTimer => GameEvent::TeamPlayUpdateTimer(
-                TeamPlayUpdateTimerEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::TeamPlayUpdateTimer => {
+                GameEvent::TeamPlayUpdateTimer(TeamPlayUpdateTimerEvent::read(stream, definition)?)
+            }
             GameEventType::TeamPlayRoundStalemate => GameEvent::TeamPlayRoundStalemate(
-                TeamPlayRoundStalemateEvent::from_raw_event(event.values)?,
+                TeamPlayRoundStalemateEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayOvertimeBegin => GameEvent::TeamPlayOvertimeBegin(
-                TeamPlayOvertimeBeginEvent::from_raw_event(event.values)?,
+                TeamPlayOvertimeBeginEvent::read(stream, definition)?,
             ),
-            GameEventType::TeamPlayOvertimeEnd => GameEvent::TeamPlayOvertimeEnd(
-                TeamPlayOvertimeEndEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::TeamPlayOvertimeEnd => {
+                GameEvent::TeamPlayOvertimeEnd(TeamPlayOvertimeEndEvent::read(stream, definition)?)
+            }
             GameEventType::TeamPlaySuddenDeathBegin => GameEvent::TeamPlaySuddenDeathBegin(
-                TeamPlaySuddenDeathBeginEvent::from_raw_event(event.values)?,
+                TeamPlaySuddenDeathBeginEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlaySuddenDeathEnd => GameEvent::TeamPlaySuddenDeathEnd(
-                TeamPlaySuddenDeathEndEvent::from_raw_event(event.values)?,
+                TeamPlaySuddenDeathEndEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayGameOver => {
-                GameEvent::TeamPlayGameOver(TeamPlayGameOverEvent::from_raw_event(event.values)?)
+                GameEvent::TeamPlayGameOver(TeamPlayGameOverEvent::read(stream, definition)?)
             }
             GameEventType::TeamPlayMapTimeRemaining => GameEvent::TeamPlayMapTimeRemaining(
-                TeamPlayMapTimeRemainingEvent::from_raw_event(event.values)?,
+                TeamPlayMapTimeRemainingEvent::read(stream, definition)?,
             ),
-            GameEventType::TeamPlayTimerFlash => GameEvent::TeamPlayTimerFlash(
-                TeamPlayTimerFlashEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::TeamPlayTimerFlash => {
+                GameEvent::TeamPlayTimerFlash(TeamPlayTimerFlashEvent::read(stream, definition)?)
+            }
             GameEventType::TeamPlayTimerTimeAdded => GameEvent::TeamPlayTimerTimeAdded(
-                TeamPlayTimerTimeAddedEvent::from_raw_event(event.values)?,
+                TeamPlayTimerTimeAddedEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayPointStartCapture => GameEvent::TeamPlayPointStartCapture(
-                TeamPlayPointStartCaptureEvent::from_raw_event(event.values)?,
+                TeamPlayPointStartCaptureEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayPointCaptured => GameEvent::TeamPlayPointCaptured(
-                TeamPlayPointCapturedEvent::from_raw_event(event.values)?,
+                TeamPlayPointCapturedEvent::read(stream, definition)?,
             ),
-            GameEventType::TeamPlayPointLocked => GameEvent::TeamPlayPointLocked(
-                TeamPlayPointLockedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::TeamPlayPointLocked => {
+                GameEvent::TeamPlayPointLocked(TeamPlayPointLockedEvent::read(stream, definition)?)
+            }
             GameEventType::TeamPlayPointUnlocked => GameEvent::TeamPlayPointUnlocked(
-                TeamPlayPointUnlockedEvent::from_raw_event(event.values)?,
+                TeamPlayPointUnlockedEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayCaptureBroken => GameEvent::TeamPlayCaptureBroken(
-                TeamPlayCaptureBrokenEvent::from_raw_event(event.values)?,
+                TeamPlayCaptureBrokenEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayCaptureBlocked => GameEvent::TeamPlayCaptureBlocked(
-                TeamPlayCaptureBlockedEvent::from_raw_event(event.values)?,
+                TeamPlayCaptureBlockedEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayFlagEvent => {
-                GameEvent::TeamPlayFlagEvent(TeamPlayFlagEventEvent::from_raw_event(event.values)?)
+                GameEvent::TeamPlayFlagEvent(TeamPlayFlagEventEvent::read(stream, definition)?)
             }
             GameEventType::TeamPlayWinPanel => {
-                GameEvent::TeamPlayWinPanel(TeamPlayWinPanelEvent::from_raw_event(event.values)?)
+                GameEvent::TeamPlayWinPanel(TeamPlayWinPanelEvent::read(stream, definition)?)
             }
             GameEventType::TeamPlayTeamBalancedPlayer => GameEvent::TeamPlayTeamBalancedPlayer(
-                TeamPlayTeamBalancedPlayerEvent::from_raw_event(event.values)?,
+                TeamPlayTeamBalancedPlayerEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlaySetupFinished => GameEvent::TeamPlaySetupFinished(
-                TeamPlaySetupFinishedEvent::from_raw_event(event.values)?,
+                TeamPlaySetupFinishedEvent::read(stream, definition)?,
             ),
             GameEventType::TeamPlayAlert => {
-                GameEvent::TeamPlayAlert(TeamPlayAlertEvent::from_raw_event(event.values)?)
+                GameEvent::TeamPlayAlert(TeamPlayAlertEvent::read(stream, definition)?)
             }
             GameEventType::TrainingComplete => {
-                GameEvent::TrainingComplete(TrainingCompleteEvent::from_raw_event(event.values)?)
+                GameEvent::TrainingComplete(TrainingCompleteEvent::read(stream, definition)?)
             }
             GameEventType::ShowFreezePanel => {
-                GameEvent::ShowFreezePanel(ShowFreezePanelEvent::from_raw_event(event.values)?)
+                GameEvent::ShowFreezePanel(ShowFreezePanelEvent::read(stream, definition)?)
             }
             GameEventType::HideFreezePanel => {
-                GameEvent::HideFreezePanel(HideFreezePanelEvent::from_raw_event(event.values)?)
+                GameEvent::HideFreezePanel(HideFreezePanelEvent::read(stream, definition)?)
             }
             GameEventType::FreezeCamStarted => {
-                GameEvent::FreezeCamStarted(FreezeCamStartedEvent::from_raw_event(event.values)?)
+                GameEvent::FreezeCamStarted(FreezeCamStartedEvent::read(stream, definition)?)
             }
             GameEventType::LocalPlayerChangeTeam => GameEvent::LocalPlayerChangeTeam(
-                LocalPlayerChangeTeamEvent::from_raw_event(event.values)?,
+                LocalPlayerChangeTeamEvent::read(stream, definition)?,
             ),
             GameEventType::LocalPlayerScoreChanged => GameEvent::LocalPlayerScoreChanged(
-                LocalPlayerScoreChangedEvent::from_raw_event(event.values)?,
+                LocalPlayerScoreChangedEvent::read(stream, definition)?,
             ),
             GameEventType::LocalPlayerChangeClass => GameEvent::LocalPlayerChangeClass(
-                LocalPlayerChangeClassEvent::from_raw_event(event.values)?,
+                LocalPlayerChangeClassEvent::read(stream, definition)?,
             ),
-            GameEventType::LocalPlayerRespawn => GameEvent::LocalPlayerRespawn(
-                LocalPlayerRespawnEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::BuildingInfoChanged => GameEvent::BuildingInfoChanged(
-                BuildingInfoChangedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::LocalPlayerRespawn => {
+                GameEvent::LocalPlayerRespawn(LocalPlayerRespawnEvent::read(stream, definition)?)
+            }
+            GameEventType::BuildingInfoChanged => {
+                GameEvent::BuildingInfoChanged(BuildingInfoChangedEvent::read(stream, definition)?)
+            }
             GameEventType::LocalPlayerChangeDisguise => GameEvent::LocalPlayerChangeDisguise(
-                LocalPlayerChangeDisguiseEvent::from_raw_event(event.values)?,
+                LocalPlayerChangeDisguiseEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerAccountChanged => GameEvent::PlayerAccountChanged(
-                PlayerAccountChangedEvent::from_raw_event(event.values)?,
+                PlayerAccountChangedEvent::read(stream, definition)?,
             ),
             GameEventType::SpyPdaReset => {
-                GameEvent::SpyPdaReset(SpyPdaResetEvent::from_raw_event(event.values)?)
+                GameEvent::SpyPdaReset(SpyPdaResetEvent::read(stream, definition)?)
             }
             GameEventType::FlagStatusUpdate => {
-                GameEvent::FlagStatusUpdate(FlagStatusUpdateEvent::from_raw_event(event.values)?)
+                GameEvent::FlagStatusUpdate(FlagStatusUpdateEvent::read(stream, definition)?)
             }
-            GameEventType::PlayerStatsUpdated => GameEvent::PlayerStatsUpdated(
-                PlayerStatsUpdatedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerStatsUpdated => {
+                GameEvent::PlayerStatsUpdated(PlayerStatsUpdatedEvent::read(stream, definition)?)
+            }
             GameEventType::PlayingCommentary => {
-                GameEvent::PlayingCommentary(PlayingCommentaryEvent::from_raw_event(event.values)?)
+                GameEvent::PlayingCommentary(PlayingCommentaryEvent::read(stream, definition)?)
             }
             GameEventType::PlayerChargeDeployed => GameEvent::PlayerChargeDeployed(
-                PlayerChargeDeployedEvent::from_raw_event(event.values)?,
+                PlayerChargeDeployedEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerBuiltObject => {
-                GameEvent::PlayerBuiltObject(PlayerBuiltObjectEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerBuiltObject(PlayerBuiltObjectEvent::read(stream, definition)?)
             }
             GameEventType::PlayerUpgradedObject => GameEvent::PlayerUpgradedObject(
-                PlayerUpgradedObjectEvent::from_raw_event(event.values)?,
+                PlayerUpgradedObjectEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerCarryObject => {
-                GameEvent::PlayerCarryObject(PlayerCarryObjectEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerCarryObject(PlayerCarryObjectEvent::read(stream, definition)?)
             }
             GameEventType::PlayerDropObject => {
-                GameEvent::PlayerDropObject(PlayerDropObjectEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerDropObject(PlayerDropObjectEvent::read(stream, definition)?)
             }
             GameEventType::ObjectRemoved => {
-                GameEvent::ObjectRemoved(ObjectRemovedEvent::from_raw_event(event.values)?)
+                GameEvent::ObjectRemoved(ObjectRemovedEvent::read(stream, definition)?)
             }
             GameEventType::ObjectDestroyed => {
-                GameEvent::ObjectDestroyed(ObjectDestroyedEvent::from_raw_event(event.values)?)
+                GameEvent::ObjectDestroyed(ObjectDestroyedEvent::read(stream, definition)?)
             }
             GameEventType::ObjectDetonated => {
-                GameEvent::ObjectDetonated(ObjectDetonatedEvent::from_raw_event(event.values)?)
+                GameEvent::ObjectDetonated(ObjectDetonatedEvent::read(stream, definition)?)
             }
             GameEventType::AchievementEarned => {
-                GameEvent::AchievementEarned(AchievementEarnedEvent::from_raw_event(event.values)?)
+                GameEvent::AchievementEarned(AchievementEarnedEvent::read(stream, definition)?)
             }
             GameEventType::SpecTargetUpdated => {
-                GameEvent::SpecTargetUpdated(SpecTargetUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::SpecTargetUpdated(SpecTargetUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::TournamentStateUpdate => GameEvent::TournamentStateUpdate(
-                TournamentStateUpdateEvent::from_raw_event(event.values)?,
+                TournamentStateUpdateEvent::read(stream, definition)?,
             ),
             GameEventType::TournamentEnableCountdown => GameEvent::TournamentEnableCountdown(
-                TournamentEnableCountdownEvent::from_raw_event(event.values)?,
+                TournamentEnableCountdownEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerCalledForMedic => GameEvent::PlayerCalledForMedic(
-                PlayerCalledForMedicEvent::from_raw_event(event.values)?,
+                PlayerCalledForMedicEvent::read(stream, definition)?,
             ),
-            GameEventType::PlayerAskedForBall => GameEvent::PlayerAskedForBall(
-                PlayerAskedForBallEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerAskedForBall => {
+                GameEvent::PlayerAskedForBall(PlayerAskedForBallEvent::read(stream, definition)?)
+            }
             GameEventType::LocalPlayerBecameObserver => GameEvent::LocalPlayerBecameObserver(
-                LocalPlayerBecameObserverEvent::from_raw_event(event.values)?,
+                LocalPlayerBecameObserverEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerIgnitedInv => {
-                GameEvent::PlayerIgnitedInv(PlayerIgnitedInvEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerIgnitedInv(PlayerIgnitedInvEvent::read(stream, definition)?)
             }
             GameEventType::PlayerIgnited => {
-                GameEvent::PlayerIgnited(PlayerIgnitedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerIgnited(PlayerIgnitedEvent::read(stream, definition)?)
             }
-            GameEventType::PlayerExtinguished => GameEvent::PlayerExtinguished(
-                PlayerExtinguishedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerExtinguished => {
+                GameEvent::PlayerExtinguished(PlayerExtinguishedEvent::read(stream, definition)?)
+            }
             GameEventType::PlayerTeleported => {
-                GameEvent::PlayerTeleported(PlayerTeleportedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerTeleported(PlayerTeleportedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerHealedMedicCall => GameEvent::PlayerHealedMedicCall(
-                PlayerHealedMedicCallEvent::from_raw_event(event.values)?,
+                PlayerHealedMedicCallEvent::read(stream, definition)?,
             ),
             GameEventType::LocalPlayerChargeReady => GameEvent::LocalPlayerChargeReady(
-                LocalPlayerChargeReadyEvent::from_raw_event(event.values)?,
+                LocalPlayerChargeReadyEvent::read(stream, definition)?,
             ),
-            GameEventType::LocalPlayerWindDown => GameEvent::LocalPlayerWindDown(
-                LocalPlayerWindDownEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::LocalPlayerWindDown => {
+                GameEvent::LocalPlayerWindDown(LocalPlayerWindDownEvent::read(stream, definition)?)
+            }
             GameEventType::PlayerInvulned => {
-                GameEvent::PlayerInvulned(PlayerInvulnedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerInvulned(PlayerInvulnedEvent::read(stream, definition)?)
             }
             GameEventType::EscortSpeed => {
-                GameEvent::EscortSpeed(EscortSpeedEvent::from_raw_event(event.values)?)
+                GameEvent::EscortSpeed(EscortSpeedEvent::read(stream, definition)?)
             }
             GameEventType::EscortProgress => {
-                GameEvent::EscortProgress(EscortProgressEvent::from_raw_event(event.values)?)
+                GameEvent::EscortProgress(EscortProgressEvent::read(stream, definition)?)
             }
             GameEventType::EscortRecede => {
-                GameEvent::EscortRecede(EscortRecedeEvent::from_raw_event(event.values)?)
+                GameEvent::EscortRecede(EscortRecedeEvent::read(stream, definition)?)
             }
             GameEventType::GameUIActivated => {
-                GameEvent::GameUIActivated(GameUIActivatedEvent::from_raw_event(event.values)?)
+                GameEvent::GameUIActivated(GameUIActivatedEvent::read(stream, definition)?)
             }
             GameEventType::GameUIHidden => {
-                GameEvent::GameUIHidden(GameUIHiddenEvent::from_raw_event(event.values)?)
+                GameEvent::GameUIHidden(GameUIHiddenEvent::read(stream, definition)?)
             }
             GameEventType::PlayerEscortScore => {
-                GameEvent::PlayerEscortScore(PlayerEscortScoreEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerEscortScore(PlayerEscortScoreEvent::read(stream, definition)?)
             }
             GameEventType::PlayerHealOnHit => {
-                GameEvent::PlayerHealOnHit(PlayerHealOnHitEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerHealOnHit(PlayerHealOnHitEvent::read(stream, definition)?)
             }
-            GameEventType::PlayerStealSandvich => GameEvent::PlayerStealSandvich(
-                PlayerStealSandvichEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerStealSandvich => {
+                GameEvent::PlayerStealSandvich(PlayerStealSandvichEvent::read(stream, definition)?)
+            }
             GameEventType::ShowClassLayout => {
-                GameEvent::ShowClassLayout(ShowClassLayoutEvent::from_raw_event(event.values)?)
+                GameEvent::ShowClassLayout(ShowClassLayoutEvent::read(stream, definition)?)
             }
             GameEventType::ShowVsPanel => {
-                GameEvent::ShowVsPanel(ShowVsPanelEvent::from_raw_event(event.values)?)
+                GameEvent::ShowVsPanel(ShowVsPanelEvent::read(stream, definition)?)
             }
             GameEventType::PlayerDamaged => {
-                GameEvent::PlayerDamaged(PlayerDamagedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerDamaged(PlayerDamagedEvent::read(stream, definition)?)
             }
             GameEventType::ArenaPlayerNotification => GameEvent::ArenaPlayerNotification(
-                ArenaPlayerNotificationEvent::from_raw_event(event.values)?,
+                ArenaPlayerNotificationEvent::read(stream, definition)?,
             ),
-            GameEventType::ArenaMatchMaxStreak => GameEvent::ArenaMatchMaxStreak(
-                ArenaMatchMaxStreakEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::ArenaMatchMaxStreak => {
+                GameEvent::ArenaMatchMaxStreak(ArenaMatchMaxStreakEvent::read(stream, definition)?)
+            }
             GameEventType::ArenaRoundStart => {
-                GameEvent::ArenaRoundStart(ArenaRoundStartEvent::from_raw_event(event.values)?)
+                GameEvent::ArenaRoundStart(ArenaRoundStartEvent::read(stream, definition)?)
             }
             GameEventType::ArenaWinPanel => {
-                GameEvent::ArenaWinPanel(ArenaWinPanelEvent::from_raw_event(event.values)?)
+                GameEvent::ArenaWinPanel(ArenaWinPanelEvent::read(stream, definition)?)
             }
             GameEventType::PveWinPanel => {
-                GameEvent::PveWinPanel(PveWinPanelEvent::from_raw_event(event.values)?)
+                GameEvent::PveWinPanel(PveWinPanelEvent::read(stream, definition)?)
             }
-            GameEventType::AirDash => {
-                GameEvent::AirDash(AirDashEvent::from_raw_event(event.values)?)
+            GameEventType::AirDash => GameEvent::AirDash(AirDashEvent::read(stream, definition)?),
+            GameEventType::Landed => GameEvent::Landed(LandedEvent::read(stream, definition)?),
+            GameEventType::PlayerDamageDodged => {
+                GameEvent::PlayerDamageDodged(PlayerDamageDodgedEvent::read(stream, definition)?)
             }
-            GameEventType::Landed => GameEvent::Landed(LandedEvent::from_raw_event(event.values)?),
-            GameEventType::PlayerDamageDodged => GameEvent::PlayerDamageDodged(
-                PlayerDamageDodgedEvent::from_raw_event(event.values)?,
-            ),
             GameEventType::PlayerStunned => {
-                GameEvent::PlayerStunned(PlayerStunnedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerStunned(PlayerStunnedEvent::read(stream, definition)?)
             }
             GameEventType::ScoutGrandSlam => {
-                GameEvent::ScoutGrandSlam(ScoutGrandSlamEvent::from_raw_event(event.values)?)
+                GameEvent::ScoutGrandSlam(ScoutGrandSlamEvent::read(stream, definition)?)
             }
-            GameEventType::ScoutSlamdollLanded => GameEvent::ScoutSlamdollLanded(
-                ScoutSlamdollLandedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::ScoutSlamdollLanded => {
+                GameEvent::ScoutSlamdollLanded(ScoutSlamdollLandedEvent::read(stream, definition)?)
+            }
             GameEventType::ArrowImpact => {
-                GameEvent::ArrowImpact(ArrowImpactEvent::from_raw_event(event.values)?)
+                GameEvent::ArrowImpact(ArrowImpactEvent::read(stream, definition)?)
             }
             GameEventType::PlayerJarated => {
-                GameEvent::PlayerJarated(PlayerJaratedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerJarated(PlayerJaratedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerJaratedFade => {
-                GameEvent::PlayerJaratedFade(PlayerJaratedFadeEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerJaratedFade(PlayerJaratedFadeEvent::read(stream, definition)?)
             }
-            GameEventType::PlayerShieldBlocked => GameEvent::PlayerShieldBlocked(
-                PlayerShieldBlockedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerShieldBlocked => {
+                GameEvent::PlayerShieldBlocked(PlayerShieldBlockedEvent::read(stream, definition)?)
+            }
             GameEventType::PlayerPinned => {
-                GameEvent::PlayerPinned(PlayerPinnedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerPinned(PlayerPinnedEvent::read(stream, definition)?)
             }
-            GameEventType::PlayerHealedByMedic => GameEvent::PlayerHealedByMedic(
-                PlayerHealedByMedicEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::PlayerSappedObject => GameEvent::PlayerSappedObject(
-                PlayerSappedObjectEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerHealedByMedic => {
+                GameEvent::PlayerHealedByMedic(PlayerHealedByMedicEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerSappedObject => {
+                GameEvent::PlayerSappedObject(PlayerSappedObjectEvent::read(stream, definition)?)
+            }
             GameEventType::ItemFound => {
-                GameEvent::ItemFound(ItemFoundEvent::from_raw_event(event.values)?)
+                GameEvent::ItemFound(ItemFoundEvent::read(stream, definition)?)
             }
             GameEventType::ShowAnnotation => {
-                GameEvent::ShowAnnotation(ShowAnnotationEvent::from_raw_event(event.values)?)
+                GameEvent::ShowAnnotation(ShowAnnotationEvent::read(stream, definition)?)
             }
             GameEventType::HideAnnotation => {
-                GameEvent::HideAnnotation(HideAnnotationEvent::from_raw_event(event.values)?)
+                GameEvent::HideAnnotation(HideAnnotationEvent::read(stream, definition)?)
             }
             GameEventType::PostInventoryApplication => GameEvent::PostInventoryApplication(
-                PostInventoryApplicationEvent::from_raw_event(event.values)?,
+                PostInventoryApplicationEvent::read(stream, definition)?,
             ),
             GameEventType::ControlPointUnlockUpdated => GameEvent::ControlPointUnlockUpdated(
-                ControlPointUnlockUpdatedEvent::from_raw_event(event.values)?,
+                ControlPointUnlockUpdatedEvent::read(stream, definition)?,
             ),
             GameEventType::DeployBuffBanner => {
-                GameEvent::DeployBuffBanner(DeployBuffBannerEvent::from_raw_event(event.values)?)
+                GameEvent::DeployBuffBanner(DeployBuffBannerEvent::read(stream, definition)?)
             }
             GameEventType::PlayerBuff => {
-                GameEvent::PlayerBuff(PlayerBuffEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerBuff(PlayerBuffEvent::read(stream, definition)?)
             }
             GameEventType::MedicDeath => {
-                GameEvent::MedicDeath(MedicDeathEvent::from_raw_event(event.values)?)
+                GameEvent::MedicDeath(MedicDeathEvent::read(stream, definition)?)
             }
             GameEventType::OvertimeNag => {
-                GameEvent::OvertimeNag(OvertimeNagEvent::from_raw_event(event.values)?)
+                GameEvent::OvertimeNag(OvertimeNagEvent::read(stream, definition)?)
             }
             GameEventType::TeamsChanged => {
-                GameEvent::TeamsChanged(TeamsChangedEvent::from_raw_event(event.values)?)
+                GameEvent::TeamsChanged(TeamsChangedEvent::read(stream, definition)?)
             }
             GameEventType::HalloweenPumpkinGrab => GameEvent::HalloweenPumpkinGrab(
-                HalloweenPumpkinGrabEvent::from_raw_event(event.values)?,
+                HalloweenPumpkinGrabEvent::read(stream, definition)?,
             ),
             GameEventType::RocketJump => {
-                GameEvent::RocketJump(RocketJumpEvent::from_raw_event(event.values)?)
+                GameEvent::RocketJump(RocketJumpEvent::read(stream, definition)?)
             }
             GameEventType::RocketJumpLanded => {
-                GameEvent::RocketJumpLanded(RocketJumpLandedEvent::from_raw_event(event.values)?)
+                GameEvent::RocketJumpLanded(RocketJumpLandedEvent::read(stream, definition)?)
             }
             GameEventType::StickyJump => {
-                GameEvent::StickyJump(StickyJumpEvent::from_raw_event(event.values)?)
+                GameEvent::StickyJump(StickyJumpEvent::read(stream, definition)?)
             }
             GameEventType::StickyJumpLanded => {
-                GameEvent::StickyJumpLanded(StickyJumpLandedEvent::from_raw_event(event.values)?)
+                GameEvent::StickyJumpLanded(StickyJumpLandedEvent::read(stream, definition)?)
             }
             GameEventType::RocketPackLaunch => {
-                GameEvent::RocketPackLaunch(RocketPackLaunchEvent::from_raw_event(event.values)?)
+                GameEvent::RocketPackLaunch(RocketPackLaunchEvent::read(stream, definition)?)
             }
             GameEventType::RocketPackLanded => {
-                GameEvent::RocketPackLanded(RocketPackLandedEvent::from_raw_event(event.values)?)
+                GameEvent::RocketPackLanded(RocketPackLandedEvent::read(stream, definition)?)
             }
             GameEventType::MedicDefended => {
-                GameEvent::MedicDefended(MedicDefendedEvent::from_raw_event(event.values)?)
+                GameEvent::MedicDefended(MedicDefendedEvent::read(stream, definition)?)
             }
             GameEventType::LocalPlayerHealed => {
-                GameEvent::LocalPlayerHealed(LocalPlayerHealedEvent::from_raw_event(event.values)?)
+                GameEvent::LocalPlayerHealed(LocalPlayerHealedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerDestroyedPipeBomb => GameEvent::PlayerDestroyedPipeBomb(
-                PlayerDestroyedPipeBombEvent::from_raw_event(event.values)?,
+                PlayerDestroyedPipeBombEvent::read(stream, definition)?,
             ),
             GameEventType::ObjectDeflected => {
-                GameEvent::ObjectDeflected(ObjectDeflectedEvent::from_raw_event(event.values)?)
+                GameEvent::ObjectDeflected(ObjectDeflectedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerMvp => {
-                GameEvent::PlayerMvp(PlayerMvpEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerMvp(PlayerMvpEvent::read(stream, definition)?)
             }
             GameEventType::RaidSpawnMob => {
-                GameEvent::RaidSpawnMob(RaidSpawnMobEvent::from_raw_event(event.values)?)
+                GameEvent::RaidSpawnMob(RaidSpawnMobEvent::read(stream, definition)?)
             }
             GameEventType::RaidSpawnSquad => {
-                GameEvent::RaidSpawnSquad(RaidSpawnSquadEvent::from_raw_event(event.values)?)
+                GameEvent::RaidSpawnSquad(RaidSpawnSquadEvent::read(stream, definition)?)
             }
             GameEventType::NavBlocked => {
-                GameEvent::NavBlocked(NavBlockedEvent::from_raw_event(event.values)?)
+                GameEvent::NavBlocked(NavBlockedEvent::read(stream, definition)?)
             }
             GameEventType::PathTrackPassed => {
-                GameEvent::PathTrackPassed(PathTrackPassedEvent::from_raw_event(event.values)?)
+                GameEvent::PathTrackPassed(PathTrackPassedEvent::read(stream, definition)?)
             }
             GameEventType::NumCappersChanged => {
-                GameEvent::NumCappersChanged(NumCappersChangedEvent::from_raw_event(event.values)?)
+                GameEvent::NumCappersChanged(NumCappersChangedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerRegenerate => {
-                GameEvent::PlayerRegenerate(PlayerRegenerateEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerRegenerate(PlayerRegenerateEvent::read(stream, definition)?)
             }
             GameEventType::UpdateStatusItem => {
-                GameEvent::UpdateStatusItem(UpdateStatusItemEvent::from_raw_event(event.values)?)
+                GameEvent::UpdateStatusItem(UpdateStatusItemEvent::read(stream, definition)?)
             }
             GameEventType::StatsResetRound => {
-                GameEvent::StatsResetRound(StatsResetRoundEvent::from_raw_event(event.values)?)
+                GameEvent::StatsResetRound(StatsResetRoundEvent::read(stream, definition)?)
             }
             GameEventType::ScoreStatsAccumulatedUpdate => GameEvent::ScoreStatsAccumulatedUpdate(
-                ScoreStatsAccumulatedUpdateEvent::from_raw_event(event.values)?,
+                ScoreStatsAccumulatedUpdateEvent::read(stream, definition)?,
             ),
             GameEventType::ScoreStatsAccumulatedReset => GameEvent::ScoreStatsAccumulatedReset(
-                ScoreStatsAccumulatedResetEvent::from_raw_event(event.values)?,
+                ScoreStatsAccumulatedResetEvent::read(stream, definition)?,
             ),
             GameEventType::AchievementEarnedLocal => GameEvent::AchievementEarnedLocal(
-                AchievementEarnedLocalEvent::from_raw_event(event.values)?,
+                AchievementEarnedLocalEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerHealed => {
-                GameEvent::PlayerHealed(PlayerHealedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerHealed(PlayerHealedEvent::read(stream, definition)?)
             }
             GameEventType::BuildingHealed => {
-                GameEvent::BuildingHealed(BuildingHealedEvent::from_raw_event(event.values)?)
+                GameEvent::BuildingHealed(BuildingHealedEvent::read(stream, definition)?)
             }
             GameEventType::ItemPickup => {
-                GameEvent::ItemPickup(ItemPickupEvent::from_raw_event(event.values)?)
+                GameEvent::ItemPickup(ItemPickupEvent::read(stream, definition)?)
             }
             GameEventType::DuelStatus => {
-                GameEvent::DuelStatus(DuelStatusEvent::from_raw_event(event.values)?)
+                GameEvent::DuelStatus(DuelStatusEvent::read(stream, definition)?)
             }
             GameEventType::FishNotice => {
-                GameEvent::FishNotice(FishNoticeEvent::from_raw_event(event.values)?)
+                GameEvent::FishNotice(FishNoticeEvent::read(stream, definition)?)
             }
             GameEventType::FishNoticeArm => {
-                GameEvent::FishNoticeArm(FishNoticeArmEvent::from_raw_event(event.values)?)
+                GameEvent::FishNoticeArm(FishNoticeArmEvent::read(stream, definition)?)
             }
             GameEventType::SlapNotice => {
-                GameEvent::SlapNotice(SlapNoticeEvent::from_raw_event(event.values)?)
+                GameEvent::SlapNotice(SlapNoticeEvent::read(stream, definition)?)
             }
             GameEventType::ThrowableHit => {
-                GameEvent::ThrowableHit(ThrowableHitEvent::from_raw_event(event.values)?)
+                GameEvent::ThrowableHit(ThrowableHitEvent::read(stream, definition)?)
             }
-            GameEventType::PumpkinLordSummoned => GameEvent::PumpkinLordSummoned(
-                PumpkinLordSummonedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PumpkinLordSummoned => {
+                GameEvent::PumpkinLordSummoned(PumpkinLordSummonedEvent::read(stream, definition)?)
+            }
             GameEventType::PumpkinLordKilled => {
-                GameEvent::PumpkinLordKilled(PumpkinLordKilledEvent::from_raw_event(event.values)?)
+                GameEvent::PumpkinLordKilled(PumpkinLordKilledEvent::read(stream, definition)?)
             }
             GameEventType::MerasmusSummoned => {
-                GameEvent::MerasmusSummoned(MerasmusSummonedEvent::from_raw_event(event.values)?)
+                GameEvent::MerasmusSummoned(MerasmusSummonedEvent::read(stream, definition)?)
             }
             GameEventType::MerasmusKilled => {
-                GameEvent::MerasmusKilled(MerasmusKilledEvent::from_raw_event(event.values)?)
+                GameEvent::MerasmusKilled(MerasmusKilledEvent::read(stream, definition)?)
             }
             GameEventType::MerasmusEscapeWarning => GameEvent::MerasmusEscapeWarning(
-                MerasmusEscapeWarningEvent::from_raw_event(event.values)?,
+                MerasmusEscapeWarningEvent::read(stream, definition)?,
             ),
             GameEventType::MerasmusEscaped => {
-                GameEvent::MerasmusEscaped(MerasmusEscapedEvent::from_raw_event(event.values)?)
+                GameEvent::MerasmusEscaped(MerasmusEscapedEvent::read(stream, definition)?)
             }
-            GameEventType::EyeballBossSummoned => GameEvent::EyeballBossSummoned(
-                EyeballBossSummonedEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::EyeballBossStunned => GameEvent::EyeballBossStunned(
-                EyeballBossStunnedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::EyeballBossSummoned => {
+                GameEvent::EyeballBossSummoned(EyeballBossSummonedEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossStunned => {
+                GameEvent::EyeballBossStunned(EyeballBossStunnedEvent::read(stream, definition)?)
+            }
             GameEventType::EyeballBossKilled => {
-                GameEvent::EyeballBossKilled(EyeballBossKilledEvent::from_raw_event(event.values)?)
+                GameEvent::EyeballBossKilled(EyeballBossKilledEvent::read(stream, definition)?)
             }
             GameEventType::EyeballBossKiller => {
-                GameEvent::EyeballBossKiller(EyeballBossKillerEvent::from_raw_event(event.values)?)
+                GameEvent::EyeballBossKiller(EyeballBossKillerEvent::read(stream, definition)?)
             }
             GameEventType::EyeballBossEscapeImminent => GameEvent::EyeballBossEscapeImminent(
-                EyeballBossEscapeImminentEvent::from_raw_event(event.values)?,
+                EyeballBossEscapeImminentEvent::read(stream, definition)?,
             ),
-            GameEventType::EyeballBossEscaped => GameEvent::EyeballBossEscaped(
-                EyeballBossEscapedEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::NpcHurt => {
-                GameEvent::NpcHurt(NpcHurtEvent::from_raw_event(event.values)?)
+            GameEventType::EyeballBossEscaped => {
+                GameEvent::EyeballBossEscaped(EyeballBossEscapedEvent::read(stream, definition)?)
             }
+            GameEventType::NpcHurt => GameEvent::NpcHurt(NpcHurtEvent::read(stream, definition)?),
             GameEventType::ControlPointTimerUpdated => GameEvent::ControlPointTimerUpdated(
-                ControlPointTimerUpdatedEvent::from_raw_event(event.values)?,
+                ControlPointTimerUpdatedEvent::read(stream, definition)?,
             ),
-            GameEventType::PlayerHighFiveStart => GameEvent::PlayerHighFiveStart(
-                PlayerHighFiveStartEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerHighFiveStart => {
+                GameEvent::PlayerHighFiveStart(PlayerHighFiveStartEvent::read(stream, definition)?)
+            }
             GameEventType::PlayerHighFiveCancel => GameEvent::PlayerHighFiveCancel(
-                PlayerHighFiveCancelEvent::from_raw_event(event.values)?,
+                PlayerHighFiveCancelEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerHighFiveSuccess => GameEvent::PlayerHighFiveSuccess(
-                PlayerHighFiveSuccessEvent::from_raw_event(event.values)?,
+                PlayerHighFiveSuccessEvent::read(stream, definition)?,
             ),
             GameEventType::PlayerBonusPoints => {
-                GameEvent::PlayerBonusPoints(PlayerBonusPointsEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerBonusPoints(PlayerBonusPointsEvent::read(stream, definition)?)
             }
             GameEventType::PlayerUpgraded => {
-                GameEvent::PlayerUpgraded(PlayerUpgradedEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerUpgraded(PlayerUpgradedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerBuyback => {
-                GameEvent::PlayerBuyback(PlayerBuybackEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerBuyback(PlayerBuybackEvent::read(stream, definition)?)
             }
             GameEventType::PlayerUsedPowerUpBottle => GameEvent::PlayerUsedPowerUpBottle(
-                PlayerUsedPowerUpBottleEvent::from_raw_event(event.values)?,
+                PlayerUsedPowerUpBottleEvent::read(stream, definition)?,
             ),
             GameEventType::ChristmasGiftGrab => {
-                GameEvent::ChristmasGiftGrab(ChristmasGiftGrabEvent::from_raw_event(event.values)?)
+                GameEvent::ChristmasGiftGrab(ChristmasGiftGrabEvent::read(stream, definition)?)
             }
             GameEventType::PlayerKilledAchievementZone => GameEvent::PlayerKilledAchievementZone(
-                PlayerKilledAchievementZoneEvent::from_raw_event(event.values)?,
+                PlayerKilledAchievementZoneEvent::read(stream, definition)?,
             ),
             GameEventType::PartyUpdated => {
-                GameEvent::PartyUpdated(PartyUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::PartyUpdated(PartyUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::PartyPrefChanged => {
-                GameEvent::PartyPrefChanged(PartyPrefChangedEvent::from_raw_event(event.values)?)
+                GameEvent::PartyPrefChanged(PartyPrefChangedEvent::read(stream, definition)?)
             }
             GameEventType::PartyCriteriaChanged => GameEvent::PartyCriteriaChanged(
-                PartyCriteriaChangedEvent::from_raw_event(event.values)?,
+                PartyCriteriaChangedEvent::read(stream, definition)?,
             ),
-            GameEventType::PartyInvitesChanged => GameEvent::PartyInvitesChanged(
-                PartyInvitesChangedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PartyInvitesChanged => {
+                GameEvent::PartyInvitesChanged(PartyInvitesChangedEvent::read(stream, definition)?)
+            }
             GameEventType::PartyQueueStateChanged => GameEvent::PartyQueueStateChanged(
-                PartyQueueStateChangedEvent::from_raw_event(event.values)?,
+                PartyQueueStateChangedEvent::read(stream, definition)?,
             ),
             GameEventType::PartyChat => {
-                GameEvent::PartyChat(PartyChatEvent::from_raw_event(event.values)?)
+                GameEvent::PartyChat(PartyChatEvent::read(stream, definition)?)
             }
             GameEventType::PartyMemberJoin => {
-                GameEvent::PartyMemberJoin(PartyMemberJoinEvent::from_raw_event(event.values)?)
+                GameEvent::PartyMemberJoin(PartyMemberJoinEvent::read(stream, definition)?)
             }
             GameEventType::PartyMemberLeave => {
-                GameEvent::PartyMemberLeave(PartyMemberLeaveEvent::from_raw_event(event.values)?)
+                GameEvent::PartyMemberLeave(PartyMemberLeaveEvent::read(stream, definition)?)
             }
-            GameEventType::MatchInvitesUpdated => GameEvent::MatchInvitesUpdated(
-                MatchInvitesUpdatedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::MatchInvitesUpdated => {
+                GameEvent::MatchInvitesUpdated(MatchInvitesUpdatedEvent::read(stream, definition)?)
+            }
             GameEventType::LobbyUpdated => {
-                GameEvent::LobbyUpdated(LobbyUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::LobbyUpdated(LobbyUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::MvmMissionUpdate => {
-                GameEvent::MvmMissionUpdate(MvmMissionUpdateEvent::from_raw_event(event.values)?)
+                GameEvent::MvmMissionUpdate(MvmMissionUpdateEvent::read(stream, definition)?)
             }
-            GameEventType::RecalculateHolidays => GameEvent::RecalculateHolidays(
-                RecalculateHolidaysEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::RecalculateHolidays => {
+                GameEvent::RecalculateHolidays(RecalculateHolidaysEvent::read(stream, definition)?)
+            }
             GameEventType::PlayerCurrencyChanged => GameEvent::PlayerCurrencyChanged(
-                PlayerCurrencyChangedEvent::from_raw_event(event.values)?,
+                PlayerCurrencyChangedEvent::read(stream, definition)?,
             ),
-            GameEventType::DoomsdayRocketOpen => GameEvent::DoomsdayRocketOpen(
-                DoomsdayRocketOpenEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::DoomsdayRocketOpen => {
+                GameEvent::DoomsdayRocketOpen(DoomsdayRocketOpenEvent::read(stream, definition)?)
+            }
             GameEventType::RemoveNemesisRelationships => GameEvent::RemoveNemesisRelationships(
-                RemoveNemesisRelationshipsEvent::from_raw_event(event.values)?,
+                RemoveNemesisRelationshipsEvent::read(stream, definition)?,
             ),
-            GameEventType::MvmCreditBonusWave => GameEvent::MvmCreditBonusWave(
-                MvmCreditBonusWaveEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::MvmCreditBonusWave => {
+                GameEvent::MvmCreditBonusWave(MvmCreditBonusWaveEvent::read(stream, definition)?)
+            }
             GameEventType::MvmCreditBonusAll => {
-                GameEvent::MvmCreditBonusAll(MvmCreditBonusAllEvent::from_raw_event(event.values)?)
+                GameEvent::MvmCreditBonusAll(MvmCreditBonusAllEvent::read(stream, definition)?)
             }
             GameEventType::MvmCreditBonusAllAdvanced => GameEvent::MvmCreditBonusAllAdvanced(
-                MvmCreditBonusAllAdvancedEvent::from_raw_event(event.values)?,
+                MvmCreditBonusAllAdvancedEvent::read(stream, definition)?,
             ),
             GameEventType::MvmQuickSentryUpgrade => GameEvent::MvmQuickSentryUpgrade(
-                MvmQuickSentryUpgradeEvent::from_raw_event(event.values)?,
+                MvmQuickSentryUpgradeEvent::read(stream, definition)?,
             ),
             GameEventType::MvmTankDestroyedByPlayers => GameEvent::MvmTankDestroyedByPlayers(
-                MvmTankDestroyedByPlayersEvent::from_raw_event(event.values)?,
+                MvmTankDestroyedByPlayersEvent::read(stream, definition)?,
             ),
             GameEventType::MvmKillRobotDeliveringBomb => GameEvent::MvmKillRobotDeliveringBomb(
-                MvmKillRobotDeliveringBombEvent::from_raw_event(event.values)?,
+                MvmKillRobotDeliveringBombEvent::read(stream, definition)?,
             ),
             GameEventType::MvmPickupCurrency => {
-                GameEvent::MvmPickupCurrency(MvmPickupCurrencyEvent::from_raw_event(event.values)?)
+                GameEvent::MvmPickupCurrency(MvmPickupCurrencyEvent::read(stream, definition)?)
             }
             GameEventType::MvmBombCarrierKilled => GameEvent::MvmBombCarrierKilled(
-                MvmBombCarrierKilledEvent::from_raw_event(event.values)?,
+                MvmBombCarrierKilledEvent::read(stream, definition)?,
             ),
             GameEventType::MvmSentryBusterDetonate => GameEvent::MvmSentryBusterDetonate(
-                MvmSentryBusterDetonateEvent::from_raw_event(event.values)?,
+                MvmSentryBusterDetonateEvent::read(stream, definition)?,
             ),
             GameEventType::MvmScoutMarkedForDeath => GameEvent::MvmScoutMarkedForDeath(
-                MvmScoutMarkedForDeathEvent::from_raw_event(event.values)?,
+                MvmScoutMarkedForDeathEvent::read(stream, definition)?,
             ),
             GameEventType::MvmMedicPowerUpShared => GameEvent::MvmMedicPowerUpShared(
-                MvmMedicPowerUpSharedEvent::from_raw_event(event.values)?,
+                MvmMedicPowerUpSharedEvent::read(stream, definition)?,
             ),
             GameEventType::MvmBeginWave => {
-                GameEvent::MvmBeginWave(MvmBeginWaveEvent::from_raw_event(event.values)?)
+                GameEvent::MvmBeginWave(MvmBeginWaveEvent::read(stream, definition)?)
             }
             GameEventType::MvmWaveComplete => {
-                GameEvent::MvmWaveComplete(MvmWaveCompleteEvent::from_raw_event(event.values)?)
+                GameEvent::MvmWaveComplete(MvmWaveCompleteEvent::read(stream, definition)?)
             }
-            GameEventType::MvmMissionComplete => GameEvent::MvmMissionComplete(
-                MvmMissionCompleteEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::MvmMissionComplete => {
+                GameEvent::MvmMissionComplete(MvmMissionCompleteEvent::read(stream, definition)?)
+            }
             GameEventType::MvmBombResetByPlayer => GameEvent::MvmBombResetByPlayer(
-                MvmBombResetByPlayerEvent::from_raw_event(event.values)?,
+                MvmBombResetByPlayerEvent::read(stream, definition)?,
             ),
             GameEventType::MvmBombAlarmTriggered => GameEvent::MvmBombAlarmTriggered(
-                MvmBombAlarmTriggeredEvent::from_raw_event(event.values)?,
+                MvmBombAlarmTriggeredEvent::read(stream, definition)?,
             ),
             GameEventType::MvmBombDeployResetByPlayer => GameEvent::MvmBombDeployResetByPlayer(
-                MvmBombDeployResetByPlayerEvent::from_raw_event(event.values)?,
+                MvmBombDeployResetByPlayerEvent::read(stream, definition)?,
             ),
             GameEventType::MvmWaveFailed => {
-                GameEvent::MvmWaveFailed(MvmWaveFailedEvent::from_raw_event(event.values)?)
+                GameEvent::MvmWaveFailed(MvmWaveFailedEvent::read(stream, definition)?)
             }
             GameEventType::MvmResetStats => {
-                GameEvent::MvmResetStats(MvmResetStatsEvent::from_raw_event(event.values)?)
+                GameEvent::MvmResetStats(MvmResetStatsEvent::read(stream, definition)?)
             }
             GameEventType::DamageResisted => {
-                GameEvent::DamageResisted(DamageResistedEvent::from_raw_event(event.values)?)
+                GameEvent::DamageResisted(DamageResistedEvent::read(stream, definition)?)
             }
-            GameEventType::RevivePlayerNotify => GameEvent::RevivePlayerNotify(
-                RevivePlayerNotifyEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::RevivePlayerStopped => GameEvent::RevivePlayerStopped(
-                RevivePlayerStoppedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::RevivePlayerNotify => {
+                GameEvent::RevivePlayerNotify(RevivePlayerNotifyEvent::read(stream, definition)?)
+            }
+            GameEventType::RevivePlayerStopped => {
+                GameEvent::RevivePlayerStopped(RevivePlayerStoppedEvent::read(stream, definition)?)
+            }
             GameEventType::RevivePlayerComplete => GameEvent::RevivePlayerComplete(
-                RevivePlayerCompleteEvent::from_raw_event(event.values)?,
+                RevivePlayerCompleteEvent::read(stream, definition)?,
             ),
-            GameEventType::PlayerTurnedToGhost => GameEvent::PlayerTurnedToGhost(
-                PlayerTurnedToGhostEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerTurnedToGhost => {
+                GameEvent::PlayerTurnedToGhost(PlayerTurnedToGhostEvent::read(stream, definition)?)
+            }
             GameEventType::MedigunShieldBlockedDamage => GameEvent::MedigunShieldBlockedDamage(
-                MedigunShieldBlockedDamageEvent::from_raw_event(event.values)?,
+                MedigunShieldBlockedDamageEvent::read(stream, definition)?,
             ),
             GameEventType::MvmAdvWaveCompleteNoGates => GameEvent::MvmAdvWaveCompleteNoGates(
-                MvmAdvWaveCompleteNoGatesEvent::from_raw_event(event.values)?,
+                MvmAdvWaveCompleteNoGatesEvent::read(stream, definition)?,
             ),
             GameEventType::MvmSniperHeadshotCurrency => GameEvent::MvmSniperHeadshotCurrency(
-                MvmSniperHeadshotCurrencyEvent::from_raw_event(event.values)?,
+                MvmSniperHeadshotCurrencyEvent::read(stream, definition)?,
             ),
             GameEventType::MvmMannhattanPit => {
-                GameEvent::MvmMannhattanPit(MvmMannhattanPitEvent::from_raw_event(event.values)?)
+                GameEvent::MvmMannhattanPit(MvmMannhattanPitEvent::read(stream, definition)?)
             }
             GameEventType::FlagCarriedInDetectionZone => GameEvent::FlagCarriedInDetectionZone(
-                FlagCarriedInDetectionZoneEvent::from_raw_event(event.values)?,
+                FlagCarriedInDetectionZoneEvent::read(stream, definition)?,
             ),
             GameEventType::MvmAdvWaveKilledStunRadio => GameEvent::MvmAdvWaveKilledStunRadio(
-                MvmAdvWaveKilledStunRadioEvent::from_raw_event(event.values)?,
+                MvmAdvWaveKilledStunRadioEvent::read(stream, definition)?,
             ),
-            GameEventType::PlayerDirectHitStun => GameEvent::PlayerDirectHitStun(
-                PlayerDirectHitStunEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerDirectHitStun => {
+                GameEvent::PlayerDirectHitStun(PlayerDirectHitStunEvent::read(stream, definition)?)
+            }
             GameEventType::MvmSentryBusterKilled => GameEvent::MvmSentryBusterKilled(
-                MvmSentryBusterKilledEvent::from_raw_event(event.values)?,
+                MvmSentryBusterKilledEvent::read(stream, definition)?,
             ),
-            GameEventType::UpgradesFileChanged => GameEvent::UpgradesFileChanged(
-                UpgradesFileChangedEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::RdTeamPointsChanged => GameEvent::RdTeamPointsChanged(
-                RdTeamPointsChangedEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::RdRulesStateChanged => GameEvent::RdRulesStateChanged(
-                RdRulesStateChangedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::UpgradesFileChanged => {
+                GameEvent::UpgradesFileChanged(UpgradesFileChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::RdTeamPointsChanged => {
+                GameEvent::RdTeamPointsChanged(RdTeamPointsChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::RdRulesStateChanged => {
+                GameEvent::RdRulesStateChanged(RdRulesStateChangedEvent::read(stream, definition)?)
+            }
             GameEventType::RdRobotKilled => {
-                GameEvent::RdRobotKilled(RdRobotKilledEvent::from_raw_event(event.values)?)
+                GameEvent::RdRobotKilled(RdRobotKilledEvent::read(stream, definition)?)
             }
             GameEventType::RdRobotImpact => {
-                GameEvent::RdRobotImpact(RdRobotImpactEvent::from_raw_event(event.values)?)
+                GameEvent::RdRobotImpact(RdRobotImpactEvent::read(stream, definition)?)
             }
             GameEventType::TeamPlayPreRoundTimeLeft => GameEvent::TeamPlayPreRoundTimeLeft(
-                TeamPlayPreRoundTimeLeftEvent::from_raw_event(event.values)?,
+                TeamPlayPreRoundTimeLeftEvent::read(stream, definition)?,
             ),
             GameEventType::ParachuteDeploy => {
-                GameEvent::ParachuteDeploy(ParachuteDeployEvent::from_raw_event(event.values)?)
+                GameEvent::ParachuteDeploy(ParachuteDeployEvent::read(stream, definition)?)
             }
             GameEventType::ParachuteHolster => {
-                GameEvent::ParachuteHolster(ParachuteHolsterEvent::from_raw_event(event.values)?)
+                GameEvent::ParachuteHolster(ParachuteHolsterEvent::read(stream, definition)?)
             }
             GameEventType::KillRefillsMeter => {
-                GameEvent::KillRefillsMeter(KillRefillsMeterEvent::from_raw_event(event.values)?)
+                GameEvent::KillRefillsMeter(KillRefillsMeterEvent::read(stream, definition)?)
             }
             GameEventType::RpsTauntEvent => {
-                GameEvent::RpsTauntEvent(RpsTauntEventEvent::from_raw_event(event.values)?)
+                GameEvent::RpsTauntEvent(RpsTauntEventEvent::read(stream, definition)?)
             }
             GameEventType::CongaKill => {
-                GameEvent::CongaKill(CongaKillEvent::from_raw_event(event.values)?)
+                GameEvent::CongaKill(CongaKillEvent::read(stream, definition)?)
             }
-            GameEventType::PlayerInitialSpawn => GameEvent::PlayerInitialSpawn(
-                PlayerInitialSpawnEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::CompetitiveVictory => GameEvent::CompetitiveVictory(
-                CompetitiveVictoryEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerInitialSpawn => {
+                GameEvent::PlayerInitialSpawn(PlayerInitialSpawnEvent::read(stream, definition)?)
+            }
+            GameEventType::CompetitiveVictory => {
+                GameEvent::CompetitiveVictory(CompetitiveVictoryEvent::read(stream, definition)?)
+            }
             GameEventType::CompetitiveStatsUpdate => GameEvent::CompetitiveStatsUpdate(
-                CompetitiveStatsUpdateEvent::from_raw_event(event.values)?,
+                CompetitiveStatsUpdateEvent::read(stream, definition)?,
             ),
             GameEventType::MiniGameWin => {
-                GameEvent::MiniGameWin(MiniGameWinEvent::from_raw_event(event.values)?)
+                GameEvent::MiniGameWin(MiniGameWinEvent::read(stream, definition)?)
             }
             GameEventType::SentryOnGoActive => {
-                GameEvent::SentryOnGoActive(SentryOnGoActiveEvent::from_raw_event(event.values)?)
+                GameEvent::SentryOnGoActive(SentryOnGoActiveEvent::read(stream, definition)?)
             }
             GameEventType::DuckXpLevelUp => {
-                GameEvent::DuckXpLevelUp(DuckXpLevelUpEvent::from_raw_event(event.values)?)
+                GameEvent::DuckXpLevelUp(DuckXpLevelUpEvent::read(stream, definition)?)
             }
             GameEventType::QuestLogOpened => {
-                GameEvent::QuestLogOpened(QuestLogOpenedEvent::from_raw_event(event.values)?)
+                GameEvent::QuestLogOpened(QuestLogOpenedEvent::read(stream, definition)?)
             }
             GameEventType::SchemaUpdated => {
-                GameEvent::SchemaUpdated(SchemaUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::SchemaUpdated(SchemaUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::LocalPlayerPickupWeapon => GameEvent::LocalPlayerPickupWeapon(
-                LocalPlayerPickupWeaponEvent::from_raw_event(event.values)?,
+                LocalPlayerPickupWeaponEvent::read(stream, definition)?,
             ),
-            GameEventType::RdPlayerScorePoints => GameEvent::RdPlayerScorePoints(
-                RdPlayerScorePointsEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::DemomanDetStickies => GameEvent::DemomanDetStickies(
-                DemomanDetStickiesEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::QuestObjectiveCompleted => GameEvent::QuestObjectiveCompleted(
-                QuestObjectiveCompletedEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::PlayerScoreChanged => GameEvent::PlayerScoreChanged(
-                PlayerScoreChangedEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::KilledCappingPlayer => GameEvent::KilledCappingPlayer(
-                KilledCappingPlayerEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::EnvironmentalDeath => GameEvent::EnvironmentalDeath(
-                EnvironmentalDeathEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::ProjectileDirectHit => GameEvent::ProjectileDirectHit(
-                ProjectileDirectHitEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::PassGet => {
-                GameEvent::PassGet(PassGetEvent::from_raw_event(event.values)?)
+            GameEventType::RdPlayerScorePoints => {
+                GameEvent::RdPlayerScorePoints(RdPlayerScorePointsEvent::read(stream, definition)?)
             }
+            GameEventType::DemomanDetStickies => {
+                GameEvent::DemomanDetStickies(DemomanDetStickiesEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestObjectiveCompleted => GameEvent::QuestObjectiveCompleted(
+                QuestObjectiveCompletedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerScoreChanged => {
+                GameEvent::PlayerScoreChanged(PlayerScoreChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::KilledCappingPlayer => {
+                GameEvent::KilledCappingPlayer(KilledCappingPlayerEvent::read(stream, definition)?)
+            }
+            GameEventType::EnvironmentalDeath => {
+                GameEvent::EnvironmentalDeath(EnvironmentalDeathEvent::read(stream, definition)?)
+            }
+            GameEventType::ProjectileDirectHit => {
+                GameEvent::ProjectileDirectHit(ProjectileDirectHitEvent::read(stream, definition)?)
+            }
+            GameEventType::PassGet => GameEvent::PassGet(PassGetEvent::read(stream, definition)?),
             GameEventType::PassScore => {
-                GameEvent::PassScore(PassScoreEvent::from_raw_event(event.values)?)
+                GameEvent::PassScore(PassScoreEvent::read(stream, definition)?)
             }
             GameEventType::PassFree => {
-                GameEvent::PassFree(PassFreeEvent::from_raw_event(event.values)?)
+                GameEvent::PassFree(PassFreeEvent::read(stream, definition)?)
             }
             GameEventType::PassPassCaught => {
-                GameEvent::PassPassCaught(PassPassCaughtEvent::from_raw_event(event.values)?)
+                GameEvent::PassPassCaught(PassPassCaughtEvent::read(stream, definition)?)
             }
             GameEventType::PassBallStolen => {
-                GameEvent::PassBallStolen(PassBallStolenEvent::from_raw_event(event.values)?)
+                GameEvent::PassBallStolen(PassBallStolenEvent::read(stream, definition)?)
             }
             GameEventType::PassBallBlocked => {
-                GameEvent::PassBallBlocked(PassBallBlockedEvent::from_raw_event(event.values)?)
+                GameEvent::PassBallBlocked(PassBallBlockedEvent::read(stream, definition)?)
             }
             GameEventType::DamagePrevented => {
-                GameEvent::DamagePrevented(DamagePreventedEvent::from_raw_event(event.values)?)
+                GameEvent::DamagePrevented(DamagePreventedEvent::read(stream, definition)?)
             }
-            GameEventType::HalloweenBossKilled => GameEvent::HalloweenBossKilled(
-                HalloweenBossKilledEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::HalloweenBossKilled => {
+                GameEvent::HalloweenBossKilled(HalloweenBossKilledEvent::read(stream, definition)?)
+            }
             GameEventType::EscapedLootIsland => {
-                GameEvent::EscapedLootIsland(EscapedLootIslandEvent::from_raw_event(event.values)?)
+                GameEvent::EscapedLootIsland(EscapedLootIslandEvent::read(stream, definition)?)
             }
             GameEventType::TaggedPlayerAsIt => {
-                GameEvent::TaggedPlayerAsIt(TaggedPlayerAsItEvent::from_raw_event(event.values)?)
+                GameEvent::TaggedPlayerAsIt(TaggedPlayerAsItEvent::read(stream, definition)?)
             }
             GameEventType::MerasmusStunned => {
-                GameEvent::MerasmusStunned(MerasmusStunnedEvent::from_raw_event(event.values)?)
+                GameEvent::MerasmusStunned(MerasmusStunnedEvent::read(stream, definition)?)
             }
             GameEventType::MerasmusPropFound => {
-                GameEvent::MerasmusPropFound(MerasmusPropFoundEvent::from_raw_event(event.values)?)
+                GameEvent::MerasmusPropFound(MerasmusPropFoundEvent::read(stream, definition)?)
             }
             GameEventType::HalloweenSkeletonKilled => GameEvent::HalloweenSkeletonKilled(
-                HalloweenSkeletonKilledEvent::from_raw_event(event.values)?,
+                HalloweenSkeletonKilledEvent::read(stream, definition)?,
             ),
             GameEventType::EscapeHell => {
-                GameEvent::EscapeHell(EscapeHellEvent::from_raw_event(event.values)?)
+                GameEvent::EscapeHell(EscapeHellEvent::read(stream, definition)?)
             }
-            GameEventType::CrossSpectralBridge => GameEvent::CrossSpectralBridge(
-                CrossSpectralBridgeEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::CrossSpectralBridge => {
+                GameEvent::CrossSpectralBridge(CrossSpectralBridgeEvent::read(stream, definition)?)
+            }
             GameEventType::MiniGameWon => {
-                GameEvent::MiniGameWon(MiniGameWonEvent::from_raw_event(event.values)?)
+                GameEvent::MiniGameWon(MiniGameWonEvent::read(stream, definition)?)
             }
             GameEventType::RespawnGhost => {
-                GameEvent::RespawnGhost(RespawnGhostEvent::from_raw_event(event.values)?)
+                GameEvent::RespawnGhost(RespawnGhostEvent::read(stream, definition)?)
             }
             GameEventType::KillInHell => {
-                GameEvent::KillInHell(KillInHellEvent::from_raw_event(event.values)?)
+                GameEvent::KillInHell(KillInHellEvent::read(stream, definition)?)
             }
             GameEventType::HalloweenDuckCollected => GameEvent::HalloweenDuckCollected(
-                HalloweenDuckCollectedEvent::from_raw_event(event.values)?,
+                HalloweenDuckCollectedEvent::read(stream, definition)?,
             ),
             GameEventType::SpecialScore => {
-                GameEvent::SpecialScore(SpecialScoreEvent::from_raw_event(event.values)?)
+                GameEvent::SpecialScore(SpecialScoreEvent::read(stream, definition)?)
             }
             GameEventType::TeamLeaderKilled => {
-                GameEvent::TeamLeaderKilled(TeamLeaderKilledEvent::from_raw_event(event.values)?)
+                GameEvent::TeamLeaderKilled(TeamLeaderKilledEvent::read(stream, definition)?)
             }
             GameEventType::HalloweenSoulCollected => GameEvent::HalloweenSoulCollected(
-                HalloweenSoulCollectedEvent::from_raw_event(event.values)?,
+                HalloweenSoulCollectedEvent::read(stream, definition)?,
             ),
             GameEventType::RecalculateTruce => {
-                GameEvent::RecalculateTruce(RecalculateTruceEvent::from_raw_event(event.values)?)
+                GameEvent::RecalculateTruce(RecalculateTruceEvent::read(stream, definition)?)
             }
             GameEventType::DeadRingerCheatDeath => GameEvent::DeadRingerCheatDeath(
-                DeadRingerCheatDeathEvent::from_raw_event(event.values)?,
+                DeadRingerCheatDeathEvent::read(stream, definition)?,
             ),
             GameEventType::CrossbowHeal => {
-                GameEvent::CrossbowHeal(CrossbowHealEvent::from_raw_event(event.values)?)
+                GameEvent::CrossbowHeal(CrossbowHealEvent::read(stream, definition)?)
             }
             GameEventType::DamageMitigated => {
-                GameEvent::DamageMitigated(DamageMitigatedEvent::from_raw_event(event.values)?)
+                GameEvent::DamageMitigated(DamageMitigatedEvent::read(stream, definition)?)
             }
             GameEventType::PayloadPushed => {
-                GameEvent::PayloadPushed(PayloadPushedEvent::from_raw_event(event.values)?)
+                GameEvent::PayloadPushed(PayloadPushedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerAbandonedMatch => GameEvent::PlayerAbandonedMatch(
-                PlayerAbandonedMatchEvent::from_raw_event(event.values)?,
+                PlayerAbandonedMatchEvent::read(stream, definition)?,
             ),
             GameEventType::ClDrawline => {
-                GameEvent::ClDrawline(ClDrawlineEvent::from_raw_event(event.values)?)
+                GameEvent::ClDrawline(ClDrawlineEvent::read(stream, definition)?)
             }
             GameEventType::RestartTimerTime => {
-                GameEvent::RestartTimerTime(RestartTimerTimeEvent::from_raw_event(event.values)?)
+                GameEvent::RestartTimerTime(RestartTimerTimeEvent::read(stream, definition)?)
             }
             GameEventType::WinLimitChanged => {
-                GameEvent::WinLimitChanged(WinLimitChangedEvent::from_raw_event(event.values)?)
+                GameEvent::WinLimitChanged(WinLimitChangedEvent::read(stream, definition)?)
             }
-            GameEventType::WinPanelShowScores => GameEvent::WinPanelShowScores(
-                WinPanelShowScoresEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::WinPanelShowScores => {
+                GameEvent::WinPanelShowScores(WinPanelShowScoresEvent::read(stream, definition)?)
+            }
             GameEventType::TopStreamsRequestFinished => GameEvent::TopStreamsRequestFinished(
-                TopStreamsRequestFinishedEvent::from_raw_event(event.values)?,
+                TopStreamsRequestFinishedEvent::read(stream, definition)?,
             ),
             GameEventType::CompetitiveStateChanged => GameEvent::CompetitiveStateChanged(
-                CompetitiveStateChangedEvent::from_raw_event(event.values)?,
+                CompetitiveStateChangedEvent::read(stream, definition)?,
             ),
             GameEventType::GlobalWarDataUpdated => GameEvent::GlobalWarDataUpdated(
-                GlobalWarDataUpdatedEvent::from_raw_event(event.values)?,
+                GlobalWarDataUpdatedEvent::read(stream, definition)?,
             ),
             GameEventType::StopWatchChanged => {
-                GameEvent::StopWatchChanged(StopWatchChangedEvent::from_raw_event(event.values)?)
+                GameEvent::StopWatchChanged(StopWatchChangedEvent::read(stream, definition)?)
             }
-            GameEventType::DsStop => GameEvent::DsStop(DsStopEvent::from_raw_event(event.values)?),
+            GameEventType::DsStop => GameEvent::DsStop(DsStopEvent::read(stream, definition)?),
             GameEventType::DsScreenshot => {
-                GameEvent::DsScreenshot(DsScreenshotEvent::from_raw_event(event.values)?)
+                GameEvent::DsScreenshot(DsScreenshotEvent::read(stream, definition)?)
             }
             GameEventType::ShowMatchSummary => {
-                GameEvent::ShowMatchSummary(ShowMatchSummaryEvent::from_raw_event(event.values)?)
+                GameEvent::ShowMatchSummary(ShowMatchSummaryEvent::read(stream, definition)?)
             }
             GameEventType::ExperienceChanged => {
-                GameEvent::ExperienceChanged(ExperienceChangedEvent::from_raw_event(event.values)?)
+                GameEvent::ExperienceChanged(ExperienceChangedEvent::read(stream, definition)?)
             }
             GameEventType::BeginXpLerp => {
-                GameEvent::BeginXpLerp(BeginXpLerpEvent::from_raw_event(event.values)?)
+                GameEvent::BeginXpLerp(BeginXpLerpEvent::read(stream, definition)?)
             }
             GameEventType::MatchmakerStatsUpdated => GameEvent::MatchmakerStatsUpdated(
-                MatchmakerStatsUpdatedEvent::from_raw_event(event.values)?,
+                MatchmakerStatsUpdatedEvent::read(stream, definition)?,
             ),
             GameEventType::RematchVotePeriodOver => GameEvent::RematchVotePeriodOver(
-                RematchVotePeriodOverEvent::from_raw_event(event.values)?,
+                RematchVotePeriodOverEvent::read(stream, definition)?,
             ),
             GameEventType::RematchFailedToCreate => GameEvent::RematchFailedToCreate(
-                RematchFailedToCreateEvent::from_raw_event(event.values)?,
+                RematchFailedToCreateEvent::read(stream, definition)?,
             ),
-            GameEventType::PlayerRematchChange => GameEvent::PlayerRematchChange(
-                PlayerRematchChangeEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::PlayerRematchChange => {
+                GameEvent::PlayerRematchChange(PlayerRematchChangeEvent::read(stream, definition)?)
+            }
             GameEventType::PingUpdated => {
-                GameEvent::PingUpdated(PingUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::PingUpdated(PingUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::MMStatsUpdated => {
-                GameEvent::MMStatsUpdated(MMStatsUpdatedEvent::from_raw_event(event.values)?)
+                GameEvent::MMStatsUpdated(MMStatsUpdatedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerNextMapVoteChange => GameEvent::PlayerNextMapVoteChange(
-                PlayerNextMapVoteChangeEvent::from_raw_event(event.values)?,
+                PlayerNextMapVoteChangeEvent::read(stream, definition)?,
             ),
             GameEventType::VoteMapsChanged => {
-                GameEvent::VoteMapsChanged(VoteMapsChangedEvent::from_raw_event(event.values)?)
+                GameEvent::VoteMapsChanged(VoteMapsChangedEvent::read(stream, definition)?)
             }
             GameEventType::ProtoDefChanged => {
-                GameEvent::ProtoDefChanged(ProtoDefChangedEvent::from_raw_event(event.values)?)
+                GameEvent::ProtoDefChanged(ProtoDefChangedEvent::read(stream, definition)?)
             }
             GameEventType::PlayerDomination => {
-                GameEvent::PlayerDomination(PlayerDominationEvent::from_raw_event(event.values)?)
+                GameEvent::PlayerDomination(PlayerDominationEvent::read(stream, definition)?)
             }
             GameEventType::PlayerRocketPackPushed => GameEvent::PlayerRocketPackPushed(
-                PlayerRocketPackPushedEvent::from_raw_event(event.values)?,
+                PlayerRocketPackPushedEvent::read(stream, definition)?,
             ),
             GameEventType::QuestRequest => {
-                GameEvent::QuestRequest(QuestRequestEvent::from_raw_event(event.values)?)
+                GameEvent::QuestRequest(QuestRequestEvent::read(stream, definition)?)
             }
             GameEventType::QuestResponse => {
-                GameEvent::QuestResponse(QuestResponseEvent::from_raw_event(event.values)?)
+                GameEvent::QuestResponse(QuestResponseEvent::read(stream, definition)?)
             }
             GameEventType::QuestProgress => {
-                GameEvent::QuestProgress(QuestProgressEvent::from_raw_event(event.values)?)
+                GameEvent::QuestProgress(QuestProgressEvent::read(stream, definition)?)
             }
             GameEventType::ProjectileRemoved => {
-                GameEvent::ProjectileRemoved(ProjectileRemovedEvent::from_raw_event(event.values)?)
+                GameEvent::ProjectileRemoved(ProjectileRemovedEvent::read(stream, definition)?)
             }
-            GameEventType::QuestMapDataChanged => GameEvent::QuestMapDataChanged(
-                QuestMapDataChangedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::QuestMapDataChanged => {
+                GameEvent::QuestMapDataChanged(QuestMapDataChangedEvent::read(stream, definition)?)
+            }
             GameEventType::GasDousedPlayerIgnited => GameEvent::GasDousedPlayerIgnited(
-                GasDousedPlayerIgnitedEvent::from_raw_event(event.values)?,
+                GasDousedPlayerIgnitedEvent::read(stream, definition)?,
             ),
             GameEventType::QuestTurnInState => {
-                GameEvent::QuestTurnInState(QuestTurnInStateEvent::from_raw_event(event.values)?)
+                GameEvent::QuestTurnInState(QuestTurnInStateEvent::read(stream, definition)?)
             }
             GameEventType::ItemsAcknowledged => {
-                GameEvent::ItemsAcknowledged(ItemsAcknowledgedEvent::from_raw_event(event.values)?)
+                GameEvent::ItemsAcknowledged(ItemsAcknowledgedEvent::read(stream, definition)?)
             }
             GameEventType::CapperKilled => {
-                GameEvent::CapperKilled(CapperKilledEvent::from_raw_event(event.values)?)
+                GameEvent::CapperKilled(CapperKilledEvent::read(stream, definition)?)
             }
-            GameEventType::MainMenuStabilized => GameEvent::MainMenuStabilized(
-                MainMenuStabilizedEvent::from_raw_event(event.values)?,
-            ),
-            GameEventType::WorldStatusChanged => GameEvent::WorldStatusChanged(
-                WorldStatusChangedEvent::from_raw_event(event.values)?,
-            ),
+            GameEventType::MainMenuStabilized => {
+                GameEvent::MainMenuStabilized(MainMenuStabilizedEvent::read(stream, definition)?)
+            }
+            GameEventType::WorldStatusChanged => {
+                GameEvent::WorldStatusChanged(WorldStatusChangedEvent::read(stream, definition)?)
+            }
             GameEventType::HLTVStatus => {
-                GameEvent::HLTVStatus(HLTVStatusEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVStatus(HLTVStatusEvent::read(stream, definition)?)
             }
             GameEventType::HLTVCameraman => {
-                GameEvent::HLTVCameraman(HLTVCameramanEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVCameraman(HLTVCameramanEvent::read(stream, definition)?)
             }
             GameEventType::HLTVRankCamera => {
-                GameEvent::HLTVRankCamera(HLTVRankCameraEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVRankCamera(HLTVRankCameraEvent::read(stream, definition)?)
             }
             GameEventType::HLTVRankEntity => {
-                GameEvent::HLTVRankEntity(HLTVRankEntityEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVRankEntity(HLTVRankEntityEvent::read(stream, definition)?)
             }
             GameEventType::HLTVFixed => {
-                GameEvent::HLTVFixed(HLTVFixedEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVFixed(HLTVFixedEvent::read(stream, definition)?)
             }
             GameEventType::HLTVChase => {
-                GameEvent::HLTVChase(HLTVChaseEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVChase(HLTVChaseEvent::read(stream, definition)?)
             }
             GameEventType::HLTVMessage => {
-                GameEvent::HLTVMessage(HLTVMessageEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVMessage(HLTVMessageEvent::read(stream, definition)?)
             }
             GameEventType::HLTVTitle => {
-                GameEvent::HLTVTitle(HLTVTitleEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVTitle(HLTVTitleEvent::read(stream, definition)?)
             }
             GameEventType::HLTVChat => {
-                GameEvent::HLTVChat(HLTVChatEvent::from_raw_event(event.values)?)
+                GameEvent::HLTVChat(HLTVChatEvent::read(stream, definition)?)
             }
             GameEventType::ReplayStartRecord => {
-                GameEvent::ReplayStartRecord(ReplayStartRecordEvent::from_raw_event(event.values)?)
+                GameEvent::ReplayStartRecord(ReplayStartRecordEvent::read(stream, definition)?)
             }
             GameEventType::ReplaySessionInfo => {
-                GameEvent::ReplaySessionInfo(ReplaySessionInfoEvent::from_raw_event(event.values)?)
+                GameEvent::ReplaySessionInfo(ReplaySessionInfoEvent::read(stream, definition)?)
             }
             GameEventType::ReplayEndRecord => {
-                GameEvent::ReplayEndRecord(ReplayEndRecordEvent::from_raw_event(event.values)?)
+                GameEvent::ReplayEndRecord(ReplayEndRecordEvent::read(stream, definition)?)
             }
             GameEventType::ReplayReplaysAvailable => GameEvent::ReplayReplaysAvailable(
-                ReplayReplaysAvailableEvent::from_raw_event(event.values)?,
+                ReplayReplaysAvailableEvent::read(stream, definition)?,
             ),
             GameEventType::ReplayServerError => {
-                GameEvent::ReplayServerError(ReplayServerErrorEvent::from_raw_event(event.values)?)
+                GameEvent::ReplayServerError(ReplayServerErrorEvent::read(stream, definition)?)
             }
-            GameEventType::Unknown => GameEvent::Unknown(event),
+            GameEventType::Unknown => GameEvent::Unknown(RawGameEvent::read(stream, definition)?),
         })
     }
 }

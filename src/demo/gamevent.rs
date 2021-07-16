@@ -1,8 +1,9 @@
 use bitbuffer::{BitRead, BitWrite};
 
-use crate::{ParseError, Result};
+use crate::{GameEventError, ParseError, Result, Stream};
 
 pub use super::gameevent_gen::{GameEvent, GameEventType};
+use crate::demo::handle_utf8_error;
 use crate::demo::message::gameevent::GameEventTypeId;
 use parse_display::Display;
 use std::cmp::Ordering;
@@ -65,6 +66,21 @@ pub enum GameEventValue {
     Local,
 }
 
+fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {
+    Ok(match definition.kind {
+        GameEventValueType::String => {
+            GameEventValue::String(stream.read().or_else(handle_utf8_error)?)
+        }
+        GameEventValueType::Float => GameEventValue::Float(stream.read()?),
+        GameEventValueType::Long => GameEventValue::Long(stream.read()?),
+        GameEventValueType::Short => GameEventValue::Short(stream.read()?),
+        GameEventValueType::Byte => GameEventValue::Byte(stream.read()?),
+        GameEventValueType::Boolean => GameEventValue::Boolean(stream.read()?),
+        GameEventValueType::Local => GameEventValue::Local,
+        GameEventValueType::None => return Err(GameEventError::NoneValue.into()),
+    })
+}
+
 impl GameEventValue {
     pub fn get_type(&self) -> GameEventValueType {
         match self {
@@ -81,6 +97,8 @@ impl GameEventValue {
 
 pub trait FromGameEventValue: Sized {
     fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self>;
+
+    fn value_type() -> GameEventValueType;
 }
 
 impl FromGameEventValue for String {
@@ -95,6 +113,10 @@ impl FromGameEventValue for String {
             }),
         }
     }
+
+    fn value_type() -> GameEventValueType {
+        GameEventValueType::String
+    }
 }
 
 impl FromGameEventValue for f32 {
@@ -108,6 +130,10 @@ impl FromGameEventValue for f32 {
                 found_type: value.get_type(),
             }),
         }
+    }
+
+    fn value_type() -> GameEventValueType {
+        GameEventValueType::Float
     }
 }
 
@@ -125,6 +151,10 @@ impl FromGameEventValue for u32 {
             }),
         }
     }
+
+    fn value_type() -> GameEventValueType {
+        GameEventValueType::Long
+    }
 }
 
 impl FromGameEventValue for u16 {
@@ -140,6 +170,10 @@ impl FromGameEventValue for u16 {
                 found_type: value.get_type(),
             }),
         }
+    }
+
+    fn value_type() -> GameEventValueType {
+        GameEventValueType::Short
     }
 }
 
@@ -157,6 +191,10 @@ impl FromGameEventValue for u8 {
             }),
         }
     }
+
+    fn value_type() -> GameEventValueType {
+        GameEventValueType::Byte
+    }
 }
 
 impl FromGameEventValue for bool {
@@ -171,6 +209,10 @@ impl FromGameEventValue for bool {
             }),
         }
     }
+
+    fn value_type() -> GameEventValueType {
+        GameEventValueType::Boolean
+    }
 }
 
 impl FromGameEventValue for () {
@@ -184,12 +226,30 @@ impl FromGameEventValue for () {
             }),
         }
     }
+
+    fn value_type() -> GameEventValueType {
+        GameEventValueType::Local
+    }
 }
 
 #[derive(Debug)]
 pub struct RawGameEvent {
     pub event_type: GameEventType,
     pub values: Vec<GameEventValue>,
+}
+
+impl RawGameEvent {
+    pub fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut values: Vec<GameEventValue> = Vec::with_capacity(definition.entries.len());
+        for entry in &definition.entries {
+            values.push(read_event_value(stream, &entry)?);
+        }
+
+        Ok(RawGameEvent {
+            event_type: definition.event_type,
+            values,
+        })
+    }
 }
 
 pub trait FromRawGameEvent: Sized {

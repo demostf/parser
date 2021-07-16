@@ -1,29 +1,12 @@
-use bitbuffer::{BitRead, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use parse_display::Display;
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{
-    GameEvent, GameEventDefinition, GameEventEntry, GameEventValue, GameEventValueType,
-    RawGameEvent,
+    GameEvent, GameEventDefinition, GameEventEntry, GameEventValueType, RawGameEvent,
 };
-use crate::demo::handle_utf8_error;
-use crate::demo::parser::ParseBitSkip;
+use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
-
-fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {
-    Ok(match definition.kind {
-        GameEventValueType::String => {
-            GameEventValue::String(stream.read().or_else(handle_utf8_error)?)
-        }
-        GameEventValueType::Float => GameEventValue::Float(stream.read()?),
-        GameEventValueType::Long => GameEventValue::Long(stream.read()?),
-        GameEventValueType::Short => GameEventValue::Short(stream.read()?),
-        GameEventValueType::Byte => GameEventValue::Byte(stream.read()?),
-        GameEventValueType::Boolean => GameEventValue::Boolean(stream.read()?),
-        GameEventValueType::Local => GameEventValue::Local,
-        GameEventValueType::None => return Err(GameEventError::NoneValue.into()),
-    })
-}
 
 #[derive(Debug)]
 pub struct GameEventMessage {
@@ -46,28 +29,27 @@ impl Parse<'_> for GameEventMessage {
             });
         }
 
-        let raw_event = match state.event_definitions.get(usize::from(event_type)) {
-            Some(definition) => {
-                let mut values: Vec<GameEventValue> = Vec::with_capacity(definition.entries.len());
-                for entry in &definition.entries {
-                    values.push(read_event_value(&mut data, &entry)?);
-                }
-
-                RawGameEvent {
-                    event_type: definition.event_type,
-                    values,
-                }
-            }
+        let event = match state.event_definitions.get(usize::from(event_type)) {
+            Some(definition) => GameEvent::read(&mut data, definition)?,
             None => {
                 return Err(ParseError::MalformedGameEvent(GameEventError::UnknownType(
                     event_type,
                 )));
             }
         };
-        let event = GameEvent::from_raw_event(raw_event)?;
         Ok(GameEventMessage {
             event: Box::new(event),
         })
+    }
+}
+
+impl Encode for GameEventMessage {
+    fn encode(
+        &self,
+        stream: &mut BitWriteStream<LittleEndian>,
+        _state: &ParserState,
+    ) -> Result<()> {
+        Ok(stream.reserve_length(11, |_stream| Ok(()))?)
     }
 }
 
@@ -78,7 +60,7 @@ impl ParseBitSkip<'_> for GameEventMessage {
     }
 }
 
-#[derive(BitRead, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Display)]
+#[derive(BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Display)]
 pub struct GameEventTypeId(#[size = 9] u16);
 
 impl From<GameEventTypeId> for usize {
@@ -123,6 +105,22 @@ impl BitRead<'_, LittleEndian> for GameEventDefinition {
     }
 }
 
+impl BitWrite<LittleEndian> for GameEventDefinition {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.id.write(stream)?;
+        self.event_type.as_str().write(stream)?;
+        self.name.write(stream)?;
+
+        for entry in self.entries.iter() {
+            entry.kind.write(stream)?;
+            entry.name.write(stream)?;
+        }
+        GameEventValueType::None.write(stream)?;
+
+        Ok(())
+    }
+}
+
 impl BitRead<'_, LittleEndian> for GameEventListMessage {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let count: u16 = stream.read_sized(9)?;
@@ -131,5 +129,19 @@ impl BitRead<'_, LittleEndian> for GameEventListMessage {
         let event_list: Vec<GameEventDefinition> = data.read_sized(count as usize)?;
 
         Ok(GameEventListMessage { event_list })
+    }
+}
+
+impl BitWrite<LittleEndian> for GameEventListMessage {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        (self.event_list.len() as u16).write(stream)?;
+        stream.reserve_length(20, |stream| {
+            for event in self.event_list.iter() {
+                event.write(stream)?;
+            }
+            Ok(())
+        })?;
+
+        Ok(())
     }
 }

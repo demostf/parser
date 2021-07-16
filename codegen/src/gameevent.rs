@@ -225,8 +225,10 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     let span = Span::call_site();
 
     let imports = quote!(
-        use super::gamevent::{FromGameEventValue, FromRawGameEvent, GameEventValue, RawGameEvent};
-        use crate::Result;
+        use super::gamevent::{FromGameEventValue, GameEventDefinition, GameEventEntry, RawGameEvent};
+        use crate::demo::Stream;
+        use crate::{ParseError, Result};
+        use bitbuffer::{BitRead, LittleEndian};
     );
 
     let event_definitions = events.iter().map(|event| {
@@ -239,28 +241,22 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
         let name = Ident::new(&format!("{}Event", get_event_name(&event.name)), span);
 
-        let entry_constructors = event.entries.iter().map(|entry| {
+        let entry_readers = event.entries.iter().map(|entry| {
             let name_str = get_entry_name(&entry.name);
             let name = Ident::new(&name_str, span);
             let ty = Ident::new(get_type_name(entry.kind), span);
 
             quote!(
-                #name: #ty::from_value(iter.next(), #name_str)?,
+                #name: read_value::<#ty>(stream, iter.next(), #name_str)?,
             )
         });
 
-        let iter = if event.entries.len() > 0 {
+        let definition_iter = if event.entries.len() > 0 {
             quote!(
-                let mut iter = values.into_iter();
+                let mut iter = definition.entries.iter();
             )
         } else {
             quote!()
-        };
-
-        let param_name = if event.entries.len() > 0 {
-            quote!(values)
-        } else {
-            quote!(_values)
         };
 
         quote!(
@@ -269,12 +265,13 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
                 #(#fields)*
             }
 
-            impl FromRawGameEvent for #name {
-                fn from_raw_event(#param_name: Vec<GameEventValue>) -> Result<Self> {
-                    #iter
+            impl #name {
+                #[allow(unused_variables)]
+                fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+                    #definition_iter
 
                     Ok(#name {
-                        #(#entry_constructors)*
+                        #(#entry_readers)*
                     })
                 }
             }
@@ -315,7 +312,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         quote!(GameEventType::#variant_name => #name_str,)
     });
 
-    let from_raw_events = events.iter().map(|event| {
+    let read_events = events.iter().map(|event| {
         let name = get_event_name(&event.name);
         let variant_name = Ident::new(&name, span);
         let struct_name = Ident::new(&format!("{}Event", name), span);
@@ -323,13 +320,13 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         if should_box_event(&name) {
             quote!(
                 GameEventType::#variant_name => {
-                    GameEvent::#variant_name(<Box<#struct_name>>::from_raw_event(event.values)?)
+                    GameEvent::#variant_name(Box::new(<#struct_name>::read(stream, definition)?))
                 }
             )
         } else {
             quote!(
                 GameEventType::#variant_name => {
-                    GameEvent::#variant_name(#struct_name::from_raw_event(event.values)?)
+                    GameEvent::#variant_name(#struct_name::read(stream, definition)?)
                 }
             )
         }
@@ -346,6 +343,27 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
     quote!(
         #imports
+
+        fn read_value<'a, T: FromGameEventValue + BitRead<'a, LittleEndian> + Default>(
+            stream: &mut Stream<'a>,
+            entry: Option<&GameEventEntry>,
+            name: &'static str,
+        ) -> Result<T> {
+            let entry = match entry {
+                Some(entry) => entry,
+                None => {
+                    return Ok(T::default());
+                }
+            };
+            if T::value_type() != entry.kind {
+                return Err(ParseError::InvalidGameEvent {
+                    expected_type: T::value_type(),
+                    name,
+                    found_type: entry.kind,
+                });
+            }
+            Ok(T::read(stream)?)
+        }
 
         #(#event_definitions)*
 
@@ -377,10 +395,10 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         }
 
         impl GameEvent {
-            pub fn from_raw_event(event: RawGameEvent) -> Result<Self> {
-                Ok(match event.event_type {
-                    #(#from_raw_events)*
-                    GameEventType::Unknown => GameEvent::Unknown(event),
+            pub fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+                Ok(match definition.event_type {
+                    #(#read_events)*
+                    GameEventType::Unknown => GameEvent::Unknown(RawGameEvent::read(stream, definition)?),
                 })
             }
         }

@@ -1,4 +1,4 @@
-use bitbuffer::{BitError, BitRead, LittleEndian};
+use bitbuffer::{BitError, BitRead, BitWrite, BitWriteStream, LittleEndian};
 
 pub use self::messagetypeanalyser::MessageTypeAnalyser;
 
@@ -28,6 +28,19 @@ pub trait Parse<'a>: Sized {
 impl<'a, T: BitRead<'a, LittleEndian>> Parse<'a> for T {
     fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
         Self::read(stream).map_err(ParseError::from)
+    }
+}
+pub trait Encode: Sized {
+    fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()>;
+}
+
+impl<T: BitWrite<LittleEndian>> Encode for T {
+    fn encode(
+        &self,
+        stream: &mut BitWriteStream<LittleEndian>,
+        _state: &ParserState,
+    ) -> Result<()> {
+        self.write(stream).map_err(ParseError::from)
     }
 }
 
