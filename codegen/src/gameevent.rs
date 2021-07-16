@@ -1,10 +1,10 @@
 extern crate proc_macro;
 
+use fnv::FnvHashMap;
 use inflector::Inflector;
 use lazy_static::lazy_static;
 use proc_macro2::{Ident, Literal, Span, TokenStream};
 use quote::quote;
-use std::collections::hash_map::HashMap;
 use tf_demo_parser::demo::gameevent_gen::get_sizes;
 use tf_demo_parser::demo::gamevent::{GameEventDefinition, GameEventValueType};
 use tf_demo_parser::demo::parser::MessageHandler;
@@ -27,7 +27,7 @@ impl MessageHandler for GameEventAnalyser {
 
 fn should_box_event(name: &str) -> bool {
     lazy_static! {
-        static ref SIZES: HashMap<&'static str, usize> = get_sizes();
+        static ref SIZES: FnvHashMap<&'static str, usize> = get_sizes();
     }
 
     SIZES.get(name).cloned().unwrap_or_default() > 120
@@ -308,6 +308,13 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         quote!(#name_str => GameEventType::#variant_name,)
     });
 
+    let type_to_names = events.iter().map(|event| {
+        let name_str = &event.name;
+        let variant_name = Ident::new(&get_event_name(&name_str), span);
+
+        quote!(GameEventType::#variant_name => #name_str,)
+    });
+
     let from_raw_events = events.iter().map(|event| {
         let name = get_event_name(&event.name);
         let variant_name = Ident::new(&name, span);
@@ -359,6 +366,12 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
                 match name {
                     #(#type_from_names)*
                     _ => GameEventType::Unknown,
+                }
+            }
+            pub fn as_str(&self) -> &'static str {
+                match self {
+                    #(#type_to_names)*
+                    GameEventType::Unknown => "unknown",
                 }
             }
         }
