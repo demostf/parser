@@ -1,8 +1,8 @@
-use super::gamevent::{FromGameEventValue, GameEventDefinition, GameEventEntry, RawGameEvent};
+use super::gamevent::{EventValue, GameEventDefinition, GameEventEntry, RawGameEvent};
 use crate::demo::Stream;
 use crate::{ParseError, Result};
-use bitbuffer::{BitRead, LittleEndian};
-fn read_value<'a, T: FromGameEventValue + BitRead<'a, LittleEndian> + Default>(
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     stream: &mut Stream<'a>,
     entry: Option<&GameEventEntry>,
     name: &'static str,
@@ -22,7 +22,7 @@ fn read_value<'a, T: FromGameEventValue + BitRead<'a, LittleEndian> + Default>(
     }
     Ok(T::read(stream)?)
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
     pub address: String,
@@ -53,7 +53,7 @@ impl ServerSpawnEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ServerChangeLevelFailedEvent {
     pub level_name: String,
 }
@@ -66,7 +66,7 @@ impl ServerChangeLevelFailedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ServerShutdownEvent {
     pub reason: String,
 }
@@ -79,7 +79,7 @@ impl ServerShutdownEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ServerCvarEvent {
     pub cvar_name: String,
     pub cvar_value: String,
@@ -94,7 +94,7 @@ impl ServerCvarEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ServerMessageEvent {
     pub text: String,
 }
@@ -107,7 +107,7 @@ impl ServerMessageEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ServerAddBanEvent {
     pub name: String,
     pub user_id: u16,
@@ -132,7 +132,7 @@ impl ServerAddBanEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ServerRemoveBanEvent {
     pub network_id: String,
     pub ip: String,
@@ -149,7 +149,7 @@ impl ServerRemoveBanEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerConnectEvent {
     pub name: String,
     pub index: u8,
@@ -172,7 +172,7 @@ impl PlayerConnectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerConnectClientEvent {
     pub name: String,
     pub index: u8,
@@ -193,7 +193,7 @@ impl PlayerConnectClientEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerInfoEvent {
     pub name: String,
     pub index: u8,
@@ -214,7 +214,7 @@ impl PlayerInfoEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerDisconnectEvent {
     pub user_id: u16,
     pub reason: String,
@@ -235,7 +235,7 @@ impl PlayerDisconnectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerActivateEvent {
     pub user_id: u16,
 }
@@ -248,7 +248,7 @@ impl PlayerActivateEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerSayEvent {
     pub user_id: u16,
     pub text: String,
@@ -263,7 +263,7 @@ impl PlayerSayEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ClientDisconnectEvent {
     pub message: String,
 }
@@ -276,7 +276,7 @@ impl ClientDisconnectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ClientBeginConnectEvent {
     pub address: String,
     pub ip: u32,
@@ -295,7 +295,7 @@ impl ClientBeginConnectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ClientConnectedEvent {
     pub address: String,
     pub ip: u32,
@@ -312,7 +312,7 @@ impl ClientConnectedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ClientFullConnectEvent {
     pub address: String,
     pub ip: u32,
@@ -329,7 +329,7 @@ impl ClientFullConnectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HostQuitEvent {}
 impl HostQuitEvent {
     #[allow(unused_variables)]
@@ -337,7 +337,7 @@ impl HostQuitEvent {
         Ok(HostQuitEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamInfoEvent {
     pub team_id: u8,
     pub team_name: String,
@@ -352,7 +352,7 @@ impl TeamInfoEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamScoreEvent {
     pub team_id: u8,
     pub score: u16,
@@ -367,7 +367,7 @@ impl TeamScoreEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayBroadcastAudioEvent {
     pub team: u8,
     pub sound: String,
@@ -384,7 +384,7 @@ impl TeamPlayBroadcastAudioEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerTeamEvent {
     pub user_id: u16,
     pub team: u8,
@@ -409,7 +409,7 @@ impl PlayerTeamEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerClassEvent {
     pub user_id: u16,
     pub class: String,
@@ -424,7 +424,7 @@ impl PlayerClassEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerDeathEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -495,7 +495,7 @@ impl PlayerDeathEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHurtEvent {
     pub user_id: u16,
     pub health: u16,
@@ -528,7 +528,7 @@ impl PlayerHurtEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerChatEvent {
     pub team_only: bool,
     pub user_id: u16,
@@ -545,7 +545,7 @@ impl PlayerChatEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerScoreEvent {
     pub user_id: u16,
     pub kills: u16,
@@ -564,7 +564,7 @@ impl PlayerScoreEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerSpawnEvent {
     pub user_id: u16,
     pub team: u16,
@@ -581,7 +581,7 @@ impl PlayerSpawnEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerShootEvent {
     pub user_id: u16,
     pub weapon: u8,
@@ -598,7 +598,7 @@ impl PlayerShootEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerUseEvent {
     pub user_id: u16,
     pub entity: u16,
@@ -613,7 +613,7 @@ impl PlayerUseEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerChangeNameEvent {
     pub user_id: u16,
     pub old_name: String,
@@ -630,7 +630,7 @@ impl PlayerChangeNameEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHintMessageEvent {
     pub hint_message: String,
 }
@@ -643,7 +643,7 @@ impl PlayerHintMessageEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
 }
@@ -656,7 +656,7 @@ impl BasePlayerTeleportedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GameInitEvent {}
 impl GameInitEvent {
     #[allow(unused_variables)]
@@ -664,7 +664,7 @@ impl GameInitEvent {
         Ok(GameInitEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GameNewMapEvent {
     pub map_name: String,
 }
@@ -677,7 +677,7 @@ impl GameNewMapEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GameStartEvent {
     pub rounds_limit: u32,
     pub time_limit: u32,
@@ -696,7 +696,7 @@ impl GameStartEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GameEndEvent {
     pub winner: u8,
 }
@@ -709,7 +709,7 @@ impl GameEndEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RoundStartEvent {
     pub time_limit: u32,
     pub frag_limit: u32,
@@ -726,7 +726,7 @@ impl RoundStartEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RoundEndEvent {
     pub winner: u8,
     pub reason: u8,
@@ -743,7 +743,7 @@ impl RoundEndEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GameMessageEvent {
     pub target: u8,
     pub text: String,
@@ -758,7 +758,7 @@ impl GameMessageEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct BreakBreakableEvent {
     pub ent_index: u32,
     pub user_id: u16,
@@ -775,7 +775,7 @@ impl BreakBreakableEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct BreakPropEvent {
     pub ent_index: u32,
     pub user_id: u16,
@@ -790,7 +790,7 @@ impl BreakPropEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EntityKilledEvent {
     pub ent_index_killed: u32,
     pub ent_index_attacker: u32,
@@ -809,7 +809,7 @@ impl EntityKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct BonusUpdatedEvent {
     pub num_advanced: u16,
     pub num_bronze: u16,
@@ -828,7 +828,7 @@ impl BonusUpdatedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct AchievementEventEvent {
     pub achievement_name: String,
     pub cur_val: u16,
@@ -845,7 +845,7 @@ impl AchievementEventEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct AchievementIncrementEvent {
     pub achievement_id: u32,
     pub cur_val: u16,
@@ -862,7 +862,7 @@ impl AchievementIncrementEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PhysgunPickupEvent {
     pub ent_index: u32,
 }
@@ -875,7 +875,7 @@ impl PhysgunPickupEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
 }
@@ -888,7 +888,7 @@ impl FlareIgniteNpcEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl HelicopterGrenadePuntMissEvent {
     #[allow(unused_variables)]
@@ -896,7 +896,7 @@ impl HelicopterGrenadePuntMissEvent {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct UserDataDownloadedEvent {}
 impl UserDataDownloadedEvent {
     #[allow(unused_variables)]
@@ -904,7 +904,7 @@ impl UserDataDownloadedEvent {
         Ok(UserDataDownloadedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
 }
@@ -917,7 +917,7 @@ impl RagdollDissolvedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVChangedModeEvent {
     pub old_mode: u16,
     pub new_mode: u16,
@@ -934,7 +934,7 @@ impl HLTVChangedModeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVChangedTargetEvent {
     pub mode: u16,
     pub old_target: u16,
@@ -951,7 +951,7 @@ impl HLTVChangedTargetEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct VoteEndedEvent {}
 impl VoteEndedEvent {
     #[allow(unused_variables)]
@@ -959,7 +959,7 @@ impl VoteEndedEvent {
         Ok(VoteEndedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct VoteStartedEvent {
     pub issue: String,
     pub param_1: String,
@@ -978,7 +978,7 @@ impl VoteStartedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct VoteChangedEvent {
     pub vote_option_1: u8,
     pub vote_option_2: u8,
@@ -1001,7 +1001,7 @@ impl VoteChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct VotePassedEvent {
     pub details: String,
     pub param_1: String,
@@ -1018,7 +1018,7 @@ impl VotePassedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct VoteFailedEvent {
     pub team: u8,
 }
@@ -1031,7 +1031,7 @@ impl VoteFailedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct VoteCastEvent {
     pub vote_option: u8,
     pub team: u16,
@@ -1048,7 +1048,7 @@ impl VoteCastEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct VoteOptionsEvent {
     pub count: u8,
     pub option_1: String,
@@ -1071,7 +1071,7 @@ impl VoteOptionsEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ReplaySavedEvent {}
 impl ReplaySavedEvent {
     #[allow(unused_variables)]
@@ -1079,7 +1079,7 @@ impl ReplaySavedEvent {
         Ok(ReplaySavedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EnteredPerformanceModeEvent {}
 impl EnteredPerformanceModeEvent {
     #[allow(unused_variables)]
@@ -1087,7 +1087,7 @@ impl EnteredPerformanceModeEvent {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct BrowseReplaysEvent {}
 impl BrowseReplaysEvent {
     #[allow(unused_variables)]
@@ -1095,7 +1095,7 @@ impl BrowseReplaysEvent {
         Ok(BrowseReplaysEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ReplayYoutubeStatsEvent {
     pub views: u32,
     pub likes: u32,
@@ -1112,7 +1112,7 @@ impl ReplayYoutubeStatsEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct InventoryUpdatedEvent {}
 impl InventoryUpdatedEvent {
     #[allow(unused_variables)]
@@ -1120,7 +1120,7 @@ impl InventoryUpdatedEvent {
         Ok(InventoryUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CartUpdatedEvent {}
 impl CartUpdatedEvent {
     #[allow(unused_variables)]
@@ -1128,7 +1128,7 @@ impl CartUpdatedEvent {
         Ok(CartUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl StorePriceSheetUpdatedEvent {
     #[allow(unused_variables)]
@@ -1136,7 +1136,7 @@ impl StorePriceSheetUpdatedEvent {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EconInventoryConnectedEvent {}
 impl EconInventoryConnectedEvent {
     #[allow(unused_variables)]
@@ -1144,7 +1144,7 @@ impl EconInventoryConnectedEvent {
         Ok(EconInventoryConnectedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ItemSchemaInitializedEvent {}
 impl ItemSchemaInitializedEvent {
     #[allow(unused_variables)]
@@ -1152,7 +1152,7 @@ impl ItemSchemaInitializedEvent {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GcNewSessionEvent {}
 impl GcNewSessionEvent {
     #[allow(unused_variables)]
@@ -1160,7 +1160,7 @@ impl GcNewSessionEvent {
         Ok(GcNewSessionEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GcLostSessionEvent {}
 impl GcLostSessionEvent {
     #[allow(unused_variables)]
@@ -1168,7 +1168,7 @@ impl GcLostSessionEvent {
         Ok(GcLostSessionEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct IntroFinishEvent {
     pub player: u16,
 }
@@ -1181,7 +1181,7 @@ impl IntroFinishEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct IntroNextCameraEvent {
     pub player: u16,
 }
@@ -1194,7 +1194,7 @@ impl IntroNextCameraEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerChangeClassEvent {
     pub user_id: u16,
     pub class: u16,
@@ -1209,7 +1209,7 @@ impl PlayerChangeClassEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
 }
@@ -1222,7 +1222,7 @@ impl TfMapTimeRemainingEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TfGameOverEvent {
     pub reason: String,
 }
@@ -1235,7 +1235,7 @@ impl TfGameOverEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CtfFlagCapturedEvent {
     pub capping_team: u16,
     pub capping_team_score: u16,
@@ -1250,7 +1250,7 @@ impl CtfFlagCapturedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointInitializedEvent {}
 impl ControlPointInitializedEvent {
     #[allow(unused_variables)]
@@ -1258,7 +1258,7 @@ impl ControlPointInitializedEvent {
         Ok(ControlPointInitializedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
 }
@@ -1271,7 +1271,7 @@ impl ControlPointUpdateImagesEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
 }
@@ -1284,7 +1284,7 @@ impl ControlPointUpdateLayoutEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
 }
@@ -1297,7 +1297,7 @@ impl ControlPointUpdateCappingEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
 }
@@ -1310,7 +1310,7 @@ impl ControlPointUpdateOwnerEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointStartTouchEvent {
     pub player: u16,
     pub area: u16,
@@ -1325,7 +1325,7 @@ impl ControlPointStartTouchEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointEndTouchEvent {
     pub player: u16,
     pub area: u16,
@@ -1340,7 +1340,7 @@ impl ControlPointEndTouchEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointPulseElementEvent {
     pub player: u16,
 }
@@ -1353,7 +1353,7 @@ impl ControlPointPulseElementEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointFakeCaptureEvent {
     pub player: u16,
     pub int_data: u16,
@@ -1368,7 +1368,7 @@ impl ControlPointFakeCaptureEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointFakeCaptureMultiplierEvent {
     pub player: u16,
     pub int_data: u16,
@@ -1383,7 +1383,7 @@ impl ControlPointFakeCaptureMultiplierEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
 }
@@ -1396,7 +1396,7 @@ impl TeamPlayRoundSelectedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
 }
@@ -1409,7 +1409,7 @@ impl TeamPlayRoundStartEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayRoundActiveEvent {}
 impl TeamPlayRoundActiveEvent {
     #[allow(unused_variables)]
@@ -1417,7 +1417,7 @@ impl TeamPlayRoundActiveEvent {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl TeamPlayWaitingBeginsEvent {
     #[allow(unused_variables)]
@@ -1425,7 +1425,7 @@ impl TeamPlayWaitingBeginsEvent {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl TeamPlayWaitingEndsEvent {
     #[allow(unused_variables)]
@@ -1433,7 +1433,7 @@ impl TeamPlayWaitingEndsEvent {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl TeamPlayWaitingAboutToEndEvent {
     #[allow(unused_variables)]
@@ -1441,7 +1441,7 @@ impl TeamPlayWaitingAboutToEndEvent {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayRestartRoundEvent {}
 impl TeamPlayRestartRoundEvent {
     #[allow(unused_variables)]
@@ -1449,7 +1449,7 @@ impl TeamPlayRestartRoundEvent {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayReadyRestartEvent {}
 impl TeamPlayReadyRestartEvent {
     #[allow(unused_variables)]
@@ -1457,7 +1457,7 @@ impl TeamPlayReadyRestartEvent {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
 }
@@ -1470,7 +1470,7 @@ impl TeamPlayRoundRestartSecondsEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
 }
@@ -1483,7 +1483,7 @@ impl TeamPlayTeamReadyEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayRoundWinEvent {
     pub team: u8,
     pub win_reason: u8,
@@ -1508,7 +1508,7 @@ impl TeamPlayRoundWinEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl TeamPlayUpdateTimerEvent {
     #[allow(unused_variables)]
@@ -1516,7 +1516,7 @@ impl TeamPlayUpdateTimerEvent {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
 }
@@ -1529,7 +1529,7 @@ impl TeamPlayRoundStalemateEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl TeamPlayOvertimeBeginEvent {
     #[allow(unused_variables)]
@@ -1537,7 +1537,7 @@ impl TeamPlayOvertimeBeginEvent {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl TeamPlayOvertimeEndEvent {
     #[allow(unused_variables)]
@@ -1545,7 +1545,7 @@ impl TeamPlayOvertimeEndEvent {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl TeamPlaySuddenDeathBeginEvent {
     #[allow(unused_variables)]
@@ -1553,7 +1553,7 @@ impl TeamPlaySuddenDeathBeginEvent {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl TeamPlaySuddenDeathEndEvent {
     #[allow(unused_variables)]
@@ -1561,7 +1561,7 @@ impl TeamPlaySuddenDeathEndEvent {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayGameOverEvent {
     pub reason: String,
 }
@@ -1574,7 +1574,7 @@ impl TeamPlayGameOverEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
 }
@@ -1587,7 +1587,7 @@ impl TeamPlayMapTimeRemainingEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
 }
@@ -1600,7 +1600,7 @@ impl TeamPlayTimerFlashEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayTimerTimeAddedEvent {
     pub timer: u16,
     pub seconds_added: u16,
@@ -1615,7 +1615,7 @@ impl TeamPlayTimerTimeAddedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayPointStartCaptureEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1638,7 +1638,7 @@ impl TeamPlayPointStartCaptureEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayPointCapturedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1657,7 +1657,7 @@ impl TeamPlayPointCapturedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayPointLockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1674,7 +1674,7 @@ impl TeamPlayPointLockedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayPointUnlockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1691,7 +1691,7 @@ impl TeamPlayPointUnlockedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayCaptureBrokenEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1708,7 +1708,7 @@ impl TeamPlayCaptureBrokenEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayCaptureBlockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1727,7 +1727,7 @@ impl TeamPlayCaptureBlockedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayFlagEventEvent {
     pub player: u16,
     pub carrier: u16,
@@ -1748,7 +1748,7 @@ impl TeamPlayFlagEventEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -1803,7 +1803,7 @@ impl TeamPlayWinPanelEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
     pub team: u8,
@@ -1818,7 +1818,7 @@ impl TeamPlayTeamBalancedPlayerEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl TeamPlaySetupFinishedEvent {
     #[allow(unused_variables)]
@@ -1826,7 +1826,7 @@ impl TeamPlaySetupFinishedEvent {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
 }
@@ -1839,7 +1839,7 @@ impl TeamPlayAlertEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TrainingCompleteEvent {
     pub next_map: String,
     pub map: String,
@@ -1856,7 +1856,7 @@ impl TrainingCompleteEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ShowFreezePanelEvent {
     pub killer: u16,
 }
@@ -1869,7 +1869,7 @@ impl ShowFreezePanelEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HideFreezePanelEvent {}
 impl HideFreezePanelEvent {
     #[allow(unused_variables)]
@@ -1877,7 +1877,7 @@ impl HideFreezePanelEvent {
         Ok(HideFreezePanelEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct FreezeCamStartedEvent {}
 impl FreezeCamStartedEvent {
     #[allow(unused_variables)]
@@ -1885,7 +1885,7 @@ impl FreezeCamStartedEvent {
         Ok(FreezeCamStartedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl LocalPlayerChangeTeamEvent {
     #[allow(unused_variables)]
@@ -1893,7 +1893,7 @@ impl LocalPlayerChangeTeamEvent {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
 }
@@ -1906,7 +1906,7 @@ impl LocalPlayerScoreChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerChangeClassEvent {}
 impl LocalPlayerChangeClassEvent {
     #[allow(unused_variables)]
@@ -1914,7 +1914,7 @@ impl LocalPlayerChangeClassEvent {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerRespawnEvent {}
 impl LocalPlayerRespawnEvent {
     #[allow(unused_variables)]
@@ -1922,7 +1922,7 @@ impl LocalPlayerRespawnEvent {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct BuildingInfoChangedEvent {
     pub building_type: u8,
     pub object_mode: u8,
@@ -1939,7 +1939,7 @@ impl BuildingInfoChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
 }
@@ -1952,7 +1952,7 @@ impl LocalPlayerChangeDisguiseEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerAccountChangedEvent {
     pub old_value: u16,
     pub new_value: u16,
@@ -1967,7 +1967,7 @@ impl PlayerAccountChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct SpyPdaResetEvent {}
 impl SpyPdaResetEvent {
     #[allow(unused_variables)]
@@ -1975,7 +1975,7 @@ impl SpyPdaResetEvent {
         Ok(SpyPdaResetEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct FlagStatusUpdateEvent {
     pub user_id: u16,
     pub ent_index: u32,
@@ -1990,7 +1990,7 @@ impl FlagStatusUpdateEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
 }
@@ -2003,7 +2003,7 @@ impl PlayerStatsUpdatedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayingCommentaryEvent {}
 impl PlayingCommentaryEvent {
     #[allow(unused_variables)]
@@ -2011,7 +2011,7 @@ impl PlayingCommentaryEvent {
         Ok(PlayingCommentaryEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerChargeDeployedEvent {
     pub user_id: u16,
     pub target_id: u16,
@@ -2026,7 +2026,7 @@ impl PlayerChargeDeployedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerBuiltObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2043,7 +2043,7 @@ impl PlayerBuiltObjectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerUpgradedObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2062,7 +2062,7 @@ impl PlayerUpgradedObjectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerCarryObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2079,7 +2079,7 @@ impl PlayerCarryObjectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerDropObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2096,7 +2096,7 @@ impl PlayerDropObjectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ObjectRemovedEvent {
     pub user_id: u16,
     pub object_type: u16,
@@ -2113,7 +2113,7 @@ impl ObjectRemovedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ObjectDestroyedEvent {
     pub user_id: u16,
     pub attacker: u16,
@@ -2140,7 +2140,7 @@ impl ObjectDestroyedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ObjectDetonatedEvent {
     pub user_id: u16,
     pub object_type: u16,
@@ -2157,7 +2157,7 @@ impl ObjectDetonatedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct AchievementEarnedEvent {
     pub player: u8,
     pub achievement: u16,
@@ -2172,7 +2172,7 @@ impl AchievementEarnedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct SpecTargetUpdatedEvent {}
 impl SpecTargetUpdatedEvent {
     #[allow(unused_variables)]
@@ -2180,7 +2180,7 @@ impl SpecTargetUpdatedEvent {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TournamentStateUpdateEvent {
     pub user_id: u16,
     pub name_change: bool,
@@ -2199,7 +2199,7 @@ impl TournamentStateUpdateEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TournamentEnableCountdownEvent {}
 impl TournamentEnableCountdownEvent {
     #[allow(unused_variables)]
@@ -2207,7 +2207,7 @@ impl TournamentEnableCountdownEvent {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
 }
@@ -2220,7 +2220,7 @@ impl PlayerCalledForMedicEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerAskedForBallEvent {
     pub user_id: u16,
 }
@@ -2233,7 +2233,7 @@ impl PlayerAskedForBallEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl LocalPlayerBecameObserverEvent {
     #[allow(unused_variables)]
@@ -2241,7 +2241,7 @@ impl LocalPlayerBecameObserverEvent {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerIgnitedInvEvent {
     pub pyro_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2258,7 +2258,7 @@ impl PlayerIgnitedInvEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerIgnitedEvent {
     pub pyro_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2275,7 +2275,7 @@ impl PlayerIgnitedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerExtinguishedEvent {
     pub victim: u8,
     pub healer: u8,
@@ -2292,7 +2292,7 @@ impl PlayerExtinguishedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerTeleportedEvent {
     pub user_id: u16,
     pub builder_id: u16,
@@ -2309,7 +2309,7 @@ impl PlayerTeleportedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
 }
@@ -2322,7 +2322,7 @@ impl PlayerHealedMedicCallEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl LocalPlayerChargeReadyEvent {
     #[allow(unused_variables)]
@@ -2330,7 +2330,7 @@ impl LocalPlayerChargeReadyEvent {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerWindDownEvent {}
 impl LocalPlayerWindDownEvent {
     #[allow(unused_variables)]
@@ -2338,7 +2338,7 @@ impl LocalPlayerWindDownEvent {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerInvulnedEvent {
     pub user_id: u16,
     pub medic_user_id: u16,
@@ -2353,7 +2353,7 @@ impl PlayerInvulnedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EscortSpeedEvent {
     pub team: u8,
     pub speed: u8,
@@ -2370,7 +2370,7 @@ impl EscortSpeedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EscortProgressEvent {
     pub team: u8,
     pub progress: f32,
@@ -2387,7 +2387,7 @@ impl EscortProgressEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EscortRecedeEvent {
     pub team: u8,
     pub recede_time: f32,
@@ -2402,7 +2402,7 @@ impl EscortRecedeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GameUIActivatedEvent {}
 impl GameUIActivatedEvent {
     #[allow(unused_variables)]
@@ -2410,7 +2410,7 @@ impl GameUIActivatedEvent {
         Ok(GameUIActivatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GameUIHiddenEvent {}
 impl GameUIHiddenEvent {
     #[allow(unused_variables)]
@@ -2418,7 +2418,7 @@ impl GameUIHiddenEvent {
         Ok(GameUIHiddenEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerEscortScoreEvent {
     pub player: u8,
     pub points: u8,
@@ -2433,7 +2433,7 @@ impl PlayerEscortScoreEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHealOnHitEvent {
     pub amount: u16,
     pub ent_index: u8,
@@ -2450,7 +2450,7 @@ impl PlayerHealOnHitEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerStealSandvichEvent {
     pub owner: u16,
     pub target: u16,
@@ -2465,7 +2465,7 @@ impl PlayerStealSandvichEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ShowClassLayoutEvent {
     pub show: bool,
 }
@@ -2478,7 +2478,7 @@ impl ShowClassLayoutEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ShowVsPanelEvent {
     pub show: bool,
 }
@@ -2491,7 +2491,7 @@ impl ShowVsPanelEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerDamagedEvent {
     pub amount: u16,
     pub kind: u32,
@@ -2506,7 +2506,7 @@ impl PlayerDamagedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ArenaPlayerNotificationEvent {
     pub player: u8,
     pub message: u8,
@@ -2521,7 +2521,7 @@ impl ArenaPlayerNotificationEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ArenaMatchMaxStreakEvent {
     pub team: u8,
     pub streak: u8,
@@ -2536,7 +2536,7 @@ impl ArenaMatchMaxStreakEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ArenaRoundStartEvent {}
 impl ArenaRoundStartEvent {
     #[allow(unused_variables)]
@@ -2544,7 +2544,7 @@ impl ArenaRoundStartEvent {
         Ok(ArenaRoundStartEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ArenaWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -2635,7 +2635,7 @@ impl ArenaWinPanelEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PveWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -2652,7 +2652,7 @@ impl PveWinPanelEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct AirDashEvent {
     pub player: u8,
 }
@@ -2665,7 +2665,7 @@ impl AirDashEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LandedEvent {
     pub player: u8,
 }
@@ -2678,7 +2678,7 @@ impl LandedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
 }
@@ -2691,7 +2691,7 @@ impl PlayerDamageDodgedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerStunnedEvent {
     pub stunner: u16,
     pub victim: u16,
@@ -2710,7 +2710,7 @@ impl PlayerStunnedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ScoutGrandSlamEvent {
     pub scout_id: u16,
     pub target_id: u16,
@@ -2725,7 +2725,7 @@ impl ScoutGrandSlamEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ScoutSlamdollLandedEvent {
     pub target_index: u16,
     pub x: f32,
@@ -2744,7 +2744,7 @@ impl ScoutSlamdollLandedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ArrowImpactEvent {
     pub attached_entity: u16,
     pub shooter: u16,
@@ -2777,7 +2777,7 @@ impl ArrowImpactEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerJaratedEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2792,7 +2792,7 @@ impl PlayerJaratedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerJaratedFadeEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2807,7 +2807,7 @@ impl PlayerJaratedFadeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerShieldBlockedEvent {
     pub attacker_ent_index: u8,
     pub blocker_ent_index: u8,
@@ -2822,7 +2822,7 @@ impl PlayerShieldBlockedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerPinnedEvent {
     pub pinned: u8,
 }
@@ -2835,7 +2835,7 @@ impl PlayerPinnedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
 }
@@ -2848,7 +2848,7 @@ impl PlayerHealedByMedicEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerSappedObjectEvent {
     pub user_id: u16,
     pub owner_id: u16,
@@ -2867,7 +2867,7 @@ impl PlayerSappedObjectEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ItemFoundEvent {
     pub player: u8,
     pub quality: u8,
@@ -2892,7 +2892,7 @@ impl ItemFoundEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ShowAnnotationEvent {
     pub world_pos_x: f32,
     pub world_pos_y: f32,
@@ -2931,7 +2931,7 @@ impl ShowAnnotationEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HideAnnotationEvent {
     pub id: u32,
 }
@@ -2944,7 +2944,7 @@ impl HideAnnotationEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
 }
@@ -2957,7 +2957,7 @@ impl PostInventoryApplicationEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointUnlockUpdatedEvent {
     pub index: u16,
     pub time: f32,
@@ -2972,7 +2972,7 @@ impl ControlPointUnlockUpdatedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DeployBuffBannerEvent {
     pub buff_type: u8,
     pub buff_owner: u16,
@@ -2987,7 +2987,7 @@ impl DeployBuffBannerEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerBuffEvent {
     pub user_id: u16,
     pub buff_owner: u16,
@@ -3004,7 +3004,7 @@ impl PlayerBuffEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MedicDeathEvent {
     pub user_id: u16,
     pub attacker: u16,
@@ -3023,7 +3023,7 @@ impl MedicDeathEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct OvertimeNagEvent {}
 impl OvertimeNagEvent {
     #[allow(unused_variables)]
@@ -3031,7 +3031,7 @@ impl OvertimeNagEvent {
         Ok(OvertimeNagEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamsChangedEvent {}
 impl TeamsChangedEvent {
     #[allow(unused_variables)]
@@ -3039,7 +3039,7 @@ impl TeamsChangedEvent {
         Ok(TeamsChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
 }
@@ -3052,7 +3052,7 @@ impl HalloweenPumpkinGrabEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RocketJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3067,7 +3067,7 @@ impl RocketJumpEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RocketJumpLandedEvent {
     pub user_id: u16,
 }
@@ -3080,7 +3080,7 @@ impl RocketJumpLandedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct StickyJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3095,7 +3095,7 @@ impl StickyJumpEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct StickyJumpLandedEvent {
     pub user_id: u16,
 }
@@ -3108,7 +3108,7 @@ impl StickyJumpLandedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RocketPackLaunchEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3123,7 +3123,7 @@ impl RocketPackLaunchEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RocketPackLandedEvent {
     pub user_id: u16,
 }
@@ -3136,7 +3136,7 @@ impl RocketPackLandedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MedicDefendedEvent {
     pub user_id: u16,
     pub medic: u16,
@@ -3151,7 +3151,7 @@ impl MedicDefendedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerHealedEvent {
     pub amount: u16,
 }
@@ -3164,7 +3164,7 @@ impl LocalPlayerHealedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
 }
@@ -3177,7 +3177,7 @@ impl PlayerDestroyedPipeBombEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ObjectDeflectedEvent {
     pub user_id: u16,
     pub owner_id: u16,
@@ -3196,7 +3196,7 @@ impl ObjectDeflectedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerMvpEvent {
     pub player: u16,
 }
@@ -3209,7 +3209,7 @@ impl PlayerMvpEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RaidSpawnMobEvent {}
 impl RaidSpawnMobEvent {
     #[allow(unused_variables)]
@@ -3217,7 +3217,7 @@ impl RaidSpawnMobEvent {
         Ok(RaidSpawnMobEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RaidSpawnSquadEvent {}
 impl RaidSpawnSquadEvent {
     #[allow(unused_variables)]
@@ -3225,7 +3225,7 @@ impl RaidSpawnSquadEvent {
         Ok(RaidSpawnSquadEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct NavBlockedEvent {
     pub area: u32,
     pub blocked: bool,
@@ -3240,7 +3240,7 @@ impl NavBlockedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PathTrackPassedEvent {
     pub index: u16,
 }
@@ -3253,7 +3253,7 @@ impl PathTrackPassedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct NumCappersChangedEvent {
     pub index: u16,
     pub count: u8,
@@ -3268,7 +3268,7 @@ impl NumCappersChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerRegenerateEvent {}
 impl PlayerRegenerateEvent {
     #[allow(unused_variables)]
@@ -3276,7 +3276,7 @@ impl PlayerRegenerateEvent {
         Ok(PlayerRegenerateEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct UpdateStatusItemEvent {
     pub index: u8,
     pub object: u8,
@@ -3291,7 +3291,7 @@ impl UpdateStatusItemEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct StatsResetRoundEvent {}
 impl StatsResetRoundEvent {
     #[allow(unused_variables)]
@@ -3299,7 +3299,7 @@ impl StatsResetRoundEvent {
         Ok(StatsResetRoundEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl ScoreStatsAccumulatedUpdateEvent {
     #[allow(unused_variables)]
@@ -3307,7 +3307,7 @@ impl ScoreStatsAccumulatedUpdateEvent {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl ScoreStatsAccumulatedResetEvent {
     #[allow(unused_variables)]
@@ -3315,7 +3315,7 @@ impl ScoreStatsAccumulatedResetEvent {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
 }
@@ -3328,7 +3328,7 @@ impl AchievementEarnedLocalEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHealedEvent {
     pub patient: u16,
     pub healer: u16,
@@ -3345,7 +3345,7 @@ impl PlayerHealedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct BuildingHealedEvent {
     pub building: u16,
     pub healer: u16,
@@ -3362,7 +3362,7 @@ impl BuildingHealedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ItemPickupEvent {
     pub user_id: u16,
     pub item: String,
@@ -3377,7 +3377,7 @@ impl ItemPickupEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DuelStatusEvent {
     pub killer: u16,
     pub score_type: u16,
@@ -3400,7 +3400,7 @@ impl DuelStatusEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct FishNoticeEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3443,7 +3443,7 @@ impl FishNoticeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct FishNoticeArmEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3486,7 +3486,7 @@ impl FishNoticeArmEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct SlapNoticeEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3529,7 +3529,7 @@ impl SlapNoticeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ThrowableHitEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3574,7 +3574,7 @@ impl ThrowableHitEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PumpkinLordSummonedEvent {}
 impl PumpkinLordSummonedEvent {
     #[allow(unused_variables)]
@@ -3582,7 +3582,7 @@ impl PumpkinLordSummonedEvent {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PumpkinLordKilledEvent {}
 impl PumpkinLordKilledEvent {
     #[allow(unused_variables)]
@@ -3590,7 +3590,7 @@ impl PumpkinLordKilledEvent {
         Ok(PumpkinLordKilledEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MerasmusSummonedEvent {
     pub level: u16,
 }
@@ -3603,7 +3603,7 @@ impl MerasmusSummonedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MerasmusKilledEvent {
     pub level: u16,
 }
@@ -3616,7 +3616,7 @@ impl MerasmusKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MerasmusEscapeWarningEvent {
     pub level: u16,
     pub time_remaining: u8,
@@ -3631,7 +3631,7 @@ impl MerasmusEscapeWarningEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MerasmusEscapedEvent {
     pub level: u16,
 }
@@ -3644,7 +3644,7 @@ impl MerasmusEscapedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EyeballBossSummonedEvent {
     pub level: u16,
 }
@@ -3657,7 +3657,7 @@ impl EyeballBossSummonedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EyeballBossStunnedEvent {
     pub level: u16,
     pub player_ent_index: u8,
@@ -3672,7 +3672,7 @@ impl EyeballBossStunnedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EyeballBossKilledEvent {
     pub level: u16,
 }
@@ -3685,7 +3685,7 @@ impl EyeballBossKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EyeballBossKillerEvent {
     pub level: u16,
     pub player_ent_index: u8,
@@ -3700,7 +3700,7 @@ impl EyeballBossKillerEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EyeballBossEscapeImminentEvent {
     pub level: u16,
     pub time_remaining: u8,
@@ -3715,7 +3715,7 @@ impl EyeballBossEscapeImminentEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EyeballBossEscapedEvent {
     pub level: u16,
 }
@@ -3728,7 +3728,7 @@ impl EyeballBossEscapedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct NpcHurtEvent {
     pub ent_index: u16,
     pub health: u16,
@@ -3753,7 +3753,7 @@ impl NpcHurtEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ControlPointTimerUpdatedEvent {
     pub index: u16,
     pub time: f32,
@@ -3768,7 +3768,7 @@ impl ControlPointTimerUpdatedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
 }
@@ -3781,7 +3781,7 @@ impl PlayerHighFiveStartEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
 }
@@ -3794,7 +3794,7 @@ impl PlayerHighFiveCancelEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerHighFiveSuccessEvent {
     pub initiator_ent_index: u8,
     pub partner_ent_index: u8,
@@ -3809,7 +3809,7 @@ impl PlayerHighFiveSuccessEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerBonusPointsEvent {
     pub points: u16,
     pub player_ent_index: u16,
@@ -3826,7 +3826,7 @@ impl PlayerBonusPointsEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerUpgradedEvent {}
 impl PlayerUpgradedEvent {
     #[allow(unused_variables)]
@@ -3834,7 +3834,7 @@ impl PlayerUpgradedEvent {
         Ok(PlayerUpgradedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerBuybackEvent {
     pub player: u16,
     pub cost: u16,
@@ -3849,7 +3849,7 @@ impl PlayerBuybackEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerUsedPowerUpBottleEvent {
     pub player: u16,
     pub kind: u16,
@@ -3866,7 +3866,7 @@ impl PlayerUsedPowerUpBottleEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
 }
@@ -3879,7 +3879,7 @@ impl ChristmasGiftGrabEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerKilledAchievementZoneEvent {
     pub attacker: u16,
     pub victim: u16,
@@ -3896,7 +3896,7 @@ impl PlayerKilledAchievementZoneEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PartyUpdatedEvent {}
 impl PartyUpdatedEvent {
     #[allow(unused_variables)]
@@ -3904,7 +3904,7 @@ impl PartyUpdatedEvent {
         Ok(PartyUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PartyPrefChangedEvent {}
 impl PartyPrefChangedEvent {
     #[allow(unused_variables)]
@@ -3912,7 +3912,7 @@ impl PartyPrefChangedEvent {
         Ok(PartyPrefChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PartyCriteriaChangedEvent {}
 impl PartyCriteriaChangedEvent {
     #[allow(unused_variables)]
@@ -3920,7 +3920,7 @@ impl PartyCriteriaChangedEvent {
         Ok(PartyCriteriaChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PartyInvitesChangedEvent {}
 impl PartyInvitesChangedEvent {
     #[allow(unused_variables)]
@@ -3928,7 +3928,7 @@ impl PartyInvitesChangedEvent {
         Ok(PartyInvitesChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PartyQueueStateChangedEvent {
     pub match_group: u16,
 }
@@ -3941,7 +3941,7 @@ impl PartyQueueStateChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PartyChatEvent {
     pub steam_id: String,
     pub text: String,
@@ -3958,7 +3958,7 @@ impl PartyChatEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PartyMemberJoinEvent {
     pub steam_id: String,
 }
@@ -3971,7 +3971,7 @@ impl PartyMemberJoinEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PartyMemberLeaveEvent {
     pub steam_id: String,
 }
@@ -3984,7 +3984,7 @@ impl PartyMemberLeaveEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MatchInvitesUpdatedEvent {}
 impl MatchInvitesUpdatedEvent {
     #[allow(unused_variables)]
@@ -3992,7 +3992,7 @@ impl MatchInvitesUpdatedEvent {
         Ok(MatchInvitesUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LobbyUpdatedEvent {}
 impl LobbyUpdatedEvent {
     #[allow(unused_variables)]
@@ -4000,7 +4000,7 @@ impl LobbyUpdatedEvent {
         Ok(LobbyUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmMissionUpdateEvent {
     pub class: u16,
     pub count: u16,
@@ -4015,7 +4015,7 @@ impl MvmMissionUpdateEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RecalculateHolidaysEvent {}
 impl RecalculateHolidaysEvent {
     #[allow(unused_variables)]
@@ -4023,7 +4023,7 @@ impl RecalculateHolidaysEvent {
         Ok(RecalculateHolidaysEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
 }
@@ -4036,7 +4036,7 @@ impl PlayerCurrencyChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
 }
@@ -4049,7 +4049,7 @@ impl DoomsdayRocketOpenEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
 }
@@ -4062,7 +4062,7 @@ impl RemoveNemesisRelationshipsEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmCreditBonusWaveEvent {}
 impl MvmCreditBonusWaveEvent {
     #[allow(unused_variables)]
@@ -4070,7 +4070,7 @@ impl MvmCreditBonusWaveEvent {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmCreditBonusAllEvent {}
 impl MvmCreditBonusAllEvent {
     #[allow(unused_variables)]
@@ -4078,7 +4078,7 @@ impl MvmCreditBonusAllEvent {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl MvmCreditBonusAllAdvancedEvent {
     #[allow(unused_variables)]
@@ -4086,7 +4086,7 @@ impl MvmCreditBonusAllAdvancedEvent {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
 }
@@ -4099,7 +4099,7 @@ impl MvmQuickSentryUpgradeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl MvmTankDestroyedByPlayersEvent {
     #[allow(unused_variables)]
@@ -4107,7 +4107,7 @@ impl MvmTankDestroyedByPlayersEvent {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
 }
@@ -4120,7 +4120,7 @@ impl MvmKillRobotDeliveringBombEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmPickupCurrencyEvent {
     pub player: u16,
     pub currency: u16,
@@ -4135,7 +4135,7 @@ impl MvmPickupCurrencyEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
 }
@@ -4148,7 +4148,7 @@ impl MvmBombCarrierKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmSentryBusterDetonateEvent {
     pub player: u16,
     pub det_x: f32,
@@ -4167,7 +4167,7 @@ impl MvmSentryBusterDetonateEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
 }
@@ -4180,7 +4180,7 @@ impl MvmScoutMarkedForDeathEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
 }
@@ -4193,7 +4193,7 @@ impl MvmMedicPowerUpSharedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmBeginWaveEvent {
     pub wave_index: u16,
     pub max_waves: u16,
@@ -4210,7 +4210,7 @@ impl MvmBeginWaveEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
 }
@@ -4223,7 +4223,7 @@ impl MvmWaveCompleteEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmMissionCompleteEvent {
     pub mission: String,
 }
@@ -4236,7 +4236,7 @@ impl MvmMissionCompleteEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
 }
@@ -4249,7 +4249,7 @@ impl MvmBombResetByPlayerEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl MvmBombAlarmTriggeredEvent {
     #[allow(unused_variables)]
@@ -4257,7 +4257,7 @@ impl MvmBombAlarmTriggeredEvent {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
 }
@@ -4270,7 +4270,7 @@ impl MvmBombDeployResetByPlayerEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmWaveFailedEvent {}
 impl MvmWaveFailedEvent {
     #[allow(unused_variables)]
@@ -4278,7 +4278,7 @@ impl MvmWaveFailedEvent {
         Ok(MvmWaveFailedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmResetStatsEvent {}
 impl MvmResetStatsEvent {
     #[allow(unused_variables)]
@@ -4286,7 +4286,7 @@ impl MvmResetStatsEvent {
         Ok(MvmResetStatsEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DamageResistedEvent {
     pub ent_index: u8,
 }
@@ -4299,7 +4299,7 @@ impl DamageResistedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RevivePlayerNotifyEvent {
     pub ent_index: u16,
     pub marker_ent_index: u16,
@@ -4314,7 +4314,7 @@ impl RevivePlayerNotifyEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
 }
@@ -4327,7 +4327,7 @@ impl RevivePlayerStoppedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
 }
@@ -4340,7 +4340,7 @@ impl RevivePlayerCompleteEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
 }
@@ -4353,7 +4353,7 @@ impl PlayerTurnedToGhostEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MedigunShieldBlockedDamageEvent {
     pub user_id: u16,
     pub damage: f32,
@@ -4368,7 +4368,7 @@ impl MedigunShieldBlockedDamageEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
 }
@@ -4381,7 +4381,7 @@ impl MvmAdvWaveCompleteNoGatesEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmSniperHeadshotCurrencyEvent {
     pub user_id: u16,
     pub currency: u16,
@@ -4396,7 +4396,7 @@ impl MvmSniperHeadshotCurrencyEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmMannhattanPitEvent {}
 impl MvmMannhattanPitEvent {
     #[allow(unused_variables)]
@@ -4404,7 +4404,7 @@ impl MvmMannhattanPitEvent {
         Ok(MvmMannhattanPitEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FlagCarriedInDetectionZoneEvent {
     #[allow(unused_variables)]
@@ -4412,7 +4412,7 @@ impl FlagCarriedInDetectionZoneEvent {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl MvmAdvWaveKilledStunRadioEvent {
     #[allow(unused_variables)]
@@ -4420,7 +4420,7 @@ impl MvmAdvWaveKilledStunRadioEvent {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
     pub victim: u16,
@@ -4435,7 +4435,7 @@ impl PlayerDirectHitStunEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
 }
@@ -4448,7 +4448,7 @@ impl MvmSentryBusterKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct UpgradesFileChangedEvent {
     pub path: String,
 }
@@ -4461,7 +4461,7 @@ impl UpgradesFileChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RdTeamPointsChangedEvent {
     pub points: u16,
     pub team: u8,
@@ -4478,7 +4478,7 @@ impl RdTeamPointsChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RdRulesStateChangedEvent {}
 impl RdRulesStateChangedEvent {
     #[allow(unused_variables)]
@@ -4486,7 +4486,7 @@ impl RdRulesStateChangedEvent {
         Ok(RdRulesStateChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RdRobotKilledEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -4519,7 +4519,7 @@ impl RdRobotKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RdRobotImpactEvent {
     pub ent_index: u16,
     pub impulse_x: f32,
@@ -4538,7 +4538,7 @@ impl RdRobotImpactEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
 }
@@ -4551,7 +4551,7 @@ impl TeamPlayPreRoundTimeLeftEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ParachuteDeployEvent {
     pub index: u16,
 }
@@ -4564,7 +4564,7 @@ impl ParachuteDeployEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ParachuteHolsterEvent {
     pub index: u16,
 }
@@ -4577,7 +4577,7 @@ impl ParachuteHolsterEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct KillRefillsMeterEvent {
     pub index: u16,
 }
@@ -4590,7 +4590,7 @@ impl KillRefillsMeterEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RpsTauntEventEvent {
     pub winner: u16,
     pub winner_rps: u8,
@@ -4609,7 +4609,7 @@ impl RpsTauntEventEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CongaKillEvent {
     pub index: u16,
 }
@@ -4622,7 +4622,7 @@ impl CongaKillEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerInitialSpawnEvent {
     pub index: u16,
 }
@@ -4635,7 +4635,7 @@ impl PlayerInitialSpawnEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CompetitiveVictoryEvent {}
 impl CompetitiveVictoryEvent {
     #[allow(unused_variables)]
@@ -4643,7 +4643,7 @@ impl CompetitiveVictoryEvent {
         Ok(CompetitiveVictoryEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CompetitiveStatsUpdateEvent {
     pub index: u16,
     pub kills_rank: u8,
@@ -4666,7 +4666,7 @@ impl CompetitiveStatsUpdateEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MiniGameWinEvent {
     pub team: u8,
     pub kind: u8,
@@ -4681,7 +4681,7 @@ impl MiniGameWinEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct SentryOnGoActiveEvent {
     pub index: u16,
 }
@@ -4694,7 +4694,7 @@ impl SentryOnGoActiveEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DuckXpLevelUpEvent {
     pub level: u16,
 }
@@ -4707,7 +4707,7 @@ impl DuckXpLevelUpEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct QuestLogOpenedEvent {}
 impl QuestLogOpenedEvent {
     #[allow(unused_variables)]
@@ -4715,7 +4715,7 @@ impl QuestLogOpenedEvent {
         Ok(QuestLogOpenedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct SchemaUpdatedEvent {}
 impl SchemaUpdatedEvent {
     #[allow(unused_variables)]
@@ -4723,7 +4723,7 @@ impl SchemaUpdatedEvent {
         Ok(SchemaUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct LocalPlayerPickupWeaponEvent {}
 impl LocalPlayerPickupWeaponEvent {
     #[allow(unused_variables)]
@@ -4731,7 +4731,7 @@ impl LocalPlayerPickupWeaponEvent {
         Ok(LocalPlayerPickupWeaponEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RdPlayerScorePointsEvent {
     pub player: u16,
     pub method: u16,
@@ -4748,7 +4748,7 @@ impl RdPlayerScorePointsEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DemomanDetStickiesEvent {
     pub player: u16,
 }
@@ -4761,7 +4761,7 @@ impl DemomanDetStickiesEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct QuestObjectiveCompletedEvent {
     pub quest_item_id_low: u32,
     pub quest_item_id_hi: u32,
@@ -4780,7 +4780,7 @@ impl QuestObjectiveCompletedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerScoreChangedEvent {
     pub player: u8,
     pub delta: u16,
@@ -4795,7 +4795,7 @@ impl PlayerScoreChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct KilledCappingPlayerEvent {
     pub cp: u8,
     pub killer: u8,
@@ -4814,7 +4814,7 @@ impl KilledCappingPlayerEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EnvironmentalDeathEvent {
     pub killer: u8,
     pub victim: u8,
@@ -4829,7 +4829,7 @@ impl EnvironmentalDeathEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ProjectileDirectHitEvent {
     pub attacker: u8,
     pub victim: u8,
@@ -4846,7 +4846,7 @@ impl ProjectileDirectHitEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PassGetEvent {
     pub owner: u16,
 }
@@ -4859,7 +4859,7 @@ impl PassGetEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PassScoreEvent {
     pub scorer: u16,
     pub assister: u16,
@@ -4876,7 +4876,7 @@ impl PassScoreEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PassFreeEvent {
     pub owner: u16,
     pub attacker: u16,
@@ -4891,7 +4891,7 @@ impl PassFreeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PassPassCaughtEvent {
     pub passer: u16,
     pub catcher: u16,
@@ -4910,7 +4910,7 @@ impl PassPassCaughtEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PassBallStolenEvent {
     pub victim: u16,
     pub attacker: u16,
@@ -4925,7 +4925,7 @@ impl PassBallStolenEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PassBallBlockedEvent {
     pub owner: u16,
     pub blocker: u16,
@@ -4940,7 +4940,7 @@ impl PassBallBlockedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DamagePreventedEvent {
     pub preventor: u16,
     pub victim: u16,
@@ -4959,7 +4959,7 @@ impl DamagePreventedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HalloweenBossKilledEvent {
     pub boss: u16,
     pub killer: u16,
@@ -4974,7 +4974,7 @@ impl HalloweenBossKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EscapedLootIslandEvent {
     pub player: u16,
 }
@@ -4987,7 +4987,7 @@ impl EscapedLootIslandEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TaggedPlayerAsItEvent {
     pub player: u16,
 }
@@ -5000,7 +5000,7 @@ impl TaggedPlayerAsItEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MerasmusStunnedEvent {
     pub player: u16,
 }
@@ -5013,7 +5013,7 @@ impl MerasmusStunnedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MerasmusPropFoundEvent {
     pub player: u16,
 }
@@ -5026,7 +5026,7 @@ impl MerasmusPropFoundEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HalloweenSkeletonKilledEvent {
     pub player: u16,
 }
@@ -5039,7 +5039,7 @@ impl HalloweenSkeletonKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct EscapeHellEvent {
     pub player: u16,
 }
@@ -5052,7 +5052,7 @@ impl EscapeHellEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CrossSpectralBridgeEvent {
     pub player: u16,
 }
@@ -5065,7 +5065,7 @@ impl CrossSpectralBridgeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MiniGameWonEvent {
     pub player: u16,
     pub game: u16,
@@ -5080,7 +5080,7 @@ impl MiniGameWonEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RespawnGhostEvent {
     pub reviver: u16,
     pub ghost: u16,
@@ -5095,7 +5095,7 @@ impl RespawnGhostEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct KillInHellEvent {
     pub killer: u16,
     pub victim: u16,
@@ -5110,7 +5110,7 @@ impl KillInHellEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HalloweenDuckCollectedEvent {
     pub collector: u16,
 }
@@ -5123,7 +5123,7 @@ impl HalloweenDuckCollectedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct SpecialScoreEvent {
     pub player: u8,
 }
@@ -5136,7 +5136,7 @@ impl SpecialScoreEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TeamLeaderKilledEvent {
     pub killer: u8,
     pub victim: u8,
@@ -5151,7 +5151,7 @@ impl TeamLeaderKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HalloweenSoulCollectedEvent {
     pub intended_target: u8,
     pub collecting_player: u8,
@@ -5168,7 +5168,7 @@ impl HalloweenSoulCollectedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RecalculateTruceEvent {}
 impl RecalculateTruceEvent {
     #[allow(unused_variables)]
@@ -5176,7 +5176,7 @@ impl RecalculateTruceEvent {
         Ok(RecalculateTruceEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DeadRingerCheatDeathEvent {
     pub spy: u8,
     pub attacker: u8,
@@ -5191,7 +5191,7 @@ impl DeadRingerCheatDeathEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CrossbowHealEvent {
     pub healer: u8,
     pub target: u8,
@@ -5208,7 +5208,7 @@ impl CrossbowHealEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DamageMitigatedEvent {
     pub mitigator: u8,
     pub damaged: u8,
@@ -5227,7 +5227,7 @@ impl DamageMitigatedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PayloadPushedEvent {
     pub pusher: u8,
     pub distance: u16,
@@ -5242,7 +5242,7 @@ impl PayloadPushedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerAbandonedMatchEvent {
     pub game_over: bool,
 }
@@ -5255,7 +5255,7 @@ impl PlayerAbandonedMatchEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ClDrawlineEvent {
     pub player: u8,
     pub panel: u8,
@@ -5276,7 +5276,7 @@ impl ClDrawlineEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RestartTimerTimeEvent {
     pub time: u8,
 }
@@ -5289,7 +5289,7 @@ impl RestartTimerTimeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct WinLimitChangedEvent {}
 impl WinLimitChangedEvent {
     #[allow(unused_variables)]
@@ -5297,7 +5297,7 @@ impl WinLimitChangedEvent {
         Ok(WinLimitChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct WinPanelShowScoresEvent {}
 impl WinPanelShowScoresEvent {
     #[allow(unused_variables)]
@@ -5305,7 +5305,7 @@ impl WinPanelShowScoresEvent {
         Ok(WinPanelShowScoresEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct TopStreamsRequestFinishedEvent {}
 impl TopStreamsRequestFinishedEvent {
     #[allow(unused_variables)]
@@ -5313,7 +5313,7 @@ impl TopStreamsRequestFinishedEvent {
         Ok(TopStreamsRequestFinishedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CompetitiveStateChangedEvent {}
 impl CompetitiveStateChangedEvent {
     #[allow(unused_variables)]
@@ -5321,7 +5321,7 @@ impl CompetitiveStateChangedEvent {
         Ok(CompetitiveStateChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GlobalWarDataUpdatedEvent {}
 impl GlobalWarDataUpdatedEvent {
     #[allow(unused_variables)]
@@ -5329,7 +5329,7 @@ impl GlobalWarDataUpdatedEvent {
         Ok(GlobalWarDataUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct StopWatchChangedEvent {}
 impl StopWatchChangedEvent {
     #[allow(unused_variables)]
@@ -5337,7 +5337,7 @@ impl StopWatchChangedEvent {
         Ok(StopWatchChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DsStopEvent {}
 impl DsStopEvent {
     #[allow(unused_variables)]
@@ -5345,7 +5345,7 @@ impl DsStopEvent {
         Ok(DsStopEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct DsScreenshotEvent {
     pub delay: f32,
 }
@@ -5358,7 +5358,7 @@ impl DsScreenshotEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ShowMatchSummaryEvent {}
 impl ShowMatchSummaryEvent {
     #[allow(unused_variables)]
@@ -5366,7 +5366,7 @@ impl ShowMatchSummaryEvent {
         Ok(ShowMatchSummaryEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ExperienceChangedEvent {}
 impl ExperienceChangedEvent {
     #[allow(unused_variables)]
@@ -5374,7 +5374,7 @@ impl ExperienceChangedEvent {
         Ok(ExperienceChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct BeginXpLerpEvent {}
 impl BeginXpLerpEvent {
     #[allow(unused_variables)]
@@ -5382,7 +5382,7 @@ impl BeginXpLerpEvent {
         Ok(BeginXpLerpEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MatchmakerStatsUpdatedEvent {}
 impl MatchmakerStatsUpdatedEvent {
     #[allow(unused_variables)]
@@ -5390,7 +5390,7 @@ impl MatchmakerStatsUpdatedEvent {
         Ok(MatchmakerStatsUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RematchVotePeriodOverEvent {
     pub success: bool,
 }
@@ -5403,7 +5403,7 @@ impl RematchVotePeriodOverEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct RematchFailedToCreateEvent {}
 impl RematchFailedToCreateEvent {
     #[allow(unused_variables)]
@@ -5411,7 +5411,7 @@ impl RematchFailedToCreateEvent {
         Ok(RematchFailedToCreateEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerRematchChangeEvent {}
 impl PlayerRematchChangeEvent {
     #[allow(unused_variables)]
@@ -5419,7 +5419,7 @@ impl PlayerRematchChangeEvent {
         Ok(PlayerRematchChangeEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PingUpdatedEvent {}
 impl PingUpdatedEvent {
     #[allow(unused_variables)]
@@ -5427,7 +5427,7 @@ impl PingUpdatedEvent {
         Ok(PingUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MMStatsUpdatedEvent {}
 impl MMStatsUpdatedEvent {
     #[allow(unused_variables)]
@@ -5435,7 +5435,7 @@ impl MMStatsUpdatedEvent {
         Ok(MMStatsUpdatedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerNextMapVoteChangeEvent {
     pub map_index: u8,
     pub vote: u8,
@@ -5450,7 +5450,7 @@ impl PlayerNextMapVoteChangeEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct VoteMapsChangedEvent {}
 impl VoteMapsChangedEvent {
     #[allow(unused_variables)]
@@ -5458,7 +5458,7 @@ impl VoteMapsChangedEvent {
         Ok(VoteMapsChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ProtoDefChangedEvent {
     pub kind: u8,
     pub definition_index: u32,
@@ -5479,7 +5479,7 @@ impl ProtoDefChangedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerDominationEvent {
     pub dominator: u16,
     pub dominated: u16,
@@ -5496,7 +5496,7 @@ impl PlayerDominationEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct PlayerRocketPackPushedEvent {
     pub pusher: u16,
     pub pushed: u16,
@@ -5511,7 +5511,7 @@ impl PlayerRocketPackPushedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct QuestRequestEvent {
     pub request: u32,
     pub msg: String,
@@ -5526,7 +5526,7 @@ impl QuestRequestEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct QuestResponseEvent {
     pub request: u32,
     pub success: bool,
@@ -5543,7 +5543,7 @@ impl QuestResponseEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct QuestProgressEvent {
     pub owner: u16,
     pub scorer: u16,
@@ -5568,7 +5568,7 @@ impl QuestProgressEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ProjectileRemovedEvent {
     pub attacker: u8,
     pub weapon_def_index: u32,
@@ -5587,7 +5587,7 @@ impl ProjectileRemovedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct QuestMapDataChangedEvent {}
 impl QuestMapDataChangedEvent {
     #[allow(unused_variables)]
@@ -5595,7 +5595,7 @@ impl QuestMapDataChangedEvent {
         Ok(QuestMapDataChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct GasDousedPlayerIgnitedEvent {
     pub igniter: u16,
     pub douser: u16,
@@ -5612,7 +5612,7 @@ impl GasDousedPlayerIgnitedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct QuestTurnInStateEvent {
     pub state: u16,
 }
@@ -5625,7 +5625,7 @@ impl QuestTurnInStateEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ItemsAcknowledgedEvent {}
 impl ItemsAcknowledgedEvent {
     #[allow(unused_variables)]
@@ -5633,7 +5633,7 @@ impl ItemsAcknowledgedEvent {
         Ok(ItemsAcknowledgedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct CapperKilledEvent {
     pub blocker: u16,
     pub victim: u16,
@@ -5648,7 +5648,7 @@ impl CapperKilledEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct MainMenuStabilizedEvent {}
 impl MainMenuStabilizedEvent {
     #[allow(unused_variables)]
@@ -5656,7 +5656,7 @@ impl MainMenuStabilizedEvent {
         Ok(MainMenuStabilizedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct WorldStatusChangedEvent {}
 impl WorldStatusChangedEvent {
     #[allow(unused_variables)]
@@ -5664,7 +5664,7 @@ impl WorldStatusChangedEvent {
         Ok(WorldStatusChangedEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVStatusEvent {
     pub clients: u32,
     pub slots: u32,
@@ -5683,7 +5683,7 @@ impl HLTVStatusEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVCameramanEvent {
     pub index: u16,
 }
@@ -5696,7 +5696,7 @@ impl HLTVCameramanEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVRankCameraEvent {
     pub index: u8,
     pub rank: f32,
@@ -5713,7 +5713,7 @@ impl HLTVRankCameraEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVRankEntityEvent {
     pub index: u16,
     pub rank: f32,
@@ -5730,7 +5730,7 @@ impl HLTVRankEntityEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVFixedEvent {
     pub pos_x: u32,
     pub pos_y: u32,
@@ -5757,7 +5757,7 @@ impl HLTVFixedEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVChaseEvent {
     pub target_1: u16,
     pub target_2: u16,
@@ -5782,7 +5782,7 @@ impl HLTVChaseEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVMessageEvent {
     pub text: String,
 }
@@ -5795,7 +5795,7 @@ impl HLTVMessageEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVTitleEvent {
     pub text: String,
 }
@@ -5808,7 +5808,7 @@ impl HLTVTitleEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct HLTVChatEvent {
     pub text: String,
 }
@@ -5821,7 +5821,7 @@ impl HLTVChatEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ReplayStartRecordEvent {}
 impl ReplayStartRecordEvent {
     #[allow(unused_variables)]
@@ -5829,7 +5829,7 @@ impl ReplayStartRecordEvent {
         Ok(ReplayStartRecordEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ReplaySessionInfoEvent {
     pub sn: String,
     pub di: u8,
@@ -5848,7 +5848,7 @@ impl ReplaySessionInfoEvent {
         })
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ReplayEndRecordEvent {}
 impl ReplayEndRecordEvent {
     #[allow(unused_variables)]
@@ -5856,7 +5856,7 @@ impl ReplayEndRecordEvent {
         Ok(ReplayEndRecordEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ReplayReplaysAvailableEvent {}
 impl ReplayReplaysAvailableEvent {
     #[allow(unused_variables)]
@@ -5864,7 +5864,7 @@ impl ReplayReplaysAvailableEvent {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
-#[derive(Debug)]
+#[derive(Debug, BitWrite)]
 pub struct ReplayServerErrorEvent {
     pub error: String,
 }
@@ -8699,6 +8699,412 @@ impl GameEvent {
             }
             GameEventType::Unknown => GameEvent::Unknown(RawGameEvent::read(stream, definition)?),
         })
+    }
+    pub fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
+        match &self {
+            GameEvent::ServerSpawn(event) => event.write(stream),
+            GameEvent::ServerChangeLevelFailed(event) => event.write(stream),
+            GameEvent::ServerShutdown(event) => event.write(stream),
+            GameEvent::ServerCvar(event) => event.write(stream),
+            GameEvent::ServerMessage(event) => event.write(stream),
+            GameEvent::ServerAddBan(event) => event.write(stream),
+            GameEvent::ServerRemoveBan(event) => event.write(stream),
+            GameEvent::PlayerConnect(event) => event.write(stream),
+            GameEvent::PlayerConnectClient(event) => event.write(stream),
+            GameEvent::PlayerInfo(event) => event.write(stream),
+            GameEvent::PlayerDisconnect(event) => event.write(stream),
+            GameEvent::PlayerActivate(event) => event.write(stream),
+            GameEvent::PlayerSay(event) => event.write(stream),
+            GameEvent::ClientDisconnect(event) => event.write(stream),
+            GameEvent::ClientBeginConnect(event) => event.write(stream),
+            GameEvent::ClientConnected(event) => event.write(stream),
+            GameEvent::ClientFullConnect(event) => event.write(stream),
+            GameEvent::HostQuit(event) => event.write(stream),
+            GameEvent::TeamInfo(event) => event.write(stream),
+            GameEvent::TeamScore(event) => event.write(stream),
+            GameEvent::TeamPlayBroadcastAudio(event) => event.write(stream),
+            GameEvent::PlayerTeam(event) => event.write(stream),
+            GameEvent::PlayerClass(event) => event.write(stream),
+            GameEvent::PlayerDeath(event) => event.write(stream),
+            GameEvent::PlayerHurt(event) => event.write(stream),
+            GameEvent::PlayerChat(event) => event.write(stream),
+            GameEvent::PlayerScore(event) => event.write(stream),
+            GameEvent::PlayerSpawn(event) => event.write(stream),
+            GameEvent::PlayerShoot(event) => event.write(stream),
+            GameEvent::PlayerUse(event) => event.write(stream),
+            GameEvent::PlayerChangeName(event) => event.write(stream),
+            GameEvent::PlayerHintMessage(event) => event.write(stream),
+            GameEvent::BasePlayerTeleported(event) => event.write(stream),
+            GameEvent::GameInit(event) => event.write(stream),
+            GameEvent::GameNewMap(event) => event.write(stream),
+            GameEvent::GameStart(event) => event.write(stream),
+            GameEvent::GameEnd(event) => event.write(stream),
+            GameEvent::RoundStart(event) => event.write(stream),
+            GameEvent::RoundEnd(event) => event.write(stream),
+            GameEvent::GameMessage(event) => event.write(stream),
+            GameEvent::BreakBreakable(event) => event.write(stream),
+            GameEvent::BreakProp(event) => event.write(stream),
+            GameEvent::EntityKilled(event) => event.write(stream),
+            GameEvent::BonusUpdated(event) => event.write(stream),
+            GameEvent::AchievementEvent(event) => event.write(stream),
+            GameEvent::AchievementIncrement(event) => event.write(stream),
+            GameEvent::PhysgunPickup(event) => event.write(stream),
+            GameEvent::FlareIgniteNpc(event) => event.write(stream),
+            GameEvent::HelicopterGrenadePuntMiss(event) => event.write(stream),
+            GameEvent::UserDataDownloaded(event) => event.write(stream),
+            GameEvent::RagdollDissolved(event) => event.write(stream),
+            GameEvent::HLTVChangedMode(event) => event.write(stream),
+            GameEvent::HLTVChangedTarget(event) => event.write(stream),
+            GameEvent::VoteEnded(event) => event.write(stream),
+            GameEvent::VoteStarted(event) => event.write(stream),
+            GameEvent::VoteChanged(event) => event.write(stream),
+            GameEvent::VotePassed(event) => event.write(stream),
+            GameEvent::VoteFailed(event) => event.write(stream),
+            GameEvent::VoteCast(event) => event.write(stream),
+            GameEvent::VoteOptions(event) => event.write(stream),
+            GameEvent::ReplaySaved(event) => event.write(stream),
+            GameEvent::EnteredPerformanceMode(event) => event.write(stream),
+            GameEvent::BrowseReplays(event) => event.write(stream),
+            GameEvent::ReplayYoutubeStats(event) => event.write(stream),
+            GameEvent::InventoryUpdated(event) => event.write(stream),
+            GameEvent::CartUpdated(event) => event.write(stream),
+            GameEvent::StorePriceSheetUpdated(event) => event.write(stream),
+            GameEvent::EconInventoryConnected(event) => event.write(stream),
+            GameEvent::ItemSchemaInitialized(event) => event.write(stream),
+            GameEvent::GcNewSession(event) => event.write(stream),
+            GameEvent::GcLostSession(event) => event.write(stream),
+            GameEvent::IntroFinish(event) => event.write(stream),
+            GameEvent::IntroNextCamera(event) => event.write(stream),
+            GameEvent::PlayerChangeClass(event) => event.write(stream),
+            GameEvent::TfMapTimeRemaining(event) => event.write(stream),
+            GameEvent::TfGameOver(event) => event.write(stream),
+            GameEvent::CtfFlagCaptured(event) => event.write(stream),
+            GameEvent::ControlPointInitialized(event) => event.write(stream),
+            GameEvent::ControlPointUpdateImages(event) => event.write(stream),
+            GameEvent::ControlPointUpdateLayout(event) => event.write(stream),
+            GameEvent::ControlPointUpdateCapping(event) => event.write(stream),
+            GameEvent::ControlPointUpdateOwner(event) => event.write(stream),
+            GameEvent::ControlPointStartTouch(event) => event.write(stream),
+            GameEvent::ControlPointEndTouch(event) => event.write(stream),
+            GameEvent::ControlPointPulseElement(event) => event.write(stream),
+            GameEvent::ControlPointFakeCapture(event) => event.write(stream),
+            GameEvent::ControlPointFakeCaptureMultiplier(event) => event.write(stream),
+            GameEvent::TeamPlayRoundSelected(event) => event.write(stream),
+            GameEvent::TeamPlayRoundStart(event) => event.write(stream),
+            GameEvent::TeamPlayRoundActive(event) => event.write(stream),
+            GameEvent::TeamPlayWaitingBegins(event) => event.write(stream),
+            GameEvent::TeamPlayWaitingEnds(event) => event.write(stream),
+            GameEvent::TeamPlayWaitingAboutToEnd(event) => event.write(stream),
+            GameEvent::TeamPlayRestartRound(event) => event.write(stream),
+            GameEvent::TeamPlayReadyRestart(event) => event.write(stream),
+            GameEvent::TeamPlayRoundRestartSeconds(event) => event.write(stream),
+            GameEvent::TeamPlayTeamReady(event) => event.write(stream),
+            GameEvent::TeamPlayRoundWin(event) => event.write(stream),
+            GameEvent::TeamPlayUpdateTimer(event) => event.write(stream),
+            GameEvent::TeamPlayRoundStalemate(event) => event.write(stream),
+            GameEvent::TeamPlayOvertimeBegin(event) => event.write(stream),
+            GameEvent::TeamPlayOvertimeEnd(event) => event.write(stream),
+            GameEvent::TeamPlaySuddenDeathBegin(event) => event.write(stream),
+            GameEvent::TeamPlaySuddenDeathEnd(event) => event.write(stream),
+            GameEvent::TeamPlayGameOver(event) => event.write(stream),
+            GameEvent::TeamPlayMapTimeRemaining(event) => event.write(stream),
+            GameEvent::TeamPlayTimerFlash(event) => event.write(stream),
+            GameEvent::TeamPlayTimerTimeAdded(event) => event.write(stream),
+            GameEvent::TeamPlayPointStartCapture(event) => event.write(stream),
+            GameEvent::TeamPlayPointCaptured(event) => event.write(stream),
+            GameEvent::TeamPlayPointLocked(event) => event.write(stream),
+            GameEvent::TeamPlayPointUnlocked(event) => event.write(stream),
+            GameEvent::TeamPlayCaptureBroken(event) => event.write(stream),
+            GameEvent::TeamPlayCaptureBlocked(event) => event.write(stream),
+            GameEvent::TeamPlayFlagEvent(event) => event.write(stream),
+            GameEvent::TeamPlayWinPanel(event) => event.write(stream),
+            GameEvent::TeamPlayTeamBalancedPlayer(event) => event.write(stream),
+            GameEvent::TeamPlaySetupFinished(event) => event.write(stream),
+            GameEvent::TeamPlayAlert(event) => event.write(stream),
+            GameEvent::TrainingComplete(event) => event.write(stream),
+            GameEvent::ShowFreezePanel(event) => event.write(stream),
+            GameEvent::HideFreezePanel(event) => event.write(stream),
+            GameEvent::FreezeCamStarted(event) => event.write(stream),
+            GameEvent::LocalPlayerChangeTeam(event) => event.write(stream),
+            GameEvent::LocalPlayerScoreChanged(event) => event.write(stream),
+            GameEvent::LocalPlayerChangeClass(event) => event.write(stream),
+            GameEvent::LocalPlayerRespawn(event) => event.write(stream),
+            GameEvent::BuildingInfoChanged(event) => event.write(stream),
+            GameEvent::LocalPlayerChangeDisguise(event) => event.write(stream),
+            GameEvent::PlayerAccountChanged(event) => event.write(stream),
+            GameEvent::SpyPdaReset(event) => event.write(stream),
+            GameEvent::FlagStatusUpdate(event) => event.write(stream),
+            GameEvent::PlayerStatsUpdated(event) => event.write(stream),
+            GameEvent::PlayingCommentary(event) => event.write(stream),
+            GameEvent::PlayerChargeDeployed(event) => event.write(stream),
+            GameEvent::PlayerBuiltObject(event) => event.write(stream),
+            GameEvent::PlayerUpgradedObject(event) => event.write(stream),
+            GameEvent::PlayerCarryObject(event) => event.write(stream),
+            GameEvent::PlayerDropObject(event) => event.write(stream),
+            GameEvent::ObjectRemoved(event) => event.write(stream),
+            GameEvent::ObjectDestroyed(event) => event.write(stream),
+            GameEvent::ObjectDetonated(event) => event.write(stream),
+            GameEvent::AchievementEarned(event) => event.write(stream),
+            GameEvent::SpecTargetUpdated(event) => event.write(stream),
+            GameEvent::TournamentStateUpdate(event) => event.write(stream),
+            GameEvent::TournamentEnableCountdown(event) => event.write(stream),
+            GameEvent::PlayerCalledForMedic(event) => event.write(stream),
+            GameEvent::PlayerAskedForBall(event) => event.write(stream),
+            GameEvent::LocalPlayerBecameObserver(event) => event.write(stream),
+            GameEvent::PlayerIgnitedInv(event) => event.write(stream),
+            GameEvent::PlayerIgnited(event) => event.write(stream),
+            GameEvent::PlayerExtinguished(event) => event.write(stream),
+            GameEvent::PlayerTeleported(event) => event.write(stream),
+            GameEvent::PlayerHealedMedicCall(event) => event.write(stream),
+            GameEvent::LocalPlayerChargeReady(event) => event.write(stream),
+            GameEvent::LocalPlayerWindDown(event) => event.write(stream),
+            GameEvent::PlayerInvulned(event) => event.write(stream),
+            GameEvent::EscortSpeed(event) => event.write(stream),
+            GameEvent::EscortProgress(event) => event.write(stream),
+            GameEvent::EscortRecede(event) => event.write(stream),
+            GameEvent::GameUIActivated(event) => event.write(stream),
+            GameEvent::GameUIHidden(event) => event.write(stream),
+            GameEvent::PlayerEscortScore(event) => event.write(stream),
+            GameEvent::PlayerHealOnHit(event) => event.write(stream),
+            GameEvent::PlayerStealSandvich(event) => event.write(stream),
+            GameEvent::ShowClassLayout(event) => event.write(stream),
+            GameEvent::ShowVsPanel(event) => event.write(stream),
+            GameEvent::PlayerDamaged(event) => event.write(stream),
+            GameEvent::ArenaPlayerNotification(event) => event.write(stream),
+            GameEvent::ArenaMatchMaxStreak(event) => event.write(stream),
+            GameEvent::ArenaRoundStart(event) => event.write(stream),
+            GameEvent::ArenaWinPanel(event) => event.write(stream),
+            GameEvent::PveWinPanel(event) => event.write(stream),
+            GameEvent::AirDash(event) => event.write(stream),
+            GameEvent::Landed(event) => event.write(stream),
+            GameEvent::PlayerDamageDodged(event) => event.write(stream),
+            GameEvent::PlayerStunned(event) => event.write(stream),
+            GameEvent::ScoutGrandSlam(event) => event.write(stream),
+            GameEvent::ScoutSlamdollLanded(event) => event.write(stream),
+            GameEvent::ArrowImpact(event) => event.write(stream),
+            GameEvent::PlayerJarated(event) => event.write(stream),
+            GameEvent::PlayerJaratedFade(event) => event.write(stream),
+            GameEvent::PlayerShieldBlocked(event) => event.write(stream),
+            GameEvent::PlayerPinned(event) => event.write(stream),
+            GameEvent::PlayerHealedByMedic(event) => event.write(stream),
+            GameEvent::PlayerSappedObject(event) => event.write(stream),
+            GameEvent::ItemFound(event) => event.write(stream),
+            GameEvent::ShowAnnotation(event) => event.write(stream),
+            GameEvent::HideAnnotation(event) => event.write(stream),
+            GameEvent::PostInventoryApplication(event) => event.write(stream),
+            GameEvent::ControlPointUnlockUpdated(event) => event.write(stream),
+            GameEvent::DeployBuffBanner(event) => event.write(stream),
+            GameEvent::PlayerBuff(event) => event.write(stream),
+            GameEvent::MedicDeath(event) => event.write(stream),
+            GameEvent::OvertimeNag(event) => event.write(stream),
+            GameEvent::TeamsChanged(event) => event.write(stream),
+            GameEvent::HalloweenPumpkinGrab(event) => event.write(stream),
+            GameEvent::RocketJump(event) => event.write(stream),
+            GameEvent::RocketJumpLanded(event) => event.write(stream),
+            GameEvent::StickyJump(event) => event.write(stream),
+            GameEvent::StickyJumpLanded(event) => event.write(stream),
+            GameEvent::RocketPackLaunch(event) => event.write(stream),
+            GameEvent::RocketPackLanded(event) => event.write(stream),
+            GameEvent::MedicDefended(event) => event.write(stream),
+            GameEvent::LocalPlayerHealed(event) => event.write(stream),
+            GameEvent::PlayerDestroyedPipeBomb(event) => event.write(stream),
+            GameEvent::ObjectDeflected(event) => event.write(stream),
+            GameEvent::PlayerMvp(event) => event.write(stream),
+            GameEvent::RaidSpawnMob(event) => event.write(stream),
+            GameEvent::RaidSpawnSquad(event) => event.write(stream),
+            GameEvent::NavBlocked(event) => event.write(stream),
+            GameEvent::PathTrackPassed(event) => event.write(stream),
+            GameEvent::NumCappersChanged(event) => event.write(stream),
+            GameEvent::PlayerRegenerate(event) => event.write(stream),
+            GameEvent::UpdateStatusItem(event) => event.write(stream),
+            GameEvent::StatsResetRound(event) => event.write(stream),
+            GameEvent::ScoreStatsAccumulatedUpdate(event) => event.write(stream),
+            GameEvent::ScoreStatsAccumulatedReset(event) => event.write(stream),
+            GameEvent::AchievementEarnedLocal(event) => event.write(stream),
+            GameEvent::PlayerHealed(event) => event.write(stream),
+            GameEvent::BuildingHealed(event) => event.write(stream),
+            GameEvent::ItemPickup(event) => event.write(stream),
+            GameEvent::DuelStatus(event) => event.write(stream),
+            GameEvent::FishNotice(event) => event.write(stream),
+            GameEvent::FishNoticeArm(event) => event.write(stream),
+            GameEvent::SlapNotice(event) => event.write(stream),
+            GameEvent::ThrowableHit(event) => event.write(stream),
+            GameEvent::PumpkinLordSummoned(event) => event.write(stream),
+            GameEvent::PumpkinLordKilled(event) => event.write(stream),
+            GameEvent::MerasmusSummoned(event) => event.write(stream),
+            GameEvent::MerasmusKilled(event) => event.write(stream),
+            GameEvent::MerasmusEscapeWarning(event) => event.write(stream),
+            GameEvent::MerasmusEscaped(event) => event.write(stream),
+            GameEvent::EyeballBossSummoned(event) => event.write(stream),
+            GameEvent::EyeballBossStunned(event) => event.write(stream),
+            GameEvent::EyeballBossKilled(event) => event.write(stream),
+            GameEvent::EyeballBossKiller(event) => event.write(stream),
+            GameEvent::EyeballBossEscapeImminent(event) => event.write(stream),
+            GameEvent::EyeballBossEscaped(event) => event.write(stream),
+            GameEvent::NpcHurt(event) => event.write(stream),
+            GameEvent::ControlPointTimerUpdated(event) => event.write(stream),
+            GameEvent::PlayerHighFiveStart(event) => event.write(stream),
+            GameEvent::PlayerHighFiveCancel(event) => event.write(stream),
+            GameEvent::PlayerHighFiveSuccess(event) => event.write(stream),
+            GameEvent::PlayerBonusPoints(event) => event.write(stream),
+            GameEvent::PlayerUpgraded(event) => event.write(stream),
+            GameEvent::PlayerBuyback(event) => event.write(stream),
+            GameEvent::PlayerUsedPowerUpBottle(event) => event.write(stream),
+            GameEvent::ChristmasGiftGrab(event) => event.write(stream),
+            GameEvent::PlayerKilledAchievementZone(event) => event.write(stream),
+            GameEvent::PartyUpdated(event) => event.write(stream),
+            GameEvent::PartyPrefChanged(event) => event.write(stream),
+            GameEvent::PartyCriteriaChanged(event) => event.write(stream),
+            GameEvent::PartyInvitesChanged(event) => event.write(stream),
+            GameEvent::PartyQueueStateChanged(event) => event.write(stream),
+            GameEvent::PartyChat(event) => event.write(stream),
+            GameEvent::PartyMemberJoin(event) => event.write(stream),
+            GameEvent::PartyMemberLeave(event) => event.write(stream),
+            GameEvent::MatchInvitesUpdated(event) => event.write(stream),
+            GameEvent::LobbyUpdated(event) => event.write(stream),
+            GameEvent::MvmMissionUpdate(event) => event.write(stream),
+            GameEvent::RecalculateHolidays(event) => event.write(stream),
+            GameEvent::PlayerCurrencyChanged(event) => event.write(stream),
+            GameEvent::DoomsdayRocketOpen(event) => event.write(stream),
+            GameEvent::RemoveNemesisRelationships(event) => event.write(stream),
+            GameEvent::MvmCreditBonusWave(event) => event.write(stream),
+            GameEvent::MvmCreditBonusAll(event) => event.write(stream),
+            GameEvent::MvmCreditBonusAllAdvanced(event) => event.write(stream),
+            GameEvent::MvmQuickSentryUpgrade(event) => event.write(stream),
+            GameEvent::MvmTankDestroyedByPlayers(event) => event.write(stream),
+            GameEvent::MvmKillRobotDeliveringBomb(event) => event.write(stream),
+            GameEvent::MvmPickupCurrency(event) => event.write(stream),
+            GameEvent::MvmBombCarrierKilled(event) => event.write(stream),
+            GameEvent::MvmSentryBusterDetonate(event) => event.write(stream),
+            GameEvent::MvmScoutMarkedForDeath(event) => event.write(stream),
+            GameEvent::MvmMedicPowerUpShared(event) => event.write(stream),
+            GameEvent::MvmBeginWave(event) => event.write(stream),
+            GameEvent::MvmWaveComplete(event) => event.write(stream),
+            GameEvent::MvmMissionComplete(event) => event.write(stream),
+            GameEvent::MvmBombResetByPlayer(event) => event.write(stream),
+            GameEvent::MvmBombAlarmTriggered(event) => event.write(stream),
+            GameEvent::MvmBombDeployResetByPlayer(event) => event.write(stream),
+            GameEvent::MvmWaveFailed(event) => event.write(stream),
+            GameEvent::MvmResetStats(event) => event.write(stream),
+            GameEvent::DamageResisted(event) => event.write(stream),
+            GameEvent::RevivePlayerNotify(event) => event.write(stream),
+            GameEvent::RevivePlayerStopped(event) => event.write(stream),
+            GameEvent::RevivePlayerComplete(event) => event.write(stream),
+            GameEvent::PlayerTurnedToGhost(event) => event.write(stream),
+            GameEvent::MedigunShieldBlockedDamage(event) => event.write(stream),
+            GameEvent::MvmAdvWaveCompleteNoGates(event) => event.write(stream),
+            GameEvent::MvmSniperHeadshotCurrency(event) => event.write(stream),
+            GameEvent::MvmMannhattanPit(event) => event.write(stream),
+            GameEvent::FlagCarriedInDetectionZone(event) => event.write(stream),
+            GameEvent::MvmAdvWaveKilledStunRadio(event) => event.write(stream),
+            GameEvent::PlayerDirectHitStun(event) => event.write(stream),
+            GameEvent::MvmSentryBusterKilled(event) => event.write(stream),
+            GameEvent::UpgradesFileChanged(event) => event.write(stream),
+            GameEvent::RdTeamPointsChanged(event) => event.write(stream),
+            GameEvent::RdRulesStateChanged(event) => event.write(stream),
+            GameEvent::RdRobotKilled(event) => event.write(stream),
+            GameEvent::RdRobotImpact(event) => event.write(stream),
+            GameEvent::TeamPlayPreRoundTimeLeft(event) => event.write(stream),
+            GameEvent::ParachuteDeploy(event) => event.write(stream),
+            GameEvent::ParachuteHolster(event) => event.write(stream),
+            GameEvent::KillRefillsMeter(event) => event.write(stream),
+            GameEvent::RpsTauntEvent(event) => event.write(stream),
+            GameEvent::CongaKill(event) => event.write(stream),
+            GameEvent::PlayerInitialSpawn(event) => event.write(stream),
+            GameEvent::CompetitiveVictory(event) => event.write(stream),
+            GameEvent::CompetitiveStatsUpdate(event) => event.write(stream),
+            GameEvent::MiniGameWin(event) => event.write(stream),
+            GameEvent::SentryOnGoActive(event) => event.write(stream),
+            GameEvent::DuckXpLevelUp(event) => event.write(stream),
+            GameEvent::QuestLogOpened(event) => event.write(stream),
+            GameEvent::SchemaUpdated(event) => event.write(stream),
+            GameEvent::LocalPlayerPickupWeapon(event) => event.write(stream),
+            GameEvent::RdPlayerScorePoints(event) => event.write(stream),
+            GameEvent::DemomanDetStickies(event) => event.write(stream),
+            GameEvent::QuestObjectiveCompleted(event) => event.write(stream),
+            GameEvent::PlayerScoreChanged(event) => event.write(stream),
+            GameEvent::KilledCappingPlayer(event) => event.write(stream),
+            GameEvent::EnvironmentalDeath(event) => event.write(stream),
+            GameEvent::ProjectileDirectHit(event) => event.write(stream),
+            GameEvent::PassGet(event) => event.write(stream),
+            GameEvent::PassScore(event) => event.write(stream),
+            GameEvent::PassFree(event) => event.write(stream),
+            GameEvent::PassPassCaught(event) => event.write(stream),
+            GameEvent::PassBallStolen(event) => event.write(stream),
+            GameEvent::PassBallBlocked(event) => event.write(stream),
+            GameEvent::DamagePrevented(event) => event.write(stream),
+            GameEvent::HalloweenBossKilled(event) => event.write(stream),
+            GameEvent::EscapedLootIsland(event) => event.write(stream),
+            GameEvent::TaggedPlayerAsIt(event) => event.write(stream),
+            GameEvent::MerasmusStunned(event) => event.write(stream),
+            GameEvent::MerasmusPropFound(event) => event.write(stream),
+            GameEvent::HalloweenSkeletonKilled(event) => event.write(stream),
+            GameEvent::EscapeHell(event) => event.write(stream),
+            GameEvent::CrossSpectralBridge(event) => event.write(stream),
+            GameEvent::MiniGameWon(event) => event.write(stream),
+            GameEvent::RespawnGhost(event) => event.write(stream),
+            GameEvent::KillInHell(event) => event.write(stream),
+            GameEvent::HalloweenDuckCollected(event) => event.write(stream),
+            GameEvent::SpecialScore(event) => event.write(stream),
+            GameEvent::TeamLeaderKilled(event) => event.write(stream),
+            GameEvent::HalloweenSoulCollected(event) => event.write(stream),
+            GameEvent::RecalculateTruce(event) => event.write(stream),
+            GameEvent::DeadRingerCheatDeath(event) => event.write(stream),
+            GameEvent::CrossbowHeal(event) => event.write(stream),
+            GameEvent::DamageMitigated(event) => event.write(stream),
+            GameEvent::PayloadPushed(event) => event.write(stream),
+            GameEvent::PlayerAbandonedMatch(event) => event.write(stream),
+            GameEvent::ClDrawline(event) => event.write(stream),
+            GameEvent::RestartTimerTime(event) => event.write(stream),
+            GameEvent::WinLimitChanged(event) => event.write(stream),
+            GameEvent::WinPanelShowScores(event) => event.write(stream),
+            GameEvent::TopStreamsRequestFinished(event) => event.write(stream),
+            GameEvent::CompetitiveStateChanged(event) => event.write(stream),
+            GameEvent::GlobalWarDataUpdated(event) => event.write(stream),
+            GameEvent::StopWatchChanged(event) => event.write(stream),
+            GameEvent::DsStop(event) => event.write(stream),
+            GameEvent::DsScreenshot(event) => event.write(stream),
+            GameEvent::ShowMatchSummary(event) => event.write(stream),
+            GameEvent::ExperienceChanged(event) => event.write(stream),
+            GameEvent::BeginXpLerp(event) => event.write(stream),
+            GameEvent::MatchmakerStatsUpdated(event) => event.write(stream),
+            GameEvent::RematchVotePeriodOver(event) => event.write(stream),
+            GameEvent::RematchFailedToCreate(event) => event.write(stream),
+            GameEvent::PlayerRematchChange(event) => event.write(stream),
+            GameEvent::PingUpdated(event) => event.write(stream),
+            GameEvent::MMStatsUpdated(event) => event.write(stream),
+            GameEvent::PlayerNextMapVoteChange(event) => event.write(stream),
+            GameEvent::VoteMapsChanged(event) => event.write(stream),
+            GameEvent::ProtoDefChanged(event) => event.write(stream),
+            GameEvent::PlayerDomination(event) => event.write(stream),
+            GameEvent::PlayerRocketPackPushed(event) => event.write(stream),
+            GameEvent::QuestRequest(event) => event.write(stream),
+            GameEvent::QuestResponse(event) => event.write(stream),
+            GameEvent::QuestProgress(event) => event.write(stream),
+            GameEvent::ProjectileRemoved(event) => event.write(stream),
+            GameEvent::QuestMapDataChanged(event) => event.write(stream),
+            GameEvent::GasDousedPlayerIgnited(event) => event.write(stream),
+            GameEvent::QuestTurnInState(event) => event.write(stream),
+            GameEvent::ItemsAcknowledged(event) => event.write(stream),
+            GameEvent::CapperKilled(event) => event.write(stream),
+            GameEvent::MainMenuStabilized(event) => event.write(stream),
+            GameEvent::WorldStatusChanged(event) => event.write(stream),
+            GameEvent::HLTVStatus(event) => event.write(stream),
+            GameEvent::HLTVCameraman(event) => event.write(stream),
+            GameEvent::HLTVRankCamera(event) => event.write(stream),
+            GameEvent::HLTVRankEntity(event) => event.write(stream),
+            GameEvent::HLTVFixed(event) => event.write(stream),
+            GameEvent::HLTVChase(event) => event.write(stream),
+            GameEvent::HLTVMessage(event) => event.write(stream),
+            GameEvent::HLTVTitle(event) => event.write(stream),
+            GameEvent::HLTVChat(event) => event.write(stream),
+            GameEvent::ReplayStartRecord(event) => event.write(stream),
+            GameEvent::ReplaySessionInfo(event) => event.write(stream),
+            GameEvent::ReplayEndRecord(event) => event.write(stream),
+            GameEvent::ReplayReplaysAvailable(event) => event.write(stream),
+            GameEvent::ReplayServerError(event) => event.write(stream),
+            GameEvent::Unknown(raw) => raw.write(stream),
+        }
     }
 }
 pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {

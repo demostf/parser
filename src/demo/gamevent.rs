@@ -1,6 +1,6 @@
-use bitbuffer::{BitRead, BitWrite};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 
-use crate::{GameEventError, ParseError, Result, Stream};
+use crate::{GameEventError, Result, Stream};
 
 pub use super::gameevent_gen::{GameEvent, GameEventType};
 use crate::demo::handle_utf8_error;
@@ -81,6 +81,20 @@ fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<
     })
 }
 
+impl BitWrite<LittleEndian> for GameEventValue {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
+        match self {
+            GameEventValue::String(value) => value.write(stream),
+            GameEventValue::Float(value) => value.write(stream),
+            GameEventValue::Long(value) => value.write(stream),
+            GameEventValue::Short(value) => value.write(stream),
+            GameEventValue::Byte(value) => value.write(stream),
+            GameEventValue::Boolean(value) => value.write(stream),
+            GameEventValue::Local => Ok(()),
+        }
+    }
+}
+
 impl GameEventValue {
     pub fn get_type(&self) -> GameEventValueType {
         match self {
@@ -95,138 +109,47 @@ impl GameEventValue {
     }
 }
 
-pub trait FromGameEventValue: Sized {
-    fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self>;
-
+pub trait EventValue: Sized {
     fn value_type() -> GameEventValueType;
 }
 
-impl FromGameEventValue for String {
-    fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
-        match value {
-            Some(GameEventValue::String(val)) => Ok(val),
-            None => Ok(String::default()),
-            Some(value) => Err(ParseError::InvalidGameEvent {
-                expected_type: GameEventValueType::String,
-                name,
-                found_type: value.get_type(),
-            }),
-        }
-    }
-
+impl EventValue for String {
     fn value_type() -> GameEventValueType {
         GameEventValueType::String
     }
 }
 
-impl FromGameEventValue for f32 {
-    fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
-        match value {
-            Some(GameEventValue::Float(val)) => Ok(val),
-            None => Ok(f32::default()),
-            Some(value) => Err(ParseError::InvalidGameEvent {
-                expected_type: GameEventValueType::Float,
-                name,
-                found_type: value.get_type(),
-            }),
-        }
-    }
-
+impl EventValue for f32 {
     fn value_type() -> GameEventValueType {
         GameEventValueType::Float
     }
 }
 
-impl FromGameEventValue for u32 {
-    fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
-        match value {
-            Some(GameEventValue::Long(val)) => Ok(val),
-            Some(GameEventValue::Short(val)) => Ok(val as u32),
-            Some(GameEventValue::Byte(val)) => Ok(val as u32),
-            None => Ok(u32::default()),
-            Some(value) => Err(ParseError::InvalidGameEvent {
-                expected_type: GameEventValueType::Long,
-                name,
-                found_type: value.get_type(),
-            }),
-        }
-    }
-
+impl EventValue for u32 {
     fn value_type() -> GameEventValueType {
         GameEventValueType::Long
     }
 }
 
-impl FromGameEventValue for u16 {
-    fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
-        match value {
-            Some(GameEventValue::Long(val)) => Ok(val as u16),
-            Some(GameEventValue::Short(val)) => Ok(val),
-            Some(GameEventValue::Byte(val)) => Ok(val as u16),
-            None => Ok(u16::default()),
-            Some(value) => Err(ParseError::InvalidGameEvent {
-                expected_type: GameEventValueType::Short,
-                name,
-                found_type: value.get_type(),
-            }),
-        }
-    }
-
+impl EventValue for u16 {
     fn value_type() -> GameEventValueType {
         GameEventValueType::Short
     }
 }
 
-impl FromGameEventValue for u8 {
-    fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
-        match value {
-            Some(GameEventValue::Long(val)) => Ok(val as u8),
-            Some(GameEventValue::Short(val)) => Ok(val as u8),
-            Some(GameEventValue::Byte(val)) => Ok(val),
-            None => Ok(u8::default()),
-            Some(value) => Err(ParseError::InvalidGameEvent {
-                expected_type: GameEventValueType::Byte,
-                name,
-                found_type: value.get_type(),
-            }),
-        }
-    }
-
+impl EventValue for u8 {
     fn value_type() -> GameEventValueType {
         GameEventValueType::Byte
     }
 }
 
-impl FromGameEventValue for bool {
-    fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
-        match value {
-            Some(GameEventValue::Boolean(val)) => Ok(val),
-            None => Ok(bool::default()),
-            Some(value) => Err(ParseError::InvalidGameEvent {
-                expected_type: GameEventValueType::Boolean,
-                name,
-                found_type: value.get_type(),
-            }),
-        }
-    }
-
+impl EventValue for bool {
     fn value_type() -> GameEventValueType {
         GameEventValueType::Boolean
     }
 }
 
-impl FromGameEventValue for () {
-    fn from_value(value: Option<GameEventValue>, name: &'static str) -> Result<Self> {
-        match value {
-            Some(GameEventValue::Local) | None => Ok(()),
-            Some(value) => Err(ParseError::InvalidGameEvent {
-                expected_type: GameEventValueType::Local,
-                name,
-                found_type: value.get_type(),
-            }),
-        }
-    }
-
+impl EventValue for () {
     fn value_type() -> GameEventValueType {
         GameEventValueType::Local
     }
@@ -249,6 +172,15 @@ impl RawGameEvent {
             event_type: definition.event_type,
             values,
         })
+    }
+}
+
+impl BitWrite<LittleEndian> for RawGameEvent {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
+        for value in self.values.iter() {
+            value.write(stream)?;
+        }
+        Ok(())
     }
 }
 

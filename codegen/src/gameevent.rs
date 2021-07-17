@@ -225,10 +225,10 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     let span = Span::call_site();
 
     let imports = quote!(
-        use super::gamevent::{FromGameEventValue, GameEventDefinition, GameEventEntry, RawGameEvent};
+        use super::gamevent::{EventValue, GameEventDefinition, GameEventEntry, RawGameEvent};
         use crate::demo::Stream;
         use crate::{ParseError, Result};
-        use bitbuffer::{BitRead, LittleEndian};
+        use bitbuffer::{BitRead, LittleEndian, BitWrite, BitWriteStream};
     );
 
     let event_definitions = events.iter().map(|event| {
@@ -260,7 +260,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         };
 
         quote!(
-            #[derive(Debug)]
+            #[derive(Debug, BitWrite)]
             pub struct #name {
                 #(#fields)*
             }
@@ -332,6 +332,15 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         }
     });
 
+    let write_events = events.iter().map(|event| {
+        let name = get_event_name(&event.name);
+        let variant_name = Ident::new(&name, span);
+
+        quote!(
+            GameEvent::#variant_name(event) => event.write(stream),
+        )
+    });
+
     let sizes = events.iter().map(|event| {
         let name = get_event_name(&event.name);
         let struct_name = Ident::new(&format!("{}Event", name), span);
@@ -344,7 +353,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     quote!(
         #imports
 
-        fn read_value<'a, T: FromGameEventValue + BitRead<'a, LittleEndian> + Default>(
+        fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
             stream: &mut Stream<'a>,
             entry: Option<&GameEventEntry>,
             name: &'static str,
@@ -400,6 +409,12 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
                     #(#read_events)*
                     GameEventType::Unknown => GameEvent::Unknown(RawGameEvent::read(stream, definition)?),
                 })
+            }
+            pub fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
+                match &self {
+                    #(#write_events)*
+                    GameEvent::Unknown(raw) => raw.write(stream),
+                }
             }
         }
 
