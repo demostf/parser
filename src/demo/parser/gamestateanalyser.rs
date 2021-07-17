@@ -151,20 +151,14 @@ impl MessageHandler for GameStateAnalyser {
     type Output = GameState;
 
     fn does_handle(message_type: MessageType) -> bool {
-        match message_type {
-            MessageType::PacketEntities => true,
-            _ => false,
-        }
+        matches!(message_type, MessageType::PacketEntities)
     }
 
     fn handle_message(&mut self, message: &Message, _tick: u32) {
-        match message {
-            Message::PacketEntities(message) => {
-                for entity in &message.entities {
-                    self.handle_entity(entity);
-                }
+        if let Message::PacketEntities(message) = message {
+            for entity in &message.entities {
+                self.handle_entity(entity);
             }
-            _ => {}
         }
     }
 
@@ -308,8 +302,8 @@ impl GameStateAnalyser {
             entity.get_prop_by_name("DT_WORLD", "m_WorldMaxs"),
         ) {
             self.state.world = Some(World {
-                boundary_min: boundary_min.clone(),
-                boundary_max: boundary_max.clone(),
+                boundary_min: *boundary_min,
+                boundary_max: *boundary_max,
             })
         }
     }

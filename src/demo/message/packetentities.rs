@@ -115,11 +115,11 @@ pub struct PacketEntitiesMessage {
     pub updated_base_line: bool,
 }
 
-fn get_send_table<'a, 'b>(state: &'b ParserState, class: ClassId) -> Result<&'b SendTable> {
+fn get_send_table(state: &ParserState, class: ClassId) -> Result<&SendTable> {
     state
         .send_tables
         .get(usize::from(class))
-        .ok_or_else(|| ParseError::UnknownServerClass(class))
+        .ok_or(ParseError::UnknownServerClass(class))
 }
 
 fn get_entity_for_update(
@@ -130,7 +130,7 @@ fn get_entity_for_update(
     let class_id = *state
         .entity_classes
         .get(&entity_index)
-        .ok_or_else(|| ParseError::UnknownEntity(entity_index))?;
+        .ok_or(ParseError::UnknownEntity(entity_index))?;
 
     Ok(PacketEntity {
         server_class: class_id,
@@ -215,7 +215,7 @@ impl PacketEntitiesMessage {
         let send_table = state
             .send_tables
             .get(usize::from(class_index))
-            .ok_or_else(|| ParseError::UnknownServerClass(class_index))?;
+            .ok_or(ParseError::UnknownServerClass(class_index))?;
 
         let props = match state.instance_baselines[baseline_index].get(&entity_index) {
             Some(baseline) => baseline.clone(),

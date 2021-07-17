@@ -10,7 +10,7 @@ use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, 
 
 #[derive(Debug)]
 pub struct GameEventMessage {
-    pub event: Box<GameEvent>,
+    pub event: GameEvent,
 }
 
 impl Parse<'_> for GameEventMessage {
@@ -20,12 +20,12 @@ impl Parse<'_> for GameEventMessage {
         let event_type: GameEventTypeId = data.read()?;
 
         // game event definitions haven't been sent yet, ignore
-        if state.event_definitions.len() == 0 {
+        if state.event_definitions.is_empty() {
             return Ok(GameEventMessage {
-                event: Box::new(GameEvent::Unknown(RawGameEvent {
+                event: GameEvent::Unknown(RawGameEvent {
                     event_type: GameEventType::Unknown,
                     values: Vec::new(),
-                })),
+                }),
             });
         }
 
@@ -37,9 +37,7 @@ impl Parse<'_> for GameEventMessage {
                 )));
             }
         };
-        Ok(GameEventMessage {
-            event: Box::new(event),
-        })
+        Ok(GameEventMessage { event })
     }
 }
 

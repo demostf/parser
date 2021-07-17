@@ -48,7 +48,7 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
             let decompressed_size: u32 = table_data.read()?;
             let compressed_size: u32 = table_data.read()?;
 
-            if compressed_size < 4 || compressed_size > 10 * 1024 * 1024 {
+            if !(4..=10 * 1024 * 1024).contains(&compressed_size) {
                 return Err(ParseError::InvalidDemo(
                     "Invalid compressed string table size",
                 ));
@@ -145,7 +145,7 @@ impl<'a> Parse<'a> for UpdateStringTableMessage<'a> {
             None => return Err(ParseError::StringTableNotFound(table_id)),
         }?;
 
-        Ok(UpdateStringTableMessage { table_id, entries })
+        Ok(UpdateStringTableMessage { entries, table_id })
     }
 }
 

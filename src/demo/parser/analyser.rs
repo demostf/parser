@@ -103,7 +103,7 @@ pub struct ClassList([u8; 10]);
 
 impl ClassList {
     /// Get an iterator for all classes played and the number of spawn on the class
-    pub fn iter<'a>(&'a self) -> impl Iterator<Item = (Class, u8)> + 'a {
+    pub fn iter(&self) -> impl Iterator<Item = (Class, u8)> + '_ {
         self.0
             .iter()
             .copied()
@@ -302,10 +302,10 @@ impl MessageHandler for Analyser {
     type Output = MatchState;
 
     fn does_handle(message_type: MessageType) -> bool {
-        match message_type {
-            MessageType::GameEvent | MessageType::UserMessage | MessageType::ServerInfo => true,
-            _ => false,
-        }
+        matches!(
+            message_type,
+            MessageType::GameEvent | MessageType::UserMessage | MessageType::ServerInfo
+        )
     }
 
     fn handle_message(&mut self, message: &Message, tick: u32) {
@@ -323,14 +323,11 @@ impl MessageHandler for Analyser {
     }
 
     fn handle_string_entry(&mut self, table: &str, _index: usize, entry: &StringTableEntry) {
-        match table {
-            "userinfo" => {
-                let _ = self.parse_user_info(
-                    entry.text.as_ref().map(|s| s.as_ref()),
-                    entry.extra_data.as_ref().map(|data| data.data.clone()),
-                );
-            }
-            _ => {}
+        if table == "userinfo" {
+            let _ = self.parse_user_info(
+                entry.text.as_ref().map(|s| s.as_ref()),
+                entry.extra_data.as_ref().map(|data| data.data.clone()),
+            );
         }
     }
 

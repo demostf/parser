@@ -15,7 +15,7 @@ impl ConstFnvHash {
         let mut i = 0;
         while i < bytes.len() {
             let byte = bytes[i];
-            hash = hash ^ (byte as u64);
+            hash ^= byte as u64;
             hash = hash.wrapping_mul(0x100000001b3);
             i += 1;
         }

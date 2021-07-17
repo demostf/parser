@@ -117,8 +117,8 @@ impl ParseSendTable {
 
         Ok(ParseSendTable {
             name,
-            needs_decoder,
             props,
+            needs_decoder,
         })
     }
 }
@@ -184,7 +184,7 @@ impl ParseSendTable {
             .iter()
             .filter(|prop| !prop.is_exclude())
             .filter(|prop| !excludes.iter().any(|exclude| *exclude == prop.identifier()))
-            .map(|prop| {
+            .try_for_each(|prop| {
                 if let Some(table) = prop.get_data_table(tables) {
                     if prop.flags.contains(SendPropFlag::Collapsible) {
                         table.get_all_props_iterator_props(tables, excludes, local_props, props)?;
@@ -196,8 +196,6 @@ impl ParseSendTable {
                 }
                 Ok(())
             })
-            .collect::<Result<()>>()?;
-        Ok(())
     }
 }
 

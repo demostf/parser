@@ -151,15 +151,15 @@ impl<'a> ParserState {
     }
 
     pub fn does_handle(message_type: MessageType) -> bool {
-        match message_type {
+        matches!(
+            message_type,
             MessageType::ServerInfo
-            | MessageType::NetTick
-            | MessageType::GameEventList
-            | MessageType::CreateStringTable
-            | MessageType::PacketEntities
-            | MessageType::UpdateStringTable => true,
-            _ => false,
-        }
+                | MessageType::NetTick
+                | MessageType::GameEventList
+                | MessageType::CreateStringTable
+                | MessageType::PacketEntities
+                | MessageType::UpdateStringTable
+        )
     }
 
     pub fn handle_message(&mut self, message: Message, _tick: u32) {
@@ -206,14 +206,11 @@ impl<'a> ParserState {
         _index: usize,
         entry: &StringTableEntry<'a>,
     ) {
-        match table {
-            "instancebaseline" => {
-                if let (Some(extra), Ok(class_id)) = (&entry.extra_data, entry.text().parse()) {
-                    let baseline = StaticBaseline::new(class_id, extra.data.to_owned());
-                    self.static_baselines.insert(class_id, baseline);
-                }
+        if table == "instancebaseline" {
+            if let (Some(extra), Ok(class_id)) = (&entry.extra_data, entry.text().parse()) {
+                let baseline = StaticBaseline::new(class_id, extra.data.to_owned());
+                self.static_baselines.insert(class_id, baseline);
             }
-            _ => {}
         }
     }
 }
