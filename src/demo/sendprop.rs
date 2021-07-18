@@ -17,7 +17,6 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::hash::Hash;
 use std::ops::BitOr;
-use std::rc::Rc;
 
 #[derive(
     BitRead,
@@ -33,7 +32,7 @@ use std::rc::Rc;
     Ord,
     PartialOrd,
 )]
-pub struct SendPropName(Rc<String>);
+pub struct SendPropName(String);
 
 impl SendPropName {
     pub fn as_str(&self) -> &str {
@@ -49,7 +48,7 @@ impl PartialEq<&str> for SendPropName {
 
 impl From<String> for SendPropName {
     fn from(value: String) -> Self {
-        Self(Rc::new(value))
+        Self(value)
     }
 }
 
