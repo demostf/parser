@@ -42,7 +42,13 @@ impl From<String> for ServerClassName {
     }
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone)]
+impl From<&str> for ServerClassName {
+    fn from(value: &str) -> Self {
+        Self(value.into())
+    }
+}
+
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
 pub struct ServerClass {
     pub id: ClassId,
     pub name: ServerClassName,
@@ -310,7 +316,7 @@ pub struct SendTable {
     pub flattened_props: Vec<SendPropDefinition>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct DataTablePacket {
     pub tick: u32,
     pub tables: Vec<ParseSendTable>,
@@ -342,4 +348,128 @@ impl Parse<'_> for DataTablePacket {
             })
         }
     }
+}
+
+impl BitWrite<LittleEndian> for DataTablePacket {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
+        self.tick.write(stream)?;
+        stream.reserve_byte_length(32, |stream| {
+            for table in self.tables.iter() {
+                true.write(stream)?;
+                table.write(stream)?;
+            }
+            false.write(stream)?;
+
+            (self.server_classes.len() as u16).write(stream)?;
+            self.server_classes.write(stream)?;
+
+            Ok(())
+        })
+    }
+}
+
+#[test]
+fn test_data_table_packet_roundtrip() {
+    use crate::demo::sendprop::SendPropFlags;
+
+    let state = ParserState::new(|_| false, false);
+    crate::test_roundtrip_encode(
+        DataTablePacket {
+            tick: 123,
+            tables: vec![],
+            server_classes: vec![],
+        },
+        &state,
+    );
+
+    let table1 = ParseSendTable {
+        name: "table1".into(),
+        props: vec![
+            RawSendPropDefinition {
+                prop_type: SendPropType::Float,
+                name: "prop1".into(),
+                owner_table: "table1".into(),
+                flags: SendPropFlags::default() | SendPropFlag::ChangesOften,
+                table_name: None,
+                low_value: Some(0.0),
+                high_value: Some(128.0),
+                bit_count: Some(10),
+                element_count: None,
+                array_property: None,
+            },
+            RawSendPropDefinition {
+                prop_type: SendPropType::Array,
+                name: "prop2".into(),
+                owner_table: "table1".into(),
+                flags: SendPropFlags::default(),
+                table_name: None,
+                low_value: None,
+                high_value: None,
+                bit_count: None,
+                element_count: Some(10),
+                array_property: Some(Box::new(RawSendPropDefinition {
+                    prop_type: SendPropType::Int,
+                    name: "prop3".into(),
+                    owner_table: "table1".into(),
+                    flags: SendPropFlags::default()
+                        | SendPropFlag::InsideArray
+                        | SendPropFlag::NoScale,
+                    table_name: None,
+                    low_value: Some(i32::MIN as f32),
+                    high_value: Some(i32::MAX as f32),
+                    bit_count: Some(32),
+                    element_count: None,
+                    array_property: None,
+                })),
+            },
+            RawSendPropDefinition {
+                prop_type: SendPropType::DataTable,
+                name: "prop1".into(),
+                owner_table: "table1".into(),
+                flags: SendPropFlags::default() | SendPropFlag::Exclude,
+                table_name: Some("table2".into()),
+                low_value: None,
+                high_value: None,
+                bit_count: None,
+                element_count: None,
+                array_property: None,
+            },
+        ],
+        needs_decoder: true,
+    };
+    let table2 = ParseSendTable {
+        name: "table2".into(),
+        props: vec![RawSendPropDefinition {
+            prop_type: SendPropType::Float,
+            name: "prop1".into(),
+            owner_table: "table2".into(),
+            flags: SendPropFlags::default() | SendPropFlag::ChangesOften,
+            table_name: None,
+            low_value: Some(0.0),
+            high_value: Some(128.0),
+            bit_count: Some(10),
+            element_count: None,
+            array_property: None,
+        }],
+        needs_decoder: true,
+    };
+    crate::test_roundtrip_encode(
+        DataTablePacket {
+            tick: 1,
+            tables: vec![table1, table2],
+            server_classes: vec![
+                ServerClass {
+                    id: ClassId(0),
+                    name: "class1".into(),
+                    data_table: "table1".into(),
+                },
+                ServerClass {
+                    id: ClassId(1),
+                    name: "class2".into(),
+                    data_table: "table2".into(),
+                },
+            ],
+        },
+        &state,
+    );
 }

@@ -59,7 +59,7 @@ impl From<&str> for SendPropName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct RawSendPropDefinition {
     pub prop_type: SendPropType,
     pub name: SendPropName,
@@ -73,11 +73,11 @@ pub struct RawSendPropDefinition {
     pub array_property: Option<Box<RawSendPropDefinition>>,
 }
 
-// impl PartialEq for RawSendPropDefinition {
-//     fn eq(&self, other: &Self) -> bool {
-//         self.identifier() == other.identifier()
-//     }
-// }
+impl PartialEq for RawSendPropDefinition {
+    fn eq(&self, other: &Self) -> bool {
+        self.identifier() == other.identifier()
+    }
+}
 
 impl fmt::Display for RawSendPropDefinition {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
