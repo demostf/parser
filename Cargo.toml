@@ -15,10 +15,6 @@ path = "src/lib.rs"
 [[bin]]
 name = "parse_demo"
 path = "src/bin/main.rs"
-[[bin]]
-
-name = "loop"
-path = "src/bin/loop.rs"
 
 [dependencies]
 bitbuffer = "0.9"
