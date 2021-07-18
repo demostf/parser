@@ -58,7 +58,7 @@ impl BitWrite<LittleEndian> for ClassInfoMessage {
 }
 
 #[test]
-fn test_say_text2_roundtrip() {
+fn test_class_info_roundtrip() {
     crate::test_roundtrip_write(ClassInfoMessage {
         count: 8,
         create: true,
