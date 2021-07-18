@@ -92,7 +92,7 @@ pub enum Message<'a> {
     EntityMessage(EntityMessage<'a>),
     GameEvent(GameEventMessage),
     PacketEntities(PacketEntitiesMessage),
-    TempEntities(TempEntitiesMessage),
+    TempEntities(TempEntitiesMessage<'a>),
     PreFetch(PreFetchMessage),
     Menu(MenuMessage<'a>),
     GameEventList(GameEventListMessage),

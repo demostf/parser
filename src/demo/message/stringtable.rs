@@ -1,4 +1,6 @@
-use bitbuffer::{BitReadBuffer, BitReadStream, LittleEndian};
+use bitbuffer::{
+    BitReadBuffer, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, LittleEndian,
+};
 use num_traits::{PrimInt, Unsigned};
 use snap::raw::{decompress_len, Decoder};
 
@@ -301,6 +303,40 @@ pub fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {
         }
     }
     Ok(result)
+}
+
+pub fn write_var_int(mut int: u32, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+    loop {
+        let byte: u8 = int as u8 & 0x7F;
+        byte.write_sized(stream, 7)?;
+        int >>= 7;
+        (int > 0).write(stream)?;
+        if int == 0 {
+            return Ok(());
+        }
+    }
+}
+
+#[test]
+fn test_var_int_roundtrip() {
+    fn var_int_roundtrip(int: u32) {
+        let mut data = Vec::new();
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            write_var_int(int, &mut write).unwrap();
+            write.bit_len()
+        };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(int, read_var_int(&mut read).unwrap());
+        assert_eq!(pos, read.pos());
+    }
+    var_int_roundtrip(0);
+    var_int_roundtrip(1);
+    var_int_roundtrip(10);
+    var_int_roundtrip(55);
+    var_int_roundtrip(355);
+    var_int_roundtrip(12354);
+    var_int_roundtrip(123125412);
 }
 
 pub fn log_base2<T: PrimInt + Unsigned>(num: T) -> u32 {

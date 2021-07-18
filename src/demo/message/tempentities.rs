@@ -1,30 +1,41 @@
-use crate::{Parse, ParseError, ParserState, Result, Stream};
+use crate::{ReadResult, Stream};
 
 use super::packetentities::PacketEntity;
 use super::stringtable::read_var_int;
-use crate::demo::parser::ParseBitSkip;
+use crate::demo::message::stringtable::write_var_int;
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 
 #[derive(Debug)]
-pub struct TempEntitiesMessage {
+pub struct TempEntitiesMessage<'a> {
+    pub count: u8,
+    pub data: Stream<'a>,
     pub entities: Vec<PacketEntity>,
 }
 
-impl Parse<'_> for TempEntitiesMessage {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
-        let _count: u8 = stream.read()?;
+impl<'a> BitRead<'a, LittleEndian> for TempEntitiesMessage<'a> {
+    fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
+        let count: u8 = stream.read()?;
         let length = read_var_int(stream)?;
-        let _data = stream.read_bits(length as usize)?;
+        let data = stream.read_bits(length as usize)?;
 
         Ok(TempEntitiesMessage {
+            count,
+            data,
             entities: Vec::new(),
         })
     }
-}
 
-impl ParseBitSkip<'_> for TempEntitiesMessage {
-    fn parse_skip(stream: &mut Stream) -> Result<()> {
+    fn skip(stream: &mut Stream) -> ReadResult<()> {
         let _: u8 = stream.read()?;
         let length = read_var_int(stream)?;
-        stream.skip_bits(length as usize).map_err(ParseError::from)
+        stream.skip_bits(length as usize)
+    }
+}
+
+impl BitWrite<LittleEndian> for TempEntitiesMessage<'_> {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.count.write(stream)?;
+        write_var_int(self.data.bit_len() as u32, stream)?;
+        self.data.write(stream)
     }
 }
