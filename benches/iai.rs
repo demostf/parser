@@ -1,5 +1,4 @@
 use iai::black_box;
-use std::fs;
 use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::{Demo, DemoParser, MessageType, ParserState};
@@ -22,9 +21,10 @@ impl MessageHandler for AllMessages {
     }
 }
 
+const INPUT: &[u8] = include_bytes!("../test_data/gully.dem");
+
 fn bench_all() {
-    let file = fs::read("test_data/gully.dem").expect("Unable to read file");
-    let demo = Demo::new(&file);
+    let demo = Demo::new(INPUT);
     let stream = demo.get_stream();
     black_box(
         DemoParser::new_with_analyser(stream.clone(), AllMessages)
