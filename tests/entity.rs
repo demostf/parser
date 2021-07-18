@@ -111,7 +111,7 @@ impl MessageHandler for EntityDumper {
             for prop_def in &table.props {
                 self.prop_names.insert(
                     prop_def.identifier(),
-                    (prop_def.owner_table.clone(), prop_def.name.clone()),
+                    (table.name.clone(), prop_def.name.clone()),
                 );
             }
         }

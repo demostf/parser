@@ -62,7 +62,7 @@ impl From<&str> for SendPropName {
 pub struct RawSendPropDefinition {
     pub prop_type: SendPropType,
     pub name: SendPropName,
-    pub owner_table: SendTableName,
+    pub identifier: SendPropIdentifier,
     pub flags: SendPropFlags,
     pub table_name: Option<SendTableName>,
     pub low_value: Option<f32>,
@@ -83,8 +83,7 @@ impl fmt::Display for RawSendPropDefinition {
         match self.prop_type {
             SendPropType::Vector | SendPropType::VectorXY => write!(
                 f,
-                "{}::{}({})(flags: {}, low: {}, high: {}, bits: {})",
-                self.owner_table,
+                "{}({})(flags: {}, low: {}, high: {}, bits: {})",
                 self.name,
                 self.prop_type,
                 self.flags,
@@ -94,8 +93,7 @@ impl fmt::Display for RawSendPropDefinition {
             ),
             SendPropType::Float => write!(
                 f,
-                "{}::{}({})(flags: {}, low: {}, high: {}, bits: {})",
-                self.owner_table,
+                "{}({})(flags: {}, low: {}, high: {}, bits: {})",
                 self.name,
                 self.prop_type,
                 self.flags,
@@ -105,21 +103,19 @@ impl fmt::Display for RawSendPropDefinition {
             ),
             SendPropType::Int => write!(
                 f,
-                "{}::{}({})(flags: {}, bits: {})",
-                self.owner_table,
+                "{}({})(flags: {}, bits: {})",
                 self.name,
                 self.prop_type,
                 self.flags,
                 self.bit_count.unwrap_or(32)
             ),
             SendPropType::String => {
-                write!(f, "{}::{}({})", self.owner_table, self.name, self.prop_type)
+                write!(f, "{}({})", self.name, self.prop_type)
             }
             SendPropType::Array => match &self.array_property {
                 Some(array_prop) => write!(
                     f,
-                    "{}::{}([{}({})] * {})",
-                    self.owner_table,
+                    "{}([{}({})] * {})",
                     self.name,
                     array_prop.prop_type,
                     array_prop.flags,
@@ -128,15 +124,11 @@ impl fmt::Display for RawSendPropDefinition {
                 None => write!(f, "{}(Malformed array)", self.name),
             },
             SendPropType::DataTable => match &self.table_name {
-                Some(sub_table) => write!(
-                    f,
-                    "{}::{}(DataTable = {})",
-                    self.owner_table, self.name, sub_table
-                ),
+                Some(sub_table) => write!(f, "{}(DataTable = {})", self.name, sub_table),
                 None => write!(f, "{}(Malformed DataTable)", self.name),
             },
             SendPropType::NumSendPropTypes => {
-                write!(f, "{}::{}(NumSendPropTypes)", self.owner_table, self.name)
+                write!(f, "{}(NumSendPropTypes)", self.name)
             }
         }
     }
@@ -144,13 +136,13 @@ impl fmt::Display for RawSendPropDefinition {
 
 impl RawSendPropDefinition {
     pub fn identifier(&self) -> SendPropIdentifier {
-        SendPropIdentifier::new(self.owner_table.as_str(), self.name.as_str())
+        self.identifier
     }
 
     pub fn with_array_property(self, array_property: Self) -> Self {
         RawSendPropDefinition {
             prop_type: self.prop_type,
-            owner_table: self.owner_table,
+            identifier: self.identifier,
             name: self.name,
             flags: self.flags,
             table_name: self.table_name,
@@ -175,9 +167,10 @@ impl RawSendPropDefinition {
         }
     }
 
-    pub fn read(stream: &mut Stream, owner_table: SendTableName) -> ReadResult<Self> {
+    pub fn read(stream: &mut Stream, owner_table: &SendTableName) -> ReadResult<Self> {
         let prop_type = SendPropType::read(stream)?;
-        let name = stream.read_string(None)?.to_string().into();
+        let name: SendPropName = stream.read()?;
+        let identifier = SendPropIdentifier::new(owner_table.as_str(), name.as_str());
         let flags = SendPropFlags::read(stream)?;
         let mut table_name = None;
         let mut element_count = None;
@@ -207,7 +200,7 @@ impl RawSendPropDefinition {
         Ok(RawSendPropDefinition {
             prop_type,
             name,
-            owner_table,
+            identifier,
             flags,
             table_name,
             low_value,

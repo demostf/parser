@@ -107,7 +107,7 @@ impl Parse<'_> for ParseSendTable {
         let mut props = Vec::with_capacity(min(prop_count, 128));
 
         for _ in 0..prop_count {
-            let prop: RawSendPropDefinition = RawSendPropDefinition::read(stream, name.clone())?;
+            let prop: RawSendPropDefinition = RawSendPropDefinition::read(stream, &name)?;
             if prop.flags.contains(SendPropFlag::InsideArray) {
                 if array_element_prop.is_some() || prop.flags.contains(SendPropFlag::ChangesOften) {
                     return Err(MalformedSendPropDefinitionError::ArrayChangesOften.into());
@@ -179,7 +179,7 @@ fn test_parse_send_table_roundtrip() {
                 RawSendPropDefinition {
                     prop_type: SendPropType::Float,
                     name: "prop1".into(),
-                    owner_table: "table1".into(),
+                    identifier: SendPropIdentifier::new("table1", "prop1"),
                     flags: SendPropFlags::default() | SendPropFlag::ChangesOften,
                     table_name: None,
                     low_value: Some(0.0),
@@ -191,7 +191,7 @@ fn test_parse_send_table_roundtrip() {
                 RawSendPropDefinition {
                     prop_type: SendPropType::Array,
                     name: "prop2".into(),
-                    owner_table: "table1".into(),
+                    identifier: SendPropIdentifier::new("table1", "prop2"),
                     flags: SendPropFlags::default(),
                     table_name: None,
                     low_value: None,
@@ -201,7 +201,7 @@ fn test_parse_send_table_roundtrip() {
                     array_property: Some(Box::new(RawSendPropDefinition {
                         prop_type: SendPropType::Int,
                         name: "prop3".into(),
-                        owner_table: "table1".into(),
+                        identifier: SendPropIdentifier::new("table1", "prop3"),
                         flags: SendPropFlags::default()
                             | SendPropFlag::InsideArray
                             | SendPropFlag::NoScale,
@@ -216,7 +216,7 @@ fn test_parse_send_table_roundtrip() {
                 RawSendPropDefinition {
                     prop_type: SendPropType::DataTable,
                     name: "prop1".into(),
-                    owner_table: "table1".into(),
+                    identifier: SendPropIdentifier::new("table1", "prop1"),
                     flags: SendPropFlags::default() | SendPropFlag::Exclude,
                     table_name: Some("table2".into()),
                     low_value: None,
@@ -388,7 +388,7 @@ fn test_data_table_packet_roundtrip() {
             RawSendPropDefinition {
                 prop_type: SendPropType::Float,
                 name: "prop1".into(),
-                owner_table: "table1".into(),
+                identifier: SendPropIdentifier::new("table1", "prop1"),
                 flags: SendPropFlags::default() | SendPropFlag::ChangesOften,
                 table_name: None,
                 low_value: Some(0.0),
@@ -400,7 +400,7 @@ fn test_data_table_packet_roundtrip() {
             RawSendPropDefinition {
                 prop_type: SendPropType::Array,
                 name: "prop2".into(),
-                owner_table: "table1".into(),
+                identifier: SendPropIdentifier::new("table1", "prop2"),
                 flags: SendPropFlags::default(),
                 table_name: None,
                 low_value: None,
@@ -410,7 +410,7 @@ fn test_data_table_packet_roundtrip() {
                 array_property: Some(Box::new(RawSendPropDefinition {
                     prop_type: SendPropType::Int,
                     name: "prop3".into(),
-                    owner_table: "table1".into(),
+                    identifier: SendPropIdentifier::new("table1", "prop3"),
                     flags: SendPropFlags::default()
                         | SendPropFlag::InsideArray
                         | SendPropFlag::NoScale,
@@ -425,7 +425,7 @@ fn test_data_table_packet_roundtrip() {
             RawSendPropDefinition {
                 prop_type: SendPropType::DataTable,
                 name: "prop1".into(),
-                owner_table: "table1".into(),
+                identifier: SendPropIdentifier::new("table1", "prop1"),
                 flags: SendPropFlags::default() | SendPropFlag::Exclude,
                 table_name: Some("table2".into()),
                 low_value: None,
@@ -442,7 +442,7 @@ fn test_data_table_packet_roundtrip() {
         props: vec![RawSendPropDefinition {
             prop_type: SendPropType::Float,
             name: "prop1".into(),
-            owner_table: "table2".into(),
+            identifier: SendPropIdentifier::new("table2", "prop1"),
             flags: SendPropFlags::default() | SendPropFlag::ChangesOften,
             table_name: None,
             low_value: Some(0.0),
