@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use parse_display::Display;
 
 use crate::demo::gameevent_gen::GameEventType;
@@ -8,8 +8,9 @@ use crate::demo::gamevent::{
 use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct GameEventMessage {
+    pub event_type_id: GameEventTypeId,
     pub event: GameEvent,
 }
 
@@ -17,11 +18,12 @@ impl Parse<'_> for GameEventMessage {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let length: u16 = stream.read_sized(11)?;
         let mut data = stream.read_bits(length as usize)?;
-        let event_type: GameEventTypeId = data.read()?;
+        let event_type_id: GameEventTypeId = data.read()?;
 
         // game event definitions haven't been sent yet, ignore
         if state.event_definitions.is_empty() {
             return Ok(GameEventMessage {
+                event_type_id,
                 event: GameEvent::Unknown(RawGameEvent {
                     event_type: GameEventType::Unknown,
                     values: Vec::new(),
@@ -29,15 +31,18 @@ impl Parse<'_> for GameEventMessage {
             });
         }
 
-        let event = match state.event_definitions.get(usize::from(event_type)) {
+        let event = match state.event_definitions.get(usize::from(event_type_id)) {
             Some(definition) => GameEvent::read(&mut data, definition)?,
             None => {
                 return Err(ParseError::MalformedGameEvent(GameEventError::UnknownType(
-                    event_type,
+                    event_type_id,
                 )));
             }
         };
-        Ok(GameEventMessage { event })
+        Ok(GameEventMessage {
+            event_type_id,
+            event,
+        })
     }
 }
 
@@ -47,8 +52,59 @@ impl Encode for GameEventMessage {
         stream: &mut BitWriteStream<LittleEndian>,
         _state: &ParserState,
     ) -> Result<()> {
-        Ok(stream.reserve_length(11, |_stream| Ok(()))?)
+        Ok(stream.reserve_length(11, |stream| {
+            self.event_type_id.write(stream)?;
+            self.event.write(stream)
+        })?)
     }
+}
+
+#[test]
+fn test_game_event_roundtrip() {
+    use crate::demo::gameevent_gen::{GameInitEvent, ServerShutdownEvent};
+
+    let definitions = vec![
+        GameEventDefinition {
+            id: GameEventTypeId(0),
+            event_type: GameEventType::ServerShutdown,
+            entries: vec![GameEventEntry {
+                name: "reason".to_string(),
+                kind: GameEventValueType::String,
+            }],
+        },
+        GameEventDefinition {
+            id: GameEventTypeId(1),
+            event_type: GameEventType::ServerChangeLevelFailed,
+            entries: vec![GameEventEntry {
+                name: "level_name".to_string(),
+                kind: GameEventValueType::String,
+            }],
+        },
+        GameEventDefinition {
+            id: GameEventTypeId(2),
+            event_type: GameEventType::GameInit,
+            entries: vec![],
+        },
+    ];
+    let mut state = ParserState::new(|_| false, false);
+    state.event_definitions = definitions;
+
+    crate::test_roundtrip_encode(
+        GameEventMessage {
+            event_type_id: GameEventTypeId(0),
+            event: GameEvent::ServerShutdown(ServerShutdownEvent {
+                reason: "asd".into(),
+            }),
+        },
+        &state,
+    );
+    crate::test_roundtrip_encode(
+        GameEventMessage {
+            event_type_id: GameEventTypeId(2),
+            event: GameEvent::GameInit(GameInitEvent {}),
+        },
+        &state,
+    );
 }
 
 impl ParseBitSkip<'_> for GameEventMessage {
@@ -73,7 +129,7 @@ impl From<GameEventTypeId> for u16 {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct GameEventListMessage {
     pub event_list: Vec<GameEventDefinition>,
 }
@@ -97,7 +153,6 @@ impl BitRead<'_, LittleEndian> for GameEventDefinition {
         Ok(GameEventDefinition {
             id: event_type,
             event_type: GameEventType::from_type_name(name.as_str()),
-            name,
             entries,
         })
     }
@@ -107,7 +162,6 @@ impl BitWrite<LittleEndian> for GameEventDefinition {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
         self.id.write(stream)?;
         self.event_type.as_str().write(stream)?;
-        self.name.write(stream)?;
 
         for entry in self.entries.iter() {
             entry.kind.write(stream)?;
@@ -117,6 +171,18 @@ impl BitWrite<LittleEndian> for GameEventDefinition {
 
         Ok(())
     }
+}
+
+#[test]
+fn test_event_definition_roundtrip() {
+    crate::test_roundtrip_write(GameEventDefinition {
+        id: GameEventTypeId(0),
+        event_type: GameEventType::ServerChangeLevelFailed,
+        entries: vec![GameEventEntry {
+            name: "level_name".to_string(),
+            kind: GameEventValueType::String,
+        }],
+    });
 }
 
 impl BitRead<'_, LittleEndian> for GameEventListMessage {
@@ -132,7 +198,7 @@ impl BitRead<'_, LittleEndian> for GameEventListMessage {
 
 impl BitWrite<LittleEndian> for GameEventListMessage {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
-        (self.event_list.len() as u16).write(stream)?;
+        (self.event_list.len() as u16).write_sized(stream, 9)?;
         stream.reserve_length(20, |stream| {
             for event in self.event_list.iter() {
                 event.write(stream)?;
@@ -142,4 +208,82 @@ impl BitWrite<LittleEndian> for GameEventListMessage {
 
         Ok(())
     }
+}
+
+#[test]
+fn test_event_list_roundtrip() {
+    crate::test_roundtrip_write(GameEventListMessage { event_list: vec![] });
+    crate::test_roundtrip_write(GameEventListMessage {
+        event_list: vec![GameEventDefinition {
+            id: GameEventTypeId(0),
+            event_type: GameEventType::ServerChangeLevelFailed,
+            entries: vec![GameEventEntry {
+                name: "level_name".to_string(),
+                kind: GameEventValueType::String,
+            }],
+        }],
+    });
+    crate::test_roundtrip_write(GameEventListMessage {
+        event_list: vec![
+            GameEventDefinition {
+                id: GameEventTypeId(0),
+                event_type: GameEventType::ServerSpawn,
+                entries: vec![
+                    GameEventEntry {
+                        name: "hostname".to_string(),
+                        kind: GameEventValueType::String,
+                    },
+                    GameEventEntry {
+                        name: "address".to_string(),
+                        kind: GameEventValueType::String,
+                    },
+                    GameEventEntry {
+                        name: "ip".to_string(),
+                        kind: GameEventValueType::Long,
+                    },
+                    GameEventEntry {
+                        name: "port".to_string(),
+                        kind: GameEventValueType::Short,
+                    },
+                    GameEventEntry {
+                        name: "game".to_string(),
+                        kind: GameEventValueType::String,
+                    },
+                    GameEventEntry {
+                        name: "map_name".to_string(),
+                        kind: GameEventValueType::String,
+                    },
+                    GameEventEntry {
+                        name: "max_players".to_string(),
+                        kind: GameEventValueType::Long,
+                    },
+                    GameEventEntry {
+                        name: "os".to_string(),
+                        kind: GameEventValueType::String,
+                    },
+                    GameEventEntry {
+                        name: "dedicated".to_string(),
+                        kind: GameEventValueType::Boolean,
+                    },
+                    GameEventEntry {
+                        name: "password".to_string(),
+                        kind: GameEventValueType::Boolean,
+                    },
+                ],
+            },
+            GameEventDefinition {
+                id: GameEventTypeId(1),
+                event_type: GameEventType::ServerChangeLevelFailed,
+                entries: vec![GameEventEntry {
+                    name: "level_name".to_string(),
+                    kind: GameEventValueType::String,
+                }],
+            },
+            GameEventDefinition {
+                id: GameEventTypeId(2),
+                event_type: GameEventType::GameInit,
+                entries: vec![],
+            },
+        ],
+    });
 }

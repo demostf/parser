@@ -239,7 +239,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             quote!(pub #name: #ty,)
         });
 
-        let name = Ident::new(&format!("{}Event", get_event_name(&event.name)), span);
+        let name = Ident::new(&format!("{}Event", get_event_name(event.event_type.as_str())), span);
 
         let entry_readers = event.entries.iter().map(|entry| {
             let name_str = get_entry_name(&entry.name);
@@ -260,7 +260,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         };
 
         quote!(
-            #[derive(Debug, BitWrite)]
+            #[derive(Debug, BitWrite, PartialEq)]
             pub struct #name {
                 #(#fields)*
             }
@@ -279,7 +279,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     });
 
     let event_variants = events.iter().map(|event| {
-        let name_str = get_event_name(&event.name);
+        let name_str = get_event_name(event.event_type.as_str());
         let name = Ident::new(&name_str, span);
         let struct_name = Ident::new(&format!("{}Event", name_str), span);
 
@@ -291,7 +291,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     });
 
     let event_types = events.iter().map(|event| {
-        let name_str = get_event_name(&event.name);
+        let name_str = get_event_name(event.event_type.as_str());
         let name = Ident::new(&name_str, span);
         let id = Literal::u16_unsuffixed(event.id.into());
 
@@ -299,21 +299,21 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     });
 
     let type_from_names = events.iter().map(|event| {
-        let name_str = &event.name;
+        let name_str = event.event_type.as_str();
         let variant_name = Ident::new(&get_event_name(&name_str), span);
 
         quote!(#name_str => GameEventType::#variant_name,)
     });
 
     let type_to_names = events.iter().map(|event| {
-        let name_str = &event.name;
+        let name_str = event.event_type.as_str();
         let variant_name = Ident::new(&get_event_name(&name_str), span);
 
         quote!(GameEventType::#variant_name => #name_str,)
     });
 
     let read_events = events.iter().map(|event| {
-        let name = get_event_name(&event.name);
+        let name = get_event_name(event.event_type.as_str());
         let variant_name = Ident::new(&name, span);
         let struct_name = Ident::new(&format!("{}Event", name), span);
 
@@ -333,7 +333,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     });
 
     let write_events = events.iter().map(|event| {
-        let name = get_event_name(&event.name);
+        let name = get_event_name(event.event_type.as_str());
         let variant_name = Ident::new(&name, span);
 
         quote!(
@@ -342,7 +342,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     });
 
     let sizes = events.iter().map(|event| {
-        let name = get_event_name(&event.name);
+        let name = get_event_name(event.event_type.as_str());
         let struct_name = Ident::new(&format!("{}Event", name), span);
 
         quote!(
@@ -376,7 +376,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
         #(#event_definitions)*
 
-        #[derive(Debug)]
+        #[derive(Debug, PartialEq)]
         pub enum GameEvent {
             #(#event_variants)*
             Unknown(RawGameEvent),

@@ -75,14 +75,14 @@ impl BitWrite<LittleEndian> for BSPDecalMessage {
 
 #[test]
 fn test_decal_roundtrip() {
-    crate::test_roundtrip_encode(BSPDecalMessage {
+    crate::test_roundtrip_write(BSPDecalMessage {
         position: Vector::default(),
         texture_index: 0,
         ent_index: 0,
         model_index: 0,
         low_priority: false,
     });
-    crate::test_roundtrip_encode(BSPDecalMessage {
+    crate::test_roundtrip_write(BSPDecalMessage {
         position: Vector {
             x: 1.0,
             y: 0.5,

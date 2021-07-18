@@ -59,12 +59,12 @@ impl BitWrite<LittleEndian> for ClassInfoMessage {
 
 #[test]
 fn test_say_text2_roundtrip() {
-    crate::test_roundtrip_encode(ClassInfoMessage {
+    crate::test_roundtrip_write(ClassInfoMessage {
         count: 8,
         create: true,
         entries: Vec::new(),
     });
-    crate::test_roundtrip_encode(ClassInfoMessage {
+    crate::test_roundtrip_write(ClassInfoMessage {
         count: 3,
         create: false,
         entries: vec![

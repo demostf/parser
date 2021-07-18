@@ -12,7 +12,6 @@ use std::cmp::Ordering;
 pub struct GameEventDefinition {
     pub id: GameEventTypeId,
     pub event_type: GameEventType,
-    pub name: String,
     pub entries: Vec<GameEventEntry>,
 }
 
@@ -36,7 +35,7 @@ impl Ord for GameEventDefinition {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct GameEventEntry {
     pub name: String,
     pub kind: GameEventValueType,
@@ -55,7 +54,7 @@ pub enum GameEventValueType {
     Local = 7,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum GameEventValue {
     String(String),
     Float(f32),
@@ -155,7 +154,7 @@ impl EventValue for () {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct RawGameEvent {
     pub event_type: GameEventType,
     pub values: Vec<GameEventValue>,

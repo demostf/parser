@@ -45,12 +45,12 @@ impl BitWrite<LittleEndian> for VoiceInitMessage {
 
 #[test]
 fn test_voice_init_roundtrip() {
-    crate::test_roundtrip_encode(VoiceInitMessage {
+    crate::test_roundtrip_write(VoiceInitMessage {
         codec: "foo".into(),
         quality: 0,
         sampling_rate: 0,
     });
-    crate::test_roundtrip_encode(VoiceInitMessage {
+    crate::test_roundtrip_write(VoiceInitMessage {
         codec: "foo".into(),
         quality: 255,
         sampling_rate: 12,
@@ -119,13 +119,13 @@ fn test_parse_sounds_roundtrip() {
     use bitbuffer::BitReadBuffer;
     let inner = BitReadBuffer::new(&[1, 2, 3, 4, 5, 6], LittleEndian);
 
-    crate::test_roundtrip_encode(ParseSoundsMessage {
+    crate::test_roundtrip_write(ParseSoundsMessage {
         reliable: false,
         num: 0,
         length: inner.bit_len() as u16,
         data: inner.clone().into(),
     });
-    crate::test_roundtrip_encode(ParseSoundsMessage {
+    crate::test_roundtrip_write(ParseSoundsMessage {
         reliable: true,
         num: 1,
         length: inner.bit_len() as u16,

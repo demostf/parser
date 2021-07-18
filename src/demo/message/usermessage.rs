@@ -140,8 +140,8 @@ impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
 
 #[test]
 fn test_user_message_roundtrip() {
-    crate::test_roundtrip_encode(UserMessage::Train(TrainMessage { data: 12 }));
-    crate::test_roundtrip_encode(UserMessage::SayText2(Box::new(SayText2Message {
+    crate::test_roundtrip_write(UserMessage::Train(TrainMessage { data: 12 }));
+    crate::test_roundtrip_write(UserMessage::SayText2(Box::new(SayText2Message {
         client: 3,
         raw: 1,
         kind: ChatMessageKind::ChatTeamDead,
@@ -297,7 +297,7 @@ impl BitWrite<LittleEndian> for SayText2Message {
 
 #[test]
 fn test_say_text2_roundtrip() {
-    crate::test_roundtrip_encode(SayText2Message {
+    crate::test_roundtrip_write(SayText2Message {
         client: 3,
         raw: 1,
         kind: ChatMessageKind::ChatTeamDead,

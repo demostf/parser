@@ -61,12 +61,12 @@ impl<E: Endianness> BitWrite<E> for ViewAngles {
 
 #[test]
 fn test_view_angles_roundtrip() {
-    crate::test_roundtrip_encode(ViewAngles {
+    crate::test_roundtrip_write(ViewAngles {
         origin: (Vector::default(), Vector::default()),
         angles: (Vector::default(), Vector::default()),
         local_angles: (Vector::default(), Vector::default()),
     });
-    crate::test_roundtrip_encode(ViewAngles {
+    crate::test_roundtrip_write(ViewAngles {
         origin: (
             Vector {
                 x: 1.0,
