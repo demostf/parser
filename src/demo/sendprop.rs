@@ -16,10 +16,22 @@ use std::cmp::min;
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::hash::Hash;
+use std::ops::BitOr;
 use std::rc::Rc;
 
 #[derive(
-    BitRead, PartialEq, Eq, Hash, Debug, Display, Clone, Serialize, Deserialize, Ord, PartialOrd,
+    BitRead,
+    BitWrite,
+    PartialEq,
+    Eq,
+    Hash,
+    Debug,
+    Display,
+    Clone,
+    Serialize,
+    Deserialize,
+    Ord,
+    PartialOrd,
 )]
 pub struct SendPropName(Rc<String>);
 
@@ -41,7 +53,13 @@ impl From<String> for SendPropName {
     }
 }
 
-#[derive(Debug, Clone)]
+impl From<&str> for SendPropName {
+    fn from(value: &str) -> Self {
+        value.to_string().into()
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct RawSendPropDefinition {
     pub prop_type: SendPropType,
     pub name: SendPropName,
@@ -55,11 +73,11 @@ pub struct RawSendPropDefinition {
     pub array_property: Option<Box<RawSendPropDefinition>>,
 }
 
-impl PartialEq for RawSendPropDefinition {
-    fn eq(&self, other: &Self) -> bool {
-        self.identifier() == other.identifier()
-    }
-}
+// impl PartialEq for RawSendPropDefinition {
+//     fn eq(&self, other: &Self) -> bool {
+//         self.identifier() == other.identifier()
+//     }
+// }
 
 impl fmt::Display for RawSendPropDefinition {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -214,7 +232,31 @@ impl RawSendPropDefinition {
     }
 }
 
-#[derive(BitRead, Copy, Clone, PartialEq, Debug, Display)]
+impl BitWrite<LittleEndian> for RawSendPropDefinition {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.prop_type.write(stream)?;
+        self.name.write(stream)?;
+        self.flags.write(stream)?;
+
+        if let Some(table_name) = self.table_name.as_ref() {
+            table_name.write(stream)?;
+        }
+        if let Some(element_count) = self.element_count {
+            element_count.write_sized(stream, 10)?;
+        }
+        if let (Some(low_value), Some(high_value), Some(bit_count)) =
+            (self.low_value, self.high_value, self.bit_count)
+        {
+            low_value.write(stream)?;
+            high_value.write(stream)?;
+            bit_count.write_sized(stream, 7)?;
+        }
+
+        Ok(())
+    }
+}
+
+#[derive(BitRead, BitWrite, Copy, Clone, PartialEq, Debug, Display)]
 #[discriminant_bits = 5]
 pub enum SendPropType {
     Int = 0,
@@ -272,8 +314,16 @@ pub enum SendPropFlag {
     NormalVarInt = 32,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub struct SendPropFlags(BitFlags<SendPropFlag>);
+
+impl BitOr<SendPropFlag> for SendPropFlags {
+    type Output = SendPropFlags;
+
+    fn bitor(self, rhs: SendPropFlag) -> Self::Output {
+        Self(self.0 | rhs)
+    }
+}
 
 impl fmt::Display for SendPropFlags {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -301,6 +351,12 @@ impl BitRead<'_, LittleEndian> for SendPropFlags {
 
     fn bit_size() -> Option<usize> {
         Some(16)
+    }
+}
+
+impl BitWrite<LittleEndian> for SendPropFlags {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.0.bits().write(stream)
     }
 }
 

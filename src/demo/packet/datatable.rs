@@ -1,16 +1,14 @@
-use bitbuffer::{BitRead, BitWrite};
-
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{
     RawSendPropDefinition, SendPropDefinition, SendPropFlag, SendPropIdentifier, SendPropType,
 };
 use crate::{Parse, ParseError, ParserState, Result, Stream};
+use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
-
 use std::cmp::min;
-
 use std::convert::TryFrom;
+use std::iter::once;
 
 #[derive(
     BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Display, FromStr,
@@ -80,18 +78,23 @@ impl From<String> for SendTableName {
     }
 }
 
-#[derive(Debug, Clone)]
+impl From<&str> for SendTableName {
+    fn from(value: &str) -> Self {
+        Self(value.into())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct ParseSendTable {
     pub name: SendTableName,
     pub props: Vec<RawSendPropDefinition>,
     pub needs_decoder: bool,
 }
 
-impl ParseSendTable {
+impl Parse<'_> for ParseSendTable {
     fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
         let needs_decoder = stream.read()?;
-        let raw_name: String = stream.read()?;
-        let name: SendTableName = raw_name.into();
+        let name: SendTableName = stream.read()?;
         let prop_count = stream.read_int(10)?;
 
         let mut array_element_prop = None;
@@ -121,6 +124,106 @@ impl ParseSendTable {
             needs_decoder,
         })
     }
+}
+
+impl BitWrite<LittleEndian> for ParseSendTable {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
+        self.needs_decoder.write(stream)?;
+        self.name.write(stream)?;
+
+        let prop_count: u16 = self
+            .props
+            .iter()
+            .map(|prop| match prop.array_property {
+                Some(_) => 2,
+                None => 1,
+            })
+            .sum();
+        prop_count.write_sized(stream, 10)?;
+
+        for prop in self
+            .props
+            .iter()
+            .flat_map(|prop| prop.array_property.as_deref().into_iter().chain(once(prop)))
+        {
+            prop.write(stream)?;
+        }
+
+        Ok(())
+    }
+}
+
+#[test]
+fn test_parse_send_table_roundtrip() {
+    use crate::demo::sendprop::SendPropFlags;
+
+    let state = ParserState::new(|_| false, false);
+    crate::test_roundtrip_encode(
+        ParseSendTable {
+            name: "foo".into(),
+            props: vec![],
+            needs_decoder: true,
+        },
+        &state,
+    );
+    crate::test_roundtrip_encode(
+        ParseSendTable {
+            name: "table1".into(),
+            props: vec![
+                RawSendPropDefinition {
+                    prop_type: SendPropType::Float,
+                    name: "prop1".into(),
+                    owner_table: "table1".into(),
+                    flags: SendPropFlags::default() | SendPropFlag::ChangesOften,
+                    table_name: None,
+                    low_value: Some(0.0),
+                    high_value: Some(128.0),
+                    bit_count: Some(10),
+                    element_count: None,
+                    array_property: None,
+                },
+                RawSendPropDefinition {
+                    prop_type: SendPropType::Array,
+                    name: "prop2".into(),
+                    owner_table: "table1".into(),
+                    flags: SendPropFlags::default(),
+                    table_name: None,
+                    low_value: None,
+                    high_value: None,
+                    bit_count: None,
+                    element_count: Some(10),
+                    array_property: Some(Box::new(RawSendPropDefinition {
+                        prop_type: SendPropType::Int,
+                        name: "prop3".into(),
+                        owner_table: "table1".into(),
+                        flags: SendPropFlags::default()
+                            | SendPropFlag::InsideArray
+                            | SendPropFlag::NoScale,
+                        table_name: None,
+                        low_value: Some(i32::MIN as f32),
+                        high_value: Some(i32::MAX as f32),
+                        bit_count: Some(32),
+                        element_count: None,
+                        array_property: None,
+                    })),
+                },
+                RawSendPropDefinition {
+                    prop_type: SendPropType::DataTable,
+                    name: "prop1".into(),
+                    owner_table: "table1".into(),
+                    flags: SendPropFlags::default() | SendPropFlag::Exclude,
+                    table_name: Some("table2".into()),
+                    low_value: None,
+                    high_value: None,
+                    bit_count: None,
+                    element_count: None,
+                    array_property: None,
+                },
+            ],
+            needs_decoder: true,
+        },
+        &state,
+    );
 }
 
 impl ParseSendTable {
