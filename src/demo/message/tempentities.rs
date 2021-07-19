@@ -34,6 +34,9 @@ impl<'a> BitRead<'a, LittleEndian> for TempEntitiesMessage<'a> {
 
 impl BitWrite<LittleEndian> for TempEntitiesMessage<'_> {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        if !self.entities.is_empty() {
+            todo!();
+        }
         self.count.write(stream)?;
         write_var_int(self.data.bit_len() as u32, stream)?;
         self.data.write(stream)

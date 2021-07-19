@@ -90,6 +90,8 @@ pub enum MalformedSendPropDefinitionError {
     ArrayChangesOften,
     #[error(display = "SendProp value out of range")]
     OutOfRange,
+    #[error(display = "Wrong prop value type for definition")]
+    WrongPropType,
 }
 
 #[derive(Debug, Error)]

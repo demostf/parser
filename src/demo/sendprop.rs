@@ -678,6 +678,75 @@ impl SendPropValue {
             }
         }
     }
+    pub fn encode(
+        &self,
+        stream: &mut BitWriteStream<LittleEndian>,
+        definition: &SendPropParseDefinition,
+    ) -> Result<()> {
+        match definition {
+            SendPropParseDefinition::NormalVarInt { unsigned, .. } => {
+                let val: i64 = self.try_into()?;
+                write_var_int(val as i32, stream, !*unsigned)?;
+                Ok(())
+            }
+            SendPropParseDefinition::UnsignedInt { bit_count, .. } => {
+                let val: i64 = self.try_into()?;
+                (val as u32).write_sized(stream, *bit_count as usize)?;
+                Ok(())
+            }
+            SendPropParseDefinition::Int { bit_count, .. } => {
+                let val: i64 = self.try_into()?;
+                (val as i32).write_sized(stream, *bit_count as usize)?;
+                Ok(())
+            }
+            SendPropParseDefinition::Float {
+                definition: float_definition,
+                ..
+            } => {
+                let val: f32 = self.try_into()?;
+                Self::write_float(val, stream, float_definition)
+            }
+            SendPropParseDefinition::String { .. } => {
+                let val: &str = self.try_into()?;
+                (val.len() as u16).write_sized(stream, 9)?;
+                val.write_sized(stream, val.len())?;
+                Ok(())
+            }
+            SendPropParseDefinition::Vector {
+                definition: float_definition,
+                ..
+            } => {
+                let val: Vector = self.try_into()?;
+                Self::write_float(val.x, stream, float_definition)?;
+                Self::write_float(val.y, stream, float_definition)?;
+                Self::write_float(val.z, stream, float_definition)?;
+                Ok(())
+            }
+            SendPropParseDefinition::VectorXY {
+                definition: float_definition,
+                ..
+            } => {
+                let val: VectorXY = self.try_into()?;
+                Self::write_float(val.x, stream, float_definition)?;
+                Self::write_float(val.y, stream, float_definition)?;
+                Ok(())
+            }
+            SendPropParseDefinition::Array {
+                count_bit_count,
+                inner_definition,
+                ..
+            } => {
+                let array: &[SendPropValue] = self.try_into()?;
+                (array.len() as u16).write_sized(stream, *count_bit_count as usize)?;
+
+                for inner in array {
+                    inner.encode(stream, inner_definition)?
+                }
+
+                Ok(())
+            }
+        }
+    }
 
     fn read_float(stream: &mut Stream, definition: &FloatDefinition) -> Result<f32> {
         match definition {
@@ -706,6 +775,157 @@ impl SendPropValue {
             }
         }
     }
+
+    fn write_float(
+        val: f32,
+        stream: &mut BitWriteStream<LittleEndian>,
+        definition: &FloatDefinition,
+    ) -> Result<()> {
+        match definition {
+            FloatDefinition::Coord => write_bit_coord(val, stream).map_err(ParseError::from),
+            FloatDefinition::CoordMP => {
+                write_bit_coord_mp(val, stream, false, false).map_err(ParseError::from)
+            }
+            FloatDefinition::CoordMPLowPrecision => {
+                write_bit_coord_mp(val, stream, false, true).map_err(ParseError::from)
+            }
+            FloatDefinition::CoordMPIntegral => {
+                write_bit_coord_mp(val, stream, true, false).map_err(ParseError::from)
+            }
+            FloatDefinition::FloatNoScale => val.write(stream).map_err(ParseError::from),
+            FloatDefinition::NormalVarFloat => {
+                write_bit_normal(val, stream).map_err(ParseError::from)
+            }
+            FloatDefinition::Scaled {
+                bit_count,
+                low,
+                high,
+            } => {
+                let percentage = (val - low) / (high - low);
+                let raw =
+                    (percentage * ((1i32.wrapping_shl(*bit_count as u32)) as f32 - 1.0)) as u32;
+                raw.write_sized(stream, *bit_count as usize)?;
+
+                Ok(())
+            }
+        }
+    }
+}
+
+#[test]
+fn test_send_prop_value_roundtrip() {
+    use bitbuffer::{BitReadBuffer, BitReadStream};
+
+    fn send_prop_value_roundtrip(val: SendPropValue, def: SendPropParseDefinition) {
+        let mut data = Vec::new();
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            val.encode(&mut write, &def).unwrap();
+            write.bit_len()
+        };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(val, SendPropValue::parse(&mut read, &def).unwrap());
+        assert_eq!(pos, read.pos());
+    }
+    send_prop_value_roundtrip(
+        SendPropValue::Integer(0),
+        SendPropParseDefinition::UnsignedInt {
+            changes_often: false,
+            bit_count: 5,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Integer(12),
+        SendPropParseDefinition::NormalVarInt {
+            changes_often: false,
+            unsigned: false,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Integer(12),
+        SendPropParseDefinition::NormalVarInt {
+            changes_often: false,
+            unsigned: false,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Integer(-12),
+        SendPropParseDefinition::NormalVarInt {
+            changes_often: false,
+            unsigned: true,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::String("foobar".into()),
+        SendPropParseDefinition::String {
+            changes_often: false,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Vector(Vector {
+            x: 1.0,
+            y: 0.0,
+            z: 1.125,
+        }),
+        SendPropParseDefinition::Vector {
+            changes_often: false,
+            definition: FloatDefinition::Coord,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::VectorXY(VectorXY { x: 1.0, y: 0.0 }),
+        SendPropParseDefinition::VectorXY {
+            changes_often: false,
+            definition: FloatDefinition::FloatNoScale,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Float(12.5),
+        SendPropParseDefinition::Float {
+            changes_often: false,
+            definition: FloatDefinition::CoordMP,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Float(12.0),
+        SendPropParseDefinition::Float {
+            changes_often: false,
+            definition: FloatDefinition::CoordMPIntegral,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Float(12.5),
+        SendPropParseDefinition::Float {
+            changes_often: false,
+            definition: FloatDefinition::CoordMPLowPrecision,
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Float(12.498169),
+        SendPropParseDefinition::Float {
+            changes_often: false,
+            definition: FloatDefinition::Scaled {
+                bit_count: 12,
+                high: 25.0,
+                low: 10.0,
+            },
+        },
+    );
+    send_prop_value_roundtrip(
+        SendPropValue::Array(vec![
+            SendPropValue::Integer(0),
+            SendPropValue::Integer(1),
+            SendPropValue::Integer(2),
+        ]),
+        SendPropParseDefinition::Array {
+            changes_often: false,
+            inner_definition: Box::new(SendPropParseDefinition::UnsignedInt {
+                changes_often: false,
+                bit_count: 3,
+            }),
+            count_bit_count: 5,
+        },
+    );
 }
 
 impl From<i32> for SendPropValue {
@@ -751,61 +971,61 @@ impl From<Vec<SendPropValue>> for SendPropValue {
 }
 
 impl TryFrom<&SendPropValue> for i64 {
-    type Error = ();
+    type Error = MalformedSendPropDefinitionError;
     fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::Integer(val) => Ok(*val),
-            _ => Err(()),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
         }
     }
 }
 
 impl TryFrom<&SendPropValue> for Vector {
-    type Error = ();
+    type Error = MalformedSendPropDefinitionError;
     fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::Vector(val) => Ok(*val),
-            _ => Err(()),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
         }
     }
 }
 
 impl TryFrom<&SendPropValue> for VectorXY {
-    type Error = ();
+    type Error = MalformedSendPropDefinitionError;
     fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::VectorXY(val) => Ok(*val),
-            _ => Err(()),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
         }
     }
 }
 
 impl TryFrom<&SendPropValue> for f32 {
-    type Error = ();
+    type Error = MalformedSendPropDefinitionError;
     fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::Float(val) => Ok(*val),
-            _ => Err(()),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
         }
     }
 }
 
 impl<'a> TryFrom<&'a SendPropValue> for &'a str {
-    type Error = ();
+    type Error = MalformedSendPropDefinitionError;
     fn try_from(value: &'a SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::String(val) => Ok(val.as_str()),
-            _ => Err(()),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
         }
     }
 }
 
 impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
-    type Error = ();
+    type Error = MalformedSendPropDefinitionError;
     fn try_from(value: &'a SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::Array(val) => Ok(val.as_slice()),
-            _ => Err(()),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
         }
     }
 }
@@ -828,22 +1048,60 @@ pub struct SendProp {
 }
 
 pub fn read_var_int(stream: &mut Stream, signed: bool) -> ReadResult<i32> {
-    let mut result: i32 = 0;
-
-    for i in (0..35).step_by(7) {
-        let byte: u8 = stream.read()?;
-        result |= ((byte & 0x7F) as i32) << i;
-
-        if (byte >> 7) == 0 {
-            break;
-        }
-    }
+    let abs_int = crate::demo::message::stringtable::read_var_int(stream)? as i32;
 
     if signed {
-        Ok((result >> 1) ^ -(result & 1))
+        Ok((abs_int >> 1) ^ -(abs_int & 1))
     } else {
-        Ok(result)
+        Ok(abs_int)
     }
+}
+
+pub fn write_var_int(
+    int: i32,
+    stream: &mut BitWriteStream<LittleEndian>,
+    signed: bool,
+) -> ReadResult<()> {
+    let abs = if signed {
+        let sign = int < 0;
+        (int.abs() as u32) << 1 | (sign as u32)
+    } else {
+        int as u32
+    };
+
+    crate::demo::message::stringtable::write_var_int(abs, stream)
+}
+
+#[test]
+fn test_var_int_roundtrip() {
+    use bitbuffer::{BitReadBuffer, BitReadStream};
+
+    fn var_int_roundtrip(int: i32, signed: bool) {
+        let mut data = Vec::new();
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            write_var_int(int, &mut write, signed).unwrap();
+            write.bit_len()
+        };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(int, read_var_int(&mut read, signed).unwrap());
+        assert_eq!(pos, read.pos());
+    }
+    var_int_roundtrip(0, false);
+    var_int_roundtrip(1, false);
+    var_int_roundtrip(10, false);
+    var_int_roundtrip(55, false);
+    var_int_roundtrip(355, false);
+    var_int_roundtrip(12354, false);
+    var_int_roundtrip(123125412, false);
+
+    var_int_roundtrip(-0, false);
+    var_int_roundtrip(-1, false);
+    var_int_roundtrip(-10, false);
+    var_int_roundtrip(-55, false);
+    var_int_roundtrip(-355, false);
+    var_int_roundtrip(-12354, false);
+    var_int_roundtrip(-123125412, false);
 }
 
 pub fn read_bit_coord(stream: &mut Stream) -> ReadResult<f32> {
@@ -890,7 +1148,7 @@ pub fn write_bit_coord(val: f32, stream: &mut BitWriteStream<LittleEndian>) -> R
 fn bit_coord_roundtrip() {
     use bitbuffer::BitReadBuffer;
 
-    let mut data = Vec::with_capacity(128);
+    let mut data = Vec::with_capacity(16);
     let (pos1, pos2, pos3, pos4) = {
         let mut write = BitWriteStream::new(&mut data, LittleEndian);
         write_bit_coord(0.0, &mut write).unwrap();
@@ -955,6 +1213,74 @@ pub fn read_bit_coord_mp(
     Ok(value)
 }
 
+pub fn write_bit_coord_mp(
+    val: f32,
+    stream: &mut BitWriteStream<LittleEndian>,
+    is_integral: bool,
+    low_precision: bool,
+) -> ReadResult<()> {
+    let abs = val.abs();
+    let in_bounds = (abs as u32) <= 2u32.pow(10);
+    let has_int_val = abs > 1.0;
+    in_bounds.write(stream)?;
+    has_int_val.write(stream)?;
+
+    if is_integral {
+        if has_int_val {
+            val.is_sign_negative().write(stream)?;
+            ((abs - 1.0) as u32).write_sized(stream, if in_bounds { 11 } else { 14 })?;
+        }
+    } else {
+        val.is_sign_negative().write(stream)?;
+        if has_int_val {
+            ((abs - 1.0) as u32).write_sized(stream, if in_bounds { 11 } else { 14 })?;
+        }
+        let frac_bits = if low_precision { 3 } else { 5 };
+        let frac_val = (abs.fract() / get_frac_factor(frac_bits)) as u32;
+        frac_val.write_sized(stream, frac_bits)?;
+    }
+
+    Ok(())
+}
+
+#[test]
+fn test_bit_coord_mp_roundtrip() {
+    use bitbuffer::{BitReadBuffer, BitReadStream};
+
+    fn bit_coord_mp_normal(val: f32, is_integral: bool, low_precision: bool) {
+        let mut data = Vec::with_capacity(16);
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            write_bit_coord_mp(val, &mut write, is_integral, low_precision).unwrap();
+            write.bit_len()
+        };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(
+            val,
+            read_bit_coord_mp(&mut read, is_integral, low_precision).unwrap()
+        );
+        assert_eq!(pos, read.pos());
+    }
+    bit_coord_mp_normal(0.0, false, false);
+    bit_coord_mp_normal(0.5, false, false);
+    bit_coord_mp_normal(-0.5, false, false);
+    bit_coord_mp_normal(1234.5, false, false);
+    bit_coord_mp_normal(-1234.5, false, false);
+    bit_coord_mp_normal(2.0f32.powf(12.0) + 0.125, false, false);
+
+    bit_coord_mp_normal(0.0, false, true);
+    bit_coord_mp_normal(0.5, false, true);
+    bit_coord_mp_normal(-0.5, false, true);
+    bit_coord_mp_normal(1234.5, false, true);
+    bit_coord_mp_normal(-1234.5, false, true);
+    bit_coord_mp_normal(2.0f32.powf(12.0) + 0.125, false, true);
+
+    bit_coord_mp_normal(0.0, true, false);
+    bit_coord_mp_normal(1234.0, true, false);
+    bit_coord_mp_normal(-1234.0, true, false);
+    bit_coord_mp_normal(2.0f32.powf(12.0), true, false);
+}
+
 pub fn read_bit_normal(stream: &mut Stream) -> ReadResult<f32> {
     let is_negative = stream.read()?;
     let frac_val: u16 = stream.read_sized(11)?;
@@ -964,4 +1290,31 @@ pub fn read_bit_normal(stream: &mut Stream) -> ReadResult<f32> {
     } else {
         Ok(value)
     }
+}
+
+pub fn write_bit_normal(val: f32, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+    val.is_sign_negative().write(stream)?;
+    let frac_val = (val.abs().fract() / get_frac_factor(11)) as u16;
+    frac_val.write_sized(stream, 11)
+}
+
+#[test]
+fn test_bit_normal_roundtrip() {
+    use bitbuffer::{BitReadBuffer, BitReadStream};
+
+    fn roundtrip_normal(val: f32) {
+        let mut data = Vec::with_capacity(16);
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            write_bit_normal(val, &mut write).unwrap();
+            write.bit_len()
+        };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(val, read_bit_normal(&mut read).unwrap());
+        assert_eq!(pos, read.pos());
+    }
+    roundtrip_normal(0.0);
+    roundtrip_normal(-0.0);
+    roundtrip_normal(0.5);
+    roundtrip_normal(-0.5);
 }
