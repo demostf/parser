@@ -1,8 +1,9 @@
 use std::fmt;
 
-use bitbuffer::{BitRead, BitWrite, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 
 use crate::demo::message::stringtable::StringTableMeta;
+use crate::demo::parser::Encode;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::borrow::{Borrow, Cow};
 use std::cmp::min;
@@ -62,6 +63,76 @@ impl<'a> BitRead<'a, LittleEndian> for StringTable<'a> {
     }
 }
 
+impl BitWrite<LittleEndian> for StringTable<'_> {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.name.as_ref().write(stream)?;
+        (self.entries.len() as u16).write(stream)?;
+        for (_, entry) in self.entries.iter() {
+            entry.write(stream)?;
+        }
+
+        self.client_entries.is_some().write(stream)?;
+        if let Some(client_entries) = self.client_entries.as_ref() {
+            (client_entries.len() as u16).write(stream)?;
+            client_entries.write(stream)?;
+        }
+
+        Ok(())
+    }
+}
+
+#[test]
+fn test_string_table_roundtrip() {
+    crate::test_roundtrip_write(StringTable {
+        name: "foo".into(),
+        entries: vec![],
+        max_entries: 0,
+        fixed_user_data_size: None,
+        client_entries: None,
+        compressed: false,
+    });
+    crate::test_roundtrip_write(StringTable {
+        name: "foo".into(),
+        entries: vec![(
+            0,
+            StringTableEntry {
+                text: Some("bar".into()),
+                extra_data: None,
+            },
+        )],
+        max_entries: 1,
+        fixed_user_data_size: None,
+        client_entries: None,
+        compressed: false,
+    });
+    crate::test_roundtrip_write(StringTable {
+        name: "foo".into(),
+        entries: vec![
+            (
+                0,
+                StringTableEntry {
+                    text: Some("bar".into()),
+                    extra_data: None,
+                },
+            ),
+            (
+                1,
+                StringTableEntry {
+                    text: Some("asd".into()),
+                    extra_data: None,
+                },
+            ),
+        ],
+        max_entries: 2,
+        fixed_user_data_size: None,
+        client_entries: Some(vec![StringTableEntry {
+            text: Some("client".into()),
+            extra_data: None,
+        }]),
+        compressed: false,
+    });
+}
+
 #[derive(BitRead, BitWrite, Clone, Debug, PartialEq)]
 #[endianness = "LittleEndian"]
 pub struct ExtraData<'a> {
@@ -101,6 +172,17 @@ impl<'a> BitRead<'a, LittleEndian> for StringTableEntry<'a> {
     }
 }
 
+impl BitWrite<LittleEndian> for StringTableEntry<'_> {
+    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
+        self.text.as_deref().unwrap_or_default().write(stream)?;
+        self.extra_data.is_some().write(stream)?;
+        if let Some(extra_data) = self.extra_data.as_ref() {
+            extra_data.write(stream)?;
+        }
+        Ok(())
+    }
+}
+
 impl fmt::Debug for StringTableEntry<'_> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match &self.extra_data {
@@ -115,7 +197,7 @@ impl fmt::Debug for StringTableEntry<'_> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct StringTablePacket<'a> {
     pub tick: u32,
     pub tables: Vec<StringTable<'a>>,
@@ -135,4 +217,95 @@ impl<'a> Parse<'a> for StringTablePacket<'a> {
             Ok(StringTablePacket { tick, tables })
         }
     }
+}
+
+impl Encode for StringTablePacket<'_> {
+    fn encode(
+        &self,
+        stream: &mut BitWriteStream<LittleEndian>,
+        _state: &ParserState,
+    ) -> Result<()> {
+        self.tick.write(stream)?;
+        stream.reserve_byte_length(32, |stream| {
+            (self.tables.len() as u8).write(stream)?;
+            self.tables.write(stream)?;
+
+            Ok(())
+        })?;
+        Ok(())
+    }
+}
+
+#[test]
+fn test_string_table_packet_roundtrip() {
+    let state = ParserState::new(|_| false, false);
+    crate::test_roundtrip_encode(
+        StringTablePacket {
+            tick: 1,
+            tables: vec![],
+        },
+        &state,
+    );
+    crate::test_roundtrip_encode(
+        StringTablePacket {
+            tick: 1,
+            tables: vec![StringTable {
+                name: "table1".into(),
+                entries: vec![],
+                max_entries: 0,
+                fixed_user_data_size: None,
+                client_entries: None,
+                compressed: false,
+            }],
+        },
+        &state,
+    );
+    crate::test_roundtrip_encode(
+        StringTablePacket {
+            tick: 1,
+            tables: vec![
+                StringTable {
+                    name: "table1".into(),
+                    entries: vec![(
+                        0,
+                        StringTableEntry {
+                            text: Some("bar".into()),
+                            extra_data: None,
+                        },
+                    )],
+                    max_entries: 1,
+                    fixed_user_data_size: None,
+                    client_entries: None,
+                    compressed: false,
+                },
+                StringTable {
+                    name: "table2".into(),
+                    entries: vec![
+                        (
+                            0,
+                            StringTableEntry {
+                                text: Some("bar".into()),
+                                extra_data: None,
+                            },
+                        ),
+                        (
+                            1,
+                            StringTableEntry {
+                                text: Some("asd".into()),
+                                extra_data: None,
+                            },
+                        ),
+                    ],
+                    max_entries: 2,
+                    fixed_user_data_size: None,
+                    client_entries: Some(vec![StringTableEntry {
+                        text: Some("client".into()),
+                        extra_data: None,
+                    }]),
+                    compressed: false,
+                },
+            ],
+        },
+        &state,
+    );
 }
