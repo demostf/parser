@@ -7,7 +7,7 @@ use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::borrow::{Borrow, Cow};
 use std::cmp::min;
 
-#[derive(BitRead, BitWrite, Clone, Copy, Debug)]
+#[derive(BitRead, BitWrite, Clone, Copy, Debug, PartialEq)]
 pub struct FixedUserDataSize {
     #[size = 12]
     pub size: u16,
@@ -15,7 +15,7 @@ pub struct FixedUserDataSize {
     pub bits: u8,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct StringTable<'a> {
     pub name: Cow<'a, str>,
     pub entries: Vec<(u16, StringTableEntry<'a>)>,
@@ -62,7 +62,7 @@ impl<'a> BitRead<'a, LittleEndian> for StringTable<'a> {
     }
 }
 
-#[derive(BitRead, BitWrite, Clone, Debug)]
+#[derive(BitRead, BitWrite, Clone, Debug, PartialEq)]
 #[endianness = "LittleEndian"]
 pub struct ExtraData<'a> {
     pub byte_len: u16,
@@ -77,7 +77,7 @@ impl<'a> ExtraData<'a> {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, PartialEq)]
 pub struct StringTableEntry<'a> {
     pub text: Option<Cow<'a, str>>,
     pub extra_data: Option<ExtraData<'a>>,

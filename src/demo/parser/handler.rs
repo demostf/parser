@@ -84,7 +84,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                     match message? {
                         Message::NetTick(message) => self.tick = message.tick,
                         Message::CreateStringTable(message) => {
-                            self.handle_string_table(*message.table)
+                            self.handle_string_table(message.table)
                         }
                         Message::UpdateStringTable(message) => {
                             self.handle_table_update(message.table_id, message.entries)

@@ -7,17 +7,17 @@ use snap::raw::{decompress_len, Decoder};
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserDataSize, StringTable, StringTableEntry,
 };
-use crate::demo::parser::ParseBitSkip;
+use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::borrow::Cow;
 use std::cmp::min;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct CreateStringTableMessage<'a> {
-    pub table: Box<StringTable<'a>>,
+    pub table: StringTable<'a>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct StringTableMeta {
     pub max_entries: u16,
     pub fixed_userdata_size: Option<FixedUserDataSize>,
@@ -105,9 +105,7 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
             compressed,
             name,
         };
-        Ok(CreateStringTableMessage {
-            table: Box::new(table),
-        })
+        Ok(CreateStringTableMessage { table })
     }
 }
 
@@ -127,7 +125,97 @@ impl<'a> ParseBitSkip<'a> for CreateStringTableMessage<'a> {
     }
 }
 
-#[derive(Debug)]
+impl Encode for CreateStringTableMessage<'_> {
+    fn encode(
+        &self,
+        stream: &mut BitWriteStream<LittleEndian>,
+        _state: &ParserState,
+    ) -> Result<()> {
+        let table = &self.table;
+        table.name.write(stream)?;
+        table.max_entries.write(stream)?;
+        let encode_bits = log_base2(table.max_entries) as usize;
+        (table.entries.len() as u16).write_sized(stream, encode_bits + 1)?;
+
+        // since length is encoded with a dynamic bit size, we can't use the normal "reserve" tricks
+        // so instead we write the body to a temporary vec first
+        let mut target_vec = Vec::with_capacity(table.entries.len() * 32);
+        let (target_length_start, target_end) = {
+            let mut target = BitWriteStream::new(&mut target_vec, LittleEndian);
+
+            table.fixed_user_data_size.is_some().write(&mut target)?;
+            if let Some(fixed_size) = table.fixed_user_data_size {
+                fixed_size.write(&mut target)?;
+            }
+
+            // no compression for now
+            false.write(&mut target)?;
+
+            let target_length_start = target.bit_len();
+
+            let table_meta = table.get_table_meta();
+
+            write_string_table_list(&table.entries, &mut target, &table_meta)?;
+            let target_end = target.bit_len();
+            (target_length_start, target_end)
+        };
+        let mut body_reader =
+            BitReadStream::new(BitReadBuffer::new_owned(target_vec, LittleEndian));
+
+        write_var_int((target_end - target_length_start) as u32, stream)?;
+        body_reader.read_bits(target_end)?.write(stream)?;
+
+        Ok(())
+    }
+}
+
+#[test]
+fn test_create_string_table_roundtrip() {
+    let state = ParserState::new(|_| false, false);
+    crate::test_roundtrip_encode(
+        CreateStringTableMessage {
+            table: StringTable {
+                name: "table1".into(),
+                entries: vec![],
+                max_entries: 16,
+                fixed_user_data_size: None,
+                client_entries: None,
+                compressed: false,
+            },
+        },
+        &state,
+    );
+    crate::test_roundtrip_encode(
+        CreateStringTableMessage {
+            table: StringTable {
+                name: "table1".into(),
+                entries: vec![
+                    (
+                        0,
+                        StringTableEntry {
+                            text: Some("foo".into()),
+                            extra_data: None,
+                        },
+                    ),
+                    (
+                        1,
+                        StringTableEntry {
+                            text: Some("bar".into()),
+                            extra_data: None,
+                        },
+                    ),
+                ],
+                max_entries: 16,
+                fixed_user_data_size: Some(FixedUserDataSize { size: 12, bits: 4 }),
+                client_entries: None,
+                compressed: false,
+            },
+        },
+        &state,
+    );
+}
+
+#[derive(Debug, PartialEq)]
 pub struct UpdateStringTableMessage<'a> {
     pub entries: Vec<(u16, StringTableEntry<'a>)>,
     pub table_id: u8,
@@ -159,6 +247,76 @@ impl<'a> ParseBitSkip<'a> for UpdateStringTableMessage<'a> {
         let length: u32 = stream.read_int(20)?;
         stream.skip_bits(length as usize).map_err(ParseError::from)
     }
+}
+
+impl Encode for UpdateStringTableMessage<'_> {
+    fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
+        self.table_id.write_sized(stream, 5)?;
+        if self.entries.len() == 1 {
+            false.write(stream)?;
+        } else {
+            true.write(stream)?;
+            (self.entries.len() as u16).write(stream)?;
+        }
+
+        match state.string_tables.get(self.table_id as usize) {
+            Some(table) => Ok(stream.reserve_length(20, |stream| {
+                write_string_table_update(&self.entries, stream, table)
+            })?),
+            None => return Err(ParseError::StringTableNotFound(self.table_id)),
+        }
+    }
+}
+
+#[test]
+fn test_update_string_table_roundtrip() {
+    let mut state = ParserState::new(|_| false, false);
+    state.string_tables = vec![StringTableMeta {
+        max_entries: 16,
+        fixed_userdata_size: None,
+    }];
+    crate::test_roundtrip_encode(
+        UpdateStringTableMessage {
+            entries: vec![],
+            table_id: 0,
+        },
+        &state,
+    );
+    crate::test_roundtrip_encode(
+        UpdateStringTableMessage {
+            entries: vec![(
+                2,
+                StringTableEntry {
+                    text: Some("foo".into()),
+                    extra_data: None,
+                },
+            )],
+            table_id: 0,
+        },
+        &state,
+    );
+    crate::test_roundtrip_encode(
+        UpdateStringTableMessage {
+            entries: vec![
+                (
+                    2,
+                    StringTableEntry {
+                        text: Some("foo".into()),
+                        extra_data: None,
+                    },
+                ),
+                (
+                    3,
+                    StringTableEntry {
+                        text: Some("bar".into()),
+                        extra_data: None,
+                    },
+                ),
+            ],
+            table_id: 0,
+        },
+        &state,
+    );
 }
 
 struct TableEntries<'a> {
@@ -221,6 +379,126 @@ fn parse_string_table_update<'a>(
     Ok(entries.into_entries())
 }
 
+fn write_string_table_update<'a>(
+    entries: &[(u16, StringTableEntry<'a>)],
+    stream: &mut BitWriteStream<LittleEndian>,
+    table_meta: &StringTableMeta,
+) -> ReadResult<()> {
+    let entry_bits = log_base2(table_meta.max_entries);
+
+    let mut last_entry: i16 = -1;
+
+    for (index, entry) in entries.iter() {
+        let index = *index as i16;
+        if index == (last_entry + 1) {
+            true.write(stream)?;
+        } else {
+            false.write(stream)?;
+            index.write_sized(stream, entry_bits as usize)?;
+        }
+        last_entry = index;
+
+        write_table_entry(entry, stream, table_meta)?;
+    }
+
+    Ok(())
+}
+
+#[test]
+fn test_table_update_roundtrip() {
+    fn entry_roundtrip(
+        entries: Vec<(u16, StringTableEntry)>,
+        max_entries: u16,
+        fixed_bits: Option<u8>,
+    ) {
+        let table_meta = StringTableMeta {
+            max_entries,
+            fixed_userdata_size: fixed_bits.map(|bits| FixedUserDataSize { size: 0, bits }),
+        };
+        let mut data = Vec::new();
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            write_string_table_update(&entries, &mut write, &table_meta).unwrap();
+            write.bit_len()
+        };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(
+            entries,
+            parse_string_table_update(&mut read, &table_meta, entries.len() as u16).unwrap()
+        );
+        assert_eq!(pos, read.pos());
+    }
+    entry_roundtrip(
+        vec![(
+            3,
+            StringTableEntry {
+                text: None,
+                extra_data: None,
+            },
+        )],
+        8,
+        None,
+    );
+    entry_roundtrip(
+        vec![
+            (
+                0,
+                StringTableEntry {
+                    text: Some("bar".into()),
+                    extra_data: None,
+                },
+            ),
+            (
+                1,
+                StringTableEntry {
+                    text: Some("foo".into()),
+                    extra_data: None,
+                },
+            ),
+            (
+                5,
+                StringTableEntry {
+                    text: Some("asd".into()),
+                    extra_data: None,
+                },
+            ),
+        ],
+        16,
+        None,
+    );
+    entry_roundtrip(
+        vec![
+            (
+                1,
+                StringTableEntry {
+                    text: Some("foo".into()),
+                    extra_data: None,
+                },
+            ),
+            (
+                2,
+                StringTableEntry {
+                    text: Some("asd".into()),
+                    extra_data: None,
+                },
+            ),
+        ],
+        16,
+        None,
+    );
+    entry_roundtrip(
+        vec![(
+            1,
+            StringTableEntry {
+                text: Some("foo".into()),
+                extra_data: None,
+            },
+        )],
+        16,
+        None,
+    );
+}
+
 fn parse_string_table_list<'a>(
     stream: &mut Stream<'a>,
     table_meta: &StringTableMeta,
@@ -240,6 +518,70 @@ fn parse_string_table_list<'a>(
     }
 
     Ok(entries.into_entries())
+}
+
+fn write_string_table_list(
+    entries: &[(u16, StringTableEntry)],
+    stream: &mut BitWriteStream<LittleEndian>,
+    table_meta: &StringTableMeta,
+) -> Result<()> {
+    for (_, entry) in entries.iter() {
+        true.write(stream)?;
+        write_table_entry(entry, stream, table_meta)?;
+    }
+
+    Ok(())
+}
+
+#[test]
+fn test_table_list_roundtrip() {
+    fn entry_roundtrip(entries: Vec<(u16, StringTableEntry)>, fixed_bits: Option<u8>) {
+        let table_meta = StringTableMeta {
+            max_entries: 0,
+            fixed_userdata_size: fixed_bits.map(|bits| FixedUserDataSize { size: 0, bits }),
+        };
+        let mut data = Vec::new();
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            write_string_table_list(&entries, &mut write, &table_meta).unwrap();
+            write.bit_len()
+        };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(
+            entries,
+            parse_string_table_list(&mut read, &table_meta, entries.len() as u16).unwrap()
+        );
+        assert_eq!(pos, read.pos());
+    }
+    entry_roundtrip(
+        vec![(
+            0,
+            StringTableEntry {
+                text: None,
+                extra_data: None,
+            },
+        )],
+        None,
+    );
+    entry_roundtrip(
+        vec![
+            (
+                0,
+                StringTableEntry {
+                    text: Some("bar".into()),
+                    extra_data: None,
+                },
+            ),
+            (
+                1,
+                StringTableEntry {
+                    text: Some("foo".into()),
+                    extra_data: None,
+                },
+            ),
+        ],
+        None,
+    );
 }
 
 fn read_table_entry<'a>(
@@ -290,6 +632,99 @@ fn read_table_entry<'a>(
     .map(ExtraData::new);
 
     Ok(StringTableEntry { text, extra_data })
+}
+
+fn write_table_entry(
+    entry: &StringTableEntry,
+    stream: &mut BitWriteStream<LittleEndian>,
+    table_meta: &StringTableMeta,
+) -> ReadResult<()> {
+    entry.text.is_some().write(stream)?;
+    if let Some(text) = entry.text.as_deref() {
+        // dont want to deal with history
+        false.write(stream)?;
+        text.write(stream)?;
+    }
+
+    entry.extra_data.is_some().write(stream)?;
+    if let Some(extra_data) = entry.extra_data.as_ref() {
+        match table_meta.fixed_userdata_size {
+            Some(size) => {
+                extra_data.data.write_sized(stream, size.bits as usize)?;
+            }
+            None => {
+                extra_data.byte_len.write_sized(stream, 14)?;
+                extra_data
+                    .data
+                    .write_sized(stream, extra_data.byte_len as usize * 8)?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
+#[test]
+fn test_table_entry_roundtrip() {
+    fn entry_roundtrip(entry: StringTableEntry, fixed_bits: Option<u8>) {
+        let table_meta = StringTableMeta {
+            max_entries: 0,
+            fixed_userdata_size: fixed_bits.map(|bits| FixedUserDataSize { size: 0, bits }),
+        };
+        let mut data = Vec::new();
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            write_table_entry(&entry, &mut write, &table_meta).unwrap();
+            write.bit_len()
+        };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(
+            entry,
+            read_table_entry(&mut read, &table_meta, &TableEntries::new(0)).unwrap()
+        );
+        assert_eq!(pos, read.pos());
+    }
+    entry_roundtrip(
+        StringTableEntry {
+            text: None,
+            extra_data: None,
+        },
+        None,
+    );
+    entry_roundtrip(
+        StringTableEntry {
+            text: Some("foo".into()),
+            extra_data: None,
+        },
+        None,
+    );
+    entry_roundtrip(
+        StringTableEntry {
+            text: None,
+            extra_data: Some(ExtraData::new(BitReadStream::new(
+                BitReadBuffer::new_owned(vec![0x55], LittleEndian),
+            ))),
+        },
+        None,
+    );
+    entry_roundtrip(
+        StringTableEntry {
+            text: None,
+            extra_data: Some(ExtraData::new(BitReadStream::new(
+                BitReadBuffer::new_owned(vec![0x55; 128], LittleEndian),
+            ))),
+        },
+        None,
+    );
+    entry_roundtrip(
+        StringTableEntry {
+            text: None,
+            extra_data: Some(ExtraData::new(BitReadStream::new(
+                BitReadBuffer::new_owned(vec![0x55; 4], LittleEndian),
+            ))),
+        },
+        Some(4 * 8),
+    );
 }
 
 pub fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {
