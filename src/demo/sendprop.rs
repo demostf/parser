@@ -1040,7 +1040,7 @@ impl SendPropIdentifier {
     }
 }
 
-#[derive(Debug, Clone, Display)]
+#[derive(Debug, Clone, Display, PartialEq)]
 #[display("{index} = {value}")]
 pub struct SendProp {
     pub index: SendPropIdentifier,

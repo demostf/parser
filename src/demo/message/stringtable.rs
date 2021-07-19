@@ -263,7 +263,7 @@ impl Encode for UpdateStringTableMessage<'_> {
             Some(table) => Ok(stream.reserve_length(20, |stream| {
                 write_string_table_update(&self.entries, stream, table)
             })?),
-            None => return Err(ParseError::StringTableNotFound(self.table_id)),
+            None => Err(ParseError::StringTableNotFound(self.table_id)),
         }
     }
 }

@@ -96,6 +96,22 @@ impl<'a> ParserState {
         })
     }
 
+    pub fn get_baseline(
+        &self,
+        baseline_index: usize,
+        entity_index: EntityId,
+        class_id: ClassId,
+        send_table: &SendTable,
+    ) -> Result<Vec<SendProp>> {
+        match self.instance_baselines[baseline_index].get(&entity_index) {
+            Some(baseline) => Ok(baseline.clone()),
+            None => match self.static_baselines.get(&class_id) {
+                Some(_static_baseline) => self.get_static_baseline(class_id, send_table),
+                None => Ok(Vec::with_capacity(8)),
+            },
+        }
+    }
+
     pub fn handle_data_table(
         &mut self,
         parse_tables: Vec<ParseSendTable>,

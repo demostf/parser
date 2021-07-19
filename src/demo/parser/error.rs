@@ -2,6 +2,7 @@ use crate::demo::gamevent::GameEventValueType;
 use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{ClassId, SendTableName};
+use crate::demo::sendprop::SendPropIdentifier;
 use bitbuffer::BitError;
 use err_derive::Error;
 use std::str::Utf8Error;
@@ -74,6 +75,8 @@ pub enum ParseError {
     PropIndexOutOfBounds { index: i32, prop_count: usize },
     #[error(display = "An attempt was made to update an unknown entity: {}", _0)]
     UnknownEntity(EntityId),
+    #[error(display = "No sendprop definition found for property")]
+    UnknownDefinition(SendPropIdentifier),
 }
 
 #[derive(Debug, Error)]
