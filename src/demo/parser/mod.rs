@@ -7,7 +7,7 @@ use crate::demo::header::Header;
 use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 pub use crate::demo::parser::analyser::MatchState;
-pub use crate::demo::parser::handler::{DemoHandler, MessageHandler};
+pub use crate::demo::parser::handler::{DemoHandler, MessageHandler, NullHandler};
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
 

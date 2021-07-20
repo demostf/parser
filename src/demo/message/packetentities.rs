@@ -94,10 +94,10 @@ impl PacketEntity {
     }
 
     pub fn diff_from_baseline<'a>(
-        &self,
+        &'a self,
         baseline: &'a [SendProp],
     ) -> impl Iterator<Item = &'a SendProp> + 'a {
-        baseline.iter().filter(move |prop| {
+        self.props.iter().filter(move |prop| {
             !baseline
                 .iter()
                 .any(|base_prop| base_prop.index == prop.index && base_prop.value == prop.value)
@@ -213,6 +213,7 @@ impl Parse<'_> for PacketEntitiesMessage {
         let updated_entries: u16 = stream.read_sized(11)?;
         let length: u32 = stream.read_sized(20)?;
         let updated_base_line = stream.read()?;
+
         let mut data = stream.read_bits(length as usize)?;
 
         let mut entities = Vec::with_capacity(min(updated_entries, 128) as usize);
@@ -319,7 +320,7 @@ impl Encode for PacketEntitiesMessage {
 
             let length_end = stream.bit_len();
 
-            (length_end - length_start).write_sized(length_stream, 11)?;
+            (length_end - length_start).write_sized(length_stream, 20)?;
 
             Ok(())
         })
@@ -555,6 +556,24 @@ fn test_packet_entitier_message_roundtrip() {
                     ],
                     in_pvs: false,
                     pvs: PVS::Preserve,
+                    serial_number: 0,
+                    delay: None,
+                },
+                PacketEntity {
+                    server_class: ClassId::from(1),
+                    entity_index: EntityId::from(5),
+                    props: vec![
+                        SendProp {
+                            index: SendPropIdentifier::new("table2", "prop1"),
+                            value: SendPropValue::Integer(4),
+                        },
+                        SendProp {
+                            index: SendPropIdentifier::new("table2", "prop3"),
+                            value: SendPropValue::Float(1.0),
+                        },
+                    ],
+                    in_pvs: true,
+                    pvs: PVS::Enter,
                     serial_number: 0,
                     delay: None,
                 },

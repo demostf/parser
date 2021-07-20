@@ -7,7 +7,7 @@ use crate::demo::parser::Encode;
 use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
 
-#[derive(Debug, BitRead, BitWrite)]
+#[derive(Debug, BitRead, BitWrite, PartialEq)]
 pub struct MessagePacketMeta {
     pub flags: u32, // TODO
     pub view_angles: ViewAngles,
@@ -15,11 +15,11 @@ pub struct MessagePacketMeta {
     pub sequence_out: u32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct MessagePacket<'a> {
     pub tick: u32,
     pub messages: Vec<Message<'a>>,
-    pub meta: LazyBitRead<'a, MessagePacketMeta, LittleEndian>,
+    pub meta: MessagePacketMeta,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -119,7 +119,7 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
 
         let mut messages = Vec::with_capacity(8);
         while packet_data.bits_left() > 6 {
-            let message_type = MessageType::parse(&mut packet_data, state)?;
+            let message_type = MessageType::read(&mut packet_data)?;
 
             if state.should_parse_message(message_type) {
                 messages.push(Message::from_type(message_type, &mut packet_data, state)?);
@@ -140,7 +140,7 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
 impl Encode for MessagePacket<'_> {
     fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
         self.tick.write(stream)?;
-        self.meta.read()?.write(stream)?;
+        self.meta.write(stream)?;
         stream.reserve_byte_length(32, |stream| {
             for message in self.messages.iter() {
                 message.get_message_type().write(stream)?;

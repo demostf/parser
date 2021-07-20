@@ -5,7 +5,7 @@ use super::stringtable::read_var_int;
 use crate::demo::message::stringtable::write_var_int;
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct TempEntitiesMessage<'a> {
     pub count: u8,
     pub data: Stream<'a>,

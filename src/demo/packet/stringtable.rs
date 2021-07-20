@@ -16,7 +16,7 @@ pub struct FixedUserDataSize {
     pub bits: u8,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct StringTable<'a> {
     pub name: Cow<'a, str>,
     pub entries: Vec<(u16, StringTableEntry<'a>)>,
@@ -24,6 +24,17 @@ pub struct StringTable<'a> {
     pub fixed_user_data_size: Option<FixedUserDataSize>,
     pub client_entries: Option<Vec<StringTableEntry<'a>>>,
     pub compressed: bool,
+}
+
+impl PartialEq for StringTable<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        // ignore `compresses` until we encode compressed
+        self.name.eq(&other.name)
+            && (self.entries.eq(&other.entries))
+            && (self.max_entries.eq(&other.max_entries))
+            && (self.fixed_user_data_size.eq(&other.fixed_user_data_size))
+            && (self.client_entries.eq(&other.client_entries))
+    }
 }
 
 impl StringTable<'_> {

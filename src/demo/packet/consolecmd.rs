@@ -2,7 +2,7 @@ use bitbuffer::{BitRead, BitWrite, BitWriteSized, LittleEndian};
 
 use crate::{ReadResult, Stream};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct ConsoleCmdPacket {
     tick: u32,
     command: String,

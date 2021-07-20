@@ -73,7 +73,7 @@ pub enum MessageType {
     CmdKeyValues = 32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Message<'a> {
     Empty,
     File(FileMessage),

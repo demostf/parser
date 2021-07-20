@@ -57,7 +57,7 @@ fn test_voice_init_roundtrip() {
     });
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
 #[endianness = "LittleEndian"]
 pub struct VoiceDataMessage<'a> {
     client: u8,

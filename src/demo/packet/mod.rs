@@ -20,7 +20,7 @@ pub mod stringtable;
 pub mod synctick;
 pub mod usercmd;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Packet<'a> {
     Sigon(MessagePacket<'a>),
     Message(MessagePacket<'a>),
@@ -32,7 +32,7 @@ pub enum Packet<'a> {
     StringTables(StringTablePacket<'a>),
 }
 
-#[derive(BitRead, BitWrite, TryFromPrimitive, Debug, Clone, Copy)]
+#[derive(BitRead, BitWrite, TryFromPrimitive, Debug, Clone, Copy, Eq, PartialEq)]
 #[discriminant_bits = 8]
 #[repr(u8)]
 pub enum PacketType {

@@ -1,7 +1,7 @@
 use crate::Stream;
 use bitbuffer::{BitRead, BitWrite, LittleEndian};
 
-#[derive(Debug, BitRead, BitWrite)]
+#[derive(Debug, BitRead, BitWrite, PartialEq)]
 #[endianness = "LittleEndian"]
 pub struct UserCmdPacket<'a> {
     tick: u32,

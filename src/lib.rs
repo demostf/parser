@@ -65,12 +65,12 @@ fn test_roundtrip_encode<
     };
 
     let mut read = BitReadStream::new(BitReadBuffer::new_owned(data, LittleEndian));
-    assert_eq!(
+    pretty_assertions::assert_eq!(
         val,
         T::parse(&mut read, state).unwrap(),
         "Failed to assert the parsed message is equal to the original"
     );
-    assert_eq!(
+    pretty_assertions::assert_eq!(
         pos,
         read.pos(),
         "Failed to assert that all encoded bits ({}) are used for decoding ({})",

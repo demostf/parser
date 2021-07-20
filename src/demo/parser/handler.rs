@@ -26,6 +26,20 @@ pub trait BorrowMessageHandler: MessageHandler {
     fn borrow_output(&self, state: &ParserState) -> &Self::Output;
 }
 
+pub struct NullHandler;
+
+impl MessageHandler for NullHandler {
+    type Output = ();
+
+    fn does_handle(_message_type: MessageType) -> bool {
+        false
+    }
+
+    fn into_output(self, _state: &ParserState) -> Self::Output {
+        ()
+    }
+}
+
 #[derive(Clone)]
 pub struct DemoHandler<'a, T: MessageHandler> {
     pub tick: u32,

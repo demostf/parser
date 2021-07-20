@@ -1040,6 +1040,12 @@ impl SendPropIdentifier {
     }
 }
 
+impl From<u64> for SendPropIdentifier {
+    fn from(raw: u64) -> Self {
+        SendPropIdentifier(raw)
+    }
+}
+
 #[derive(Debug, Clone, Display, PartialEq)]
 #[display("{index} = {value}")]
 pub struct SendProp {
