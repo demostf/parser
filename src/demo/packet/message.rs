@@ -1,9 +1,11 @@
-use bitbuffer::{bit_size_of, BitRead, BitWrite, Endianness, LazyBitRead, LittleEndian};
+use bitbuffer::{
+    bit_size_of, BitRead, BitWrite, BitWriteStream, Endianness, LazyBitRead, LittleEndian,
+};
 
 use crate::demo::message::{Message, MessageType};
+use crate::demo::parser::Encode;
 use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
-use std::fmt;
 
 #[derive(Debug, BitRead, BitWrite)]
 pub struct MessagePacketMeta {
@@ -16,7 +18,7 @@ pub struct MessagePacketMeta {
 #[derive(Debug)]
 pub struct MessagePacket<'a> {
     pub tick: u32,
-    pub messages: MessageIterator<'a>,
+    pub messages: Vec<Message<'a>>,
     pub meta: LazyBitRead<'a, MessagePacketMeta, LittleEndian>,
 }
 
@@ -107,15 +109,24 @@ fn test_view_angles_roundtrip() {
 }
 
 impl<'a> Parse<'a> for MessagePacket<'a> {
-    fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let tick = stream.read()?;
 
         let meta = stream.read()?;
 
         let length: u32 = stream.read()?;
-        let packet_data = stream.read_bits(length as usize * 8)?;
+        let mut packet_data = stream.read_bits(length as usize * 8)?;
 
-        let messages = MessageIterator::new(packet_data);
+        let mut messages = Vec::with_capacity(8);
+        while packet_data.bits_left() > 6 {
+            let message_type = MessageType::parse(&mut packet_data, state)?;
+
+            if state.should_parse_message(message_type) {
+                messages.push(Message::from_type(message_type, &mut packet_data, state)?);
+            } else {
+                Message::skip_type(message_type, &mut packet_data)?;
+            }
+        }
 
         let packet = MessagePacket {
             tick,
@@ -126,41 +137,17 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
     }
 }
 
-pub struct MessageIterator<'a> {
-    packet_data: Stream<'a>,
-}
-
-impl fmt::Debug for MessageIterator<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "MessageIterator {{}}")
-    }
-}
-
-impl<'a> MessageIterator<'a> {
-    fn new(packet_data: Stream<'a>) -> Self {
-        MessageIterator { packet_data }
-    }
-
-    pub fn next(&mut self, state: &ParserState) -> Option<Result<Message<'a>>> {
-        while self.packet_data.bits_left() > 6 {
-            let message_type = match MessageType::parse(&mut self.packet_data, state) {
-                Ok(message_type) => message_type,
-                Err(e) => return Some(Err(e)),
-            };
-
-            if state.should_parse_message(message_type) {
-                return Some(Message::from_type(
-                    message_type,
-                    &mut self.packet_data,
-                    state,
-                ));
-            } else {
-                match Message::skip_type(message_type, &mut self.packet_data) {
-                    Ok(_) => (),
-                    Err(e) => return Some(Err(e)),
-                }
+impl Encode for MessagePacket<'_> {
+    fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
+        self.tick.write(stream)?;
+        self.meta.read()?.write(stream)?;
+        stream.reserve_byte_length(32, |stream| {
+            for message in self.messages.iter() {
+                message.get_message_type().write(stream)?;
+                message.encode(stream, state)?;
             }
-        }
-        None
+
+            Ok(())
+        })
     }
 }

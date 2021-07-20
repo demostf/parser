@@ -5,10 +5,7 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::{ClassId, SendTable};
 use crate::demo::parser::{Encode, ParseBitSkip};
-use crate::demo::sendprop::{
-    FloatDefinition, SendProp, SendPropDefinition, SendPropIdentifier, SendPropParseDefinition,
-    SendPropValue,
-};
+use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropValue};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
 use std::cmp::min;
@@ -452,6 +449,7 @@ impl ParseBitSkip<'_> for PacketEntitiesMessage {
 #[test]
 fn test_packet_entitier_message_roundtrip() {
     use crate::demo::packet::datatable::{SendTable, SendTableName, ServerClass, ServerClassName};
+    use crate::demo::sendprop::{FloatDefinition, SendPropDefinition, SendPropParseDefinition};
 
     let mut state = ParserState::new(|_| false, false);
     state.server_classes = vec![

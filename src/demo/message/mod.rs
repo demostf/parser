@@ -1,5 +1,4 @@
 use num_enum::TryFromPrimitive;
-use std::convert::TryFrom;
 
 pub use generated::*;
 
@@ -14,8 +13,9 @@ use crate::demo::message::stringtable::*;
 use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
-use crate::demo::parser::ParseBitSkip;
-use crate::{Parse, ParseError, ParserState, Result, Stream};
+use crate::demo::parser::{Encode, ParseBitSkip};
+use crate::{Parse, ParserState, Result, Stream};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 
 pub mod bspdecal;
 pub mod classinfo;
@@ -28,8 +28,20 @@ pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
 
-#[derive(TryFromPrimitive, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr)]
+#[derive(
+    TryFromPrimitive,
+    BitRead,
+    BitWrite,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Serialize_repr,
+    Deserialize_repr,
+)]
 #[repr(u8)]
+#[discriminant_bits = 6]
 pub enum MessageType {
     Empty = 0,
     File = 2,
@@ -59,13 +71,6 @@ pub enum MessageType {
     GameEventList = 30,
     GetCvarValue = 31,
     CmdKeyValues = 32,
-}
-
-impl Parse<'_> for MessageType {
-    fn parse(stream: &mut Stream, _state: &ParserState) -> Result<Self> {
-        let raw = stream.read_int(6)?;
-        MessageType::try_from(raw).map_err(|_| ParseError::InvalidMessageType(raw))
-    }
 }
 
 #[derive(Debug)]
@@ -230,6 +235,41 @@ impl<'a> Message<'a> {
             MessageType::GameEventList => GameEventListMessage::parse_skip(stream),
             MessageType::GetCvarValue => GetCvarValueMessage::parse_skip(stream),
             MessageType::CmdKeyValues => CmdKeyValuesMessage::parse_skip(stream),
+        }
+    }
+}
+
+impl Encode for Message<'_> {
+    fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
+        match self {
+            Message::Empty => Ok(()),
+            Message::File(message) => message.encode(stream, state),
+            Message::NetTick(message) => message.encode(stream, state),
+            Message::StringCmd(message) => message.encode(stream, state),
+            Message::SetConVar(message) => message.encode(stream, state),
+            Message::SigOnState(message) => message.encode(stream, state),
+            Message::Print(message) => message.encode(stream, state),
+            Message::ServerInfo(message) => message.encode(stream, state),
+            Message::ClassInfo(message) => message.encode(stream, state),
+            Message::SetPause(message) => message.encode(stream, state),
+            Message::CreateStringTable(message) => message.encode(stream, state),
+            Message::UpdateStringTable(message) => message.encode(stream, state),
+            Message::VoiceInit(message) => message.encode(stream, state),
+            Message::VoiceData(message) => message.encode(stream, state),
+            Message::ParseSounds(message) => message.encode(stream, state),
+            Message::SetView(message) => message.encode(stream, state),
+            Message::FixAngle(message) => message.encode(stream, state),
+            Message::BspDecal(message) => message.encode(stream, state),
+            Message::UserMessage(message) => message.encode(stream, state),
+            Message::EntityMessage(message) => message.encode(stream, state),
+            Message::GameEvent(message) => message.encode(stream, state),
+            Message::PacketEntities(message) => message.encode(stream, state),
+            Message::TempEntities(message) => message.encode(stream, state),
+            Message::PreFetch(message) => message.encode(stream, state),
+            Message::Menu(message) => message.encode(stream, state),
+            Message::GameEventList(message) => message.encode(stream, state),
+            Message::GetCvarValue(message) => message.encode(stream, state),
+            Message::CmdKeyValues(message) => message.encode(stream, state),
         }
     }
 }

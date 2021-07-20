@@ -78,10 +78,10 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                     self.handle_string_table(table)
                 }
             }
-            Packet::Message(mut packet) | Packet::Sigon(mut packet) => {
+            Packet::Message(packet) | Packet::Sigon(packet) => {
                 //self.tick = packet.tick;
-                while let Some(message) = packet.messages.next(&self.state_handler) {
-                    match message? {
+                for message in packet.messages {
+                    match message {
                         Message::NetTick(message) => self.tick = message.tick,
                         Message::CreateStringTable(message) => {
                             self.handle_string_table(message.table)

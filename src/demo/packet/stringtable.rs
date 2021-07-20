@@ -231,8 +231,7 @@ impl Encode for StringTablePacket<'_> {
             self.tables.write(stream)?;
 
             Ok(())
-        })?;
-        Ok(())
+        })
     }
 }
 

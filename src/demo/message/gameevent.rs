@@ -204,9 +204,7 @@ impl BitWrite<LittleEndian> for GameEventListMessage {
                 event.write(stream)?;
             }
             Ok(())
-        })?;
-
-        Ok(())
+        })
     }
 }
 
