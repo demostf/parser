@@ -1,5 +1,6 @@
 use bitbuffer::{
-    bit_size_of, BitRead, BitWrite, BitWriteStream, Endianness, LazyBitRead, LittleEndian,
+    bit_size_of, BitRead, BitWrite, BitWriteSized, BitWriteStream, Endianness, LazyBitRead,
+    LittleEndian,
 };
 
 use crate::demo::message::{Message, MessageType};
@@ -121,7 +122,7 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
         while packet_data.bits_left() > 6 {
             let message_type = MessageType::read(&mut packet_data)?;
 
-            if state.should_parse_message(message_type) {
+            if state.should_parse_message(message_type) && message_type != MessageType::Empty {
                 messages.push(Message::from_type(message_type, &mut packet_data, state)?);
             } else {
                 Message::skip_type(message_type, &mut packet_data)?;
