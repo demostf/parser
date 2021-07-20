@@ -98,13 +98,9 @@ impl PacketEntity {
         baseline: &'a [SendProp],
     ) -> impl Iterator<Item = &'a SendProp> + 'a {
         baseline.iter().filter(move |prop| {
-            match baseline
+            !baseline
                 .iter()
-                .find(|base_prop| base_prop.index == prop.index)
-            {
-                Some(base_prop) => base_prop.value != prop.value,
-                None => true,
-            }
+                .any(|base_prop| base_prop.index == prop.index && base_prop.value == prop.value)
         })
     }
 }
