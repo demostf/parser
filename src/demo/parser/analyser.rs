@@ -30,7 +30,7 @@ impl ChatMassage {
         ChatMassage {
             kind: message.kind,
             from: message.from.clone().unwrap_or_default(),
-            text: message.text.clone(),
+            text: message.plain_text(),
             tick,
         }
     }
