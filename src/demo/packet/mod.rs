@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, BitWrite};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use num_enum::TryFromPrimitive;
 
 use crate::{Parse, ParserState, Result, Stream};
@@ -10,6 +10,7 @@ use self::stop::StopPacket;
 use self::stringtable::StringTablePacket;
 use self::synctick::SyncTickPacket;
 use self::usercmd::UserCmdPacket;
+use crate::demo::parser::Encode;
 
 pub mod consolecmd;
 pub mod datatable;
@@ -45,6 +46,21 @@ pub enum PacketType {
     StringTables = 8,
 }
 
+impl Packet<'_> {
+    pub fn packet_type(&self) -> PacketType {
+        match self {
+            Packet::Sigon(_) => PacketType::Sigon,
+            Packet::Message(_) => PacketType::Message,
+            Packet::SyncTick(_) => PacketType::SyncTick,
+            Packet::ConsoleCmd(_) => PacketType::ConsoleCmd,
+            Packet::UserCmd(_) => PacketType::UserCmd,
+            Packet::DataTables(_) => PacketType::DataTables,
+            Packet::Stop(_) => PacketType::Stop,
+            Packet::StringTables(_) => PacketType::StringTables,
+        }
+    }
+}
+
 impl<'a> Parse<'a> for Packet<'a> {
     fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let packet_type = PacketType::read(stream)?;
@@ -60,5 +76,21 @@ impl<'a> Parse<'a> for Packet<'a> {
                 Packet::StringTables(StringTablePacket::parse(stream, state)?)
             }
         })
+    }
+}
+
+impl Encode for Packet<'_> {
+    fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
+        self.packet_type().write(stream)?;
+        match self {
+            Packet::Sigon(inner) => inner.encode(stream, state),
+            Packet::Message(inner) => inner.encode(stream, state),
+            Packet::SyncTick(inner) => inner.encode(stream, state),
+            Packet::ConsoleCmd(inner) => inner.encode(stream, state),
+            Packet::UserCmd(inner) => inner.encode(stream, state),
+            Packet::DataTables(inner) => inner.encode(stream, state),
+            Packet::Stop(inner) => inner.encode(stream, state),
+            Packet::StringTables(inner) => inner.encode(stream, state),
+        }
     }
 }
