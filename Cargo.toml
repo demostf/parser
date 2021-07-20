@@ -16,6 +16,10 @@ path = "src/lib.rs"
 name = "parse_demo"
 path = "src/bin/main.rs"
 
+[[bin]]
+name = "reencode_demo"
+path = "src/bin/reencode.rs"
+
 [dependencies]
 bitbuffer = "0.9"
 num_enum = "0.5"
