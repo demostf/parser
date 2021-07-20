@@ -1,7 +1,7 @@
 use std::fs;
 use test_case::test_case;
 
-use bitbuffer::{BitRead, BitReadBuffer, BitReadStream, BitWriteStream, LittleEndian};
+use bitbuffer::{BitRead, BitReadBuffer, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
 use std::collections::HashMap;
 use tf_demo_parser::demo::header::Header;
 use tf_demo_parser::demo::message::Message;
@@ -26,10 +26,18 @@ fn re_encode_test(input_file: &str) {
     let mut out_buffer = Vec::with_capacity(file.len());
 
     let mut stream = demo.get_stream();
-    let _header = Header::read(&mut stream).unwrap();
+    let header = Header::read(&mut stream).unwrap();
+    let header_size = stream.pos() / 8;
+    assert_eq!(1072, header_size);
 
     let mut packets = RawPacketStream::new(stream);
     let mut handler = DemoHandler::parse_all_with_analyser(NullHandler);
+
+    {
+        let mut out_stream = BitWriteStream::new(&mut out_buffer, LittleEndian);
+        header.write(&mut out_stream).unwrap();
+    }
+    assert_eq!(file[0..header_size], out_buffer);
 
     let mut prop_names: HashMap<
         SendPropIdentifier,
