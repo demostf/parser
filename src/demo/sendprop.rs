@@ -618,6 +618,11 @@ impl fmt::Display for SendPropValue {
     }
 }
 
+fn float_scale(bit_count: u8) -> f32 {
+    // is this -1 correct?, it is consistent with the js version but seems weird
+    (1i32.wrapping_shl(bit_count as u32)) as f32 - 1.0
+}
+
 impl SendPropValue {
     pub fn parse(stream: &mut Stream, definition: &SendPropParseDefinition) -> Result<Self> {
         match definition {
@@ -768,9 +773,8 @@ impl SendPropValue {
                 high,
             } => {
                 let raw: u32 = stream.read_int(*bit_count as usize)?;
-                // is this -1 correct?, it is consistent with the js version but seems weird
-                let percentage =
-                    (raw as f32) / ((1i32.wrapping_shl(*bit_count as u32)) as f32 - 1.0);
+                let scale = float_scale(*bit_count);
+                let percentage = (raw as f32) / scale;
                 Ok(low + ((high - low) * percentage))
             }
         }
@@ -802,8 +806,8 @@ impl SendPropValue {
                 high,
             } => {
                 let percentage = (val - low) / (high - low);
-                let raw =
-                    (percentage * ((1i32.wrapping_shl(*bit_count as u32)) as f32 - 1.0)) as u32;
+                let scale = float_scale(*bit_count);
+                let raw = (percentage * scale).round() as u32;
                 raw.write_sized(stream, *bit_count as usize)?;
 
                 Ok(())
@@ -924,6 +928,18 @@ fn test_send_prop_value_roundtrip() {
                 bit_count: 3,
             }),
             count_bit_count: 5,
+        },
+    );
+
+    send_prop_value_roundtrip(
+        SendPropValue::Float(76.22549),
+        SendPropParseDefinition::Float {
+            changes_often: false,
+            definition: FloatDefinition::Scaled {
+                bit_count: 10,
+                high: 102.3,
+                low: 0.09990235,
+            },
         },
     );
 }
