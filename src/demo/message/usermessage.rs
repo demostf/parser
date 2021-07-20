@@ -205,53 +205,11 @@ pub struct SayText2Message {
     pub text: String,
 }
 
-impl BitRead<'_, LittleEndian> for SayText2Message {
-    fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let client = stream.read()?;
-        let raw = stream.read()?;
-        let (kind, from, text): (ChatMessageKind, Option<String>, String) =
-            if stream.read::<u8>()? == 1 {
-                let first = stream.read::<u8>()?;
-
-                if stream.bits_left() == 0 {
-                    return Ok(SayText2Message {
-                        client,
-                        raw,
-                        kind: ChatMessageKind::Empty,
-                        from: None,
-                        text: String::new(),
-                    });
-                }
-
-                if first == 7 {
-                    let _color = stream.read_string(Some(6))?;
-                } else {
-                    stream.skip_bits(8)?;
-                }
-
-                let text: String = stream.read().or_else(handle_utf8_error)?;
-                if text.starts_with("*DEAD*") {
-                    // grave talk is in the format '*DEAD* \u0003$from\u0001:    $text'b
-                    let start = text.find(char::from(3)).unwrap_or(0);
-                    let end = text.find(char::from(1)).unwrap_or(0);
-                    let from: String = text.chars().skip(start + 1).take(end - start - 1).collect();
-                    let text: String = text.chars().skip(end + 5).collect();
-                    let kind = ChatMessageKind::ChatAllDead;
-                    (kind, Some(from), text)
-                } else {
-                    (ChatMessageKind::ChatAll, None, text)
-                }
-            } else {
-                stream.set_pos(stream.pos() - 8)?;
-
-                let kind = stream.read()?;
-                let from = stream.read().or_else(handle_utf8_error)?;
-                let text = stream.read().or_else(handle_utf8_error)?;
-                (kind, Some(from), text)
-            };
-
-        // cleanup color codes
-        let mut text = text.replace(char::from(1), "").replace(char::from(3), "");
+impl SayText2Message {
+    pub fn plain_text(&self) -> String {
+        // 1: normal, 2: team, 3: team, 4: location
+        let mut text = self.text.replace(|c| c <= char::from(4), "");
+        // 7: 6-char hex
         while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
             if c == char::from(7) {
                 Some(index)
@@ -265,6 +223,42 @@ impl BitRead<'_, LittleEndian> for SayText2Message {
                 .chain(text.chars().skip(pos + 7))
                 .collect();
         }
+        // 9: 8-char hex
+        while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
+            if c == char::from(9) {
+                Some(index)
+            } else {
+                None
+            }
+        }) {
+            text = text
+                .chars()
+                .take(pos)
+                .chain(text.chars().skip(pos + 9))
+                .collect();
+        }
+        text
+    }
+}
+
+impl BitRead<'_, LittleEndian> for SayText2Message {
+    fn read(stream: &mut Stream) -> ReadResult<Self> {
+        let client = stream.read()?;
+        let raw = stream.read()?;
+        let (kind, from, text): (ChatMessageKind, Option<String>, String) =
+            if stream.read::<u8>()? == 1 {
+                stream.set_pos(stream.pos() - 8)?;
+
+                let text: String = stream.read().or_else(handle_utf8_error)?;
+                (ChatMessageKind::ChatAll, None, text)
+            } else {
+                stream.set_pos(stream.pos() - 8)?;
+
+                let kind = stream.read()?;
+                let from = stream.read().or_else(handle_utf8_error)?;
+                let text = stream.read().or_else(handle_utf8_error)?;
+                (kind, Some(from), text)
+            };
 
         Ok(SayText2Message {
             client,
@@ -281,13 +275,11 @@ impl BitWrite<LittleEndian> for SayText2Message {
         self.client.write(stream)?;
         self.raw.write(stream)?;
 
-        let from = self.from.as_deref().unwrap_or_default();
-        if self.kind == ChatMessageKind::ChatAllDead {
-            let raw = format!("*DEAD* \x03${}\x01:    {}", from, self.text);
-            raw.write(stream)?;
-        } else {
+        if let Some(from) = self.from.as_deref() {
             self.kind.write(stream)?;
             from.write(stream)?;
+            self.text.write(stream)?;
+        } else {
             self.text.write(stream)?;
         }
 

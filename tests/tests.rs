@@ -24,6 +24,7 @@ fn snapshot_test(input_file: &str, snapshot_file: &str) {
             .as_slice(),
     )
     .unwrap();
+    pretty_assertions::assert_eq!(expected.chat, state.chat);
     pretty_assertions::assert_eq!(expected, state);
 }
 
