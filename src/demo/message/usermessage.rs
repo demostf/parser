@@ -257,6 +257,9 @@ impl BitRead<'_, LittleEndian> for SayText2Message {
                 let kind = stream.read()?;
                 let from = stream.read().or_else(handle_utf8_error)?;
                 let text = stream.read().or_else(handle_utf8_error)?;
+
+                // always ends with 2 0 bytes?
+                let _: u16 = stream.read()?;
                 (kind, Some(from), text)
             };
 
