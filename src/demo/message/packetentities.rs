@@ -320,6 +320,7 @@ impl Encode for PacketEntitiesMessage {
 
             if self.delta.is_some() {
                 for removed in self.removed_entities.iter() {
+                    true.write(stream)?;
                     removed.0.write_sized(stream, 11)?;
                 }
                 false.write(stream)?;
