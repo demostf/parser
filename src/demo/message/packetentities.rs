@@ -97,10 +97,17 @@ impl PacketEntity {
         &'a self,
         baseline: &'a [SendProp],
     ) -> impl Iterator<Item = &'a SendProp> + 'a {
+        // self.props.iter().filter(move |prop| {
+        //     !baseline
+        //         .iter()
+        //         .any(|base_prop| base_prop.index == prop.index && base_prop.value == prop.value)
+        // })
         self.props.iter().filter(move |prop| {
-            !baseline
+            baseline
                 .iter()
-                .any(|base_prop| base_prop.index == prop.index && base_prop.value == prop.value)
+                .find(|base_prop| base_prop.index == prop.index)
+                .map(|base_prop| base_prop.value != prop.value)
+                .unwrap_or(true)
         })
     }
 }
@@ -299,7 +306,7 @@ impl Encode for PacketEntitiesMessage {
                             send_table,
                         )?;
                         Self::write_update(
-                            entity.diff_from_baseline(&baseline),
+                            entity.props.iter().skip(baseline.len()),
                             stream,
                             send_table,
                         )?;
