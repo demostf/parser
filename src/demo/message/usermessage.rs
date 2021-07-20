@@ -279,6 +279,7 @@ impl BitWrite<LittleEndian> for SayText2Message {
             self.kind.write(stream)?;
             from.write(stream)?;
             self.text.write(stream)?;
+            0u16.write(stream)?;
         } else {
             self.text.write(stream)?;
         }
