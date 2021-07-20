@@ -4,6 +4,8 @@ use std::fs;
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use main_error::MainError;
 use tf_demo_parser::demo::header::Header;
+use tf_demo_parser::demo::packet::stop::StopPacket;
+use tf_demo_parser::demo::packet::Packet;
 use tf_demo_parser::demo::parser::{DemoHandler, Encode, NullHandler, RawPacketStream};
 use tf_demo_parser::Demo;
 
@@ -36,6 +38,7 @@ fn main() -> Result<(), MainError> {
             packet.encode(&mut out_stream, &handler.state_handler)?;
             handler.handle_packet(packet)?;
         }
+        Packet::Stop(StopPacket).encode(&mut out_stream, &handler.state_handler)?;
     }
 
     fs::write(out_path, out_buffer)?;
