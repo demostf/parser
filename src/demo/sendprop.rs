@@ -942,6 +942,17 @@ fn test_send_prop_value_roundtrip() {
             },
         },
     );
+    send_prop_value_roundtrip(
+        SendPropValue::Vector(Vector {
+            x: 1.0,
+            y: -25.96875,
+            z: 0.1875,
+        }),
+        SendPropParseDefinition::Vector {
+            changes_often: false,
+            definition: FloatDefinition::CoordMP,
+        },
+    );
 }
 
 impl From<i32> for SendPropValue {
@@ -1243,7 +1254,7 @@ pub fn write_bit_coord_mp(
 ) -> ReadResult<()> {
     let abs = val.abs();
     let in_bounds = (abs as u32) <= 2u32.pow(10);
-    let has_int_val = abs > 1.0;
+    let has_int_val = abs >= 1.0;
     in_bounds.write(stream)?;
     has_int_val.write(stream)?;
 
@@ -1283,6 +1294,9 @@ fn test_bit_coord_mp_roundtrip() {
         );
         assert_eq!(pos, read.pos());
     }
+
+    bit_coord_mp_normal(1.0, false, false);
+
     bit_coord_mp_normal(0.0, false, false);
     bit_coord_mp_normal(0.5, false, false);
     bit_coord_mp_normal(-0.5, false, false);
