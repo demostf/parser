@@ -953,6 +953,13 @@ fn test_send_prop_value_roundtrip() {
             definition: FloatDefinition::CoordMP,
         },
     );
+    send_prop_value_roundtrip(
+        SendPropValue::Integer(-1),
+        SendPropParseDefinition::NormalVarInt {
+            changes_often: false,
+            unsigned: false,
+        },
+    );
 }
 
 impl From<i32> for SendPropValue {
@@ -1096,8 +1103,8 @@ pub fn write_var_int(
     signed: bool,
 ) -> ReadResult<()> {
     let abs = if signed {
-        let sign = int < 0;
-        (int.abs() as u32) << 1 | (sign as u32)
+        let int = (int << 1) ^ -(int & 1);
+        u32::from_le_bytes(int.to_le_bytes())
     } else {
         int as u32
     };
@@ -1128,13 +1135,20 @@ fn test_var_int_roundtrip() {
     var_int_roundtrip(12354, false);
     var_int_roundtrip(123125412, false);
 
-    var_int_roundtrip(-0, false);
-    var_int_roundtrip(-1, false);
-    var_int_roundtrip(-10, false);
-    var_int_roundtrip(-55, false);
-    var_int_roundtrip(-355, false);
-    var_int_roundtrip(-12354, false);
-    var_int_roundtrip(-123125412, false);
+    var_int_roundtrip(0, true);
+    var_int_roundtrip(1, true);
+    var_int_roundtrip(10, true);
+    var_int_roundtrip(55, true);
+    var_int_roundtrip(355, true);
+    var_int_roundtrip(12354, true);
+    var_int_roundtrip(123125412, true);
+    var_int_roundtrip(-0, true);
+    var_int_roundtrip(-1, true);
+    var_int_roundtrip(-10, true);
+    var_int_roundtrip(-55, true);
+    var_int_roundtrip(-355, true);
+    var_int_roundtrip(-12354, true);
+    var_int_roundtrip(-123125412, true);
 }
 
 pub fn read_bit_coord(stream: &mut Stream) -> ReadResult<f32> {
