@@ -224,9 +224,9 @@ impl From<crate::demo::data::UserInfo> for UserInfo {
     fn from(info: crate::demo::data::UserInfo) -> Self {
         UserInfo {
             classes: ClassList::default(),
-            name: info.name,
-            user_id: info.user_id,
-            steam_id: info.steam_id,
+            name: info.player_info.name,
+            user_id: info.player_info.user_id.into(),
+            steam_id: info.player_info.steam_id,
             entity_id: info.entity_id,
             team: Team::default(),
         }
@@ -392,7 +392,7 @@ impl Analyser {
         if let Some(user_info) = crate::demo::data::UserInfo::parse_from_string_table(text, data)? {
             self.state
                 .users
-                .entry(user_info.user_id)
+                .entry(user_info.player_info.user_id.into())
                 .and_modify(|info| {
                     info.entity_id = user_info.entity_id;
                 })
