@@ -70,6 +70,7 @@ pub struct RawSendPropDefinition {
     pub bit_count: Option<u32>,
     pub element_count: Option<u16>,
     pub array_property: Option<Box<RawSendPropDefinition>>,
+    original_bit_count: Option<u32>,
 }
 
 impl PartialEq for RawSendPropDefinition {
@@ -151,6 +152,7 @@ impl RawSendPropDefinition {
             bit_count: self.bit_count,
             element_count: self.element_count,
             array_property: Some(Box::new(array_property)),
+            original_bit_count: self.original_bit_count,
         }
     }
 
@@ -186,6 +188,7 @@ impl RawSendPropDefinition {
             high_value = Some(stream.read()?);
             bit_count = Some(stream.read_int(7)?);
         }
+        let original_bit_count = bit_count;
 
         if flags.contains(SendPropFlag::NoScale) {
             if prop_type == SendPropType::Float {
@@ -207,6 +210,7 @@ impl RawSendPropDefinition {
             high_value,
             bit_count,
             element_count,
+            original_bit_count,
             array_property: None,
         })
     }
@@ -237,7 +241,7 @@ impl BitWrite<LittleEndian> for RawSendPropDefinition {
             element_count.write_sized(stream, 10)?;
         }
         if let (Some(low_value), Some(high_value), Some(bit_count)) =
-            (self.low_value, self.high_value, self.bit_count)
+            (self.low_value, self.high_value, self.original_bit_count)
         {
             low_value.write(stream)?;
             high_value.write(stream)?;
