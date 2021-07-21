@@ -11,13 +11,13 @@ struct RawPlayerInfo {
     pub steam_id: String,
     pub extra: u32, // all my sources say these 4 bytes don't exist
     pub friends_id: u32,
-    #[size = 32]
     pub friends_name_bytes: [u8; 32], // seem to all be 0 now
     pub is_fake_player: u8,
     pub is_hl_tv: u8,
     pub is_replay: u8,
     pub custom_file: [u32; 4],
     pub files_downloaded: u32,
+    pub more_extra: u8,
 }
 
 #[derive(BitWrite, Debug, Clone)]
@@ -29,13 +29,13 @@ pub struct PlayerInfo {
     pub steam_id: String,
     pub extra: u32, // all my sources say these 4 bytes don't exist
     pub friends_id: u32,
-    #[size = 32]
     pub friends_name_bytes: [u8; 32], // seem to all be 0 now
     pub is_fake_player: u8,
     pub is_hl_tv: u8,
     pub is_replay: u8,
     pub custom_file: [u32; 4],
     pub files_downloaded: u32,
+    pub more_extra: u8,
 }
 
 impl From<RawPlayerInfo> for PlayerInfo {
@@ -52,6 +52,7 @@ impl From<RawPlayerInfo> for PlayerInfo {
             is_replay: raw.is_replay,
             custom_file: raw.custom_file,
             files_downloaded: raw.files_downloaded,
+            more_extra: raw.more_extra,
         }
     }
 }
@@ -88,7 +89,7 @@ impl UserInfo {
 
     pub fn encode_to_string_table(&self) -> ReadResult<StringTableEntry<'static>> {
         let text = format!("{}", self.entity_id);
-        let mut extra_data = Vec::with_capacity(128);
+        let mut extra_data = Vec::with_capacity(132);
         {
             let mut stream = BitWriteStream::new(&mut extra_data, LittleEndian);
             self.player_info.write(&mut stream)?;

@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, BitWrite, BitWriteSized, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, LittleEndian};
 
 use crate::{ReadResult, Stream};
 
