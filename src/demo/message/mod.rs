@@ -1,8 +1,4 @@
-use num_enum::TryFromPrimitive;
-
 pub use generated::*;
-
-use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::demo::message::bspdecal::*;
 use crate::demo::message::classinfo::*;
@@ -16,6 +12,7 @@ use crate::demo::message::voice::*;
 use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{Parse, ParserState, Result, Stream};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 pub mod bspdecal;
 pub mod classinfo;
@@ -29,16 +26,7 @@ pub mod usermessage;
 pub mod voice;
 
 #[derive(
-    TryFromPrimitive,
-    BitRead,
-    BitWrite,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Serialize_repr,
-    Deserialize_repr,
+    BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr,
 )]
 #[repr(u8)]
 #[discriminant_bits = 6]

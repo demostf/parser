@@ -1,14 +1,13 @@
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
-use num_enum::TryFromPrimitive;
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
 
 use crate::demo::handle_utf8_error;
 
 use crate::{ReadResult, Stream};
 
-#[derive(TryFromPrimitive, Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
+#[discriminant_bits = 8]
 pub enum UserMessageType {
     Geiger = 0,
     Train = 1,
@@ -98,8 +97,7 @@ impl UserMessage<'_> {
 
 impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
     fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
-        let message_type =
-            UserMessageType::try_from(stream.read::<u8>()?).unwrap_or(UserMessageType::Unknown);
+        let message_type = stream.read().unwrap_or(UserMessageType::Unknown);
         let length = stream.read_int(11)?;
         let mut data = stream.read_bits(length)?;
         let message = match message_type {
@@ -123,7 +121,7 @@ impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
 
 impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
-        (self.message_type() as u8).write(stream)?;
+        self.message_type().write(stream)?;
         stream.reserve_length(11, |stream| match self {
             UserMessage::SayText2(body) => stream.write(body),
             UserMessage::Text(body) => stream.write(body),

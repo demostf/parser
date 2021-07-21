@@ -1,5 +1,4 @@
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
-use num_enum::TryFromPrimitive;
 
 use crate::{Parse, ParserState, Result, Stream};
 
@@ -32,7 +31,7 @@ pub enum Packet<'a> {
     StringTables(StringTablePacket<'a>),
 }
 
-#[derive(BitRead, BitWrite, TryFromPrimitive, Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, Copy, Eq, PartialEq)]
 #[discriminant_bits = 8]
 #[repr(u8)]
 pub enum PacketType {
