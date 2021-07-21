@@ -121,6 +121,6 @@ fn mut_string_user_info(entry: &mut StringTableEntry) {
         user_info.player_info.steam_id = "[U:1:32061783]".into();
         user_info.player_info.friends_id =
             SteamID::from_steam3("[U:1:32061783]").unwrap().account_id();
-        // *entry = user_info.encode_to_string_table().unwrap();
+        *entry = user_info.encode_to_string_table().unwrap();
     }
 }
