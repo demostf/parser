@@ -1,0 +1,8 @@
+{
+  "max_entries": 512,
+  "fixed_userdata_size": {
+    "size": 1,
+    "bits": 2
+  },
+  "count": 133
+}

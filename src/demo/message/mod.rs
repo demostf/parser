@@ -68,7 +68,7 @@ pub enum Message<'a> {
     NetTick(NetTickMessage),
     StringCmd(StringCmdMessage),
     SetConVar(SetConVarMessage),
-    SigOnState(SigOnStateMessage),
+    SigOnState(SignOnStateMessage),
     Print(PrintMessage),
     ServerInfo(Box<ServerInfoMessage>),
     ClassInfo(ClassInfoMessage),
@@ -146,7 +146,7 @@ impl<'a> Message<'a> {
             MessageType::StringCmd => Message::StringCmd(StringCmdMessage::parse(stream, state)?),
             MessageType::SetConVar => Message::SetConVar(SetConVarMessage::parse(stream, state)?),
             MessageType::SigOnState => {
-                Message::SigOnState(SigOnStateMessage::parse(stream, state)?)
+                Message::SigOnState(SignOnStateMessage::parse(stream, state)?)
             }
             MessageType::Print => Message::Print(PrintMessage::parse(stream, state)?),
             MessageType::ServerInfo => {
@@ -200,7 +200,7 @@ impl<'a> Message<'a> {
             MessageType::NetTick => NetTickMessage::parse_skip(stream),
             MessageType::StringCmd => StringCmdMessage::parse_skip(stream),
             MessageType::SetConVar => SetConVarMessage::parse_skip(stream),
-            MessageType::SigOnState => SigOnStateMessage::parse_skip(stream),
+            MessageType::SigOnState => SignOnStateMessage::parse_skip(stream),
             MessageType::Print => PrintMessage::parse_skip(stream),
             MessageType::ServerInfo => ServerInfoMessage::parse_skip(stream),
             MessageType::ClassInfo => ClassInfoMessage::parse_skip(stream),

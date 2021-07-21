@@ -22,7 +22,7 @@ pub struct StringCmdMessage {
 }
 
 #[derive(BitRead, BitWrite, Debug, PartialEq)]
-pub struct SigOnStateMessage {
+pub struct SignOnStateMessage {
     pub state: u8,
     pub count: u32,
 }
