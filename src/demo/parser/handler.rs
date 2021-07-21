@@ -43,7 +43,7 @@ impl MessageHandler for NullHandler {
 #[derive(Clone)]
 pub struct DemoHandler<'a, T: MessageHandler> {
     pub tick: u32,
-    string_table_names: Vec<Cow<'a, str>>,
+    pub string_table_names: Vec<Cow<'a, str>>,
     analyser: T,
     pub state_handler: ParserState,
 }

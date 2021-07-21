@@ -108,8 +108,8 @@ impl<'a, A: MessageHandler> DemoParser<'a, A> {
 #[derive(Clone)]
 pub struct RawPacketStream<'a> {
     stream: Stream<'a>,
-    ended: bool,
-    incomplete: bool,
+    pub ended: bool,
+    pub incomplete: bool,
 }
 
 impl<'a> RawPacketStream<'a> {
@@ -121,14 +121,18 @@ impl<'a> RawPacketStream<'a> {
         }
     }
 
+    pub fn pos(&self) -> usize {
+        self.stream.pos()
+    }
+
     pub fn next(&mut self, state: &ParserState) -> Result<Option<Packet<'a>>> {
         if self.ended {
             Ok(None)
         } else {
             match Packet::parse(&mut self.stream, state) {
-                Ok(Packet::Stop(_)) => {
+                Ok(packet @ Packet::Stop(_)) => {
                     self.ended = true;
-                    Ok(None)
+                    Ok(Some(packet))
                 }
                 Ok(packet) => Ok(Some(packet)),
                 Err(ParseError::ReadError(BitError::NotEnoughData { .. })) => {
