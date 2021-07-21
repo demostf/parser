@@ -351,6 +351,31 @@ impl<'a> TableEntries<'a> {
     pub fn into_entries(self) -> Vec<(u16, StringTableEntry<'a>)> {
         self.entries
     }
+
+    pub fn find_best_history(&self, text: &str) -> Option<(usize, usize)> {
+        let mut best_index = None;
+        let mut best_count = 0;
+        for (history_index, entry_index) in self.history.iter().enumerate() {
+            if let Some((_, entry)) = self.entries.get(*entry_index as usize) {
+                let similar = min(31, count_similar_characters(entry.text(), text));
+                if similar >= 3 && similar > best_count {
+                    best_index = Some(history_index);
+                    best_count = similar;
+                }
+            }
+        }
+
+        best_index.map(|index| (index, best_count))
+    }
+}
+
+fn count_similar_characters(a: &str, b: &str) -> usize {
+    for (i, (a, b)) in a.bytes().zip(b.bytes()).enumerate() {
+        if a != b {
+            return i;
+        }
+    }
+    min(a.len(), b.len())
 }
 
 fn parse_string_table_update<'a>(
@@ -387,6 +412,7 @@ fn write_string_table_update<'a>(
     let entry_bits = log_base2(table_meta.max_entries);
 
     let mut last_entry: i16 = -1;
+    let mut history = TableEntries::new(entries.len());
 
     for (index, entry) in entries.iter() {
         let index = *index as i16;
@@ -398,7 +424,8 @@ fn write_string_table_update<'a>(
         }
         last_entry = index;
 
-        write_table_entry(entry, stream, table_meta)?;
+        write_table_entry(entry, stream, table_meta, &history)?;
+        history.push((index as u16, entry.clone()));
     }
 
     Ok(())
@@ -499,7 +526,7 @@ fn test_table_update_roundtrip() {
     );
 }
 
-fn parse_string_table_list<'a>(
+pub fn parse_string_table_list<'a>(
     stream: &mut Stream<'a>,
     table_meta: &StringTableMeta,
     entry_count: u16,
@@ -520,14 +547,16 @@ fn parse_string_table_list<'a>(
     Ok(entries.into_entries())
 }
 
-fn write_string_table_list(
+pub fn write_string_table_list(
     entries: &[(u16, StringTableEntry)],
     stream: &mut BitWriteStream<LittleEndian>,
     table_meta: &StringTableMeta,
 ) -> Result<()> {
-    for (_, entry) in entries.iter() {
+    let mut history = TableEntries::new(entries.len() as usize);
+    for (index, entry) in entries.iter() {
         true.write(stream)?;
-        write_table_entry(entry, stream, table_meta)?;
+        write_table_entry(entry, stream, table_meta, &history)?;
+        history.push((*index, entry.clone()));
     }
 
     Ok(())
@@ -638,12 +667,21 @@ fn write_table_entry(
     entry: &StringTableEntry,
     stream: &mut BitWriteStream<LittleEndian>,
     table_meta: &StringTableMeta,
+    history: &TableEntries,
 ) -> ReadResult<()> {
     entry.text.is_some().write(stream)?;
     if let Some(text) = entry.text.as_deref() {
-        // dont want to deal with history
-        false.write(stream)?;
-        text.write(stream)?;
+        let history_item = history.find_best_history(text);
+        history_item.is_some().write(stream)?;
+        if let Some((history_index, history_count)) = history_item {
+            history_index.write_sized(stream, 5)?;
+            history_count.write_sized(stream, 5)?;
+            let diff_bytes = &text.as_bytes()[history_count..];
+            stream.write_bytes(diff_bytes)?;
+            0u8.write(stream)?; // writing the string as bytes doesn't add the null terminator
+        } else {
+            text.write(stream)?;
+        }
     }
 
     entry.extra_data.is_some().write(stream)?;
@@ -673,8 +711,9 @@ fn test_table_entry_roundtrip() {
         };
         let mut data = Vec::new();
         let pos = {
+            let history = TableEntries::new(1);
             let mut write = BitWriteStream::new(&mut data, LittleEndian);
-            write_table_entry(&entry, &mut write, &table_meta).unwrap();
+            write_table_entry(&entry, &mut write, &table_meta, &history).unwrap();
             write.bit_len()
         };
         let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
