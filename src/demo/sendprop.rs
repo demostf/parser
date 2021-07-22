@@ -1107,7 +1107,7 @@ pub fn write_var_int(
     signed: bool,
 ) -> ReadResult<()> {
     let abs = if signed {
-        let int = (int << 1) ^ -(int & 1);
+        let int = (int << 1) ^ (int >> 31);
         u32::from_le_bytes(int.to_le_bytes())
     } else {
         int as u32
