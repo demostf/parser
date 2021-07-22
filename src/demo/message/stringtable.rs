@@ -95,7 +95,7 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
             fixed_userdata_size,
         };
 
-        let entries = parse_string_table_list(&mut table_data, &table_meta, entity_count)?;
+        let entries = parse_string_table_update(&mut table_data, &table_meta, entity_count)?;
 
         let table = StringTable {
             entries,
@@ -155,7 +155,7 @@ impl Encode for CreateStringTableMessage<'_> {
 
             let table_meta = table.get_table_meta();
 
-            write_string_table_list(&table.entries, &mut target, &table_meta)?;
+            write_string_table_update(&table.entries, &mut target, &table_meta)?;
             let target_end = target.bit_len();
             (target_length_start, target_end)
         };
@@ -378,7 +378,7 @@ fn count_similar_characters(a: &str, b: &str) -> usize {
     min(a.len(), b.len())
 }
 
-fn parse_string_table_update<'a>(
+pub fn parse_string_table_update<'a>(
     stream: &mut Stream<'a>,
     table_meta: &StringTableMeta,
     entry_count: u16,
@@ -404,7 +404,7 @@ fn parse_string_table_update<'a>(
     Ok(entries.into_entries())
 }
 
-fn write_string_table_update<'a>(
+pub fn write_string_table_update<'a>(
     entries: &[(u16, StringTableEntry<'a>)],
     stream: &mut BitWriteStream<LittleEndian>,
     table_meta: &StringTableMeta,
@@ -522,93 +522,6 @@ fn test_table_update_roundtrip() {
             },
         )],
         16,
-        None,
-    );
-}
-
-pub fn parse_string_table_list<'a>(
-    stream: &mut Stream<'a>,
-    table_meta: &StringTableMeta,
-    entry_count: u16,
-) -> Result<Vec<(u16, StringTableEntry<'a>)>> {
-    let mut entries = TableEntries::new(entry_count as usize);
-
-    for index in 0..entry_count {
-        if !stream.read::<bool>()? {
-            return Err(ParseError::InvalidDemo(
-                "there should be no holes when reading CreateStringTable message",
-            ));
-        };
-
-        let entry = read_table_entry(stream, table_meta, &entries)?;
-        entries.push((index, entry));
-    }
-
-    Ok(entries.into_entries())
-}
-
-pub fn write_string_table_list(
-    entries: &[(u16, StringTableEntry)],
-    stream: &mut BitWriteStream<LittleEndian>,
-    table_meta: &StringTableMeta,
-) -> Result<()> {
-    let mut history = TableEntries::new(entries.len() as usize);
-    for (index, entry) in entries.iter() {
-        true.write(stream)?;
-        write_table_entry(entry, stream, table_meta, &history)?;
-        history.push((*index, entry.clone()));
-    }
-
-    Ok(())
-}
-
-#[test]
-fn test_table_list_roundtrip() {
-    fn entry_roundtrip(entries: Vec<(u16, StringTableEntry)>, fixed_bits: Option<u8>) {
-        let table_meta = StringTableMeta {
-            max_entries: 0,
-            fixed_userdata_size: fixed_bits.map(|bits| FixedUserDataSize { size: 0, bits }),
-        };
-        let mut data = Vec::new();
-        let pos = {
-            let mut write = BitWriteStream::new(&mut data, LittleEndian);
-            write_string_table_list(&entries, &mut write, &table_meta).unwrap();
-            write.bit_len()
-        };
-        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
-        assert_eq!(
-            entries,
-            parse_string_table_list(&mut read, &table_meta, entries.len() as u16).unwrap()
-        );
-        assert_eq!(pos, read.pos());
-    }
-    entry_roundtrip(
-        vec![(
-            0,
-            StringTableEntry {
-                text: None,
-                extra_data: None,
-            },
-        )],
-        None,
-    );
-    entry_roundtrip(
-        vec![
-            (
-                0,
-                StringTableEntry {
-                    text: Some("bar".into()),
-                    extra_data: None,
-                },
-            ),
-            (
-                1,
-                StringTableEntry {
-                    text: Some("foo".into()),
-                    extra_data: None,
-                },
-            ),
-        ],
         None,
     );
 }
