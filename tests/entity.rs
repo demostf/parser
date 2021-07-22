@@ -61,7 +61,7 @@ impl EntityDump {
                 .props
                 .into_iter()
                 .map(|prop| {
-                    let (table_name, prop_name) = &prop_names[&prop.index];
+                    let (table_name, prop_name) = &prop_names[&prop.identifier];
                     (format!("{}.{}", table_name, prop_name), prop.value)
                 })
                 .collect(),

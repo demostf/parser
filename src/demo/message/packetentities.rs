@@ -560,7 +560,7 @@ fn test_packet_entitier_message_roundtrip() {
                             value: SendPropValue::Integer(4),
                         },
                         SendProp {
-                            index: 3,
+                            index: 2,
                             identifier: SendPropIdentifier::new("table2", "prop3"),
                             value: SendPropValue::Float(1.0),
                         },
