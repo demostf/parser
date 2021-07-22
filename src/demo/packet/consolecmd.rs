@@ -4,8 +4,8 @@ use crate::{ReadResult, Stream};
 
 #[derive(Debug, PartialEq)]
 pub struct ConsoleCmdPacket {
-    tick: u32,
-    command: String,
+    pub tick: u32,
+    pub command: String,
 }
 
 impl BitRead<'_, LittleEndian> for ConsoleCmdPacket {

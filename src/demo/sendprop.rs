@@ -1087,7 +1087,8 @@ impl From<u64> for SendPropIdentifier {
 #[derive(Debug, Clone, Display, PartialEq)]
 #[display("{index} = {value}")]
 pub struct SendProp {
-    pub index: SendPropIdentifier,
+    pub index: u32,
+    pub identifier: SendPropIdentifier,
     pub value: SendPropValue,
 }
 

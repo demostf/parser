@@ -215,7 +215,7 @@ impl GameStateAnalyser {
 
     pub fn handle_player_resource(&mut self, entity: &PacketEntity) {
         for prop in &entity.props {
-            if let Some((table_name, prop_name)) = self.prop_names.get(&prop.index) {
+            if let Some((table_name, prop_name)) = self.prop_names.get(&prop.identifier) {
                 if let Ok(player_id) = u32::from_str(prop_name.as_str()) {
                     let entity_id = EntityId::from(player_id);
                     if let Some(player) = self
@@ -249,7 +249,7 @@ impl GameStateAnalyser {
         let player = self.state.get_or_create_player(entity.entity_index);
 
         for prop in &entity.props {
-            if let Some((table_name, prop_name)) = self.prop_names.get(&prop.index) {
+            if let Some((table_name, prop_name)) = self.prop_names.get(&prop.identifier) {
                 match table_name.as_str() {
                     "DT_BasePlayer" => match prop_name.as_str() {
                         "m_iHealth" => {

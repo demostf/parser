@@ -72,16 +72,16 @@ impl fmt::Display for PacketEntity {
 
 impl PacketEntity {
     pub fn mut_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
-        self.props.iter_mut().find(|prop| prop.index == *index)
+        self.props.iter_mut().find(|prop| prop.identifier == *index)
     }
 
     pub fn get_prop_by_identifier(&self, index: &SendPropIdentifier) -> Option<&SendProp> {
-        self.props.iter().find(|prop| prop.index == *index)
+        self.props.iter().find(|prop| prop.identifier == *index)
     }
 
     pub fn apply_update(&mut self, props: Vec<SendProp>) {
         for prop in props {
-            match self.mut_prop_by_identifier(&prop.index) {
+            match self.mut_prop_by_identifier(&prop.identifier) {
                 Some(existing_prop) => existing_prop.value = prop.value,
                 None => self.props.push(prop),
             }
@@ -105,7 +105,7 @@ impl PacketEntity {
         self.props.iter().filter(move |prop| {
             baseline
                 .iter()
-                .find(|base_prop| base_prop.index == prop.index)
+                .find(|base_prop| base_prop.identifier == prop.identifier)
                 .map(|base_prop| base_prop.value != prop.value)
                 .unwrap_or(true)
         })
@@ -397,7 +397,8 @@ impl PacketEntitiesMessage {
                 Some(definition) => {
                     let value = SendPropValue::parse(stream, &definition.parse_definition)?;
                     props.push(SendProp {
-                        index: definition.identifier,
+                        index: index as u32,
+                        identifier: definition.identifier,
                         value,
                     });
                 }
@@ -422,12 +423,12 @@ impl PacketEntitiesMessage {
 
         for prop in props {
             true.write(stream)?;
-            let (index, definition) = send_table
+
+            let index = prop.index as usize;
+            let definition = send_table
                 .flattened_props
-                .iter()
-                .enumerate()
-                .find(|(_, def)| def.identifier == prop.index)
-                .ok_or(ParseError::UnknownDefinition(prop.index))?;
+                .get(index)
+                .ok_or(ParseError::UnknownDefinition(prop.identifier))?;
             write_bit_var((index as i32 - last_index - 1) as u32, stream)?;
             last_index = index as i32;
             prop.value.encode(stream, &definition.parse_definition)?;
@@ -554,11 +555,13 @@ fn test_packet_entitier_message_roundtrip() {
                     entity_index: EntityId::from(4),
                     props: vec![
                         SendProp {
-                            index: SendPropIdentifier::new("table2", "prop1"),
+                            index: 0,
+                            identifier: SendPropIdentifier::new("table2", "prop1"),
                             value: SendPropValue::Integer(4),
                         },
                         SendProp {
-                            index: SendPropIdentifier::new("table2", "prop3"),
+                            index: 3,
+                            identifier: SendPropIdentifier::new("table2", "prop3"),
                             value: SendPropValue::Float(1.0),
                         },
                     ],
@@ -572,11 +575,13 @@ fn test_packet_entitier_message_roundtrip() {
                     entity_index: EntityId::from(5),
                     props: vec![
                         SendProp {
-                            index: SendPropIdentifier::new("table2", "prop1"),
+                            index: 0,
+                            identifier: SendPropIdentifier::new("table2", "prop1"),
                             value: SendPropValue::Integer(4),
                         },
                         SendProp {
-                            index: SendPropIdentifier::new("table2", "prop3"),
+                            index: 2,
+                            identifier: SendPropIdentifier::new("table2", "prop3"),
                             value: SendPropValue::Float(1.0),
                         },
                     ],
