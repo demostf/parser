@@ -2,7 +2,7 @@ use bitbuffer::{BitReadBuffer, BitReadStream, BitWriteStream, LittleEndian};
 use std::fs;
 use test_case::test_case;
 use tf_demo_parser::demo::message::stringtable::{
-    parse_string_table_list, write_string_table_list, StringTableMeta,
+    parse_string_table_update, write_string_table_update, StringTableMeta,
 };
 use tf_demo_parser::demo::packet::stringtable::FixedUserDataSize;
 
@@ -44,17 +44,17 @@ fn string_table_reencode(input_file: &str, meta_file: &str) {
         fixed_userdata_size,
     };
     let mut stream = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
-    let parsed = parse_string_table_list(&mut stream, &table_meta, count).unwrap();
+    let parsed = parse_string_table_update(&mut stream, &table_meta, count).unwrap();
 
     let mut out = Vec::with_capacity(data.len());
     let written_bits = {
         let mut write = BitWriteStream::new(&mut out, LittleEndian);
-        write_string_table_list(&parsed, &mut write, &table_meta).unwrap();
+        write_string_table_update(&parsed, &mut write, &table_meta).unwrap();
         write.bit_len()
     };
 
     let mut re_stream = BitReadStream::new(BitReadBuffer::new(&out, LittleEndian));
-    let re_parsed = parse_string_table_list(&mut re_stream, &table_meta, count).unwrap();
+    let re_parsed = parse_string_table_update(&mut re_stream, &table_meta, count).unwrap();
 
     assert_eq!(written_bits, stream.pos());
     assert_eq!(parsed, re_parsed);

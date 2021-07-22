@@ -6,14 +6,16 @@ use tf_demo_parser::demo::packet::Packet;
 use tf_demo_parser::demo::parser::{DemoHandler, Encode, NullHandler};
 use tf_demo_parser::{MessageType, Parse};
 
-#[test_case("test_data/messages/game_event_list.bin", MessageType::GameEventList; "game_event_list")]
-#[test_case("test_data/messages/packet_entities.bin", MessageType::PacketEntities; "packet_entities")]
-fn message_reencode(input_file: &str, ty: MessageType) {
-    let data = fs::read(input_file).unwrap();
+#[test_case("game_event_list.bin", MessageType::GameEventList, &[]; "game_event_list")]
+#[test_case("packet_entities.bin", MessageType::PacketEntities, &["setup_data_tables.bin", "setup_string_tables.bin"]; "packet_entities")]
+#[test_case("packet_entities_pov.bin", MessageType::PacketEntities, &["setup_data_tables_pov.bin", "setup_string_tables_pov.bin"]; "packet_entities_pov")]
+fn message_reencode(input_file: &str, ty: MessageType, setup_files: &[&str]) {
+    let data = fs::read(format!("test_data/messages/{}", input_file)).unwrap();
 
     let mut handler = DemoHandler::parse_all_with_analyser(NullHandler);
-    setup(&mut handler, "test_data/messages/setup_data_tables.bin");
-    setup(&mut handler, "test_data/messages/setup_string_tables.bin");
+    for file in setup_files {
+        setup(&mut handler, &format!("test_data/messages/{}", file));
+    }
 
     let state = &handler.state_handler;
 
