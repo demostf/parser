@@ -1,4 +1,4 @@
-use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use bitbuffer::{BitError, BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 
 use crate::demo::handle_utf8_error;
@@ -78,18 +78,18 @@ pub enum UserMessage<'a> {
     Train(TrainMessage),
     VoiceSubtitle(VoiceSubtitleMessage),
     Shake(ShakeMessage),
-    Unknown(UserMessageType, UnknownUserMessage<'a>),
+    Unknown(u8, UnknownUserMessage<'a>),
 }
 
 impl UserMessage<'_> {
-    pub fn message_type(&self) -> UserMessageType {
+    pub fn message_type(&self) -> u8 {
         match self {
-            UserMessage::SayText2(_) => UserMessageType::SayText2,
-            UserMessage::Text(_) => UserMessageType::TextMsg,
-            UserMessage::ResetHUD(_) => UserMessageType::ResetHUD,
-            UserMessage::Train(_) => UserMessageType::Train,
-            UserMessage::VoiceSubtitle(_) => UserMessageType::VoiceSubtitle,
-            UserMessage::Shake(_) => UserMessageType::Shake,
+            UserMessage::SayText2(_) => UserMessageType::SayText2 as u8,
+            UserMessage::Text(_) => UserMessageType::TextMsg as u8,
+            UserMessage::ResetHUD(_) => UserMessageType::ResetHUD as u8,
+            UserMessage::Train(_) => UserMessageType::Train as u8,
+            UserMessage::VoiceSubtitle(_) => UserMessageType::VoiceSubtitle as u8,
+            UserMessage::Shake(_) => UserMessageType::Shake as u8,
             UserMessage::Unknown(ty, _) => *ty,
         }
     }
@@ -97,18 +97,28 @@ impl UserMessage<'_> {
 
 impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
     fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
-        let message_type = stream.read().unwrap_or(UserMessageType::Unknown);
-        let length = stream.read_int(11)?;
-        let mut data = stream.read_bits(length)?;
-        let message = match message_type {
-            UserMessageType::SayText2 => UserMessage::SayText2(data.read()?),
-            //UserMessageType::TextMsg => UserMessage::Text(data.read()?),
-            UserMessageType::ResetHUD => UserMessage::ResetHUD(data.read()?),
-            UserMessageType::Train => UserMessage::Train(data.read()?),
-            UserMessageType::VoiceSubtitle => UserMessage::VoiceSubtitle(data.read()?),
-            UserMessageType::Shake => UserMessage::Shake(data.read()?),
-            _ => UserMessage::Unknown(message_type, data.read()?),
+        let message = match stream.read() {
+            Ok(message_type) => {
+                let length = stream.read_int(11)?;
+                let mut data = stream.read_bits(length)?;
+                match message_type {
+                    UserMessageType::SayText2 => UserMessage::SayText2(data.read()?),
+                    //UserMessageType::TextMsg => UserMessage::Text(data.read()?),
+                    UserMessageType::ResetHUD => UserMessage::ResetHUD(data.read()?),
+                    UserMessageType::Train => UserMessage::Train(data.read()?),
+                    UserMessageType::VoiceSubtitle => UserMessage::VoiceSubtitle(data.read()?),
+                    UserMessageType::Shake => UserMessage::Shake(data.read()?),
+                    _ => UserMessage::Unknown(message_type as u8, data.read()?),
+                }
+            }
+            Err(BitError::UnmatchedDiscriminant { discriminant, .. }) => {
+                let length = stream.read_int(11)?;
+                let mut data = stream.read_bits(length)?;
+                UserMessage::Unknown(discriminant as u8, data.read()?)
+            }
+            Err(e) => return Err(e),
         };
+
         Ok(message)
     }
 
