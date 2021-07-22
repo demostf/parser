@@ -70,7 +70,7 @@ pub struct RawSendPropDefinition {
     pub bit_count: Option<u32>,
     pub element_count: Option<u16>,
     pub array_property: Option<Box<RawSendPropDefinition>>,
-    original_bit_count: Option<u32>,
+    pub original_bit_count: Option<u32>,
 }
 
 impl PartialEq for RawSendPropDefinition {

@@ -24,7 +24,12 @@ fn snapshot_test(input_file: &str, snapshot_file: &str) {
             .as_slice(),
     )
     .unwrap();
+    pretty_assertions::assert_eq!(expected.start_tick, state.start_tick);
     pretty_assertions::assert_eq!(expected.chat, state.chat);
+    pretty_assertions::assert_eq!(expected.deaths, state.deaths);
+    pretty_assertions::assert_eq!(expected.interval_per_tick, state.interval_per_tick);
+    pretty_assertions::assert_eq!(expected.rounds, state.rounds);
+    pretty_assertions::assert_eq!(expected.users, state.users);
     pretty_assertions::assert_eq!(expected, state);
 }
 

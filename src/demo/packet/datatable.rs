@@ -187,6 +187,7 @@ fn test_parse_send_table_roundtrip() {
                     bit_count: Some(10),
                     element_count: None,
                     array_property: None,
+                    original_bit_count: Some(10),
                 },
                 RawSendPropDefinition {
                     prop_type: SendPropType::Array,
@@ -211,7 +212,9 @@ fn test_parse_send_table_roundtrip() {
                         bit_count: Some(32),
                         element_count: None,
                         array_property: None,
+                        original_bit_count: Some(32),
                     })),
+                    original_bit_count: None,
                 },
                 RawSendPropDefinition {
                     prop_type: SendPropType::DataTable,
@@ -224,6 +227,7 @@ fn test_parse_send_table_roundtrip() {
                     bit_count: None,
                     element_count: None,
                     array_property: None,
+                    original_bit_count: None,
                 },
             ],
             needs_decoder: true,
@@ -396,6 +400,7 @@ fn test_data_table_packet_roundtrip() {
                 bit_count: Some(10),
                 element_count: None,
                 array_property: None,
+                original_bit_count: Some(10),
             },
             RawSendPropDefinition {
                 prop_type: SendPropType::Array,
@@ -420,7 +425,9 @@ fn test_data_table_packet_roundtrip() {
                     bit_count: Some(32),
                     element_count: None,
                     array_property: None,
+                    original_bit_count: Some(32),
                 })),
+                original_bit_count: None,
             },
             RawSendPropDefinition {
                 prop_type: SendPropType::DataTable,
@@ -433,6 +440,7 @@ fn test_data_table_packet_roundtrip() {
                 bit_count: None,
                 element_count: None,
                 array_property: None,
+                original_bit_count: None,
             },
         ],
         needs_decoder: true,
@@ -450,6 +458,7 @@ fn test_data_table_packet_roundtrip() {
             bit_count: Some(10),
             element_count: None,
             array_property: None,
+            original_bit_count: Some(10),
         }],
         needs_decoder: true,
     };
