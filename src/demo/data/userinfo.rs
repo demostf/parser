@@ -41,7 +41,9 @@ pub struct PlayerInfo {
 impl From<RawPlayerInfo> for PlayerInfo {
     fn from(raw: RawPlayerInfo) -> Self {
         PlayerInfo {
-            name: String::from_utf8_lossy(&raw.name_bytes).to_string(),
+            name: String::from_utf8_lossy(&raw.name_bytes)
+                .trim_end_matches('\0')
+                .to_string(),
             user_id: raw.user_id,
             steam_id: raw.steam_id,
             extra: raw.extra,
@@ -70,7 +72,7 @@ impl UserInfo {
     ) -> ReadResult<Option<Self>> {
         if let Some(mut data) = data {
             // extra decode step to gracefully handle malformed utf8 names
-            let raw_info: RawPlayerInfo = data.clone().read()?;
+            let raw_info: RawPlayerInfo = data.read()?;
 
             match text
                 .map(|text| text.parse::<u32>().map(|id| (id + 1).into()))
