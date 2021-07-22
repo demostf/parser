@@ -7,7 +7,7 @@ use tf_demo_parser::demo::parser::{DemoHandler, Encode, NullHandler};
 use tf_demo_parser::{MessageType, Parse};
 
 #[test_case("test_data/messages/game_event_list.bin", MessageType::GameEventList; "game_event_list")]
-// #[test_case("test_data/messages/packet_entities.bin", MessageType::PacketEntities; "packet_entities")]
+#[test_case("test_data/messages/packet_entities.bin", MessageType::PacketEntities; "packet_entities")]
 fn message_reencode(input_file: &str, ty: MessageType) {
     let data = fs::read(input_file).unwrap();
 
