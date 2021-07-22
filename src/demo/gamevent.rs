@@ -168,7 +168,7 @@ impl RawGameEvent {
         }
 
         Ok(RawGameEvent {
-            event_type: definition.event_type,
+            event_type: definition.event_type.clone(),
             values,
         })
     }

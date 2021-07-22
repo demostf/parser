@@ -25,7 +25,7 @@ impl Parse<'_> for GameEventMessage {
             return Ok(GameEventMessage {
                 event_type_id,
                 event: GameEvent::Unknown(RawGameEvent {
-                    event_type: GameEventType::Unknown,
+                    event_type: GameEventType::Unknown(String::new()),
                     values: Vec::new(),
                 }),
             });
@@ -161,6 +161,9 @@ impl BitRead<'_, LittleEndian> for GameEventDefinition {
 impl BitWrite<LittleEndian> for GameEventDefinition {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
         self.id.write(stream)?;
+        // if self.event_type == GameEventType::Unknown {
+        //     panic!("unknown");
+        // }
         self.event_type.as_str().write(stream)?;
 
         for entry in self.entries.iter() {

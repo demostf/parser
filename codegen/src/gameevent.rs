@@ -239,7 +239,10 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             quote!(pub #name: #ty,)
         });
 
-        let name = Ident::new(&format!("{}Event", get_event_name(event.event_type.as_str())), span);
+        let name = Ident::new(
+            &format!("{}Event", get_event_name(event.event_type.as_str())),
+            span,
+        );
 
         let entry_readers = event.entries.iter().map(|entry| {
             let name_str = get_entry_name(&entry.name);
@@ -293,9 +296,8 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     let event_types = events.iter().map(|event| {
         let name_str = get_event_name(event.event_type.as_str());
         let name = Ident::new(&name_str, span);
-        let id = Literal::u16_unsuffixed(event.id.into());
 
-        quote!(#name = #id,)
+        quote!(#name,)
     });
 
     let type_from_names = events.iter().map(|event| {
@@ -382,23 +384,23 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             Unknown(RawGameEvent),
         }
 
-        #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+        #[derive(Clone, Debug, PartialEq, Eq, Hash)]
         pub enum GameEventType {
             #(#event_types)*
-            Unknown,
+            Unknown(String),
         }
 
         impl GameEventType {
             pub fn from_type_name(name: &str) -> Self {
                 match name {
                     #(#type_from_names)*
-                    _ => GameEventType::Unknown,
+                    ty => GameEventType::Unknown(ty.into()),
                 }
             }
-            pub fn as_str(&self) -> &'static str {
+            pub fn as_str(&self) -> &str {
                 match self {
                     #(#type_to_names)*
-                    GameEventType::Unknown => "unknown",
+                    GameEventType::Unknown(ty) => &ty,
                 }
             }
         }
@@ -407,7 +409,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             pub fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
                 Ok(match definition.event_type {
                     #(#read_events)*
-                    GameEventType::Unknown => GameEvent::Unknown(RawGameEvent::read(stream, definition)?),
+                    GameEventType::Unknown(_) => GameEvent::Unknown(RawGameEvent::read(stream, definition)?),
                 })
             }
             pub fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
