@@ -780,15 +780,12 @@ pub fn read_var_int(stream: &mut Stream) -> ReadResult<u32> {
 }
 
 pub fn write_var_int(mut int: u32, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
-    loop {
+    while int > 0x7F {
         let byte: u8 = int as u8 & 0x7F;
-        byte.write_sized(stream, 7)?;
+        (byte | 0x80).write(stream)?;
         int >>= 7;
-        (int > 0).write(stream)?;
-        if int == 0 {
-            return Ok(());
-        }
     }
+    (int as u8).write(stream)
 }
 
 #[test]
