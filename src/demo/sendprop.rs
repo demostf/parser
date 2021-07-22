@@ -1271,7 +1271,7 @@ pub fn write_bit_coord_mp(
     low_precision: bool,
 ) -> ReadResult<()> {
     let abs = val.abs();
-    let in_bounds = (abs as u32) <= 2u32.pow(10);
+    let in_bounds = (abs as u32) < (1 << 11);
     let has_int_val = abs >= 1.0;
     in_bounds.write(stream)?;
     has_int_val.write(stream)?;
