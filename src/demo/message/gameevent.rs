@@ -108,7 +108,7 @@ fn test_game_event_roundtrip() {
 }
 
 impl ParseBitSkip<'_> for GameEventMessage {
-    fn parse_skip(stream: &mut Stream) -> Result<()> {
+    fn parse_skip(stream: &mut Stream, _state: &ParserState) -> Result<()> {
         let length: u16 = stream.read_sized(11)?;
         stream.skip_bits(length as usize).map_err(ParseError::from)
     }

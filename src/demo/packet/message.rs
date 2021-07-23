@@ -124,7 +124,7 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
             if state.should_parse_message(message_type) && message_type != MessageType::Empty {
                 messages.push(Message::from_type(message_type, &mut packet_data, state)?);
             } else {
-                Message::skip_type(message_type, &mut packet_data)?;
+                Message::skip_type(message_type, &mut packet_data, state)?;
             }
         }
 

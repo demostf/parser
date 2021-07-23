@@ -133,12 +133,16 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
 }
 
 impl<'a> ParseBitSkip<'a> for CreateStringTableMessage<'a> {
-    fn parse_skip(stream: &mut Stream<'a>) -> Result<()> {
+    fn parse_skip(stream: &mut Stream<'a>, state: &ParserState) -> Result<()> {
         let _: String = stream.read()?;
         let max_entries: u16 = stream.read()?;
         let encode_bits = log_base2(max_entries);
         let _: u16 = stream.read_sized(encode_bits as usize + 1)?;
-        let length = read_var_int(stream)?;
+        let length = if state.protocol_version > 23 {
+            read_var_int(stream)?
+        } else {
+            stream.read_sized(20)?
+        };
 
         let _: Option<FixedUserDataSize> = stream.read()?;
 
@@ -263,7 +267,7 @@ impl<'a> Parse<'a> for UpdateStringTableMessage<'a> {
 }
 
 impl<'a> ParseBitSkip<'a> for UpdateStringTableMessage<'a> {
-    fn parse_skip(stream: &mut Stream<'a>) -> Result<()> {
+    fn parse_skip(stream: &mut Stream<'a>, _state: &ParserState) -> Result<()> {
         let _: u8 = stream.read_sized(5)?;
 
         let _: u16 = if stream.read()? { stream.read()? } else { 1 };

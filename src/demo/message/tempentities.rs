@@ -1,9 +1,11 @@
-use crate::{ReadResult, Stream};
+use crate::{Parse, ParserState, ReadResult, Stream};
 
 use super::packetentities::PacketEntity;
 use super::stringtable::read_var_int;
 use crate::demo::message::stringtable::write_var_int;
-use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use crate::demo::parser::ParseBitSkip;
+use crate::Result;
+use bitbuffer::{BitWrite, BitWriteStream, LittleEndian};
 
 #[derive(Debug, PartialEq)]
 pub struct TempEntitiesMessage<'a> {
@@ -12,10 +14,14 @@ pub struct TempEntitiesMessage<'a> {
     pub entities: Vec<PacketEntity>,
 }
 
-impl<'a> BitRead<'a, LittleEndian> for TempEntitiesMessage<'a> {
-    fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
+impl<'a> Parse<'a> for TempEntitiesMessage<'a> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let count: u8 = stream.read()?;
-        let length = read_var_int(stream)?;
+        let length = if state.protocol_version > 23 {
+            read_var_int(stream)?
+        } else {
+            stream.read_sized(17)?
+        };
         let data = stream.read_bits(length as usize)?;
 
         Ok(TempEntitiesMessage {
@@ -24,11 +30,18 @@ impl<'a> BitRead<'a, LittleEndian> for TempEntitiesMessage<'a> {
             entities: Vec::new(),
         })
     }
+}
 
-    fn skip(stream: &mut Stream) -> ReadResult<()> {
+impl<'a> ParseBitSkip<'a> for TempEntitiesMessage<'a> {
+    fn parse_skip(stream: &mut Stream<'a>, state: &ParserState) -> Result<()> {
         let _: u8 = stream.read()?;
-        let length = read_var_int(stream)?;
-        stream.skip_bits(length as usize)
+        let length = if state.protocol_version > 23 {
+            read_var_int(stream)?
+        } else {
+            stream.read_sized(17)?
+        };
+        stream.skip_bits(length as usize)?;
+        Ok(())
     }
 }
 

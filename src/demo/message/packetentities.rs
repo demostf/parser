@@ -439,7 +439,7 @@ impl PacketEntitiesMessage {
 }
 
 impl ParseBitSkip<'_> for PacketEntitiesMessage {
-    fn parse_skip(stream: &mut Stream) -> Result<()> {
+    fn parse_skip(stream: &mut Stream, _state: &ParserState) -> Result<()> {
         stream.skip_bits(11)?;
         if stream.read()? {
             stream.skip_bits(32)?;

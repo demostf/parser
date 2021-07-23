@@ -45,12 +45,12 @@ impl<T: BitWrite<LittleEndian>> Encode for T {
 }
 
 pub trait ParseBitSkip<'a> {
-    fn parse_skip(stream: &mut Stream<'a>) -> Result<()>;
+    fn parse_skip(stream: &mut Stream<'a>, state: &ParserState) -> Result<()>;
 }
 
 impl<'a, T: BitRead<'a, LittleEndian>> ParseBitSkip<'a> for T {
     #[inline(always)]
-    fn parse_skip(stream: &mut Stream<'a>) -> Result<()> {
+    fn parse_skip(stream: &mut Stream<'a>, _state: &ParserState) -> Result<()> {
         Self::skip(stream).map_err(ParseError::from)
     }
 }
