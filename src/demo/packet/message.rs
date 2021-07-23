@@ -1,6 +1,4 @@
-use bitbuffer::{
-    bit_size_of, BitRead, BitWrite, BitWriteStream, Endianness, LazyBitRead, LittleEndian,
-};
+use bitbuffer::{bit_size_of, BitRead, BitWrite, BitWriteStream, Endianness, LittleEndian};
 
 use crate::demo::message::{Message, MessageType};
 use crate::demo::parser::Encode;
@@ -19,7 +17,7 @@ pub struct MessagePacketMeta {
 pub struct MessagePacket<'a> {
     pub tick: u32,
     pub messages: Vec<Message<'a>>,
-    pub meta: LazyBitRead<'a, MessagePacketMeta, LittleEndian>,
+    pub meta: MessagePacketMeta,
 }
 
 #[derive(Clone, Debug, PartialEq, Default)]
@@ -140,7 +138,7 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
 impl Encode for MessagePacket<'_> {
     fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
         self.tick.write(stream)?;
-        self.meta.read()?.write(stream)?;
+        self.meta.write(stream)?;
         stream.reserve_byte_length(32, |stream| {
             for message in self.messages.iter() {
                 message.get_message_type().write(stream)?;

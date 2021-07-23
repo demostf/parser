@@ -20,11 +20,11 @@ use tf_demo_parser::{Demo, MessageType, Parse};
 const COPY_TYPES: &[PacketType] = &[
     // PacketType::Sigon,
     // PacketType::Message,
-    // PacketType::SyncTick, // bit perfect
+    // PacketType::SyncTick,   // bit perfect
     // PacketType::ConsoleCmd, // bit perfect
     // PacketType::DataTables, // bit perfect
     // PacketType::StringTables, // clone enough
-    // PacketType::UserCmd,      // bit perfect
+                              // PacketType::UserCmd,      // bit perfect
 ];
 
 fn main() -> Result<(), MainError> {
@@ -62,7 +62,7 @@ fn main() -> Result<(), MainError> {
             } else {
                 match &mut packet {
                     Packet::Sigon(message_packet) | Packet::Message(message_packet) => {
-                        // message_packet.meta.view_angles = Default::default();
+                        message_packet.meta.view_angles = Default::default();
                         let messages = std::mem::take(&mut message_packet.messages);
                         let messages = messages
                             .into_iter()
@@ -78,9 +78,6 @@ fn main() -> Result<(), MainError> {
                             })
                             .collect::<Vec<_>>();
                         message_packet.messages = messages;
-                    }
-                    Packet::ConsoleCmd(cmd) => {
-                        println!("{}", cmd.command);
                     }
                     _ => {}
                 }
