@@ -153,7 +153,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
             .handle_data_table(send_tables, server_classes)
     }
 
-    fn handle_message(&mut self, message: Message<'a>) {
+    pub fn handle_message(&mut self, message: Message<'a>) {
         let message_type = message.get_message_type();
         if T::does_handle(message_type) {
             self.analyser.handle_message(&message, self.tick);

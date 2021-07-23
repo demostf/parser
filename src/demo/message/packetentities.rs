@@ -251,6 +251,16 @@ impl Parse<'_> for PacketEntitiesMessage {
             } else if state.entity_classes.contains_key(&entity_index) {
                 let entity = get_entity_for_update(state, entity_index, pvs)?;
                 entities.push(entity);
+            } else {
+                entities.push(PacketEntity {
+                    server_class: 0.into(),
+                    entity_index,
+                    props: vec![],
+                    in_pvs: false,
+                    pvs,
+                    serial_number: 0,
+                    delay: None,
+                });
             }
         }
 
