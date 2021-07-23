@@ -1,21 +1,30 @@
-use crate::{Parse, ParserState, ReadResult, Stream};
-
-use super::packetentities::PacketEntity;
 use super::stringtable::read_var_int;
-use crate::demo::message::stringtable::write_var_int;
-use crate::demo::parser::ParseBitSkip;
+use crate::demo::message::packetentities::PacketEntitiesMessage;
+use crate::demo::message::stringtable::{log_base2, write_var_int};
+use crate::demo::packet::datatable::ClassId;
+use crate::demo::parser::{Encode, ParseBitSkip};
+use crate::demo::sendprop::SendProp;
 use crate::Result;
-use bitbuffer::{BitWrite, BitWriteStream, LittleEndian};
+use crate::{Parse, ParseError, ParserState, Stream};
+use bitbuffer::{
+    BitReadBuffer, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, LittleEndian,
+};
 
 #[derive(Debug, PartialEq)]
-pub struct TempEntitiesMessage<'a> {
-    pub count: u8,
-    pub data: Stream<'a>,
-    pub entities: Vec<PacketEntity>,
+pub struct TempEntitiesMessage {
+    pub events: Vec<EventInfo>,
 }
 
-impl<'a> Parse<'a> for TempEntitiesMessage<'a> {
-    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
+#[derive(Clone, Debug, PartialEq)]
+pub struct EventInfo {
+    pub class_id: ClassId,
+    pub fire_delay: f32,
+    pub reliable: bool,
+    pub props: Vec<SendProp>,
+}
+
+impl Parse<'_> for TempEntitiesMessage {
+    fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let count: u8 = stream.read()?;
         let length = if state.protocol_version > 23 {
             read_var_int(stream)?
@@ -23,17 +32,57 @@ impl<'a> Parse<'a> for TempEntitiesMessage<'a> {
             stream.read_sized(17)?
         };
         let data = stream.read_bits(length as usize)?;
+        let mut stream = data.clone();
+        let stream = &mut stream;
 
-        Ok(TempEntitiesMessage {
-            count,
-            data,
-            entities: Vec::new(),
-        })
+        let (count, reliable) = if count == 0 {
+            (1, true)
+        } else {
+            (count, false)
+        };
+
+        let mut events: Vec<EventInfo> = Vec::with_capacity(count as usize);
+
+        for _ in 0..count {
+            let delay = if stream.read()? {
+                let raw: u8 = stream.read()?;
+                raw as f32 / 100.0
+            } else {
+                0.0
+            };
+
+            let class_id = if stream.read()? {
+                let bits = log_base2(state.server_classes.len()) + 1;
+                (stream.read_sized::<u16>(bits as usize)? - 1).into()
+            } else {
+                let last = events.last().ok_or(ParseError::InvalidDemo(
+                    "temp entity update without previous",
+                ))?;
+
+                last.class_id
+            };
+            let send_table = state
+                .send_tables
+                .get(usize::from(class_id))
+                .ok_or(ParseError::UnknownServerClass(class_id))?;
+
+            let mut props = Vec::new();
+            PacketEntitiesMessage::read_update(stream, send_table, &mut props)?;
+
+            events.push(EventInfo {
+                class_id,
+                fire_delay: delay,
+                reliable,
+                props,
+            });
+        }
+
+        Ok(TempEntitiesMessage { events })
     }
 }
 
-impl<'a> ParseBitSkip<'a> for TempEntitiesMessage<'a> {
-    fn parse_skip(stream: &mut Stream<'a>, state: &ParserState) -> Result<()> {
+impl ParseBitSkip<'_> for TempEntitiesMessage {
+    fn parse_skip(stream: &mut Stream, state: &ParserState) -> Result<()> {
         let _: u8 = stream.read()?;
         let length = if state.protocol_version > 23 {
             read_var_int(stream)?
@@ -45,13 +94,54 @@ impl<'a> ParseBitSkip<'a> for TempEntitiesMessage<'a> {
     }
 }
 
-impl BitWrite<LittleEndian> for TempEntitiesMessage<'_> {
-    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
-        if !self.entities.is_empty() {
-            todo!();
-        }
-        self.count.write(stream)?;
-        write_var_int(self.data.bit_len() as u32, stream)?;
-        self.data.write(stream)
+impl Encode for TempEntitiesMessage {
+    fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
+        let count = if self.events.len() == 1 {
+            if self.events[0].reliable {
+                0
+            } else {
+                1
+            }
+        } else {
+            self.events.len() as u8
+        };
+        count.write(stream)?;
+
+        let mut out = Vec::with_capacity(self.events.len() * 16);
+        let bits = {
+            let mut write = BitWriteStream::new(&mut out, LittleEndian);
+            let mut last_class_id = u16::MAX.into();
+
+            for event in self.events.iter() {
+                if event.fire_delay > 0.0 {
+                    true.write(&mut write)?;
+                    ((event.fire_delay * 100.0) as u8).write(&mut write)?;
+                } else {
+                    false.write(&mut write)?;
+                }
+
+                if event.class_id != last_class_id {
+                    true.write(&mut write)?;
+                    let bits = log_base2(state.server_classes.len()) + 1;
+                    let id: u16 = event.class_id.into();
+                    (id + 1).write_sized(&mut write, bits as usize)?;
+                } else {
+                    false.write(&mut write)?;
+                }
+                last_class_id = event.class_id;
+
+                let send_table = state
+                    .send_tables
+                    .get(usize::from(event.class_id))
+                    .ok_or(ParseError::UnknownServerClass(event.class_id))?;
+                PacketEntitiesMessage::write_update(&event.props, &mut write, send_table)?;
+            }
+            write.bit_len()
+        };
+        let mut data = BitReadStream::new(BitReadBuffer::new(&out, LittleEndian));
+
+        write_var_int(bits as u32, stream)?;
+        data.read_bits(bits)?.write(stream)?;
+        Ok(())
     }
 }

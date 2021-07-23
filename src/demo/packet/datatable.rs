@@ -27,6 +27,12 @@ impl From<ClassId> for usize {
     }
 }
 
+impl From<ClassId> for u16 {
+    fn from(class: ClassId) -> Self {
+        class.0
+    }
+}
+
 #[derive(BitRead, BitWrite, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
 pub struct ServerClassName(String);
 

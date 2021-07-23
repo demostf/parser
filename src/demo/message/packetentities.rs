@@ -57,7 +57,7 @@ pub struct PacketEntity {
     pub in_pvs: bool,
     pub pvs: PVS,
     pub serial_number: u32,
-    pub delay: Option<u32>,
+    pub delay: Option<f32>,
 }
 
 impl fmt::Display for PacketEntity {
@@ -414,7 +414,7 @@ impl PacketEntitiesMessage {
         Ok(())
     }
 
-    fn write_update<'a, Props: IntoIterator<Item = &'a SendProp>>(
+    pub fn write_update<'a, Props: IntoIterator<Item = &'a SendProp>>(
         props: Props,
         stream: &mut BitWriteStream<LittleEndian>,
         send_table: &SendTable,

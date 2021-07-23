@@ -85,7 +85,7 @@ pub enum Message<'a> {
     EntityMessage(EntityMessage<'a>),
     GameEvent(GameEventMessage),
     PacketEntities(PacketEntitiesMessage),
-    TempEntities(TempEntitiesMessage<'a>),
+    TempEntities(TempEntitiesMessage),
     PreFetch(PreFetchMessage),
     Menu(MenuMessage<'a>),
     GameEventList(GameEventListMessage),
