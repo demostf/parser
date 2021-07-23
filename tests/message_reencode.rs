@@ -8,7 +8,7 @@ use tf_demo_parser::{MessageType, Parse};
 
 #[test_case("game_event_list.bin", MessageType::GameEventList, &[]; "game_event_list")]
 #[test_case("packet_entities.bin", MessageType::PacketEntities, &["setup_data_tables.bin", "setup_string_tables.bin"]; "packet_entities")]
-#[test_case("packet_entities_pov.bin", MessageType::PacketEntities, &["setup_data_tables_pov.bin", "setup_string_tables_pov.bin"]; "packet_entities_pov")]
+#[test_case("packet_entities_pov1.bin", MessageType::PacketEntities, &["setup_data_tables_pov.bin", "setup_string_tables_pov.bin"]; "packet_entities_pov1")]
 fn message_reencode(input_file: &str, ty: MessageType, setup_files: &[&str]) {
     let data = fs::read(format!("test_data/messages/{}", input_file)).unwrap();
 
