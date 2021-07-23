@@ -101,14 +101,20 @@ fn re_encode_test(input_file: &str) {
                                     .props
                                     .iter()
                                     .map(|prop| {
-                                        (prop_names.get(&prop.index).unwrap(), prop.value.clone())
+                                        (
+                                            prop_names.get(&prop.identifier).unwrap(),
+                                            prop.value.clone(),
+                                        )
                                     })
                                     .collect::<Vec<_>>();
                                 let re_props = re_ent
                                     .props
                                     .iter()
                                     .map(|prop| {
-                                        (prop_names.get(&prop.index).unwrap(), prop.value.clone())
+                                        (
+                                            prop_names.get(&prop.identifier).unwrap(),
+                                            prop.value.clone(),
+                                        )
                                     })
                                     .collect::<Vec<_>>();
                                 pretty_assertions::assert_eq!(props, re_props);

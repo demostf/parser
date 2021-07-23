@@ -5,6 +5,7 @@ use crate::demo::packet::Packet;
 use crate::demo::parser::analyser::Analyser;
 use crate::Result;
 
+use crate::demo::header::Header;
 use crate::ParserState;
 use std::borrow::Cow;
 
@@ -62,7 +63,7 @@ impl<'a> Default for DemoHandler<'a, Analyser> {
 
 impl<'a, T: MessageHandler> DemoHandler<'a, T> {
     pub fn with_analyser(analyser: T) -> Self {
-        let state_handler = ParserState::new(T::does_handle, false);
+        let state_handler = ParserState::new(24, T::does_handle, false);
 
         DemoHandler {
             tick: 0,
@@ -72,7 +73,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         }
     }
     pub fn parse_all_with_analyser(analyser: T) -> Self {
-        let state_handler = ParserState::new(T::does_handle, true);
+        let state_handler = ParserState::new(24, T::does_handle, true);
 
         DemoHandler {
             tick: 0,
@@ -80,6 +81,10 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
             analyser,
             state_handler,
         }
+    }
+
+    pub fn handle_header(&mut self, header: &Header) {
+        self.state_handler.protocol_version = header.protocol;
     }
 
     pub fn handle_packet(&mut self, packet: Packet<'a>) -> Result<()> {

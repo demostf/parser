@@ -4,6 +4,7 @@ use bitbuffer::{
 use num_traits::{PrimInt, Unsigned};
 use snap::raw::{decompress_len, Decoder};
 
+use crate::demo::lzss::decompress;
 use crate::demo::packet::stringtable::{
     ExtraData, FixedUserDataSize, StringTable, StringTableEntry,
 };
@@ -33,12 +34,16 @@ impl From<&StringTable<'_>> for StringTableMeta {
 }
 
 impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
-    fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
+    fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let name = stream.read()?;
         let max_entries: u16 = stream.read()?;
         let encode_bits = log_base2(max_entries);
         let entity_count: u16 = stream.read_sized(encode_bits as usize + 1)?;
-        let length = read_var_int(stream)?;
+        let length = if state.protocol_version > 23 {
+            read_var_int(stream)?
+        } else {
+            stream.read_sized(20)?
+        };
 
         let fixed_userdata_size = stream.read()?;
 
@@ -64,30 +69,48 @@ impl<'a> Parse<'a> for CreateStringTableMessage<'a> {
 
             let magic = table_data.read_string(Some(4))?;
 
-            if magic != "SNAP" {
-                return Err(ParseError::UnexpectedCompressionType(magic.into_owned()));
+            match magic.as_ref() {
+                "SNAP" => {
+                    let compressed_data = table_data.read_bytes(compressed_size as usize - 4)?;
+
+                    let mut decoder = Decoder::new();
+
+                    let decompressed_size_from_header = decompress_len(&compressed_data)?;
+
+                    if decompressed_size_from_header != decompressed_size as usize {
+                        return Err(ParseError::UnexpectedDecompressedSize {
+                            expected: decompressed_size,
+                            size: decompressed_size_from_header as u32,
+                        });
+                    }
+
+                    let mut decompressed_data = vec![0; decompressed_size_from_header];
+                    decoder
+                        .decompress(&compressed_data, &mut decompressed_data)
+                        .map_err(ParseError::from)?;
+
+                    let buffer = BitReadBuffer::new_owned(decompressed_data, LittleEndian);
+                    table_data = BitReadStream::new(buffer);
+                }
+                "LZSS" => {
+                    let compressed_data = table_data.read_bytes(compressed_size as usize - 4)?;
+                    let mut decompressed_data = Vec::with_capacity(decompressed_size as usize);
+                    decompress(&compressed_data, &mut decompressed_data);
+
+                    if decompressed_data.len() != decompressed_size as usize {
+                        return Err(ParseError::UnexpectedDecompressedSize {
+                            expected: decompressed_size,
+                            size: decompressed_data.len() as u32,
+                        });
+                    }
+
+                    let buffer = BitReadBuffer::new_owned(decompressed_data, LittleEndian);
+                    table_data = BitReadStream::new(buffer);
+                }
+                _ => {
+                    return Err(ParseError::UnexpectedCompressionType(magic.into_owned()));
+                }
             }
-
-            let compressed_data = table_data.read_bytes(compressed_size as usize - 4)?;
-
-            let mut decoder = Decoder::new();
-
-            let decompressed_size_from_header = decompress_len(&compressed_data)?;
-
-            if decompressed_size_from_header != decompressed_size as usize {
-                return Err(ParseError::UnexpectedDecompressedSize {
-                    expected: decompressed_size,
-                    size: decompressed_size_from_header as u32,
-                });
-            }
-
-            let mut decompressed_data = vec![0; decompressed_size_from_header];
-            decoder
-                .decompress(&compressed_data, &mut decompressed_data)
-                .map_err(ParseError::from)?;
-
-            let buffer = BitReadBuffer::new_owned(decompressed_data, LittleEndian);
-            table_data = BitReadStream::new(buffer);
         }
 
         let table_meta = StringTableMeta {
@@ -171,7 +194,7 @@ impl Encode for CreateStringTableMessage<'_> {
 
 #[test]
 fn test_create_string_table_roundtrip() {
-    let state = ParserState::new(|_| false, false);
+    let state = ParserState::new(24, |_| false, false);
     crate::test_roundtrip_encode(
         CreateStringTableMessage {
             table: StringTable {
@@ -270,7 +293,7 @@ impl Encode for UpdateStringTableMessage<'_> {
 
 #[test]
 fn test_update_string_table_roundtrip() {
-    let mut state = ParserState::new(|_| false, false);
+    let mut state = ParserState::new(24, |_| false, false);
     state.string_tables = vec![StringTableMeta {
         max_entries: 16,
         fixed_userdata_size: None,

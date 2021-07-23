@@ -5,6 +5,7 @@ pub mod data;
 pub mod gameevent_gen;
 pub mod gamevent;
 pub mod header;
+pub mod lzss;
 pub mod message;
 pub mod packet;
 pub mod parser;

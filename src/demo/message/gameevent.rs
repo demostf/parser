@@ -86,7 +86,7 @@ fn test_game_event_roundtrip() {
             entries: vec![],
         },
     ];
-    let mut state = ParserState::new(|_| false, false);
+    let mut state = ParserState::new(24, |_| false, false);
     state.event_definitions = definitions;
 
     crate::test_roundtrip_encode(

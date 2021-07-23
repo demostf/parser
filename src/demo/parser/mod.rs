@@ -97,6 +97,7 @@ impl<'a, A: MessageHandler> DemoParser<'a, A> {
     /// while allowing to see the intermediate states
     pub fn ticker(mut self) -> Result<(Header, DemoTicker<'a, A>)> {
         let header = Header::read(&mut self.stream)?;
+        self.handler.handle_header(&header);
         let ticker = DemoTicker {
             handler: self.handler,
             packets: RawPacketStream::new(self.stream),
@@ -135,7 +136,7 @@ impl<'a> RawPacketStream<'a> {
                     Ok(Some(packet))
                 }
                 Ok(packet) => Ok(Some(packet)),
-                Err(ParseError::ReadError(BitError::NotEnoughData { .. })) => {
+                Err(ParseError::ReadError(BitError::NotEnoughData { .. })) if false => {
                     self.ended = true;
                     self.incomplete = true;
                     Ok(None)

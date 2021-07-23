@@ -22,7 +22,7 @@ pub struct MessagePacket<'a> {
     pub meta: LazyBitRead<'a, MessagePacketMeta, LittleEndian>,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Default)]
 pub struct ViewAngles {
     pub origin: (Vector, Vector),
     pub angles: (Vector, Vector),

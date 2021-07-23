@@ -1,16 +1,21 @@
+#![allow(unused_imports)]
+
 use std::env;
 use std::fs;
 
-use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use bitbuffer::{BitRead, BitReadBuffer, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
 use main_error::MainError;
+use std::collections::HashMap;
 use steamid_ng::SteamID;
 use tf_demo_parser::demo::data::UserInfo;
 use tf_demo_parser::demo::header::Header;
+use tf_demo_parser::demo::message::stringtable::UpdateStringTableMessage;
 use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::packet::stringtable::{StringTable, StringTableEntry};
 use tf_demo_parser::demo::packet::{Packet, PacketType};
+use tf_demo_parser::demo::parser::gamestateanalyser::UserId;
 use tf_demo_parser::demo::parser::{DemoHandler, Encode, NullHandler, RawPacketStream};
-use tf_demo_parser::{Demo, Parse};
+use tf_demo_parser::{Demo, MessageType, Parse};
 
 const COPY_TYPES: &[PacketType] = &[
     // PacketType::Sigon,
@@ -18,7 +23,7 @@ const COPY_TYPES: &[PacketType] = &[
     // PacketType::SyncTick, // bit perfect
     // PacketType::ConsoleCmd, // bit perfect
     // PacketType::DataTables, // bit perfect
-    // PacketType::StringTables, // bit perfect
+    // PacketType::StringTables, // clone enough
     // PacketType::UserCmd,      // bit perfect
 ];
 
@@ -48,57 +53,45 @@ fn main() -> Result<(), MainError> {
         let mut handler = DemoHandler::parse_all_with_analyser(NullHandler);
 
         let mut packet_start = packets.pos();
-        let mut userinfo_table_id = 0;
 
         while let Some(mut packet) = packets.next(&handler.state_handler)? {
             let packet_end = packets.pos();
             let packet_bits = stream.read_bits(packet_end - packet_start)?;
-            assert_eq!(
-                Packet::parse(&mut packet_bits.clone(), &handler.state_handler)?,
-                packet
-            );
             if COPY_TYPES.contains(&packet.packet_type()) {
                 packet_bits.write(&mut out_stream)?;
             } else {
                 match &mut packet {
                     Packet::Sigon(message_packet) | Packet::Message(message_packet) => {
-                        message_packet.meta.view_angles = Default::default();
-                        for message in message_packet.messages.iter_mut() {
-                            match message {
-                                Message::CreateStringTable(table_message) => {
-                                    if table_message.table.name == "userinfo" {
-                                        for (_i, entry) in table_message.table.entries.iter_mut() {
-                                            mut_string_user_info(entry);
-                                        }
+                        // message_packet.meta.view_angles = Default::default();
+                        let messages = std::mem::take(&mut message_packet.messages);
+                        let messages = messages
+                            .into_iter()
+                            .filter(|msg| msg.get_message_type() != MessageType::SetView)
+                            .map(|mut msg| {
+                                match &mut msg {
+                                    Message::ServerInfo(info) => {
+                                        info.stv = true;
                                     }
-                                }
-                                Message::UpdateStringTable(table_message) => {
-                                    let table_name = &handler.string_table_names
-                                        [table_message.table_id as usize];
-                                    if table_name == "userinfo" {
-                                        for (_i, entry) in table_message.entries.iter_mut() {
-                                            mut_string_user_info(entry);
-                                        }
-                                    }
-                                }
-                                _ => {}
-                            }
-                        }
+                                    _ => {}
+                                };
+                                msg
+                            })
+                            .collect::<Vec<_>>();
+                        message_packet.messages = messages;
                     }
-                    Packet::StringTables(table_packet) => {
-                        for table in table_packet.tables.iter_mut() {
-                            if table.name == "userinfo" {
-                                for (_i, entry) in table.entries.iter_mut() {
-                                    mut_string_user_info(entry);
-                                }
-                            }
-                        }
+                    Packet::ConsoleCmd(cmd) => {
+                        println!("{}", cmd.command);
                     }
                     _ => {}
                 }
-                packet.encode(&mut out_stream, &handler.state_handler)?;
+
+                if packet.packet_type() != PacketType::ConsoleCmd {
+                    packet
+                        .encode(&mut out_stream, &handler.state_handler)
+                        .unwrap();
+                }
             }
-            handler.handle_packet(packet)?;
+            handler.handle_packet(packet).unwrap();
             packet_start = packet_end;
         }
         assert_eq!(false, packets.incomplete);
@@ -107,20 +100,4 @@ fn main() -> Result<(), MainError> {
     fs::write(out_path, out_buffer)?;
 
     Ok(())
-}
-
-fn mut_string_user_info(entry: &mut StringTableEntry) {
-    if let Some(mut user_info) = UserInfo::parse_from_string_table(
-        entry.text.as_deref(),
-        entry.extra_data.as_ref().map(|data| data.data.clone()),
-    )
-    .unwrap()
-    {
-        // dbg!(&user_info);
-        user_info.player_info.name = "[GC]Kimo".into();
-        user_info.player_info.steam_id = "[U:1:32061783]".into();
-        user_info.player_info.friends_id =
-            SteamID::from_steam3("[U:1:32061783]").unwrap().account_id();
-        *entry = user_info.encode_to_string_table().unwrap();
-    }
 }

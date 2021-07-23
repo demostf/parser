@@ -457,7 +457,7 @@ fn test_packet_entitier_message_roundtrip() {
     use crate::demo::packet::datatable::{SendTable, SendTableName, ServerClass, ServerClassName};
     use crate::demo::sendprop::{FloatDefinition, SendPropDefinition, SendPropParseDefinition};
 
-    let mut state = ParserState::new(|_| false, false);
+    let mut state = ParserState::new(24, |_| false, false);
     state.server_classes = vec![
         ServerClass {
             id: ClassId::from(0),

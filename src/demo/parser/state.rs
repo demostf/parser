@@ -37,6 +37,7 @@ pub struct ParserState {
     analyser_handles: fn(message_type: MessageType) -> bool,
     handle_entities: bool,
     parse_all: bool,
+    pub protocol_version: u32,
 }
 
 #[derive(Clone)]
@@ -58,7 +59,11 @@ impl StaticBaseline {
 }
 
 impl<'a> ParserState {
-    pub fn new(analyser_handles: fn(message_type: MessageType) -> bool, parse_all: bool) -> Self {
+    pub fn new(
+        protocol_version: u32,
+        analyser_handles: fn(message_type: MessageType) -> bool,
+        parse_all: bool,
+    ) -> Self {
         ParserState {
             static_baselines: HashMap::with_hasher(NullHasherBuilder),
             parsed_static_baselines: RefCell::new(HashMap::with_hasher(NullHasherBuilder)),
@@ -75,6 +80,7 @@ impl<'a> ParserState {
             analyser_handles,
             handle_entities: analyser_handles(MessageType::PacketEntities) || parse_all,
             parse_all,
+            protocol_version,
         }
     }
 

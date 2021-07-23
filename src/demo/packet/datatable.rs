@@ -163,7 +163,7 @@ impl BitWrite<LittleEndian> for ParseSendTable {
 fn test_parse_send_table_roundtrip() {
     use crate::demo::sendprop::SendPropFlags;
 
-    let state = ParserState::new(|_| false, false);
+    let state = ParserState::new(24, |_| false, false);
     crate::test_roundtrip_encode(
         ParseSendTable {
             name: "foo".into(),
@@ -376,7 +376,7 @@ impl BitWrite<LittleEndian> for DataTablePacket {
 fn test_data_table_packet_roundtrip() {
     use crate::demo::sendprop::SendPropFlags;
 
-    let state = ParserState::new(|_| false, false);
+    let state = ParserState::new(24, |_| false, false);
     crate::test_roundtrip_encode(
         DataTablePacket {
             tick: 123,

@@ -248,7 +248,7 @@ impl Encode for StringTablePacket<'_> {
 
 #[test]
 fn test_string_table_packet_roundtrip() {
-    let state = ParserState::new(|_| false, false);
+    let state = ParserState::new(24, |_| false, false);
     crate::test_roundtrip_encode(
         StringTablePacket {
             tick: 1,
