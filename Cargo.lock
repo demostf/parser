@@ -79,9 +79,9 @@ dependencies = [
 
 [[package]]
 name = "bitbuffer"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e1dc2ea53de9c6c441eeadcfc64a4275206ac96ef865ff6c6147f7e6395fb24"
+checksum = "ecda732bb39816e05e1d037def865ab8744579ffd53aa7586a17eb0bc7492170"
 dependencies = [
  "bitbuffer_derive",
  "err-derive",
