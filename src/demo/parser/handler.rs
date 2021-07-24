@@ -2,7 +2,6 @@ use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{ParseSendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
-use crate::demo::parser::analyser::Analyser;
 use crate::Result;
 
 use crate::demo::header::Header;
@@ -49,13 +48,13 @@ pub struct DemoHandler<'a, T: MessageHandler> {
     pub state_handler: ParserState,
 }
 
-impl<'a> DemoHandler<'a, Analyser> {
+impl<'a> DemoHandler<'a, NullHandler> {
     pub fn new() -> Self {
-        Self::with_analyser(Analyser::new())
+        Self::parse_all_with_analyser(NullHandler)
     }
 }
 
-impl<'a> Default for DemoHandler<'a, Analyser> {
+impl<'a> Default for DemoHandler<'a, NullHandler> {
     fn default() -> Self {
         DemoHandler::new()
     }
