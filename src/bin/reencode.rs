@@ -3,19 +3,13 @@
 use std::env;
 use std::fs;
 
-use bitbuffer::{BitRead, BitReadBuffer, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use main_error::MainError;
-use std::collections::HashMap;
-use steamid_ng::SteamID;
-use tf_demo_parser::demo::data::UserInfo;
 use tf_demo_parser::demo::header::Header;
-use tf_demo_parser::demo::message::stringtable::UpdateStringTableMessage;
 use tf_demo_parser::demo::message::Message;
-use tf_demo_parser::demo::packet::stringtable::{StringTable, StringTableEntry};
 use tf_demo_parser::demo::packet::{Packet, PacketType};
-use tf_demo_parser::demo::parser::gamestateanalyser::UserId;
-use tf_demo_parser::demo::parser::{DemoHandler, Encode, NullHandler, RawPacketStream};
-use tf_demo_parser::{Demo, MessageType, Parse};
+use tf_demo_parser::demo::parser::{DemoHandler, Encode, RawPacketStream};
+use tf_demo_parser::Demo;
 
 const COPY_TYPES: &[PacketType] = &[
     // PacketType::Sigon,
@@ -50,7 +44,7 @@ fn main() -> Result<(), MainError> {
         header.write(&mut out_stream)?;
 
         let mut packets = RawPacketStream::new(stream.clone());
-        let mut handler = DemoHandler::parse_all_with_analyser(NullHandler);
+        let mut handler = DemoHandler::default();
 
         let mut packet_start = packets.pos();
 
