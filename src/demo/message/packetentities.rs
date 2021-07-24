@@ -160,7 +160,7 @@ fn test_bit_var_roundtrip() {
             write.bit_len()
         };
         let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
-        assert_eq!(val, read_bit_var(&mut read).unwrap());
+        assert_eq!(val, read_bit_var::<u32>(&mut read).unwrap());
         assert_eq!(pos, read.pos());
     }
     bit_var_normal(0);
@@ -291,7 +291,7 @@ impl Encode for PacketEntitiesMessage {
         self.base_line.write_sized(stream, 1)?;
         self.entities.len().write_sized(stream, 11)?;
 
-        stream.reserve(20, |length_stream, stream| {
+        stream.reserve_int(20, |stream| {
             self.updated_base_line.write(stream)?;
 
             let length_start = stream.bit_len();
@@ -338,9 +338,7 @@ impl Encode for PacketEntitiesMessage {
 
             let length_end = stream.bit_len();
 
-            (length_end - length_start).write_sized(length_stream, 20)?;
-
-            Ok(())
+            Ok((length_end - length_start) as u64)
         })
     }
 }

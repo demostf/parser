@@ -164,33 +164,24 @@ impl Encode for CreateStringTableMessage<'_> {
         let encode_bits = log_base2(table.max_entries) as usize;
         (table.entries.len() as u16).write_sized(stream, encode_bits + 1)?;
 
-        // since length is encoded with a dynamic bit size, we can't use the normal "reserve" tricks
-        // so instead we write the body to a temporary vec first
-        let mut target_vec = Vec::with_capacity(table.entries.len() * 32);
-        let (target_length_start, target_end) = {
-            let mut target = BitWriteStream::new(&mut target_vec, LittleEndian);
-
-            table.fixed_user_data_size.is_some().write(&mut target)?;
+        stream.reserve_int::<ParseError, _>(40, |stream| {
+            table.fixed_user_data_size.is_some().write(stream)?;
             if let Some(fixed_size) = table.fixed_user_data_size {
-                fixed_size.write(&mut target)?;
+                fixed_size.write(stream)?;
             }
 
             // no compression for now
-            false.write(&mut target)?;
+            false.write(stream)?;
 
-            let target_length_start = target.bit_len();
+            let start = stream.bit_len();
 
             let table_meta = table.get_table_meta();
 
-            write_string_table_update(&table.entries, &mut target, &table_meta)?;
-            let target_end = target.bit_len();
-            (target_length_start, target_end)
-        };
-        let mut body_reader =
-            BitReadStream::new(BitReadBuffer::new_owned(target_vec, LittleEndian));
+            write_string_table_update(&table.entries, stream, &table_meta)?;
 
-        write_var_int((target_end - target_length_start) as u32, stream)?;
-        body_reader.read_bits(target_end)?.write(stream)?;
+            let end = stream.bit_len();
+            Ok(encode_var_int_fixed((end - start) as u32))
+        })?;
 
         Ok(())
     }
@@ -728,6 +719,19 @@ pub fn write_var_int(mut int: u32, stream: &mut BitWriteStream<LittleEndian>) ->
     (int as u8).write(stream)
 }
 
+// encode the int in such a way that it has a fixed size, but still decodes the same
+// result is the first 40 bits of the return value
+pub fn encode_var_int_fixed(mut int: u32) -> u64 {
+    let mut out = 0;
+    for i in 0..4 {
+        let byte: u8 = int as u8 & 0x7F;
+        out |= ((byte | 0x80) as u64) << i * 8;
+        int >>= 7;
+    }
+    out |= (int as u64) << 32;
+    out
+}
+
 #[test]
 fn test_var_int_roundtrip() {
     fn var_int_roundtrip(int: u32) {
@@ -737,6 +741,30 @@ fn test_var_int_roundtrip() {
             write_var_int(int, &mut write).unwrap();
             write.bit_len()
         };
+        let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
+        assert_eq!(int, read_var_int(&mut read).unwrap());
+        assert_eq!(pos, read.pos());
+    }
+    var_int_roundtrip(0);
+    var_int_roundtrip(1);
+    var_int_roundtrip(10);
+    var_int_roundtrip(55);
+    var_int_roundtrip(355);
+    var_int_roundtrip(12354);
+    var_int_roundtrip(123125412);
+}
+
+#[test]
+fn test_var_int_fixed_roundtrip() {
+    fn var_int_roundtrip(int: u32) {
+        let mut data = Vec::new();
+        let pos = {
+            let mut write = BitWriteStream::new(&mut data, LittleEndian);
+            let encoded = encode_var_int_fixed(int);
+            encoded.write_sized(&mut write, 40).unwrap();
+            write.bit_len()
+        };
+        assert_eq!(40, pos);
         let mut read = BitReadStream::new(BitReadBuffer::new(&data, LittleEndian));
         assert_eq!(int, read_var_int(&mut read).unwrap());
         assert_eq!(pos, read.pos());

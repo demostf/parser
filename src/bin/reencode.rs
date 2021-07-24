@@ -23,8 +23,8 @@ const COPY_TYPES: &[PacketType] = &[
     // PacketType::SyncTick,   // bit perfect
     // PacketType::ConsoleCmd, // bit perfect
     // PacketType::DataTables, // bit perfect
-    // PacketType::StringTables, // clone enough
-                              // PacketType::UserCmd,      // bit perfect
+    // PacketType::StringTables, // close enough
+    // PacketType::UserCmd, // close enough
 ];
 
 fn main() -> Result<(), MainError> {
@@ -63,21 +63,15 @@ fn main() -> Result<(), MainError> {
                 match &mut packet {
                     Packet::Sigon(message_packet) | Packet::Message(message_packet) => {
                         message_packet.meta.view_angles = Default::default();
-                        let messages = std::mem::take(&mut message_packet.messages);
-                        let messages = messages
-                            .into_iter()
-                            .filter(|msg| msg.get_message_type() != MessageType::SetView)
-                            .map(|mut msg| {
-                                match &mut msg {
-                                    Message::ServerInfo(info) => {
-                                        info.stv = true;
-                                    }
-                                    _ => {}
-                                };
-                                msg
-                            })
-                            .collect::<Vec<_>>();
-                        message_packet.messages = messages;
+                        message_packet
+                            .messages
+                            .iter_mut()
+                            .for_each(|msg| match msg {
+                                Message::ServerInfo(info) => {
+                                    info.stv = true;
+                                }
+                                _ => {}
+                            });
                     }
                     _ => {}
                 }

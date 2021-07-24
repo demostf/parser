@@ -1,14 +1,12 @@
 use super::stringtable::read_var_int;
 use crate::demo::message::packetentities::PacketEntitiesMessage;
-use crate::demo::message::stringtable::{log_base2, write_var_int};
+use crate::demo::message::stringtable::{encode_var_int_fixed, log_base2};
 use crate::demo::packet::datatable::ClassId;
 use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::demo::sendprop::SendProp;
 use crate::Result;
 use crate::{Parse, ParseError, ParserState, Stream};
-use bitbuffer::{
-    BitReadBuffer, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, LittleEndian,
-};
+use bitbuffer::{BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 
 #[derive(Debug, PartialEq)]
 pub struct TempEntitiesMessage {
@@ -107,26 +105,25 @@ impl Encode for TempEntitiesMessage {
         };
         count.write(stream)?;
 
-        let mut out = Vec::with_capacity(self.events.len() * 16);
-        let bits = {
-            let mut write = BitWriteStream::new(&mut out, LittleEndian);
+        stream.reserve_int::<ParseError, _>(40, |stream| {
+            let start = stream.bit_len();
             let mut last_class_id = u16::MAX.into();
 
             for event in self.events.iter() {
                 if event.fire_delay > 0.0 {
-                    true.write(&mut write)?;
-                    ((event.fire_delay * 100.0) as u8).write(&mut write)?;
+                    true.write(stream)?;
+                    ((event.fire_delay * 100.0) as u8).write(stream)?;
                 } else {
-                    false.write(&mut write)?;
+                    false.write(stream)?;
                 }
 
                 if event.class_id != last_class_id {
-                    true.write(&mut write)?;
+                    true.write(stream)?;
                     let bits = log_base2(state.server_classes.len()) + 1;
                     let id: u16 = event.class_id.into();
-                    (id + 1).write_sized(&mut write, bits as usize)?;
+                    (id + 1).write_sized(stream, bits as usize)?;
                 } else {
-                    false.write(&mut write)?;
+                    false.write(stream)?;
                 }
                 last_class_id = event.class_id;
 
@@ -134,14 +131,11 @@ impl Encode for TempEntitiesMessage {
                     .send_tables
                     .get(usize::from(event.class_id))
                     .ok_or(ParseError::UnknownServerClass(event.class_id))?;
-                PacketEntitiesMessage::write_update(&event.props, &mut write, send_table)?;
+                PacketEntitiesMessage::write_update(&event.props, stream, send_table)?;
             }
-            write.bit_len()
-        };
-        let mut data = BitReadStream::new(BitReadBuffer::new(&out, LittleEndian));
-
-        write_var_int(bits as u32, stream)?;
-        data.read_bits(bits)?.write(stream)?;
+            let end = stream.bit_len();
+            Ok(encode_var_int_fixed((end - start) as u32))
+        })?;
         Ok(())
     }
 }
