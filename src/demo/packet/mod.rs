@@ -25,7 +25,7 @@ pub enum Packet<'a> {
     Message(MessagePacket<'a>),
     SyncTick(SyncTickPacket),
     ConsoleCmd(ConsoleCmdPacket),
-    UserCmd(UserCmdPacket<'a>),
+    UserCmd(UserCmdPacket),
     DataTables(DataTablePacket),
     Stop(StopPacket),
     StringTables(StringTablePacket<'a>),
