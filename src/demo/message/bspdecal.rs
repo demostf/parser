@@ -27,7 +27,7 @@ impl BitRead<'_, LittleEndian> for BSPDecalMessage {
 
         let texture_index = stream.read_sized(9)?;
         let (ent_index, model_index): (u16, u16) = if stream.read()? {
-            (stream.read_sized(12)?, stream.read_sized(12)?)
+            (stream.read_sized(11)?, stream.read_sized(13)?)
         } else {
             (0, 0)
         };
@@ -62,8 +62,8 @@ impl BitWrite<LittleEndian> for BSPDecalMessage {
         self.texture_index.write_sized(stream, 9)?;
         if self.ent_index != 0 || self.model_index != 0 {
             true.write(stream)?;
-            self.ent_index.write_sized(stream, 12)?;
-            self.model_index.write_sized(stream, 12)?;
+            self.ent_index.write_sized(stream, 11)?;
+            self.model_index.write_sized(stream, 13)?;
         } else {
             false.write(stream)?;
         }
