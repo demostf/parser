@@ -1,6 +1,6 @@
-use std::fmt;
-
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
+use std::fmt;
 
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::parser::Encode;
@@ -8,7 +8,7 @@ use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::borrow::{Borrow, Cow};
 use std::cmp::min;
 
-#[derive(BitRead, BitWrite, Clone, Copy, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FixedUserDataSize {
     #[size = 12]
     pub size: u16,
@@ -16,7 +16,8 @@ pub struct FixedUserDataSize {
     pub bits: u8,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTable<'a> {
     pub name: Cow<'a, str>,
     pub entries: Vec<(u16, StringTableEntry<'a>)>,
@@ -144,8 +145,9 @@ fn test_string_table_roundtrip() {
     });
 }
 
-#[derive(BitRead, BitWrite, Clone, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct ExtraData<'a> {
     pub byte_len: u16,
     #[size = "byte_len.saturating_mul(8)"]
@@ -159,7 +161,8 @@ impl<'a> ExtraData<'a> {
     }
 }
 
-#[derive(Clone, Default, PartialEq)]
+#[derive(Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTableEntry<'a> {
     pub text: Option<Cow<'a, str>>,
     pub extra_data: Option<ExtraData<'a>>,
@@ -208,7 +211,8 @@ impl fmt::Debug for StringTableEntry<'_> {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTablePacket<'a> {
     pub tick: u32,
     pub tables: Vec<StringTable<'a>>,

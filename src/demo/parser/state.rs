@@ -14,9 +14,10 @@ use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::sendprop::SendProp;
 use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
+use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Serialize, Deserialize)]
 pub struct DemoMeta {
     pub version: u16,
     pub game: String,

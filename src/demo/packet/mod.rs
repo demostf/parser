@@ -10,6 +10,7 @@ use self::stringtable::StringTablePacket;
 use self::synctick::SyncTickPacket;
 use self::usercmd::UserCmdPacket;
 use crate::demo::parser::Encode;
+use serde::{Deserialize, Serialize};
 
 pub mod consolecmd;
 pub mod datatable;
@@ -19,7 +20,8 @@ pub mod stringtable;
 pub mod synctick;
 pub mod usercmd;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub enum Packet<'a> {
     Sigon(MessagePacket<'a>),
     Message(MessagePacket<'a>),

@@ -1,10 +1,11 @@
 use bitbuffer::{BitRead, BitReadSized, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
 
 use crate::demo::message::stringtable::log_base2;
 use crate::{ReadResult, Stream};
 use std::cmp::min;
 
-#[derive(BitReadSized, BitWriteSized, Debug, PartialEq)]
+#[derive(BitReadSized, BitWriteSized, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ClassInfoEntry {
     #[size = "input_size"]
     class_id: u16,
@@ -12,7 +13,7 @@ pub struct ClassInfoEntry {
     table_name: String,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct ClassInfoMessage {
     count: u16,
     create: bool,

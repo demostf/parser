@@ -1,8 +1,9 @@
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, Endianness};
+use serde::{Deserialize, Serialize};
 
 use crate::ReadResult;
 
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ConVar {
     key: String,
     value: String,
@@ -20,7 +21,7 @@ impl<E: Endianness> BitRead<'_, E> for ConVar {
     }
 }
 
-#[derive(Debug, BitRead, PartialEq)]
+#[derive(Debug, BitRead, PartialEq, Serialize, Deserialize)]
 pub struct SetConVarMessage {
     length: u8,
     #[size = "length"]

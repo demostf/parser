@@ -1,8 +1,9 @@
 use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
 
 use crate::{ReadResult, Stream};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct VoiceInitMessage {
     codec: String,
     quality: u8,
@@ -57,8 +58,9 @@ fn test_voice_init_roundtrip() {
     });
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct VoiceDataMessage<'a> {
     client: u8,
     proximity: u8,
@@ -67,7 +69,8 @@ pub struct VoiceDataMessage<'a> {
     data: Stream<'a>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct ParseSoundsMessage<'a> {
     pub reliable: bool,
     pub num: u8,

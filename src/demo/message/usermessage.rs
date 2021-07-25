@@ -5,7 +5,7 @@ use crate::demo::handle_utf8_error;
 
 use crate::{ReadResult, Stream};
 
-#[derive(BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[repr(u8)]
 #[discriminant_bits = 8]
 pub enum UserMessageType {
@@ -70,7 +70,8 @@ pub enum UserMessageType {
     Unknown = 255,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub enum UserMessage<'a> {
     SayText2(Box<SayText2Message>),
     Text(Box<TextMessage>),
@@ -204,7 +205,7 @@ impl BitWrite<LittleEndian> for ChatMessageKind {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SayText2Message {
     pub client: u8,
     pub raw: u8,
@@ -312,7 +313,7 @@ fn test_say_text2_roundtrip() {
     });
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[discriminant_bits = 8]
 pub enum HudTextLocation {
     PrintNotify = 1,
@@ -321,31 +322,31 @@ pub enum HudTextLocation {
     PrintCenter,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TextMessage {
     pub location: HudTextLocation,
     pub text: String,
     pub substitute: [String; 4],
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ResetHudMessage {
     pub data: u8,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TrainMessage {
     pub data: u8,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct VoiceSubtitleMessage {
     client: u8,
     menu: u8,
     item: u8,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShakeMessage {
     command: u8,
     amplitude: f32,
@@ -353,7 +354,8 @@ pub struct ShakeMessage {
     duration: f32,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct UnknownUserMessage<'a> {
     data: Stream<'a>,
 }

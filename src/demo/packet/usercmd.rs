@@ -1,6 +1,7 @@
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct UserCmdPacket {
     pub tick: u32,
     pub sequence_out: u32,
@@ -30,7 +31,7 @@ impl BitWrite<LittleEndian> for UserCmdPacket {
     }
 }
 
-#[derive(Debug, PartialEq, BitRead, BitWrite)]
+#[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize)]
 pub struct UserCmd {
     command_number: Option<u32>,
     tick_count: Option<u32>,
@@ -43,7 +44,7 @@ pub struct UserCmd {
     mouse_dy: Option<u16>,
 }
 
-#[derive(Debug, PartialEq, BitRead, BitWrite)]
+#[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize)]
 pub struct WeaponSelect {
     #[size = 11]
     select: u16,

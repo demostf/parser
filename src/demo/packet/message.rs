@@ -1,11 +1,12 @@
 use bitbuffer::{bit_size_of, BitRead, BitWrite, BitWriteStream, Endianness, LittleEndian};
+use serde::{Deserialize, Serialize};
 
 use crate::demo::message::{Message, MessageType};
 use crate::demo::parser::Encode;
 use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
 
-#[derive(Debug, BitRead, BitWrite, PartialEq)]
+#[derive(Debug, BitRead, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MessagePacketMeta {
     pub flags: u32, // TODO
     pub view_angles: ViewAngles,
@@ -13,14 +14,15 @@ pub struct MessagePacketMeta {
     pub sequence_out: u32,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct MessagePacket<'a> {
     pub tick: u32,
     pub messages: Vec<Message<'a>>,
     pub meta: MessagePacketMeta,
 }
 
-#[derive(Clone, Debug, PartialEq, Default)]
+#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct ViewAngles {
     pub origin: (Vector, Vector),
     pub angles: (Vector, Vector),

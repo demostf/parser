@@ -79,14 +79,15 @@ dependencies = [
 
 [[package]]
 name = "bitbuffer"
-version = "0.10.1"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ecda732bb39816e05e1d037def865ab8744579ffd53aa7586a17eb0bc7492170"
+checksum = "29a6edc6bf48f16337689fb5122a6407713ecc23e57fbbcfde367c51fdb6aec1"
 dependencies = [
  "bitbuffer_derive",
  "err-derive",
  "memchr",
  "num-traits 0.2.14",
+ "serde",
 ]
 
 [[package]]
@@ -189,6 +190,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8672257d642ffdd235f6e9c723c2326ac1253c8f3c022e7cfd2e57da55b1131"
 dependencies = [
  "enumflags2_derive",
+ "serde",
 ]
 
 [[package]]

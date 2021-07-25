@@ -2,6 +2,7 @@ use bitbuffer::{
     BitReadBuffer, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, LittleEndian,
 };
 use num_traits::{PrimInt, Unsigned};
+use serde::{Deserialize, Serialize};
 use snap::raw::{decompress_len, Decoder};
 
 use crate::demo::lzss::decompress;
@@ -13,12 +14,13 @@ use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::borrow::Cow;
 use std::cmp::min;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct CreateStringTableMessage<'a> {
     pub table: StringTable<'a>,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StringTableMeta {
     pub max_entries: u16,
     pub fixed_userdata_size: Option<FixedUserDataSize>,
@@ -233,7 +235,8 @@ fn test_create_string_table_roundtrip() {
     );
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct UpdateStringTableMessage<'a> {
     pub entries: Vec<(u16, StringTableEntry<'a>)>,
     pub table_id: u8,

@@ -1,5 +1,6 @@
 use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use parse_display::Display;
+use serde::{Deserialize, Serialize};
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{
@@ -8,7 +9,7 @@ use crate::demo::gamevent::{
 use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct GameEventMessage {
     pub event_type_id: GameEventTypeId,
     pub event: GameEvent,
@@ -114,7 +115,21 @@ impl ParseBitSkip<'_> for GameEventMessage {
     }
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Display)]
+#[derive(
+    BitRead,
+    BitWrite,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    PartialOrd,
+    Ord,
+    Display,
+    Serialize,
+    Deserialize,
+)]
 pub struct GameEventTypeId(#[size = 9] u16);
 
 impl From<GameEventTypeId> for usize {
@@ -129,7 +144,7 @@ impl From<GameEventTypeId> for u16 {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct GameEventListMessage {
     pub event_list: Vec<GameEventDefinition>,
 }

@@ -11,7 +11,20 @@ use std::convert::TryFrom;
 use std::iter::once;
 
 #[derive(
-    BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Display, FromStr,
+    BitRead,
+    BitWrite,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    Ord,
+    PartialOrd,
+    Display,
+    FromStr,
+    Serialize,
+    Deserialize,
 )]
 pub struct ClassId(u16);
 
@@ -54,7 +67,7 @@ impl From<&str> for ServerClassName {
     }
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ServerClass {
     pub id: ClassId,
     pub name: ServerClassName,
@@ -96,7 +109,7 @@ impl From<&str> for SendTableName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ParseSendTable {
     pub name: SendTableName,
     pub props: Vec<RawSendPropDefinition>,
@@ -318,7 +331,7 @@ impl ParseSendTable {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendTable {
     pub name: SendTableName,
     pub needs_decoder: bool,
@@ -326,7 +339,7 @@ pub struct SendTable {
     pub flattened_props: Vec<SendPropDefinition>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct DataTablePacket {
     pub tick: u32,
     pub tables: Vec<ParseSendTable>,

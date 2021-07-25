@@ -1,4 +1,5 @@
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
 
 use crate::{GameEventError, Result, Stream};
 
@@ -8,7 +9,7 @@ use crate::demo::message::gameevent::GameEventTypeId;
 use parse_display::Display;
 use std::cmp::Ordering;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameEventDefinition {
     pub id: GameEventTypeId,
     pub event_type: GameEventType,
@@ -35,13 +36,13 @@ impl Ord for GameEventDefinition {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GameEventEntry {
     pub name: String,
     pub kind: GameEventValueType,
 }
 
-#[derive(BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Display)]
+#[derive(BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Display, Serialize, Deserialize)]
 #[discriminant_bits = 3]
 pub enum GameEventValueType {
     None = 0,
@@ -54,7 +55,7 @@ pub enum GameEventValueType {
     Local = 7,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GameEventValue {
     String(String),
     Float(f32),
@@ -154,7 +155,7 @@ impl EventValue for () {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct RawGameEvent {
     pub event_type: GameEventType,
     pub values: Vec<GameEventValue>,

@@ -12,6 +12,7 @@ use crate::demo::message::voice::*;
 use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{Parse, ParserState, Result, Stream};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 pub mod bspdecal;
@@ -61,7 +62,8 @@ pub enum MessageType {
     CmdKeyValues = 32,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub enum Message<'a> {
     Empty,
     File(FileMessage),

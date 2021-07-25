@@ -7,13 +7,14 @@ use crate::demo::sendprop::SendProp;
 use crate::Result;
 use crate::{Parse, ParseError, ParserState, Stream};
 use bitbuffer::{BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct TempEntitiesMessage {
     pub events: Vec<EventInfo>,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct EventInfo {
     pub class_id: ClassId,
     pub fire_delay: f32,

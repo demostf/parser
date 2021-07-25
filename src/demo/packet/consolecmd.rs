@@ -1,8 +1,8 @@
-use bitbuffer::{BitRead, BitWrite, LittleEndian};
-
 use crate::{ReadResult, Stream};
+use bitbuffer::{BitRead, BitWrite, LittleEndian};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct ConsoleCmdPacket {
     pub tick: u32,
     pub command: String,

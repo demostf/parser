@@ -1,38 +1,39 @@
 use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
 use bitbuffer::{BitRead, BitWrite, LittleEndian};
+use serde::{Deserialize, Serialize};
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FileMessage {
     pub transfer_id: u32,
     pub file_name: String,
     pub requested: bool,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct NetTickMessage {
     pub tick: u32,
     pub frame_time: u16,
     pub std_dev: u16,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StringCmdMessage {
     pub command: String,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SignOnStateMessage {
     pub state: u8,
     pub count: u32,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PrintMessage {
     pub value: String,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ServerInfoMessage {
     pub version: u16,
     pub server_count: u32,
@@ -53,18 +54,18 @@ pub struct ServerInfoMessage {
     pub replay: bool,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SetPauseMessage {
     pub pause: bool,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SetViewMessage {
     #[size = 11]
     pub index: u16,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FixAngleMessage {
     pub relative: bool,
     pub x: u16,
@@ -72,8 +73,9 @@ pub struct FixAngleMessage {
     pub z: u16,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct EntityMessage<'a> {
     #[size = 11]
     pub index: u16,
@@ -85,14 +87,15 @@ pub struct EntityMessage<'a> {
     pub data: Stream<'a>,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PreFetchMessage {
     #[size = 14]
     pub index: u16,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct MenuMessage<'a> {
     pub kind: u16,
     pub length: u16,
@@ -100,14 +103,15 @@ pub struct MenuMessage<'a> {
     pub index: Stream<'a>,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct GetCvarValueMessage {
     pub cookie: u32,
     pub value: String,
 }
 
-#[derive(BitRead, BitWrite, Debug, PartialEq)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
+#[serde(bound(deserialize = "'a: 'static"))]
 pub struct CmdKeyValuesMessage<'a> {
     pub length: u32,
     #[size = "length.saturating_mul(8)"]

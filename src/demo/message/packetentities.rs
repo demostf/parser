@@ -49,7 +49,7 @@ pub enum PVS {
     Delete = 3,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PacketEntity {
     pub server_class: ClassId,
     pub entity_index: EntityId,
@@ -174,7 +174,7 @@ fn test_bit_var_roundtrip() {
     bit_var_normal(123456789);
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct PacketEntitiesMessage {
     pub entities: Vec<PacketEntity>,
     pub removed_entities: Vec<EntityId>,

@@ -58,7 +58,7 @@ impl From<&str> for SendPropName {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RawSendPropDefinition {
     pub prop_type: SendPropType,
     pub name: SendPropName,
@@ -252,7 +252,7 @@ impl BitWrite<LittleEndian> for RawSendPropDefinition {
     }
 }
 
-#[derive(BitRead, BitWrite, Copy, Clone, PartialEq, Debug, Display)]
+#[derive(BitRead, BitWrite, Copy, Clone, PartialEq, Debug, Display, Serialize, Deserialize)]
 #[discriminant_bits = 5]
 pub enum SendPropType {
     Int = 0,
@@ -310,7 +310,7 @@ pub enum SendPropFlag {
     NormalVarInt = 32,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Default)]
+#[derive(Debug, Copy, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct SendPropFlags(BitFlags<SendPropFlag>);
 
 impl BitOr<SendPropFlag> for SendPropFlags {
@@ -356,7 +356,7 @@ impl BitWrite<LittleEndian> for SendPropFlags {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FloatDefinition {
     Coord,
     CoordMP,
@@ -398,7 +398,7 @@ impl FloatDefinition {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendPropDefinition {
     pub identifier: SendPropIdentifier,
     pub parse_definition: SendPropParseDefinition,
@@ -416,7 +416,7 @@ impl TryFrom<&RawSendPropDefinition> for SendPropDefinition {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SendPropParseDefinition {
     NormalVarInt {
         changes_often: bool,
@@ -1068,7 +1068,9 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
     }
 }
 
-#[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash, Display)]
+#[derive(
+    Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash, Display, Serialize, Deserialize,
+)]
 pub struct SendPropIdentifier(u64);
 
 impl SendPropIdentifier {
@@ -1084,7 +1086,7 @@ impl From<u64> for SendPropIdentifier {
     }
 }
 
-#[derive(Debug, Clone, Display, PartialEq)]
+#[derive(Debug, Clone, Display, PartialEq, Serialize, Deserialize)]
 #[display("{index} = {value}")]
 pub struct SendProp {
     pub index: u32,

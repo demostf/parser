@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use std::hash::{BuildHasher, Hasher};
 
 /// A dummy hasher that maps simply returns the hashed u64
@@ -34,7 +35,7 @@ impl Hasher for NullHasher {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Default)]
 pub struct NullHasherBuilder;
 
 impl BuildHasher for NullHasherBuilder {
