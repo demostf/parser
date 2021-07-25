@@ -8,22 +8,14 @@ use crate::Result;
 use crate::{Parse, ParseError, ParserState, Stream};
 use bitbuffer::{BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct TempEntitiesMessage {
     pub events: Vec<EventInfo>,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct EventInfo {
     pub class_id: ClassId,

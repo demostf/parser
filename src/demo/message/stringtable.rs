@@ -13,23 +13,15 @@ use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::borrow::Cow;
 use std::cmp::min;
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct CreateStringTableMessage<'a> {
     pub table: StringTable<'a>,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StringTableMeta {
     pub max_entries: u16,
@@ -245,10 +237,7 @@ fn test_create_string_table_roundtrip() {
     );
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct UpdateStringTableMessage<'a> {

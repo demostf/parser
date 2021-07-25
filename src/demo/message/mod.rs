@@ -14,8 +14,6 @@ use crate::{Parse, ParserState, Result, Stream};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
 pub mod bspdecal;
 pub mod classinfo;
@@ -28,10 +26,7 @@ pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
     BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr,
 )]
@@ -68,10 +63,7 @@ pub enum MessageType {
     CmdKeyValues = 32,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub enum Message<'a> {

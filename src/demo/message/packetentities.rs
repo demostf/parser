@@ -13,13 +13,8 @@ use std::cmp::min;
 use std::fmt;
 use std::hint::unreachable_unchecked;
 use std::num::NonZeroU32;
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
     Debug,
     Copy,
@@ -43,10 +38,7 @@ impl From<u32> for EntityId {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
     BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Eq, Serialize_repr, Deserialize_repr,
 )]
@@ -59,10 +51,7 @@ pub enum PVS {
     Delete = 3,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PacketEntity {
     pub server_class: ClassId,
@@ -188,10 +177,7 @@ fn test_bit_var_roundtrip() {
     bit_var_normal(123456789);
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct PacketEntitiesMessage {
     pub entities: Vec<PacketEntity>,

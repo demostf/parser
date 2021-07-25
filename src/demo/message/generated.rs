@@ -2,13 +2,8 @@ use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
 use bitbuffer::{BitRead, BitWrite, LittleEndian};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FileMessage {
     pub transfer_id: u32,
@@ -16,10 +11,7 @@ pub struct FileMessage {
     pub requested: bool,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct NetTickMessage {
     pub tick: u32,
@@ -27,38 +19,26 @@ pub struct NetTickMessage {
     pub std_dev: u16,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StringCmdMessage {
     pub command: String,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SignOnStateMessage {
     pub state: u8,
     pub count: u32,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PrintMessage {
     pub value: String,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ServerInfoMessage {
     pub version: u16,
@@ -80,29 +60,20 @@ pub struct ServerInfoMessage {
     pub replay: bool,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SetPauseMessage {
     pub pause: bool,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SetViewMessage {
     #[size = 11]
     pub index: u16,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FixAngleMessage {
     pub relative: bool,
@@ -111,10 +82,7 @@ pub struct FixAngleMessage {
     pub z: u16,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]
@@ -129,17 +97,14 @@ pub struct EntityMessage<'a> {
     pub data: Stream<'a>,
 }
 
-#[cfg_attr(feature = "wasm", wasm_bindgen::prelude::wasm_bindgen)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PreFetchMessage {
     #[size = 14]
     pub index: u16,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]
@@ -150,20 +115,14 @@ pub struct MenuMessage<'a> {
     pub index: Stream<'a>,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 pub struct GetCvarValueMessage {
     pub cookie: u32,
     pub value: String,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]

@@ -4,13 +4,8 @@ use serde::{Deserialize, Serialize};
 use crate::demo::message::stringtable::log_base2;
 use crate::{ReadResult, Stream};
 use std::cmp::min;
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitReadSized, BitWriteSized, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ClassInfoEntry {
     #[size = "input_size"]
@@ -19,10 +14,7 @@ pub struct ClassInfoEntry {
     table_name: String,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct ClassInfoMessage {
     count: u16,

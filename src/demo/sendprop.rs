@@ -17,9 +17,8 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::hash::Hash;
 use std::ops::BitOr;
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
     BitRead,
     BitWrite,
@@ -60,10 +59,7 @@ impl From<&str> for SendPropName {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RawSendPropDefinition {
     pub prop_type: SendPropType,
@@ -258,6 +254,7 @@ impl BitWrite<LittleEndian> for RawSendPropDefinition {
     }
 }
 
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Copy, Clone, PartialEq, Debug, Display, Serialize, Deserialize)]
 #[discriminant_bits = 5]
 pub enum SendPropType {
@@ -319,6 +316,17 @@ pub enum SendPropFlag {
 #[derive(Debug, Copy, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub struct SendPropFlags(BitFlags<SendPropFlag>);
 
+#[cfg(feature = "schemars")]
+impl schemars::JsonSchema for SendPropFlags {
+    fn schema_name() -> String {
+        "SendPropFlags".into()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        u16::json_schema(gen)
+    }
+}
+
 impl BitOr<SendPropFlag> for SendPropFlags {
     type Output = SendPropFlags;
 
@@ -362,10 +370,7 @@ impl BitWrite<LittleEndian> for SendPropFlags {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FloatDefinition {
     Coord,
@@ -408,10 +413,7 @@ impl FloatDefinition {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendPropDefinition {
     pub identifier: SendPropIdentifier,
@@ -430,10 +432,7 @@ impl TryFrom<&RawSendPropDefinition> for SendPropDefinition {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SendPropParseDefinition {
     NormalVarInt {
@@ -561,10 +560,7 @@ impl TryFrom<&RawSendPropDefinition> for SendPropParseDefinition {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum SendPropValue {
@@ -1090,10 +1086,7 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
     Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash, Display, Serialize, Deserialize,
 )]
@@ -1112,10 +1105,7 @@ impl From<u64> for SendPropIdentifier {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Display, PartialEq, Serialize, Deserialize)]
 #[display("{index} = {value}")]
 pub struct SendProp {

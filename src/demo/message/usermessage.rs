@@ -4,13 +4,8 @@ use serde::{Deserialize, Serialize};
 use crate::demo::handle_utf8_error;
 
 use crate::{ReadResult, Stream};
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[repr(u8)]
 #[discriminant_bits = 8]
@@ -76,10 +71,7 @@ pub enum UserMessageType {
     Unknown = 255,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub enum UserMessage<'a> {
@@ -169,10 +161,7 @@ fn test_user_message_roundtrip() {
     })));
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub enum ChatMessageKind {
     #[serde(rename = "TF_Chat_All")]
@@ -219,10 +208,7 @@ impl BitWrite<LittleEndian> for ChatMessageKind {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SayText2Message {
     pub client: u8,
@@ -331,10 +317,7 @@ fn test_say_text2_roundtrip() {
     });
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[discriminant_bits = 8]
 pub enum HudTextLocation {
@@ -344,10 +327,7 @@ pub enum HudTextLocation {
     PrintCenter,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TextMessage {
     pub location: HudTextLocation,
@@ -355,24 +335,19 @@ pub struct TextMessage {
     pub substitute: [String; 4],
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ResetHudMessage {
     pub data: u8,
 }
 
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TrainMessage {
     pub data: u8,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct VoiceSubtitleMessage {
     client: u8,
@@ -380,10 +355,7 @@ pub struct VoiceSubtitleMessage {
     item: u8,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShakeMessage {
     command: u8,
@@ -392,10 +364,7 @@ pub struct ShakeMessage {
     duration: f32,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct UnknownUserMessage<'a> {

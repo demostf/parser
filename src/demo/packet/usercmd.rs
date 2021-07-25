@@ -1,12 +1,7 @@
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct UserCmdPacket {
     pub tick: u32,
@@ -37,10 +32,7 @@ impl BitWrite<LittleEndian> for UserCmdPacket {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize)]
 pub struct UserCmd {
     command_number: Option<u32>,
@@ -54,6 +46,7 @@ pub struct UserCmd {
     mouse_dy: Option<u16>,
 }
 
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize)]
 pub struct WeaponSelect {
     #[size = 11]

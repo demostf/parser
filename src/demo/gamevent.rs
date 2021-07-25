@@ -6,13 +6,8 @@ use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use parse_display::Display;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameEventDefinition {
     pub id: GameEventTypeId,
@@ -40,20 +35,14 @@ impl Ord for GameEventDefinition {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GameEventEntry {
     pub name: String,
     pub kind: GameEventValueType,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Display, Serialize, Deserialize)]
 #[discriminant_bits = 3]
 pub enum GameEventValueType {
@@ -67,10 +56,7 @@ pub enum GameEventValueType {
     Local = 7,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GameEventValue {
     String(String),
@@ -171,10 +157,7 @@ impl EventValue for () {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct RawGameEvent {
     pub event_type: GameEventType,

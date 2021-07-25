@@ -230,8 +230,6 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         use crate::{ParseError, Result};
         use bitbuffer::{BitRead, LittleEndian, BitWrite, BitWriteStream};
         use serde::{Deserialize, Serialize};
-        #[cfg(feature = "wasm")]
-        use wasm_bindgen::prelude::*;
     );
 
     let event_definitions = events.iter().map(|event| {
@@ -266,10 +264,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         };
 
         quote!(
-            #[cfg_attr(
-                feature = "wasm",
-                derive(wasm_typescript_definition::TypescriptDefinition)
-            )]
+            #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
             #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
             pub struct #name {
                 #(#fields)*
@@ -386,20 +381,14 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         #(#event_definitions)*
 
 
-        #[cfg_attr(
-            feature = "wasm",
-            derive(wasm_typescript_definition::TypescriptDefinition)
-        )]
+        #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
         #[derive(Debug, PartialEq, Serialize, Deserialize)]
         pub enum GameEvent {
             #(#event_variants)*
             Unknown(RawGameEvent),
         }
 
-        #[cfg_attr(
-            feature = "wasm",
-            derive(wasm_typescript_definition::TypescriptDefinition)
-        )]
+        #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
         #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
         pub enum GameEventType {
             #(#event_types)*

@@ -19,13 +19,8 @@ pub mod stop;
 pub mod stringtable;
 pub mod synctick;
 pub mod usercmd;
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub enum Packet<'a> {
@@ -54,10 +49,7 @@ impl Packet<'_> {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, Eq, PartialEq)]
 #[discriminant_bits = 8]
 #[repr(u8)]

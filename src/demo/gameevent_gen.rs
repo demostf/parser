@@ -3,8 +3,7 @@ use crate::demo::Stream;
 use crate::{ParseError, Result};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
+
 fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     stream: &mut Stream<'a>,
     entry: Option<&GameEventEntry>,
@@ -25,10 +24,7 @@ fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     }
     Ok(T::read(stream)?)
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
@@ -60,10 +56,7 @@ impl ServerSpawnEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerChangeLevelFailedEvent {
     pub level_name: String,
@@ -77,10 +70,7 @@ impl ServerChangeLevelFailedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerShutdownEvent {
     pub reason: String,
@@ -94,10 +84,7 @@ impl ServerShutdownEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerCvarEvent {
     pub cvar_name: String,
@@ -113,10 +100,7 @@ impl ServerCvarEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerMessageEvent {
     pub text: String,
@@ -130,10 +114,7 @@ impl ServerMessageEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerAddBanEvent {
     pub name: String,
@@ -159,10 +140,7 @@ impl ServerAddBanEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerRemoveBanEvent {
     pub network_id: String,
@@ -180,10 +158,7 @@ impl ServerRemoveBanEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerConnectEvent {
     pub name: String,
@@ -207,10 +182,7 @@ impl PlayerConnectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerConnectClientEvent {
     pub name: String,
@@ -232,10 +204,7 @@ impl PlayerConnectClientEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerInfoEvent {
     pub name: String,
@@ -257,10 +226,7 @@ impl PlayerInfoEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDisconnectEvent {
     pub user_id: u16,
@@ -282,10 +248,7 @@ impl PlayerDisconnectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerActivateEvent {
     pub user_id: u16,
@@ -299,10 +262,7 @@ impl PlayerActivateEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerSayEvent {
     pub user_id: u16,
@@ -318,10 +278,7 @@ impl PlayerSayEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClientDisconnectEvent {
     pub message: String,
@@ -335,10 +292,7 @@ impl ClientDisconnectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClientBeginConnectEvent {
     pub address: String,
@@ -358,10 +312,7 @@ impl ClientBeginConnectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClientConnectedEvent {
     pub address: String,
@@ -379,10 +330,7 @@ impl ClientConnectedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClientFullConnectEvent {
     pub address: String,
@@ -400,10 +348,7 @@ impl ClientFullConnectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HostQuitEvent {}
 impl HostQuitEvent {
@@ -412,10 +357,7 @@ impl HostQuitEvent {
         Ok(HostQuitEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamInfoEvent {
     pub team_id: u8,
@@ -431,10 +373,7 @@ impl TeamInfoEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamScoreEvent {
     pub team_id: u8,
@@ -450,10 +389,7 @@ impl TeamScoreEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayBroadcastAudioEvent {
     pub team: u8,
@@ -471,10 +407,7 @@ impl TeamPlayBroadcastAudioEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerTeamEvent {
     pub user_id: u16,
@@ -500,10 +433,7 @@ impl PlayerTeamEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerClassEvent {
     pub user_id: u16,
@@ -519,10 +449,7 @@ impl PlayerClassEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDeathEvent {
     pub user_id: u16,
@@ -594,10 +521,7 @@ impl PlayerDeathEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHurtEvent {
     pub user_id: u16,
@@ -631,10 +555,7 @@ impl PlayerHurtEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerChatEvent {
     pub team_only: bool,
@@ -652,10 +573,7 @@ impl PlayerChatEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerScoreEvent {
     pub user_id: u16,
@@ -675,10 +593,7 @@ impl PlayerScoreEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerSpawnEvent {
     pub user_id: u16,
@@ -696,10 +611,7 @@ impl PlayerSpawnEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerShootEvent {
     pub user_id: u16,
@@ -717,10 +629,7 @@ impl PlayerShootEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerUseEvent {
     pub user_id: u16,
@@ -736,10 +645,7 @@ impl PlayerUseEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerChangeNameEvent {
     pub user_id: u16,
@@ -757,10 +663,7 @@ impl PlayerChangeNameEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHintMessageEvent {
     pub hint_message: String,
@@ -774,10 +677,7 @@ impl PlayerHintMessageEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
@@ -791,10 +691,7 @@ impl BasePlayerTeleportedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameInitEvent {}
 impl GameInitEvent {
@@ -803,10 +700,7 @@ impl GameInitEvent {
         Ok(GameInitEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameNewMapEvent {
     pub map_name: String,
@@ -820,10 +714,7 @@ impl GameNewMapEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameStartEvent {
     pub rounds_limit: u32,
@@ -843,10 +734,7 @@ impl GameStartEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameEndEvent {
     pub winner: u8,
@@ -860,10 +748,7 @@ impl GameEndEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RoundStartEvent {
     pub time_limit: u32,
@@ -881,10 +766,7 @@ impl RoundStartEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RoundEndEvent {
     pub winner: u8,
@@ -902,10 +784,7 @@ impl RoundEndEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameMessageEvent {
     pub target: u8,
@@ -921,10 +800,7 @@ impl GameMessageEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BreakBreakableEvent {
     pub ent_index: u32,
@@ -942,10 +818,7 @@ impl BreakBreakableEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BreakPropEvent {
     pub ent_index: u32,
@@ -961,10 +834,7 @@ impl BreakPropEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EntityKilledEvent {
     pub ent_index_killed: u32,
@@ -984,10 +854,7 @@ impl EntityKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BonusUpdatedEvent {
     pub num_advanced: u16,
@@ -1007,10 +874,7 @@ impl BonusUpdatedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AchievementEventEvent {
     pub achievement_name: String,
@@ -1028,10 +892,7 @@ impl AchievementEventEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AchievementIncrementEvent {
     pub achievement_id: u32,
@@ -1049,10 +910,7 @@ impl AchievementIncrementEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PhysgunPickupEvent {
     pub ent_index: u32,
@@ -1066,10 +924,7 @@ impl PhysgunPickupEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
@@ -1083,10 +938,7 @@ impl FlareIgniteNpcEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl HelicopterGrenadePuntMissEvent {
@@ -1095,10 +947,7 @@ impl HelicopterGrenadePuntMissEvent {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct UserDataDownloadedEvent {}
 impl UserDataDownloadedEvent {
@@ -1107,10 +956,7 @@ impl UserDataDownloadedEvent {
         Ok(UserDataDownloadedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
@@ -1124,10 +970,7 @@ impl RagdollDissolvedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVChangedModeEvent {
     pub old_mode: u16,
@@ -1145,10 +988,7 @@ impl HLTVChangedModeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVChangedTargetEvent {
     pub mode: u16,
@@ -1166,10 +1006,7 @@ impl HLTVChangedTargetEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteEndedEvent {}
 impl VoteEndedEvent {
@@ -1178,10 +1015,7 @@ impl VoteEndedEvent {
         Ok(VoteEndedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteStartedEvent {
     pub issue: String,
@@ -1201,10 +1035,7 @@ impl VoteStartedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteChangedEvent {
     pub vote_option_1: u8,
@@ -1228,10 +1059,7 @@ impl VoteChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VotePassedEvent {
     pub details: String,
@@ -1249,10 +1077,7 @@ impl VotePassedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteFailedEvent {
     pub team: u8,
@@ -1266,10 +1091,7 @@ impl VoteFailedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteCastEvent {
     pub vote_option: u8,
@@ -1287,10 +1109,7 @@ impl VoteCastEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteOptionsEvent {
     pub count: u8,
@@ -1314,10 +1133,7 @@ impl VoteOptionsEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplaySavedEvent {}
 impl ReplaySavedEvent {
@@ -1326,10 +1142,7 @@ impl ReplaySavedEvent {
         Ok(ReplaySavedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EnteredPerformanceModeEvent {}
 impl EnteredPerformanceModeEvent {
@@ -1338,10 +1151,7 @@ impl EnteredPerformanceModeEvent {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BrowseReplaysEvent {}
 impl BrowseReplaysEvent {
@@ -1350,10 +1160,7 @@ impl BrowseReplaysEvent {
         Ok(BrowseReplaysEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayYoutubeStatsEvent {
     pub views: u32,
@@ -1371,10 +1178,7 @@ impl ReplayYoutubeStatsEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct InventoryUpdatedEvent {}
 impl InventoryUpdatedEvent {
@@ -1383,10 +1187,7 @@ impl InventoryUpdatedEvent {
         Ok(InventoryUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CartUpdatedEvent {}
 impl CartUpdatedEvent {
@@ -1395,10 +1196,7 @@ impl CartUpdatedEvent {
         Ok(CartUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl StorePriceSheetUpdatedEvent {
@@ -1407,10 +1205,7 @@ impl StorePriceSheetUpdatedEvent {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EconInventoryConnectedEvent {}
 impl EconInventoryConnectedEvent {
@@ -1419,10 +1214,7 @@ impl EconInventoryConnectedEvent {
         Ok(EconInventoryConnectedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ItemSchemaInitializedEvent {}
 impl ItemSchemaInitializedEvent {
@@ -1431,10 +1223,7 @@ impl ItemSchemaInitializedEvent {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GcNewSessionEvent {}
 impl GcNewSessionEvent {
@@ -1443,10 +1232,7 @@ impl GcNewSessionEvent {
         Ok(GcNewSessionEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GcLostSessionEvent {}
 impl GcLostSessionEvent {
@@ -1455,10 +1241,7 @@ impl GcLostSessionEvent {
         Ok(GcLostSessionEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct IntroFinishEvent {
     pub player: u16,
@@ -1472,10 +1255,7 @@ impl IntroFinishEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct IntroNextCameraEvent {
     pub player: u16,
@@ -1489,10 +1269,7 @@ impl IntroNextCameraEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerChangeClassEvent {
     pub user_id: u16,
@@ -1508,10 +1285,7 @@ impl PlayerChangeClassEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
@@ -1525,10 +1299,7 @@ impl TfMapTimeRemainingEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TfGameOverEvent {
     pub reason: String,
@@ -1542,10 +1313,7 @@ impl TfGameOverEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CtfFlagCapturedEvent {
     pub capping_team: u16,
@@ -1561,10 +1329,7 @@ impl CtfFlagCapturedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointInitializedEvent {}
 impl ControlPointInitializedEvent {
@@ -1573,10 +1338,7 @@ impl ControlPointInitializedEvent {
         Ok(ControlPointInitializedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
@@ -1590,10 +1352,7 @@ impl ControlPointUpdateImagesEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
@@ -1607,10 +1366,7 @@ impl ControlPointUpdateLayoutEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
@@ -1624,10 +1380,7 @@ impl ControlPointUpdateCappingEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
@@ -1641,10 +1394,7 @@ impl ControlPointUpdateOwnerEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointStartTouchEvent {
     pub player: u16,
@@ -1660,10 +1410,7 @@ impl ControlPointStartTouchEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointEndTouchEvent {
     pub player: u16,
@@ -1679,10 +1426,7 @@ impl ControlPointEndTouchEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointPulseElementEvent {
     pub player: u16,
@@ -1696,10 +1440,7 @@ impl ControlPointPulseElementEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointFakeCaptureEvent {
     pub player: u16,
@@ -1715,10 +1456,7 @@ impl ControlPointFakeCaptureEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointFakeCaptureMultiplierEvent {
     pub player: u16,
@@ -1734,10 +1472,7 @@ impl ControlPointFakeCaptureMultiplierEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
@@ -1751,10 +1486,7 @@ impl TeamPlayRoundSelectedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
@@ -1768,10 +1500,7 @@ impl TeamPlayRoundStartEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundActiveEvent {}
 impl TeamPlayRoundActiveEvent {
@@ -1780,10 +1509,7 @@ impl TeamPlayRoundActiveEvent {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl TeamPlayWaitingBeginsEvent {
@@ -1792,10 +1518,7 @@ impl TeamPlayWaitingBeginsEvent {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl TeamPlayWaitingEndsEvent {
@@ -1804,10 +1527,7 @@ impl TeamPlayWaitingEndsEvent {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl TeamPlayWaitingAboutToEndEvent {
@@ -1816,10 +1536,7 @@ impl TeamPlayWaitingAboutToEndEvent {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRestartRoundEvent {}
 impl TeamPlayRestartRoundEvent {
@@ -1828,10 +1545,7 @@ impl TeamPlayRestartRoundEvent {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayReadyRestartEvent {}
 impl TeamPlayReadyRestartEvent {
@@ -1840,10 +1554,7 @@ impl TeamPlayReadyRestartEvent {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
@@ -1857,10 +1568,7 @@ impl TeamPlayRoundRestartSecondsEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
@@ -1874,10 +1582,7 @@ impl TeamPlayTeamReadyEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundWinEvent {
     pub team: u8,
@@ -1903,10 +1608,7 @@ impl TeamPlayRoundWinEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl TeamPlayUpdateTimerEvent {
@@ -1915,10 +1617,7 @@ impl TeamPlayUpdateTimerEvent {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
@@ -1932,10 +1631,7 @@ impl TeamPlayRoundStalemateEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl TeamPlayOvertimeBeginEvent {
@@ -1944,10 +1640,7 @@ impl TeamPlayOvertimeBeginEvent {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl TeamPlayOvertimeEndEvent {
@@ -1956,10 +1649,7 @@ impl TeamPlayOvertimeEndEvent {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl TeamPlaySuddenDeathBeginEvent {
@@ -1968,10 +1658,7 @@ impl TeamPlaySuddenDeathBeginEvent {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl TeamPlaySuddenDeathEndEvent {
@@ -1980,10 +1667,7 @@ impl TeamPlaySuddenDeathEndEvent {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayGameOverEvent {
     pub reason: String,
@@ -1997,10 +1681,7 @@ impl TeamPlayGameOverEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
@@ -2014,10 +1695,7 @@ impl TeamPlayMapTimeRemainingEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
@@ -2031,10 +1709,7 @@ impl TeamPlayTimerFlashEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayTimerTimeAddedEvent {
     pub timer: u16,
@@ -2050,10 +1725,7 @@ impl TeamPlayTimerTimeAddedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPointStartCaptureEvent {
     pub cp: u8,
@@ -2077,10 +1749,7 @@ impl TeamPlayPointStartCaptureEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPointCapturedEvent {
     pub cp: u8,
@@ -2100,10 +1769,7 @@ impl TeamPlayPointCapturedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPointLockedEvent {
     pub cp: u8,
@@ -2121,10 +1787,7 @@ impl TeamPlayPointLockedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPointUnlockedEvent {
     pub cp: u8,
@@ -2142,10 +1805,7 @@ impl TeamPlayPointUnlockedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayCaptureBrokenEvent {
     pub cp: u8,
@@ -2163,10 +1823,7 @@ impl TeamPlayCaptureBrokenEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayCaptureBlockedEvent {
     pub cp: u8,
@@ -2186,10 +1843,7 @@ impl TeamPlayCaptureBlockedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayFlagEventEvent {
     pub player: u16,
@@ -2211,10 +1865,7 @@ impl TeamPlayFlagEventEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayWinPanelEvent {
     pub panel_style: u8,
@@ -2270,10 +1921,7 @@ impl TeamPlayWinPanelEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
@@ -2289,10 +1937,7 @@ impl TeamPlayTeamBalancedPlayerEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl TeamPlaySetupFinishedEvent {
@@ -2301,10 +1946,7 @@ impl TeamPlaySetupFinishedEvent {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
@@ -2318,10 +1960,7 @@ impl TeamPlayAlertEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TrainingCompleteEvent {
     pub next_map: String,
@@ -2339,10 +1978,7 @@ impl TrainingCompleteEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowFreezePanelEvent {
     pub killer: u16,
@@ -2356,10 +1992,7 @@ impl ShowFreezePanelEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HideFreezePanelEvent {}
 impl HideFreezePanelEvent {
@@ -2368,10 +2001,7 @@ impl HideFreezePanelEvent {
         Ok(HideFreezePanelEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FreezeCamStartedEvent {}
 impl FreezeCamStartedEvent {
@@ -2380,10 +2010,7 @@ impl FreezeCamStartedEvent {
         Ok(FreezeCamStartedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl LocalPlayerChangeTeamEvent {
@@ -2392,10 +2019,7 @@ impl LocalPlayerChangeTeamEvent {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
@@ -2409,10 +2033,7 @@ impl LocalPlayerScoreChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerChangeClassEvent {}
 impl LocalPlayerChangeClassEvent {
@@ -2421,10 +2042,7 @@ impl LocalPlayerChangeClassEvent {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerRespawnEvent {}
 impl LocalPlayerRespawnEvent {
@@ -2433,10 +2051,7 @@ impl LocalPlayerRespawnEvent {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BuildingInfoChangedEvent {
     pub building_type: u8,
@@ -2454,10 +2069,7 @@ impl BuildingInfoChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
@@ -2471,10 +2083,7 @@ impl LocalPlayerChangeDisguiseEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerAccountChangedEvent {
     pub old_value: u16,
@@ -2490,10 +2099,7 @@ impl PlayerAccountChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SpyPdaResetEvent {}
 impl SpyPdaResetEvent {
@@ -2502,10 +2108,7 @@ impl SpyPdaResetEvent {
         Ok(SpyPdaResetEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FlagStatusUpdateEvent {
     pub user_id: u16,
@@ -2521,10 +2124,7 @@ impl FlagStatusUpdateEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
@@ -2538,10 +2138,7 @@ impl PlayerStatsUpdatedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayingCommentaryEvent {}
 impl PlayingCommentaryEvent {
@@ -2550,10 +2147,7 @@ impl PlayingCommentaryEvent {
         Ok(PlayingCommentaryEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerChargeDeployedEvent {
     pub user_id: u16,
@@ -2569,10 +2163,7 @@ impl PlayerChargeDeployedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerBuiltObjectEvent {
     pub user_id: u16,
@@ -2590,10 +2181,7 @@ impl PlayerBuiltObjectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerUpgradedObjectEvent {
     pub user_id: u16,
@@ -2613,10 +2201,7 @@ impl PlayerUpgradedObjectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerCarryObjectEvent {
     pub user_id: u16,
@@ -2634,10 +2219,7 @@ impl PlayerCarryObjectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDropObjectEvent {
     pub user_id: u16,
@@ -2655,10 +2237,7 @@ impl PlayerDropObjectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ObjectRemovedEvent {
     pub user_id: u16,
@@ -2676,10 +2255,7 @@ impl ObjectRemovedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ObjectDestroyedEvent {
     pub user_id: u16,
@@ -2707,10 +2283,7 @@ impl ObjectDestroyedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ObjectDetonatedEvent {
     pub user_id: u16,
@@ -2728,10 +2301,7 @@ impl ObjectDetonatedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AchievementEarnedEvent {
     pub player: u8,
@@ -2747,10 +2317,7 @@ impl AchievementEarnedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SpecTargetUpdatedEvent {}
 impl SpecTargetUpdatedEvent {
@@ -2759,10 +2326,7 @@ impl SpecTargetUpdatedEvent {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TournamentStateUpdateEvent {
     pub user_id: u16,
@@ -2782,10 +2346,7 @@ impl TournamentStateUpdateEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TournamentEnableCountdownEvent {}
 impl TournamentEnableCountdownEvent {
@@ -2794,10 +2355,7 @@ impl TournamentEnableCountdownEvent {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
@@ -2811,10 +2369,7 @@ impl PlayerCalledForMedicEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerAskedForBallEvent {
     pub user_id: u16,
@@ -2828,10 +2383,7 @@ impl PlayerAskedForBallEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl LocalPlayerBecameObserverEvent {
@@ -2840,10 +2392,7 @@ impl LocalPlayerBecameObserverEvent {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerIgnitedInvEvent {
     pub pyro_ent_index: u8,
@@ -2861,10 +2410,7 @@ impl PlayerIgnitedInvEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerIgnitedEvent {
     pub pyro_ent_index: u8,
@@ -2882,10 +2428,7 @@ impl PlayerIgnitedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerExtinguishedEvent {
     pub victim: u8,
@@ -2903,10 +2446,7 @@ impl PlayerExtinguishedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerTeleportedEvent {
     pub user_id: u16,
@@ -2924,10 +2464,7 @@ impl PlayerTeleportedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
@@ -2941,10 +2478,7 @@ impl PlayerHealedMedicCallEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl LocalPlayerChargeReadyEvent {
@@ -2953,10 +2487,7 @@ impl LocalPlayerChargeReadyEvent {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerWindDownEvent {}
 impl LocalPlayerWindDownEvent {
@@ -2965,10 +2496,7 @@ impl LocalPlayerWindDownEvent {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerInvulnedEvent {
     pub user_id: u16,
@@ -2984,10 +2512,7 @@ impl PlayerInvulnedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscortSpeedEvent {
     pub team: u8,
@@ -3005,10 +2530,7 @@ impl EscortSpeedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscortProgressEvent {
     pub team: u8,
@@ -3026,10 +2548,7 @@ impl EscortProgressEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscortRecedeEvent {
     pub team: u8,
@@ -3045,10 +2564,7 @@ impl EscortRecedeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameUIActivatedEvent {}
 impl GameUIActivatedEvent {
@@ -3057,10 +2573,7 @@ impl GameUIActivatedEvent {
         Ok(GameUIActivatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameUIHiddenEvent {}
 impl GameUIHiddenEvent {
@@ -3069,10 +2582,7 @@ impl GameUIHiddenEvent {
         Ok(GameUIHiddenEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerEscortScoreEvent {
     pub player: u8,
@@ -3088,10 +2598,7 @@ impl PlayerEscortScoreEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHealOnHitEvent {
     pub amount: u16,
@@ -3109,10 +2616,7 @@ impl PlayerHealOnHitEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerStealSandvichEvent {
     pub owner: u16,
@@ -3128,10 +2632,7 @@ impl PlayerStealSandvichEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowClassLayoutEvent {
     pub show: bool,
@@ -3145,10 +2646,7 @@ impl ShowClassLayoutEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowVsPanelEvent {
     pub show: bool,
@@ -3162,10 +2660,7 @@ impl ShowVsPanelEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDamagedEvent {
     pub amount: u16,
@@ -3181,10 +2676,7 @@ impl PlayerDamagedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArenaPlayerNotificationEvent {
     pub player: u8,
@@ -3200,10 +2692,7 @@ impl ArenaPlayerNotificationEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArenaMatchMaxStreakEvent {
     pub team: u8,
@@ -3219,10 +2708,7 @@ impl ArenaMatchMaxStreakEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArenaRoundStartEvent {}
 impl ArenaRoundStartEvent {
@@ -3231,10 +2717,7 @@ impl ArenaRoundStartEvent {
         Ok(ArenaRoundStartEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArenaWinPanelEvent {
     pub panel_style: u8,
@@ -3326,10 +2809,7 @@ impl ArenaWinPanelEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PveWinPanelEvent {
     pub panel_style: u8,
@@ -3347,10 +2827,7 @@ impl PveWinPanelEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AirDashEvent {
     pub player: u8,
@@ -3364,10 +2841,7 @@ impl AirDashEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LandedEvent {
     pub player: u8,
@@ -3381,10 +2855,7 @@ impl LandedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
@@ -3398,10 +2869,7 @@ impl PlayerDamageDodgedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerStunnedEvent {
     pub stunner: u16,
@@ -3421,10 +2889,7 @@ impl PlayerStunnedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ScoutGrandSlamEvent {
     pub scout_id: u16,
@@ -3440,10 +2905,7 @@ impl ScoutGrandSlamEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ScoutSlamdollLandedEvent {
     pub target_index: u16,
@@ -3463,10 +2925,7 @@ impl ScoutSlamdollLandedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArrowImpactEvent {
     pub attached_entity: u16,
@@ -3500,10 +2959,7 @@ impl ArrowImpactEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerJaratedEvent {
     pub thrower_ent_index: u8,
@@ -3519,10 +2975,7 @@ impl PlayerJaratedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerJaratedFadeEvent {
     pub thrower_ent_index: u8,
@@ -3538,10 +2991,7 @@ impl PlayerJaratedFadeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerShieldBlockedEvent {
     pub attacker_ent_index: u8,
@@ -3557,10 +3007,7 @@ impl PlayerShieldBlockedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerPinnedEvent {
     pub pinned: u8,
@@ -3574,10 +3021,7 @@ impl PlayerPinnedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
@@ -3591,10 +3035,7 @@ impl PlayerHealedByMedicEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerSappedObjectEvent {
     pub user_id: u16,
@@ -3614,10 +3055,7 @@ impl PlayerSappedObjectEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ItemFoundEvent {
     pub player: u8,
@@ -3643,10 +3081,7 @@ impl ItemFoundEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowAnnotationEvent {
     pub world_pos_x: f32,
@@ -3686,10 +3121,7 @@ impl ShowAnnotationEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HideAnnotationEvent {
     pub id: u32,
@@ -3703,10 +3135,7 @@ impl HideAnnotationEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
@@ -3720,10 +3149,7 @@ impl PostInventoryApplicationEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUnlockUpdatedEvent {
     pub index: u16,
@@ -3739,10 +3165,7 @@ impl ControlPointUnlockUpdatedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DeployBuffBannerEvent {
     pub buff_type: u8,
@@ -3758,10 +3181,7 @@ impl DeployBuffBannerEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerBuffEvent {
     pub user_id: u16,
@@ -3779,10 +3199,7 @@ impl PlayerBuffEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MedicDeathEvent {
     pub user_id: u16,
@@ -3802,10 +3219,7 @@ impl MedicDeathEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct OvertimeNagEvent {}
 impl OvertimeNagEvent {
@@ -3814,10 +3228,7 @@ impl OvertimeNagEvent {
         Ok(OvertimeNagEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamsChangedEvent {}
 impl TeamsChangedEvent {
@@ -3826,10 +3237,7 @@ impl TeamsChangedEvent {
         Ok(TeamsChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
@@ -3843,10 +3251,7 @@ impl HalloweenPumpkinGrabEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RocketJumpEvent {
     pub user_id: u16,
@@ -3862,10 +3267,7 @@ impl RocketJumpEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RocketJumpLandedEvent {
     pub user_id: u16,
@@ -3879,10 +3281,7 @@ impl RocketJumpLandedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StickyJumpEvent {
     pub user_id: u16,
@@ -3898,10 +3297,7 @@ impl StickyJumpEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StickyJumpLandedEvent {
     pub user_id: u16,
@@ -3915,10 +3311,7 @@ impl StickyJumpLandedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RocketPackLaunchEvent {
     pub user_id: u16,
@@ -3934,10 +3327,7 @@ impl RocketPackLaunchEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RocketPackLandedEvent {
     pub user_id: u16,
@@ -3951,10 +3341,7 @@ impl RocketPackLandedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MedicDefendedEvent {
     pub user_id: u16,
@@ -3970,10 +3357,7 @@ impl MedicDefendedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerHealedEvent {
     pub amount: u16,
@@ -3987,10 +3371,7 @@ impl LocalPlayerHealedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
@@ -4004,10 +3385,7 @@ impl PlayerDestroyedPipeBombEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ObjectDeflectedEvent {
     pub user_id: u16,
@@ -4027,10 +3405,7 @@ impl ObjectDeflectedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerMvpEvent {
     pub player: u16,
@@ -4044,10 +3419,7 @@ impl PlayerMvpEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RaidSpawnMobEvent {}
 impl RaidSpawnMobEvent {
@@ -4056,10 +3428,7 @@ impl RaidSpawnMobEvent {
         Ok(RaidSpawnMobEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RaidSpawnSquadEvent {}
 impl RaidSpawnSquadEvent {
@@ -4068,10 +3437,7 @@ impl RaidSpawnSquadEvent {
         Ok(RaidSpawnSquadEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct NavBlockedEvent {
     pub area: u32,
@@ -4087,10 +3453,7 @@ impl NavBlockedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PathTrackPassedEvent {
     pub index: u16,
@@ -4104,10 +3467,7 @@ impl PathTrackPassedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct NumCappersChangedEvent {
     pub index: u16,
@@ -4123,10 +3483,7 @@ impl NumCappersChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerRegenerateEvent {}
 impl PlayerRegenerateEvent {
@@ -4135,10 +3492,7 @@ impl PlayerRegenerateEvent {
         Ok(PlayerRegenerateEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct UpdateStatusItemEvent {
     pub index: u8,
@@ -4154,10 +3508,7 @@ impl UpdateStatusItemEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StatsResetRoundEvent {}
 impl StatsResetRoundEvent {
@@ -4166,10 +3517,7 @@ impl StatsResetRoundEvent {
         Ok(StatsResetRoundEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl ScoreStatsAccumulatedUpdateEvent {
@@ -4178,10 +3526,7 @@ impl ScoreStatsAccumulatedUpdateEvent {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl ScoreStatsAccumulatedResetEvent {
@@ -4190,10 +3535,7 @@ impl ScoreStatsAccumulatedResetEvent {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
@@ -4207,10 +3549,7 @@ impl AchievementEarnedLocalEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHealedEvent {
     pub patient: u16,
@@ -4228,10 +3567,7 @@ impl PlayerHealedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BuildingHealedEvent {
     pub building: u16,
@@ -4249,10 +3585,7 @@ impl BuildingHealedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ItemPickupEvent {
     pub user_id: u16,
@@ -4268,10 +3601,7 @@ impl ItemPickupEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DuelStatusEvent {
     pub killer: u16,
@@ -4295,10 +3625,7 @@ impl DuelStatusEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FishNoticeEvent {
     pub user_id: u16,
@@ -4342,10 +3669,7 @@ impl FishNoticeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FishNoticeArmEvent {
     pub user_id: u16,
@@ -4389,10 +3713,7 @@ impl FishNoticeArmEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SlapNoticeEvent {
     pub user_id: u16,
@@ -4436,10 +3757,7 @@ impl SlapNoticeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ThrowableHitEvent {
     pub user_id: u16,
@@ -4485,10 +3803,7 @@ impl ThrowableHitEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PumpkinLordSummonedEvent {}
 impl PumpkinLordSummonedEvent {
@@ -4497,10 +3812,7 @@ impl PumpkinLordSummonedEvent {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PumpkinLordKilledEvent {}
 impl PumpkinLordKilledEvent {
@@ -4509,10 +3821,7 @@ impl PumpkinLordKilledEvent {
         Ok(PumpkinLordKilledEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusSummonedEvent {
     pub level: u16,
@@ -4526,10 +3835,7 @@ impl MerasmusSummonedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusKilledEvent {
     pub level: u16,
@@ -4543,10 +3849,7 @@ impl MerasmusKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusEscapeWarningEvent {
     pub level: u16,
@@ -4562,10 +3865,7 @@ impl MerasmusEscapeWarningEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusEscapedEvent {
     pub level: u16,
@@ -4579,10 +3879,7 @@ impl MerasmusEscapedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossSummonedEvent {
     pub level: u16,
@@ -4596,10 +3893,7 @@ impl EyeballBossSummonedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossStunnedEvent {
     pub level: u16,
@@ -4615,10 +3909,7 @@ impl EyeballBossStunnedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossKilledEvent {
     pub level: u16,
@@ -4632,10 +3923,7 @@ impl EyeballBossKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossKillerEvent {
     pub level: u16,
@@ -4651,10 +3939,7 @@ impl EyeballBossKillerEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossEscapeImminentEvent {
     pub level: u16,
@@ -4670,10 +3955,7 @@ impl EyeballBossEscapeImminentEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossEscapedEvent {
     pub level: u16,
@@ -4687,10 +3969,7 @@ impl EyeballBossEscapedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct NpcHurtEvent {
     pub ent_index: u16,
@@ -4716,10 +3995,7 @@ impl NpcHurtEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointTimerUpdatedEvent {
     pub index: u16,
@@ -4735,10 +4011,7 @@ impl ControlPointTimerUpdatedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
@@ -4752,10 +4025,7 @@ impl PlayerHighFiveStartEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
@@ -4769,10 +4039,7 @@ impl PlayerHighFiveCancelEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHighFiveSuccessEvent {
     pub initiator_ent_index: u8,
@@ -4788,10 +4055,7 @@ impl PlayerHighFiveSuccessEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerBonusPointsEvent {
     pub points: u16,
@@ -4809,10 +4073,7 @@ impl PlayerBonusPointsEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerUpgradedEvent {}
 impl PlayerUpgradedEvent {
@@ -4821,10 +4082,7 @@ impl PlayerUpgradedEvent {
         Ok(PlayerUpgradedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerBuybackEvent {
     pub player: u16,
@@ -4840,10 +4098,7 @@ impl PlayerBuybackEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerUsedPowerUpBottleEvent {
     pub player: u16,
@@ -4861,10 +4116,7 @@ impl PlayerUsedPowerUpBottleEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
@@ -4878,10 +4130,7 @@ impl ChristmasGiftGrabEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerKilledAchievementZoneEvent {
     pub attacker: u16,
@@ -4899,10 +4148,7 @@ impl PlayerKilledAchievementZoneEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyUpdatedEvent {}
 impl PartyUpdatedEvent {
@@ -4911,10 +4157,7 @@ impl PartyUpdatedEvent {
         Ok(PartyUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyPrefChangedEvent {}
 impl PartyPrefChangedEvent {
@@ -4923,10 +4166,7 @@ impl PartyPrefChangedEvent {
         Ok(PartyPrefChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyCriteriaChangedEvent {}
 impl PartyCriteriaChangedEvent {
@@ -4935,10 +4175,7 @@ impl PartyCriteriaChangedEvent {
         Ok(PartyCriteriaChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyInvitesChangedEvent {}
 impl PartyInvitesChangedEvent {
@@ -4947,10 +4184,7 @@ impl PartyInvitesChangedEvent {
         Ok(PartyInvitesChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyQueueStateChangedEvent {
     pub match_group: u16,
@@ -4964,10 +4198,7 @@ impl PartyQueueStateChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyChatEvent {
     pub steam_id: String,
@@ -4985,10 +4216,7 @@ impl PartyChatEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyMemberJoinEvent {
     pub steam_id: String,
@@ -5002,10 +4230,7 @@ impl PartyMemberJoinEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyMemberLeaveEvent {
     pub steam_id: String,
@@ -5019,10 +4244,7 @@ impl PartyMemberLeaveEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MatchInvitesUpdatedEvent {}
 impl MatchInvitesUpdatedEvent {
@@ -5031,10 +4253,7 @@ impl MatchInvitesUpdatedEvent {
         Ok(MatchInvitesUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LobbyUpdatedEvent {}
 impl LobbyUpdatedEvent {
@@ -5043,10 +4262,7 @@ impl LobbyUpdatedEvent {
         Ok(LobbyUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmMissionUpdateEvent {
     pub class: u16,
@@ -5062,10 +4278,7 @@ impl MvmMissionUpdateEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RecalculateHolidaysEvent {}
 impl RecalculateHolidaysEvent {
@@ -5074,10 +4287,7 @@ impl RecalculateHolidaysEvent {
         Ok(RecalculateHolidaysEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
@@ -5091,10 +4301,7 @@ impl PlayerCurrencyChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
@@ -5108,10 +4315,7 @@ impl DoomsdayRocketOpenEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
@@ -5125,10 +4329,7 @@ impl RemoveNemesisRelationshipsEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmCreditBonusWaveEvent {}
 impl MvmCreditBonusWaveEvent {
@@ -5137,10 +4338,7 @@ impl MvmCreditBonusWaveEvent {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmCreditBonusAllEvent {}
 impl MvmCreditBonusAllEvent {
@@ -5149,10 +4347,7 @@ impl MvmCreditBonusAllEvent {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl MvmCreditBonusAllAdvancedEvent {
@@ -5161,10 +4356,7 @@ impl MvmCreditBonusAllAdvancedEvent {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
@@ -5178,10 +4370,7 @@ impl MvmQuickSentryUpgradeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl MvmTankDestroyedByPlayersEvent {
@@ -5190,10 +4379,7 @@ impl MvmTankDestroyedByPlayersEvent {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
@@ -5207,10 +4393,7 @@ impl MvmKillRobotDeliveringBombEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmPickupCurrencyEvent {
     pub player: u16,
@@ -5226,10 +4409,7 @@ impl MvmPickupCurrencyEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
@@ -5243,10 +4423,7 @@ impl MvmBombCarrierKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmSentryBusterDetonateEvent {
     pub player: u16,
@@ -5266,10 +4443,7 @@ impl MvmSentryBusterDetonateEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
@@ -5283,10 +4457,7 @@ impl MvmScoutMarkedForDeathEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
@@ -5300,10 +4471,7 @@ impl MvmMedicPowerUpSharedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBeginWaveEvent {
     pub wave_index: u16,
@@ -5321,10 +4489,7 @@ impl MvmBeginWaveEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
@@ -5338,10 +4503,7 @@ impl MvmWaveCompleteEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmMissionCompleteEvent {
     pub mission: String,
@@ -5355,10 +4517,7 @@ impl MvmMissionCompleteEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
@@ -5372,10 +4531,7 @@ impl MvmBombResetByPlayerEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl MvmBombAlarmTriggeredEvent {
@@ -5384,10 +4540,7 @@ impl MvmBombAlarmTriggeredEvent {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
@@ -5401,10 +4554,7 @@ impl MvmBombDeployResetByPlayerEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmWaveFailedEvent {}
 impl MvmWaveFailedEvent {
@@ -5413,10 +4563,7 @@ impl MvmWaveFailedEvent {
         Ok(MvmWaveFailedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmResetStatsEvent {}
 impl MvmResetStatsEvent {
@@ -5425,10 +4572,7 @@ impl MvmResetStatsEvent {
         Ok(MvmResetStatsEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DamageResistedEvent {
     pub ent_index: u8,
@@ -5442,10 +4586,7 @@ impl DamageResistedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RevivePlayerNotifyEvent {
     pub ent_index: u16,
@@ -5461,10 +4602,7 @@ impl RevivePlayerNotifyEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
@@ -5478,10 +4616,7 @@ impl RevivePlayerStoppedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
@@ -5495,10 +4630,7 @@ impl RevivePlayerCompleteEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
@@ -5512,10 +4644,7 @@ impl PlayerTurnedToGhostEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MedigunShieldBlockedDamageEvent {
     pub user_id: u16,
@@ -5531,10 +4660,7 @@ impl MedigunShieldBlockedDamageEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
@@ -5548,10 +4674,7 @@ impl MvmAdvWaveCompleteNoGatesEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmSniperHeadshotCurrencyEvent {
     pub user_id: u16,
@@ -5567,10 +4690,7 @@ impl MvmSniperHeadshotCurrencyEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmMannhattanPitEvent {}
 impl MvmMannhattanPitEvent {
@@ -5579,10 +4699,7 @@ impl MvmMannhattanPitEvent {
         Ok(MvmMannhattanPitEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FlagCarriedInDetectionZoneEvent {
@@ -5591,10 +4708,7 @@ impl FlagCarriedInDetectionZoneEvent {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl MvmAdvWaveKilledStunRadioEvent {
@@ -5603,10 +4717,7 @@ impl MvmAdvWaveKilledStunRadioEvent {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
@@ -5622,10 +4733,7 @@ impl PlayerDirectHitStunEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
@@ -5639,10 +4747,7 @@ impl MvmSentryBusterKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct UpgradesFileChangedEvent {
     pub path: String,
@@ -5656,10 +4761,7 @@ impl UpgradesFileChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdTeamPointsChangedEvent {
     pub points: u16,
@@ -5677,10 +4779,7 @@ impl RdTeamPointsChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdRulesStateChangedEvent {}
 impl RdRulesStateChangedEvent {
@@ -5689,10 +4788,7 @@ impl RdRulesStateChangedEvent {
         Ok(RdRulesStateChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdRobotKilledEvent {
     pub user_id: u16,
@@ -5726,10 +4822,7 @@ impl RdRobotKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdRobotImpactEvent {
     pub ent_index: u16,
@@ -5749,10 +4842,7 @@ impl RdRobotImpactEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
@@ -5766,10 +4856,7 @@ impl TeamPlayPreRoundTimeLeftEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ParachuteDeployEvent {
     pub index: u16,
@@ -5783,10 +4870,7 @@ impl ParachuteDeployEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ParachuteHolsterEvent {
     pub index: u16,
@@ -5800,10 +4884,7 @@ impl ParachuteHolsterEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct KillRefillsMeterEvent {
     pub index: u16,
@@ -5817,10 +4898,7 @@ impl KillRefillsMeterEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RpsTauntEventEvent {
     pub winner: u16,
@@ -5840,10 +4918,7 @@ impl RpsTauntEventEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CongaKillEvent {
     pub index: u16,
@@ -5857,10 +4932,7 @@ impl CongaKillEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerInitialSpawnEvent {
     pub index: u16,
@@ -5874,10 +4946,7 @@ impl PlayerInitialSpawnEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CompetitiveVictoryEvent {}
 impl CompetitiveVictoryEvent {
@@ -5886,10 +4955,7 @@ impl CompetitiveVictoryEvent {
         Ok(CompetitiveVictoryEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CompetitiveStatsUpdateEvent {
     pub index: u16,
@@ -5913,10 +4979,7 @@ impl CompetitiveStatsUpdateEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MiniGameWinEvent {
     pub team: u8,
@@ -5932,10 +4995,7 @@ impl MiniGameWinEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SentryOnGoActiveEvent {
     pub index: u16,
@@ -5949,10 +5009,7 @@ impl SentryOnGoActiveEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DuckXpLevelUpEvent {
     pub level: u16,
@@ -5966,10 +5023,7 @@ impl DuckXpLevelUpEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestLogOpenedEvent {}
 impl QuestLogOpenedEvent {
@@ -5978,10 +5032,7 @@ impl QuestLogOpenedEvent {
         Ok(QuestLogOpenedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SchemaUpdatedEvent {}
 impl SchemaUpdatedEvent {
@@ -5990,10 +5041,7 @@ impl SchemaUpdatedEvent {
         Ok(SchemaUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerPickupWeaponEvent {}
 impl LocalPlayerPickupWeaponEvent {
@@ -6002,10 +5050,7 @@ impl LocalPlayerPickupWeaponEvent {
         Ok(LocalPlayerPickupWeaponEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdPlayerScorePointsEvent {
     pub player: u16,
@@ -6023,10 +5068,7 @@ impl RdPlayerScorePointsEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DemomanDetStickiesEvent {
     pub player: u16,
@@ -6040,10 +5082,7 @@ impl DemomanDetStickiesEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestObjectiveCompletedEvent {
     pub quest_item_id_low: u32,
@@ -6063,10 +5102,7 @@ impl QuestObjectiveCompletedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerScoreChangedEvent {
     pub player: u8,
@@ -6082,10 +5118,7 @@ impl PlayerScoreChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct KilledCappingPlayerEvent {
     pub cp: u8,
@@ -6105,10 +5138,7 @@ impl KilledCappingPlayerEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EnvironmentalDeathEvent {
     pub killer: u8,
@@ -6124,10 +5154,7 @@ impl EnvironmentalDeathEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ProjectileDirectHitEvent {
     pub attacker: u8,
@@ -6145,10 +5172,7 @@ impl ProjectileDirectHitEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassGetEvent {
     pub owner: u16,
@@ -6162,10 +5186,7 @@ impl PassGetEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassScoreEvent {
     pub scorer: u16,
@@ -6183,10 +5204,7 @@ impl PassScoreEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassFreeEvent {
     pub owner: u16,
@@ -6202,10 +5220,7 @@ impl PassFreeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassPassCaughtEvent {
     pub passer: u16,
@@ -6225,10 +5240,7 @@ impl PassPassCaughtEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassBallStolenEvent {
     pub victim: u16,
@@ -6244,10 +5256,7 @@ impl PassBallStolenEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassBallBlockedEvent {
     pub owner: u16,
@@ -6263,10 +5272,7 @@ impl PassBallBlockedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DamagePreventedEvent {
     pub preventor: u16,
@@ -6286,10 +5292,7 @@ impl DamagePreventedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenBossKilledEvent {
     pub boss: u16,
@@ -6305,10 +5308,7 @@ impl HalloweenBossKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscapedLootIslandEvent {
     pub player: u16,
@@ -6322,10 +5322,7 @@ impl EscapedLootIslandEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TaggedPlayerAsItEvent {
     pub player: u16,
@@ -6339,10 +5336,7 @@ impl TaggedPlayerAsItEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusStunnedEvent {
     pub player: u16,
@@ -6356,10 +5350,7 @@ impl MerasmusStunnedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusPropFoundEvent {
     pub player: u16,
@@ -6373,10 +5364,7 @@ impl MerasmusPropFoundEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenSkeletonKilledEvent {
     pub player: u16,
@@ -6390,10 +5378,7 @@ impl HalloweenSkeletonKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscapeHellEvent {
     pub player: u16,
@@ -6407,10 +5392,7 @@ impl EscapeHellEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CrossSpectralBridgeEvent {
     pub player: u16,
@@ -6424,10 +5406,7 @@ impl CrossSpectralBridgeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MiniGameWonEvent {
     pub player: u16,
@@ -6443,10 +5422,7 @@ impl MiniGameWonEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RespawnGhostEvent {
     pub reviver: u16,
@@ -6462,10 +5438,7 @@ impl RespawnGhostEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct KillInHellEvent {
     pub killer: u16,
@@ -6481,10 +5454,7 @@ impl KillInHellEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenDuckCollectedEvent {
     pub collector: u16,
@@ -6498,10 +5468,7 @@ impl HalloweenDuckCollectedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SpecialScoreEvent {
     pub player: u8,
@@ -6515,10 +5482,7 @@ impl SpecialScoreEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamLeaderKilledEvent {
     pub killer: u8,
@@ -6534,10 +5498,7 @@ impl TeamLeaderKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenSoulCollectedEvent {
     pub intended_target: u8,
@@ -6555,10 +5516,7 @@ impl HalloweenSoulCollectedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RecalculateTruceEvent {}
 impl RecalculateTruceEvent {
@@ -6567,10 +5525,7 @@ impl RecalculateTruceEvent {
         Ok(RecalculateTruceEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DeadRingerCheatDeathEvent {
     pub spy: u8,
@@ -6586,10 +5541,7 @@ impl DeadRingerCheatDeathEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CrossbowHealEvent {
     pub healer: u8,
@@ -6607,10 +5559,7 @@ impl CrossbowHealEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DamageMitigatedEvent {
     pub mitigator: u8,
@@ -6630,10 +5579,7 @@ impl DamageMitigatedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PayloadPushedEvent {
     pub pusher: u8,
@@ -6649,10 +5595,7 @@ impl PayloadPushedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerAbandonedMatchEvent {
     pub game_over: bool,
@@ -6666,10 +5609,7 @@ impl PlayerAbandonedMatchEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClDrawlineEvent {
     pub player: u8,
@@ -6691,10 +5631,7 @@ impl ClDrawlineEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RestartTimerTimeEvent {
     pub time: u8,
@@ -6708,10 +5645,7 @@ impl RestartTimerTimeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct WinLimitChangedEvent {}
 impl WinLimitChangedEvent {
@@ -6720,10 +5654,7 @@ impl WinLimitChangedEvent {
         Ok(WinLimitChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct WinPanelShowScoresEvent {}
 impl WinPanelShowScoresEvent {
@@ -6732,10 +5663,7 @@ impl WinPanelShowScoresEvent {
         Ok(WinPanelShowScoresEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TopStreamsRequestFinishedEvent {}
 impl TopStreamsRequestFinishedEvent {
@@ -6744,10 +5672,7 @@ impl TopStreamsRequestFinishedEvent {
         Ok(TopStreamsRequestFinishedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CompetitiveStateChangedEvent {}
 impl CompetitiveStateChangedEvent {
@@ -6756,10 +5681,7 @@ impl CompetitiveStateChangedEvent {
         Ok(CompetitiveStateChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GlobalWarDataUpdatedEvent {}
 impl GlobalWarDataUpdatedEvent {
@@ -6768,10 +5690,7 @@ impl GlobalWarDataUpdatedEvent {
         Ok(GlobalWarDataUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StopWatchChangedEvent {}
 impl StopWatchChangedEvent {
@@ -6780,10 +5699,7 @@ impl StopWatchChangedEvent {
         Ok(StopWatchChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DsStopEvent {}
 impl DsStopEvent {
@@ -6792,10 +5708,7 @@ impl DsStopEvent {
         Ok(DsStopEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DsScreenshotEvent {
     pub delay: f32,
@@ -6809,10 +5722,7 @@ impl DsScreenshotEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowMatchSummaryEvent {}
 impl ShowMatchSummaryEvent {
@@ -6821,10 +5731,7 @@ impl ShowMatchSummaryEvent {
         Ok(ShowMatchSummaryEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ExperienceChangedEvent {}
 impl ExperienceChangedEvent {
@@ -6833,10 +5740,7 @@ impl ExperienceChangedEvent {
         Ok(ExperienceChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BeginXpLerpEvent {}
 impl BeginXpLerpEvent {
@@ -6845,10 +5749,7 @@ impl BeginXpLerpEvent {
         Ok(BeginXpLerpEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MatchmakerStatsUpdatedEvent {}
 impl MatchmakerStatsUpdatedEvent {
@@ -6857,10 +5758,7 @@ impl MatchmakerStatsUpdatedEvent {
         Ok(MatchmakerStatsUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RematchVotePeriodOverEvent {
     pub success: bool,
@@ -6874,10 +5772,7 @@ impl RematchVotePeriodOverEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RematchFailedToCreateEvent {}
 impl RematchFailedToCreateEvent {
@@ -6886,10 +5781,7 @@ impl RematchFailedToCreateEvent {
         Ok(RematchFailedToCreateEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerRematchChangeEvent {}
 impl PlayerRematchChangeEvent {
@@ -6898,10 +5790,7 @@ impl PlayerRematchChangeEvent {
         Ok(PlayerRematchChangeEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PingUpdatedEvent {}
 impl PingUpdatedEvent {
@@ -6910,10 +5799,7 @@ impl PingUpdatedEvent {
         Ok(PingUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MMStatsUpdatedEvent {}
 impl MMStatsUpdatedEvent {
@@ -6922,10 +5808,7 @@ impl MMStatsUpdatedEvent {
         Ok(MMStatsUpdatedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerNextMapVoteChangeEvent {
     pub map_index: u8,
@@ -6941,10 +5824,7 @@ impl PlayerNextMapVoteChangeEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteMapsChangedEvent {}
 impl VoteMapsChangedEvent {
@@ -6953,10 +5833,7 @@ impl VoteMapsChangedEvent {
         Ok(VoteMapsChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ProtoDefChangedEvent {
     pub kind: u8,
@@ -6978,10 +5855,7 @@ impl ProtoDefChangedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDominationEvent {
     pub dominator: u16,
@@ -6999,10 +5873,7 @@ impl PlayerDominationEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerRocketPackPushedEvent {
     pub pusher: u16,
@@ -7018,10 +5889,7 @@ impl PlayerRocketPackPushedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestRequestEvent {
     pub request: u32,
@@ -7037,10 +5905,7 @@ impl QuestRequestEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestResponseEvent {
     pub request: u32,
@@ -7058,10 +5923,7 @@ impl QuestResponseEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestProgressEvent {
     pub owner: u16,
@@ -7087,10 +5949,7 @@ impl QuestProgressEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ProjectileRemovedEvent {
     pub attacker: u8,
@@ -7110,10 +5969,7 @@ impl ProjectileRemovedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestMapDataChangedEvent {}
 impl QuestMapDataChangedEvent {
@@ -7122,10 +5978,7 @@ impl QuestMapDataChangedEvent {
         Ok(QuestMapDataChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GasDousedPlayerIgnitedEvent {
     pub igniter: u16,
@@ -7143,10 +5996,7 @@ impl GasDousedPlayerIgnitedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestTurnInStateEvent {
     pub state: u16,
@@ -7160,10 +6010,7 @@ impl QuestTurnInStateEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ItemsAcknowledgedEvent {}
 impl ItemsAcknowledgedEvent {
@@ -7172,10 +6019,7 @@ impl ItemsAcknowledgedEvent {
         Ok(ItemsAcknowledgedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CapperKilledEvent {
     pub blocker: u16,
@@ -7191,10 +6035,7 @@ impl CapperKilledEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MainMenuStabilizedEvent {}
 impl MainMenuStabilizedEvent {
@@ -7203,10 +6044,7 @@ impl MainMenuStabilizedEvent {
         Ok(MainMenuStabilizedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct WorldStatusChangedEvent {}
 impl WorldStatusChangedEvent {
@@ -7215,10 +6053,7 @@ impl WorldStatusChangedEvent {
         Ok(WorldStatusChangedEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVStatusEvent {
     pub clients: u32,
@@ -7238,10 +6073,7 @@ impl HLTVStatusEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVCameramanEvent {
     pub index: u16,
@@ -7255,10 +6087,7 @@ impl HLTVCameramanEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVRankCameraEvent {
     pub index: u8,
@@ -7276,10 +6105,7 @@ impl HLTVRankCameraEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVRankEntityEvent {
     pub index: u16,
@@ -7297,10 +6123,7 @@ impl HLTVRankEntityEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVFixedEvent {
     pub pos_x: u32,
@@ -7328,10 +6151,7 @@ impl HLTVFixedEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVChaseEvent {
     pub target_1: u16,
@@ -7357,10 +6177,7 @@ impl HLTVChaseEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVMessageEvent {
     pub text: String,
@@ -7374,10 +6191,7 @@ impl HLTVMessageEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVTitleEvent {
     pub text: String,
@@ -7391,10 +6205,7 @@ impl HLTVTitleEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVChatEvent {
     pub text: String,
@@ -7408,10 +6219,7 @@ impl HLTVChatEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayStartRecordEvent {}
 impl ReplayStartRecordEvent {
@@ -7420,10 +6228,7 @@ impl ReplayStartRecordEvent {
         Ok(ReplayStartRecordEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplaySessionInfoEvent {
     pub sn: String,
@@ -7443,10 +6248,7 @@ impl ReplaySessionInfoEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayEndRecordEvent {}
 impl ReplayEndRecordEvent {
@@ -7455,10 +6257,7 @@ impl ReplayEndRecordEvent {
         Ok(ReplayEndRecordEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayReplaysAvailableEvent {}
 impl ReplayReplaysAvailableEvent {
@@ -7467,10 +6266,7 @@ impl ReplayReplaysAvailableEvent {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayServerErrorEvent {
     pub error: String,
@@ -7484,10 +6280,7 @@ impl ReplayServerErrorEvent {
         })
     }
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub enum GameEvent {
     ServerSpawn(Box<ServerSpawnEvent>),
@@ -7893,10 +6686,7 @@ pub enum GameEvent {
     ReplayServerError(ReplayServerErrorEvent),
     Unknown(RawGameEvent),
 }
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameEventType {
     ServerSpawn,
@@ -11914,4 +10704,3 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
     .into_iter()
     .collect()
 }
-

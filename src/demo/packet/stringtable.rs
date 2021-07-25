@@ -7,13 +7,8 @@ use crate::demo::parser::Encode;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use std::borrow::{Borrow, Cow};
 use std::cmp::min;
-#[cfg(feature = "wasm")]
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FixedUserDataSize {
     #[size = 12]
@@ -22,10 +17,7 @@ pub struct FixedUserDataSize {
     pub bits: u8,
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTable<'a> {
@@ -155,10 +147,7 @@ fn test_string_table_roundtrip() {
     });
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]
@@ -175,10 +164,7 @@ impl<'a> ExtraData<'a> {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTableEntry<'a> {
@@ -229,10 +215,7 @@ impl fmt::Debug for StringTableEntry<'_> {
     }
 }
 
-#[cfg_attr(
-    feature = "wasm",
-    derive(wasm_typescript_definition::TypescriptDefinition)
-)]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTablePacket<'a> {
