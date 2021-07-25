@@ -94,9 +94,9 @@ dependencies = [
 
 [[package]]
 name = "bitbuffer"
-version = "0.9.7"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c69c4d2ef0cb9cd4cbb53bf5cd13746e6bc73c6ff2aedbfee0951c18553232d3"
+checksum = "ecda732bb39816e05e1d037def865ab8744579ffd53aa7586a17eb0bc7492170"
 dependencies = [
  "bitbuffer_derive",
  "err-derive",
@@ -106,9 +106,9 @@ dependencies = [
 
 [[package]]
 name = "bitbuffer_derive"
-version = "0.9.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "175ef08d15b205e940949b6005da842e81707a2ea3eb1b079294ef2e89c778e1"
+checksum = "4090254bfbc71442ff4a426ddba663346e26fd14b55b259281f763e350d7f621"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -897,7 +897,7 @@ dependencies = [
 
 [[package]]
 name = "tf-demo-parser"
-version = "0.2.6"
+version = "0.3.0"
 dependencies = [
  "bitbuffer",
  "enumflags2",
