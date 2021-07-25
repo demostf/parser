@@ -94,14 +94,15 @@ dependencies = [
 
 [[package]]
 name = "bitbuffer"
-version = "0.10.1"
+version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ecda732bb39816e05e1d037def865ab8744579ffd53aa7586a17eb0bc7492170"
+checksum = "29a6edc6bf48f16337689fb5122a6407713ecc23e57fbbcfde367c51fdb6aec1"
 dependencies = [
  "bitbuffer_derive",
  "err-derive",
  "memchr",
  "num-traits 0.2.14",
+ "serde",
 ]
 
 [[package]]
@@ -578,9 +579,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.27"
+version = "1.0.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0d8caf72986c1a598726adc988bb5984792ef84f5ee5aa50209145ee8077038"
+checksum = "5c7ed8b8c7b886ea3ed7dde405212185f423ab44682667c8c6dd14aa1d9f6612"
 dependencies = [
  "unicode-xid",
 ]

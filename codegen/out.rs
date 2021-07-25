@@ -2,6 +2,7 @@ use super::gamevent::{EventValue, GameEventDefinition, GameEventEntry, RawGameEv
 use crate::demo::Stream;
 use crate::{ParseError, Result};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
 fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     stream: &mut Stream<'a>,
     entry: Option<&GameEventEntry>,
@@ -22,7 +23,7 @@ fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     }
     Ok(T::read(stream)?)
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
     pub address: String,
@@ -53,7 +54,7 @@ impl ServerSpawnEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerChangeLevelFailedEvent {
     pub level_name: String,
 }
@@ -66,7 +67,7 @@ impl ServerChangeLevelFailedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerShutdownEvent {
     pub reason: String,
 }
@@ -79,7 +80,7 @@ impl ServerShutdownEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerCvarEvent {
     pub cvar_name: String,
     pub cvar_value: String,
@@ -94,7 +95,7 @@ impl ServerCvarEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerMessageEvent {
     pub text: String,
 }
@@ -107,7 +108,7 @@ impl ServerMessageEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerAddBanEvent {
     pub name: String,
     pub user_id: u16,
@@ -132,7 +133,7 @@ impl ServerAddBanEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ServerRemoveBanEvent {
     pub network_id: String,
     pub ip: String,
@@ -149,7 +150,7 @@ impl ServerRemoveBanEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerConnectEvent {
     pub name: String,
     pub index: u8,
@@ -172,7 +173,7 @@ impl PlayerConnectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerConnectClientEvent {
     pub name: String,
     pub index: u8,
@@ -193,7 +194,7 @@ impl PlayerConnectClientEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerInfoEvent {
     pub name: String,
     pub index: u8,
@@ -214,7 +215,7 @@ impl PlayerInfoEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDisconnectEvent {
     pub user_id: u16,
     pub reason: String,
@@ -235,7 +236,7 @@ impl PlayerDisconnectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerActivateEvent {
     pub user_id: u16,
 }
@@ -248,7 +249,7 @@ impl PlayerActivateEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerSayEvent {
     pub user_id: u16,
     pub text: String,
@@ -263,7 +264,7 @@ impl PlayerSayEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClientDisconnectEvent {
     pub message: String,
 }
@@ -276,7 +277,7 @@ impl ClientDisconnectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClientBeginConnectEvent {
     pub address: String,
     pub ip: u32,
@@ -295,7 +296,7 @@ impl ClientBeginConnectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClientConnectedEvent {
     pub address: String,
     pub ip: u32,
@@ -312,7 +313,7 @@ impl ClientConnectedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClientFullConnectEvent {
     pub address: String,
     pub ip: u32,
@@ -329,7 +330,7 @@ impl ClientFullConnectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HostQuitEvent {}
 impl HostQuitEvent {
     #[allow(unused_variables)]
@@ -337,7 +338,7 @@ impl HostQuitEvent {
         Ok(HostQuitEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamInfoEvent {
     pub team_id: u8,
     pub team_name: String,
@@ -352,7 +353,7 @@ impl TeamInfoEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamScoreEvent {
     pub team_id: u8,
     pub score: u16,
@@ -367,7 +368,7 @@ impl TeamScoreEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayBroadcastAudioEvent {
     pub team: u8,
     pub sound: String,
@@ -384,7 +385,7 @@ impl TeamPlayBroadcastAudioEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerTeamEvent {
     pub user_id: u16,
     pub team: u8,
@@ -409,7 +410,7 @@ impl PlayerTeamEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerClassEvent {
     pub user_id: u16,
     pub class: String,
@@ -424,7 +425,7 @@ impl PlayerClassEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDeathEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -495,7 +496,7 @@ impl PlayerDeathEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHurtEvent {
     pub user_id: u16,
     pub health: u16,
@@ -528,7 +529,7 @@ impl PlayerHurtEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerChatEvent {
     pub team_only: bool,
     pub user_id: u16,
@@ -545,7 +546,7 @@ impl PlayerChatEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerScoreEvent {
     pub user_id: u16,
     pub kills: u16,
@@ -564,7 +565,7 @@ impl PlayerScoreEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerSpawnEvent {
     pub user_id: u16,
     pub team: u16,
@@ -581,7 +582,7 @@ impl PlayerSpawnEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerShootEvent {
     pub user_id: u16,
     pub weapon: u8,
@@ -598,7 +599,7 @@ impl PlayerShootEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerUseEvent {
     pub user_id: u16,
     pub entity: u16,
@@ -613,7 +614,7 @@ impl PlayerUseEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerChangeNameEvent {
     pub user_id: u16,
     pub old_name: String,
@@ -630,7 +631,7 @@ impl PlayerChangeNameEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHintMessageEvent {
     pub hint_message: String,
 }
@@ -643,7 +644,7 @@ impl PlayerHintMessageEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
 }
@@ -656,7 +657,7 @@ impl BasePlayerTeleportedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameInitEvent {}
 impl GameInitEvent {
     #[allow(unused_variables)]
@@ -664,7 +665,7 @@ impl GameInitEvent {
         Ok(GameInitEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameNewMapEvent {
     pub map_name: String,
 }
@@ -677,7 +678,7 @@ impl GameNewMapEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameStartEvent {
     pub rounds_limit: u32,
     pub time_limit: u32,
@@ -696,7 +697,7 @@ impl GameStartEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameEndEvent {
     pub winner: u8,
 }
@@ -709,7 +710,7 @@ impl GameEndEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RoundStartEvent {
     pub time_limit: u32,
     pub frag_limit: u32,
@@ -726,7 +727,7 @@ impl RoundStartEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RoundEndEvent {
     pub winner: u8,
     pub reason: u8,
@@ -743,7 +744,7 @@ impl RoundEndEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameMessageEvent {
     pub target: u8,
     pub text: String,
@@ -758,7 +759,7 @@ impl GameMessageEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BreakBreakableEvent {
     pub ent_index: u32,
     pub user_id: u16,
@@ -775,7 +776,7 @@ impl BreakBreakableEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BreakPropEvent {
     pub ent_index: u32,
     pub user_id: u16,
@@ -790,7 +791,7 @@ impl BreakPropEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EntityKilledEvent {
     pub ent_index_killed: u32,
     pub ent_index_attacker: u32,
@@ -809,7 +810,7 @@ impl EntityKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BonusUpdatedEvent {
     pub num_advanced: u16,
     pub num_bronze: u16,
@@ -828,7 +829,7 @@ impl BonusUpdatedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AchievementEventEvent {
     pub achievement_name: String,
     pub cur_val: u16,
@@ -845,7 +846,7 @@ impl AchievementEventEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AchievementIncrementEvent {
     pub achievement_id: u32,
     pub cur_val: u16,
@@ -862,7 +863,7 @@ impl AchievementIncrementEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PhysgunPickupEvent {
     pub ent_index: u32,
 }
@@ -875,7 +876,7 @@ impl PhysgunPickupEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
 }
@@ -888,7 +889,7 @@ impl FlareIgniteNpcEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl HelicopterGrenadePuntMissEvent {
     #[allow(unused_variables)]
@@ -896,7 +897,7 @@ impl HelicopterGrenadePuntMissEvent {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct UserDataDownloadedEvent {}
 impl UserDataDownloadedEvent {
     #[allow(unused_variables)]
@@ -904,7 +905,7 @@ impl UserDataDownloadedEvent {
         Ok(UserDataDownloadedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
 }
@@ -917,7 +918,7 @@ impl RagdollDissolvedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVChangedModeEvent {
     pub old_mode: u16,
     pub new_mode: u16,
@@ -934,7 +935,7 @@ impl HLTVChangedModeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVChangedTargetEvent {
     pub mode: u16,
     pub old_target: u16,
@@ -951,7 +952,7 @@ impl HLTVChangedTargetEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteEndedEvent {}
 impl VoteEndedEvent {
     #[allow(unused_variables)]
@@ -959,7 +960,7 @@ impl VoteEndedEvent {
         Ok(VoteEndedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteStartedEvent {
     pub issue: String,
     pub param_1: String,
@@ -978,7 +979,7 @@ impl VoteStartedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteChangedEvent {
     pub vote_option_1: u8,
     pub vote_option_2: u8,
@@ -1001,7 +1002,7 @@ impl VoteChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VotePassedEvent {
     pub details: String,
     pub param_1: String,
@@ -1018,7 +1019,7 @@ impl VotePassedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteFailedEvent {
     pub team: u8,
 }
@@ -1031,7 +1032,7 @@ impl VoteFailedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteCastEvent {
     pub vote_option: u8,
     pub team: u16,
@@ -1048,7 +1049,7 @@ impl VoteCastEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteOptionsEvent {
     pub count: u8,
     pub option_1: String,
@@ -1071,7 +1072,7 @@ impl VoteOptionsEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplaySavedEvent {}
 impl ReplaySavedEvent {
     #[allow(unused_variables)]
@@ -1079,7 +1080,7 @@ impl ReplaySavedEvent {
         Ok(ReplaySavedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EnteredPerformanceModeEvent {}
 impl EnteredPerformanceModeEvent {
     #[allow(unused_variables)]
@@ -1087,7 +1088,7 @@ impl EnteredPerformanceModeEvent {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BrowseReplaysEvent {}
 impl BrowseReplaysEvent {
     #[allow(unused_variables)]
@@ -1095,7 +1096,7 @@ impl BrowseReplaysEvent {
         Ok(BrowseReplaysEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayYoutubeStatsEvent {
     pub views: u32,
     pub likes: u32,
@@ -1112,7 +1113,7 @@ impl ReplayYoutubeStatsEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct InventoryUpdatedEvent {}
 impl InventoryUpdatedEvent {
     #[allow(unused_variables)]
@@ -1120,7 +1121,7 @@ impl InventoryUpdatedEvent {
         Ok(InventoryUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CartUpdatedEvent {}
 impl CartUpdatedEvent {
     #[allow(unused_variables)]
@@ -1128,7 +1129,7 @@ impl CartUpdatedEvent {
         Ok(CartUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl StorePriceSheetUpdatedEvent {
     #[allow(unused_variables)]
@@ -1136,7 +1137,7 @@ impl StorePriceSheetUpdatedEvent {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EconInventoryConnectedEvent {}
 impl EconInventoryConnectedEvent {
     #[allow(unused_variables)]
@@ -1144,7 +1145,7 @@ impl EconInventoryConnectedEvent {
         Ok(EconInventoryConnectedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ItemSchemaInitializedEvent {}
 impl ItemSchemaInitializedEvent {
     #[allow(unused_variables)]
@@ -1152,7 +1153,7 @@ impl ItemSchemaInitializedEvent {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GcNewSessionEvent {}
 impl GcNewSessionEvent {
     #[allow(unused_variables)]
@@ -1160,7 +1161,7 @@ impl GcNewSessionEvent {
         Ok(GcNewSessionEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GcLostSessionEvent {}
 impl GcLostSessionEvent {
     #[allow(unused_variables)]
@@ -1168,7 +1169,7 @@ impl GcLostSessionEvent {
         Ok(GcLostSessionEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct IntroFinishEvent {
     pub player: u16,
 }
@@ -1181,7 +1182,7 @@ impl IntroFinishEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct IntroNextCameraEvent {
     pub player: u16,
 }
@@ -1194,7 +1195,7 @@ impl IntroNextCameraEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerChangeClassEvent {
     pub user_id: u16,
     pub class: u16,
@@ -1209,7 +1210,7 @@ impl PlayerChangeClassEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
 }
@@ -1222,7 +1223,7 @@ impl TfMapTimeRemainingEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TfGameOverEvent {
     pub reason: String,
 }
@@ -1235,7 +1236,7 @@ impl TfGameOverEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CtfFlagCapturedEvent {
     pub capping_team: u16,
     pub capping_team_score: u16,
@@ -1250,7 +1251,7 @@ impl CtfFlagCapturedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointInitializedEvent {}
 impl ControlPointInitializedEvent {
     #[allow(unused_variables)]
@@ -1258,7 +1259,7 @@ impl ControlPointInitializedEvent {
         Ok(ControlPointInitializedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
 }
@@ -1271,7 +1272,7 @@ impl ControlPointUpdateImagesEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
 }
@@ -1284,7 +1285,7 @@ impl ControlPointUpdateLayoutEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
 }
@@ -1297,7 +1298,7 @@ impl ControlPointUpdateCappingEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
 }
@@ -1310,7 +1311,7 @@ impl ControlPointUpdateOwnerEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointStartTouchEvent {
     pub player: u16,
     pub area: u16,
@@ -1325,7 +1326,7 @@ impl ControlPointStartTouchEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointEndTouchEvent {
     pub player: u16,
     pub area: u16,
@@ -1340,7 +1341,7 @@ impl ControlPointEndTouchEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointPulseElementEvent {
     pub player: u16,
 }
@@ -1353,7 +1354,7 @@ impl ControlPointPulseElementEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointFakeCaptureEvent {
     pub player: u16,
     pub int_data: u16,
@@ -1368,7 +1369,7 @@ impl ControlPointFakeCaptureEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointFakeCaptureMultiplierEvent {
     pub player: u16,
     pub int_data: u16,
@@ -1383,7 +1384,7 @@ impl ControlPointFakeCaptureMultiplierEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
 }
@@ -1396,7 +1397,7 @@ impl TeamPlayRoundSelectedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
 }
@@ -1409,7 +1410,7 @@ impl TeamPlayRoundStartEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundActiveEvent {}
 impl TeamPlayRoundActiveEvent {
     #[allow(unused_variables)]
@@ -1417,7 +1418,7 @@ impl TeamPlayRoundActiveEvent {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl TeamPlayWaitingBeginsEvent {
     #[allow(unused_variables)]
@@ -1425,7 +1426,7 @@ impl TeamPlayWaitingBeginsEvent {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl TeamPlayWaitingEndsEvent {
     #[allow(unused_variables)]
@@ -1433,7 +1434,7 @@ impl TeamPlayWaitingEndsEvent {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl TeamPlayWaitingAboutToEndEvent {
     #[allow(unused_variables)]
@@ -1441,7 +1442,7 @@ impl TeamPlayWaitingAboutToEndEvent {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRestartRoundEvent {}
 impl TeamPlayRestartRoundEvent {
     #[allow(unused_variables)]
@@ -1449,7 +1450,7 @@ impl TeamPlayRestartRoundEvent {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayReadyRestartEvent {}
 impl TeamPlayReadyRestartEvent {
     #[allow(unused_variables)]
@@ -1457,7 +1458,7 @@ impl TeamPlayReadyRestartEvent {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
 }
@@ -1470,7 +1471,7 @@ impl TeamPlayRoundRestartSecondsEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
 }
@@ -1483,7 +1484,7 @@ impl TeamPlayTeamReadyEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundWinEvent {
     pub team: u8,
     pub win_reason: u8,
@@ -1508,7 +1509,7 @@ impl TeamPlayRoundWinEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl TeamPlayUpdateTimerEvent {
     #[allow(unused_variables)]
@@ -1516,7 +1517,7 @@ impl TeamPlayUpdateTimerEvent {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
 }
@@ -1529,7 +1530,7 @@ impl TeamPlayRoundStalemateEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl TeamPlayOvertimeBeginEvent {
     #[allow(unused_variables)]
@@ -1537,7 +1538,7 @@ impl TeamPlayOvertimeBeginEvent {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl TeamPlayOvertimeEndEvent {
     #[allow(unused_variables)]
@@ -1545,7 +1546,7 @@ impl TeamPlayOvertimeEndEvent {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl TeamPlaySuddenDeathBeginEvent {
     #[allow(unused_variables)]
@@ -1553,7 +1554,7 @@ impl TeamPlaySuddenDeathBeginEvent {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl TeamPlaySuddenDeathEndEvent {
     #[allow(unused_variables)]
@@ -1561,7 +1562,7 @@ impl TeamPlaySuddenDeathEndEvent {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayGameOverEvent {
     pub reason: String,
 }
@@ -1574,7 +1575,7 @@ impl TeamPlayGameOverEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
 }
@@ -1587,7 +1588,7 @@ impl TeamPlayMapTimeRemainingEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
 }
@@ -1600,7 +1601,7 @@ impl TeamPlayTimerFlashEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayTimerTimeAddedEvent {
     pub timer: u16,
     pub seconds_added: u16,
@@ -1615,7 +1616,7 @@ impl TeamPlayTimerTimeAddedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPointStartCaptureEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1638,7 +1639,7 @@ impl TeamPlayPointStartCaptureEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPointCapturedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1657,7 +1658,7 @@ impl TeamPlayPointCapturedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPointLockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1674,7 +1675,7 @@ impl TeamPlayPointLockedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPointUnlockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1691,7 +1692,7 @@ impl TeamPlayPointUnlockedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayCaptureBrokenEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1708,7 +1709,7 @@ impl TeamPlayCaptureBrokenEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayCaptureBlockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1727,7 +1728,7 @@ impl TeamPlayCaptureBlockedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayFlagEventEvent {
     pub player: u16,
     pub carrier: u16,
@@ -1748,7 +1749,7 @@ impl TeamPlayFlagEventEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -1803,7 +1804,7 @@ impl TeamPlayWinPanelEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
     pub team: u8,
@@ -1818,7 +1819,7 @@ impl TeamPlayTeamBalancedPlayerEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl TeamPlaySetupFinishedEvent {
     #[allow(unused_variables)]
@@ -1826,7 +1827,7 @@ impl TeamPlaySetupFinishedEvent {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
 }
@@ -1839,7 +1840,7 @@ impl TeamPlayAlertEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TrainingCompleteEvent {
     pub next_map: String,
     pub map: String,
@@ -1856,7 +1857,7 @@ impl TrainingCompleteEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowFreezePanelEvent {
     pub killer: u16,
 }
@@ -1869,7 +1870,7 @@ impl ShowFreezePanelEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HideFreezePanelEvent {}
 impl HideFreezePanelEvent {
     #[allow(unused_variables)]
@@ -1877,7 +1878,7 @@ impl HideFreezePanelEvent {
         Ok(HideFreezePanelEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FreezeCamStartedEvent {}
 impl FreezeCamStartedEvent {
     #[allow(unused_variables)]
@@ -1885,7 +1886,7 @@ impl FreezeCamStartedEvent {
         Ok(FreezeCamStartedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl LocalPlayerChangeTeamEvent {
     #[allow(unused_variables)]
@@ -1893,7 +1894,7 @@ impl LocalPlayerChangeTeamEvent {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
 }
@@ -1906,7 +1907,7 @@ impl LocalPlayerScoreChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerChangeClassEvent {}
 impl LocalPlayerChangeClassEvent {
     #[allow(unused_variables)]
@@ -1914,7 +1915,7 @@ impl LocalPlayerChangeClassEvent {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerRespawnEvent {}
 impl LocalPlayerRespawnEvent {
     #[allow(unused_variables)]
@@ -1922,7 +1923,7 @@ impl LocalPlayerRespawnEvent {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BuildingInfoChangedEvent {
     pub building_type: u8,
     pub object_mode: u8,
@@ -1939,7 +1940,7 @@ impl BuildingInfoChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
 }
@@ -1952,7 +1953,7 @@ impl LocalPlayerChangeDisguiseEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerAccountChangedEvent {
     pub old_value: u16,
     pub new_value: u16,
@@ -1967,7 +1968,7 @@ impl PlayerAccountChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SpyPdaResetEvent {}
 impl SpyPdaResetEvent {
     #[allow(unused_variables)]
@@ -1975,7 +1976,7 @@ impl SpyPdaResetEvent {
         Ok(SpyPdaResetEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FlagStatusUpdateEvent {
     pub user_id: u16,
     pub ent_index: u32,
@@ -1990,7 +1991,7 @@ impl FlagStatusUpdateEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
 }
@@ -2003,7 +2004,7 @@ impl PlayerStatsUpdatedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayingCommentaryEvent {}
 impl PlayingCommentaryEvent {
     #[allow(unused_variables)]
@@ -2011,7 +2012,7 @@ impl PlayingCommentaryEvent {
         Ok(PlayingCommentaryEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerChargeDeployedEvent {
     pub user_id: u16,
     pub target_id: u16,
@@ -2026,7 +2027,7 @@ impl PlayerChargeDeployedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerBuiltObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2043,7 +2044,7 @@ impl PlayerBuiltObjectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerUpgradedObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2062,7 +2063,7 @@ impl PlayerUpgradedObjectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerCarryObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2079,7 +2080,7 @@ impl PlayerCarryObjectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDropObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2096,7 +2097,7 @@ impl PlayerDropObjectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ObjectRemovedEvent {
     pub user_id: u16,
     pub object_type: u16,
@@ -2113,7 +2114,7 @@ impl ObjectRemovedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ObjectDestroyedEvent {
     pub user_id: u16,
     pub attacker: u16,
@@ -2140,7 +2141,7 @@ impl ObjectDestroyedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ObjectDetonatedEvent {
     pub user_id: u16,
     pub object_type: u16,
@@ -2157,7 +2158,7 @@ impl ObjectDetonatedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AchievementEarnedEvent {
     pub player: u8,
     pub achievement: u16,
@@ -2172,7 +2173,7 @@ impl AchievementEarnedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SpecTargetUpdatedEvent {}
 impl SpecTargetUpdatedEvent {
     #[allow(unused_variables)]
@@ -2180,7 +2181,7 @@ impl SpecTargetUpdatedEvent {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TournamentStateUpdateEvent {
     pub user_id: u16,
     pub name_change: bool,
@@ -2199,7 +2200,7 @@ impl TournamentStateUpdateEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TournamentEnableCountdownEvent {}
 impl TournamentEnableCountdownEvent {
     #[allow(unused_variables)]
@@ -2207,7 +2208,7 @@ impl TournamentEnableCountdownEvent {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
 }
@@ -2220,7 +2221,7 @@ impl PlayerCalledForMedicEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerAskedForBallEvent {
     pub user_id: u16,
 }
@@ -2233,7 +2234,7 @@ impl PlayerAskedForBallEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl LocalPlayerBecameObserverEvent {
     #[allow(unused_variables)]
@@ -2241,7 +2242,7 @@ impl LocalPlayerBecameObserverEvent {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerIgnitedInvEvent {
     pub pyro_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2258,7 +2259,7 @@ impl PlayerIgnitedInvEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerIgnitedEvent {
     pub pyro_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2275,7 +2276,7 @@ impl PlayerIgnitedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerExtinguishedEvent {
     pub victim: u8,
     pub healer: u8,
@@ -2292,7 +2293,7 @@ impl PlayerExtinguishedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerTeleportedEvent {
     pub user_id: u16,
     pub builder_id: u16,
@@ -2309,7 +2310,7 @@ impl PlayerTeleportedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
 }
@@ -2322,7 +2323,7 @@ impl PlayerHealedMedicCallEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl LocalPlayerChargeReadyEvent {
     #[allow(unused_variables)]
@@ -2330,7 +2331,7 @@ impl LocalPlayerChargeReadyEvent {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerWindDownEvent {}
 impl LocalPlayerWindDownEvent {
     #[allow(unused_variables)]
@@ -2338,7 +2339,7 @@ impl LocalPlayerWindDownEvent {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerInvulnedEvent {
     pub user_id: u16,
     pub medic_user_id: u16,
@@ -2353,7 +2354,7 @@ impl PlayerInvulnedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscortSpeedEvent {
     pub team: u8,
     pub speed: u8,
@@ -2370,7 +2371,7 @@ impl EscortSpeedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscortProgressEvent {
     pub team: u8,
     pub progress: f32,
@@ -2387,7 +2388,7 @@ impl EscortProgressEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscortRecedeEvent {
     pub team: u8,
     pub recede_time: f32,
@@ -2402,7 +2403,7 @@ impl EscortRecedeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameUIActivatedEvent {}
 impl GameUIActivatedEvent {
     #[allow(unused_variables)]
@@ -2410,7 +2411,7 @@ impl GameUIActivatedEvent {
         Ok(GameUIActivatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GameUIHiddenEvent {}
 impl GameUIHiddenEvent {
     #[allow(unused_variables)]
@@ -2418,7 +2419,7 @@ impl GameUIHiddenEvent {
         Ok(GameUIHiddenEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerEscortScoreEvent {
     pub player: u8,
     pub points: u8,
@@ -2433,7 +2434,7 @@ impl PlayerEscortScoreEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHealOnHitEvent {
     pub amount: u16,
     pub ent_index: u8,
@@ -2450,7 +2451,7 @@ impl PlayerHealOnHitEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerStealSandvichEvent {
     pub owner: u16,
     pub target: u16,
@@ -2465,7 +2466,7 @@ impl PlayerStealSandvichEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowClassLayoutEvent {
     pub show: bool,
 }
@@ -2478,7 +2479,7 @@ impl ShowClassLayoutEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowVsPanelEvent {
     pub show: bool,
 }
@@ -2491,7 +2492,7 @@ impl ShowVsPanelEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDamagedEvent {
     pub amount: u16,
     pub kind: u32,
@@ -2506,7 +2507,7 @@ impl PlayerDamagedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArenaPlayerNotificationEvent {
     pub player: u8,
     pub message: u8,
@@ -2521,7 +2522,7 @@ impl ArenaPlayerNotificationEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArenaMatchMaxStreakEvent {
     pub team: u8,
     pub streak: u8,
@@ -2536,7 +2537,7 @@ impl ArenaMatchMaxStreakEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArenaRoundStartEvent {}
 impl ArenaRoundStartEvent {
     #[allow(unused_variables)]
@@ -2544,7 +2545,7 @@ impl ArenaRoundStartEvent {
         Ok(ArenaRoundStartEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArenaWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -2635,7 +2636,7 @@ impl ArenaWinPanelEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PveWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -2652,7 +2653,7 @@ impl PveWinPanelEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AirDashEvent {
     pub player: u8,
 }
@@ -2665,7 +2666,7 @@ impl AirDashEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LandedEvent {
     pub player: u8,
 }
@@ -2678,7 +2679,7 @@ impl LandedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
 }
@@ -2691,7 +2692,7 @@ impl PlayerDamageDodgedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerStunnedEvent {
     pub stunner: u16,
     pub victim: u16,
@@ -2710,7 +2711,7 @@ impl PlayerStunnedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ScoutGrandSlamEvent {
     pub scout_id: u16,
     pub target_id: u16,
@@ -2725,7 +2726,7 @@ impl ScoutGrandSlamEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ScoutSlamdollLandedEvent {
     pub target_index: u16,
     pub x: f32,
@@ -2744,7 +2745,7 @@ impl ScoutSlamdollLandedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ArrowImpactEvent {
     pub attached_entity: u16,
     pub shooter: u16,
@@ -2777,7 +2778,7 @@ impl ArrowImpactEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerJaratedEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2792,7 +2793,7 @@ impl PlayerJaratedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerJaratedFadeEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2807,7 +2808,7 @@ impl PlayerJaratedFadeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerShieldBlockedEvent {
     pub attacker_ent_index: u8,
     pub blocker_ent_index: u8,
@@ -2822,7 +2823,7 @@ impl PlayerShieldBlockedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerPinnedEvent {
     pub pinned: u8,
 }
@@ -2835,7 +2836,7 @@ impl PlayerPinnedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
 }
@@ -2848,7 +2849,7 @@ impl PlayerHealedByMedicEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerSappedObjectEvent {
     pub user_id: u16,
     pub owner_id: u16,
@@ -2867,7 +2868,7 @@ impl PlayerSappedObjectEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ItemFoundEvent {
     pub player: u8,
     pub quality: u8,
@@ -2892,7 +2893,7 @@ impl ItemFoundEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowAnnotationEvent {
     pub world_pos_x: f32,
     pub world_pos_y: f32,
@@ -2931,7 +2932,7 @@ impl ShowAnnotationEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HideAnnotationEvent {
     pub id: u32,
 }
@@ -2944,7 +2945,7 @@ impl HideAnnotationEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
 }
@@ -2957,7 +2958,7 @@ impl PostInventoryApplicationEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointUnlockUpdatedEvent {
     pub index: u16,
     pub time: f32,
@@ -2972,7 +2973,7 @@ impl ControlPointUnlockUpdatedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DeployBuffBannerEvent {
     pub buff_type: u8,
     pub buff_owner: u16,
@@ -2987,7 +2988,7 @@ impl DeployBuffBannerEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerBuffEvent {
     pub user_id: u16,
     pub buff_owner: u16,
@@ -3004,7 +3005,7 @@ impl PlayerBuffEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MedicDeathEvent {
     pub user_id: u16,
     pub attacker: u16,
@@ -3023,7 +3024,7 @@ impl MedicDeathEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct OvertimeNagEvent {}
 impl OvertimeNagEvent {
     #[allow(unused_variables)]
@@ -3031,7 +3032,7 @@ impl OvertimeNagEvent {
         Ok(OvertimeNagEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamsChangedEvent {}
 impl TeamsChangedEvent {
     #[allow(unused_variables)]
@@ -3039,7 +3040,7 @@ impl TeamsChangedEvent {
         Ok(TeamsChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
 }
@@ -3052,7 +3053,7 @@ impl HalloweenPumpkinGrabEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RocketJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3067,7 +3068,7 @@ impl RocketJumpEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RocketJumpLandedEvent {
     pub user_id: u16,
 }
@@ -3080,7 +3081,7 @@ impl RocketJumpLandedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StickyJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3095,7 +3096,7 @@ impl StickyJumpEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StickyJumpLandedEvent {
     pub user_id: u16,
 }
@@ -3108,7 +3109,7 @@ impl StickyJumpLandedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RocketPackLaunchEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3123,7 +3124,7 @@ impl RocketPackLaunchEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RocketPackLandedEvent {
     pub user_id: u16,
 }
@@ -3136,7 +3137,7 @@ impl RocketPackLandedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MedicDefendedEvent {
     pub user_id: u16,
     pub medic: u16,
@@ -3151,7 +3152,7 @@ impl MedicDefendedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerHealedEvent {
     pub amount: u16,
 }
@@ -3164,7 +3165,7 @@ impl LocalPlayerHealedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
 }
@@ -3177,7 +3178,7 @@ impl PlayerDestroyedPipeBombEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ObjectDeflectedEvent {
     pub user_id: u16,
     pub owner_id: u16,
@@ -3196,7 +3197,7 @@ impl ObjectDeflectedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerMvpEvent {
     pub player: u16,
 }
@@ -3209,7 +3210,7 @@ impl PlayerMvpEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RaidSpawnMobEvent {}
 impl RaidSpawnMobEvent {
     #[allow(unused_variables)]
@@ -3217,7 +3218,7 @@ impl RaidSpawnMobEvent {
         Ok(RaidSpawnMobEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RaidSpawnSquadEvent {}
 impl RaidSpawnSquadEvent {
     #[allow(unused_variables)]
@@ -3225,7 +3226,7 @@ impl RaidSpawnSquadEvent {
         Ok(RaidSpawnSquadEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct NavBlockedEvent {
     pub area: u32,
     pub blocked: bool,
@@ -3240,7 +3241,7 @@ impl NavBlockedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PathTrackPassedEvent {
     pub index: u16,
 }
@@ -3253,7 +3254,7 @@ impl PathTrackPassedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct NumCappersChangedEvent {
     pub index: u16,
     pub count: u8,
@@ -3268,7 +3269,7 @@ impl NumCappersChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerRegenerateEvent {}
 impl PlayerRegenerateEvent {
     #[allow(unused_variables)]
@@ -3276,7 +3277,7 @@ impl PlayerRegenerateEvent {
         Ok(PlayerRegenerateEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct UpdateStatusItemEvent {
     pub index: u8,
     pub object: u8,
@@ -3291,7 +3292,7 @@ impl UpdateStatusItemEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StatsResetRoundEvent {}
 impl StatsResetRoundEvent {
     #[allow(unused_variables)]
@@ -3299,7 +3300,7 @@ impl StatsResetRoundEvent {
         Ok(StatsResetRoundEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl ScoreStatsAccumulatedUpdateEvent {
     #[allow(unused_variables)]
@@ -3307,7 +3308,7 @@ impl ScoreStatsAccumulatedUpdateEvent {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl ScoreStatsAccumulatedResetEvent {
     #[allow(unused_variables)]
@@ -3315,7 +3316,7 @@ impl ScoreStatsAccumulatedResetEvent {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
 }
@@ -3328,7 +3329,7 @@ impl AchievementEarnedLocalEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHealedEvent {
     pub patient: u16,
     pub healer: u16,
@@ -3345,7 +3346,7 @@ impl PlayerHealedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BuildingHealedEvent {
     pub building: u16,
     pub healer: u16,
@@ -3362,7 +3363,7 @@ impl BuildingHealedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ItemPickupEvent {
     pub user_id: u16,
     pub item: String,
@@ -3377,7 +3378,7 @@ impl ItemPickupEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DuelStatusEvent {
     pub killer: u16,
     pub score_type: u16,
@@ -3400,7 +3401,7 @@ impl DuelStatusEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FishNoticeEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3443,7 +3444,7 @@ impl FishNoticeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FishNoticeArmEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3486,7 +3487,7 @@ impl FishNoticeArmEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SlapNoticeEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3529,7 +3530,7 @@ impl SlapNoticeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ThrowableHitEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3574,7 +3575,7 @@ impl ThrowableHitEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PumpkinLordSummonedEvent {}
 impl PumpkinLordSummonedEvent {
     #[allow(unused_variables)]
@@ -3582,7 +3583,7 @@ impl PumpkinLordSummonedEvent {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PumpkinLordKilledEvent {}
 impl PumpkinLordKilledEvent {
     #[allow(unused_variables)]
@@ -3590,7 +3591,7 @@ impl PumpkinLordKilledEvent {
         Ok(PumpkinLordKilledEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusSummonedEvent {
     pub level: u16,
 }
@@ -3603,7 +3604,7 @@ impl MerasmusSummonedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusKilledEvent {
     pub level: u16,
 }
@@ -3616,7 +3617,7 @@ impl MerasmusKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusEscapeWarningEvent {
     pub level: u16,
     pub time_remaining: u8,
@@ -3631,7 +3632,7 @@ impl MerasmusEscapeWarningEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusEscapedEvent {
     pub level: u16,
 }
@@ -3644,7 +3645,7 @@ impl MerasmusEscapedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossSummonedEvent {
     pub level: u16,
 }
@@ -3657,7 +3658,7 @@ impl EyeballBossSummonedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossStunnedEvent {
     pub level: u16,
     pub player_ent_index: u8,
@@ -3672,7 +3673,7 @@ impl EyeballBossStunnedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossKilledEvent {
     pub level: u16,
 }
@@ -3685,7 +3686,7 @@ impl EyeballBossKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossKillerEvent {
     pub level: u16,
     pub player_ent_index: u8,
@@ -3700,7 +3701,7 @@ impl EyeballBossKillerEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossEscapeImminentEvent {
     pub level: u16,
     pub time_remaining: u8,
@@ -3715,7 +3716,7 @@ impl EyeballBossEscapeImminentEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EyeballBossEscapedEvent {
     pub level: u16,
 }
@@ -3728,7 +3729,7 @@ impl EyeballBossEscapedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct NpcHurtEvent {
     pub ent_index: u16,
     pub health: u16,
@@ -3753,7 +3754,7 @@ impl NpcHurtEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ControlPointTimerUpdatedEvent {
     pub index: u16,
     pub time: f32,
@@ -3768,7 +3769,7 @@ impl ControlPointTimerUpdatedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
 }
@@ -3781,7 +3782,7 @@ impl PlayerHighFiveStartEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
 }
@@ -3794,7 +3795,7 @@ impl PlayerHighFiveCancelEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerHighFiveSuccessEvent {
     pub initiator_ent_index: u8,
     pub partner_ent_index: u8,
@@ -3809,7 +3810,7 @@ impl PlayerHighFiveSuccessEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerBonusPointsEvent {
     pub points: u16,
     pub player_ent_index: u16,
@@ -3826,7 +3827,7 @@ impl PlayerBonusPointsEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerUpgradedEvent {}
 impl PlayerUpgradedEvent {
     #[allow(unused_variables)]
@@ -3834,7 +3835,7 @@ impl PlayerUpgradedEvent {
         Ok(PlayerUpgradedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerBuybackEvent {
     pub player: u16,
     pub cost: u16,
@@ -3849,7 +3850,7 @@ impl PlayerBuybackEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerUsedPowerUpBottleEvent {
     pub player: u16,
     pub kind: u16,
@@ -3866,7 +3867,7 @@ impl PlayerUsedPowerUpBottleEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
 }
@@ -3879,7 +3880,7 @@ impl ChristmasGiftGrabEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerKilledAchievementZoneEvent {
     pub attacker: u16,
     pub victim: u16,
@@ -3896,7 +3897,7 @@ impl PlayerKilledAchievementZoneEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyUpdatedEvent {}
 impl PartyUpdatedEvent {
     #[allow(unused_variables)]
@@ -3904,7 +3905,7 @@ impl PartyUpdatedEvent {
         Ok(PartyUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyPrefChangedEvent {}
 impl PartyPrefChangedEvent {
     #[allow(unused_variables)]
@@ -3912,7 +3913,7 @@ impl PartyPrefChangedEvent {
         Ok(PartyPrefChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyCriteriaChangedEvent {}
 impl PartyCriteriaChangedEvent {
     #[allow(unused_variables)]
@@ -3920,7 +3921,7 @@ impl PartyCriteriaChangedEvent {
         Ok(PartyCriteriaChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyInvitesChangedEvent {}
 impl PartyInvitesChangedEvent {
     #[allow(unused_variables)]
@@ -3928,7 +3929,7 @@ impl PartyInvitesChangedEvent {
         Ok(PartyInvitesChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyQueueStateChangedEvent {
     pub match_group: u16,
 }
@@ -3941,7 +3942,7 @@ impl PartyQueueStateChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyChatEvent {
     pub steam_id: String,
     pub text: String,
@@ -3958,7 +3959,7 @@ impl PartyChatEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyMemberJoinEvent {
     pub steam_id: String,
 }
@@ -3971,7 +3972,7 @@ impl PartyMemberJoinEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PartyMemberLeaveEvent {
     pub steam_id: String,
 }
@@ -3984,7 +3985,7 @@ impl PartyMemberLeaveEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MatchInvitesUpdatedEvent {}
 impl MatchInvitesUpdatedEvent {
     #[allow(unused_variables)]
@@ -3992,7 +3993,7 @@ impl MatchInvitesUpdatedEvent {
         Ok(MatchInvitesUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LobbyUpdatedEvent {}
 impl LobbyUpdatedEvent {
     #[allow(unused_variables)]
@@ -4000,7 +4001,7 @@ impl LobbyUpdatedEvent {
         Ok(LobbyUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmMissionUpdateEvent {
     pub class: u16,
     pub count: u16,
@@ -4015,7 +4016,7 @@ impl MvmMissionUpdateEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RecalculateHolidaysEvent {}
 impl RecalculateHolidaysEvent {
     #[allow(unused_variables)]
@@ -4023,7 +4024,7 @@ impl RecalculateHolidaysEvent {
         Ok(RecalculateHolidaysEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
 }
@@ -4036,7 +4037,7 @@ impl PlayerCurrencyChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
 }
@@ -4049,7 +4050,7 @@ impl DoomsdayRocketOpenEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
 }
@@ -4062,7 +4063,7 @@ impl RemoveNemesisRelationshipsEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmCreditBonusWaveEvent {}
 impl MvmCreditBonusWaveEvent {
     #[allow(unused_variables)]
@@ -4070,7 +4071,7 @@ impl MvmCreditBonusWaveEvent {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmCreditBonusAllEvent {}
 impl MvmCreditBonusAllEvent {
     #[allow(unused_variables)]
@@ -4078,7 +4079,7 @@ impl MvmCreditBonusAllEvent {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl MvmCreditBonusAllAdvancedEvent {
     #[allow(unused_variables)]
@@ -4086,7 +4087,7 @@ impl MvmCreditBonusAllAdvancedEvent {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
 }
@@ -4099,7 +4100,7 @@ impl MvmQuickSentryUpgradeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl MvmTankDestroyedByPlayersEvent {
     #[allow(unused_variables)]
@@ -4107,7 +4108,7 @@ impl MvmTankDestroyedByPlayersEvent {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
 }
@@ -4120,7 +4121,7 @@ impl MvmKillRobotDeliveringBombEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmPickupCurrencyEvent {
     pub player: u16,
     pub currency: u16,
@@ -4135,7 +4136,7 @@ impl MvmPickupCurrencyEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
 }
@@ -4148,7 +4149,7 @@ impl MvmBombCarrierKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmSentryBusterDetonateEvent {
     pub player: u16,
     pub det_x: f32,
@@ -4167,7 +4168,7 @@ impl MvmSentryBusterDetonateEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
 }
@@ -4180,7 +4181,7 @@ impl MvmScoutMarkedForDeathEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
 }
@@ -4193,7 +4194,7 @@ impl MvmMedicPowerUpSharedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBeginWaveEvent {
     pub wave_index: u16,
     pub max_waves: u16,
@@ -4210,7 +4211,7 @@ impl MvmBeginWaveEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
 }
@@ -4223,7 +4224,7 @@ impl MvmWaveCompleteEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmMissionCompleteEvent {
     pub mission: String,
 }
@@ -4236,7 +4237,7 @@ impl MvmMissionCompleteEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
 }
@@ -4249,7 +4250,7 @@ impl MvmBombResetByPlayerEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl MvmBombAlarmTriggeredEvent {
     #[allow(unused_variables)]
@@ -4257,7 +4258,7 @@ impl MvmBombAlarmTriggeredEvent {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
 }
@@ -4270,7 +4271,7 @@ impl MvmBombDeployResetByPlayerEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmWaveFailedEvent {}
 impl MvmWaveFailedEvent {
     #[allow(unused_variables)]
@@ -4278,7 +4279,7 @@ impl MvmWaveFailedEvent {
         Ok(MvmWaveFailedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmResetStatsEvent {}
 impl MvmResetStatsEvent {
     #[allow(unused_variables)]
@@ -4286,7 +4287,7 @@ impl MvmResetStatsEvent {
         Ok(MvmResetStatsEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DamageResistedEvent {
     pub ent_index: u8,
 }
@@ -4299,7 +4300,7 @@ impl DamageResistedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RevivePlayerNotifyEvent {
     pub ent_index: u16,
     pub marker_ent_index: u16,
@@ -4314,7 +4315,7 @@ impl RevivePlayerNotifyEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
 }
@@ -4327,7 +4328,7 @@ impl RevivePlayerStoppedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
 }
@@ -4340,7 +4341,7 @@ impl RevivePlayerCompleteEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
 }
@@ -4353,7 +4354,7 @@ impl PlayerTurnedToGhostEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MedigunShieldBlockedDamageEvent {
     pub user_id: u16,
     pub damage: f32,
@@ -4368,7 +4369,7 @@ impl MedigunShieldBlockedDamageEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
 }
@@ -4381,7 +4382,7 @@ impl MvmAdvWaveCompleteNoGatesEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmSniperHeadshotCurrencyEvent {
     pub user_id: u16,
     pub currency: u16,
@@ -4396,7 +4397,7 @@ impl MvmSniperHeadshotCurrencyEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmMannhattanPitEvent {}
 impl MvmMannhattanPitEvent {
     #[allow(unused_variables)]
@@ -4404,7 +4405,7 @@ impl MvmMannhattanPitEvent {
         Ok(MvmMannhattanPitEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FlagCarriedInDetectionZoneEvent {
     #[allow(unused_variables)]
@@ -4412,7 +4413,7 @@ impl FlagCarriedInDetectionZoneEvent {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl MvmAdvWaveKilledStunRadioEvent {
     #[allow(unused_variables)]
@@ -4420,7 +4421,7 @@ impl MvmAdvWaveKilledStunRadioEvent {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
     pub victim: u16,
@@ -4435,7 +4436,7 @@ impl PlayerDirectHitStunEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
 }
@@ -4448,7 +4449,7 @@ impl MvmSentryBusterKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct UpgradesFileChangedEvent {
     pub path: String,
 }
@@ -4461,7 +4462,7 @@ impl UpgradesFileChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdTeamPointsChangedEvent {
     pub points: u16,
     pub team: u8,
@@ -4478,7 +4479,7 @@ impl RdTeamPointsChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdRulesStateChangedEvent {}
 impl RdRulesStateChangedEvent {
     #[allow(unused_variables)]
@@ -4486,7 +4487,7 @@ impl RdRulesStateChangedEvent {
         Ok(RdRulesStateChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdRobotKilledEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -4519,7 +4520,7 @@ impl RdRobotKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdRobotImpactEvent {
     pub ent_index: u16,
     pub impulse_x: f32,
@@ -4538,7 +4539,7 @@ impl RdRobotImpactEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
 }
@@ -4551,7 +4552,7 @@ impl TeamPlayPreRoundTimeLeftEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ParachuteDeployEvent {
     pub index: u16,
 }
@@ -4564,7 +4565,7 @@ impl ParachuteDeployEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ParachuteHolsterEvent {
     pub index: u16,
 }
@@ -4577,7 +4578,7 @@ impl ParachuteHolsterEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct KillRefillsMeterEvent {
     pub index: u16,
 }
@@ -4590,7 +4591,7 @@ impl KillRefillsMeterEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RpsTauntEventEvent {
     pub winner: u16,
     pub winner_rps: u8,
@@ -4609,7 +4610,7 @@ impl RpsTauntEventEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CongaKillEvent {
     pub index: u16,
 }
@@ -4622,7 +4623,7 @@ impl CongaKillEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerInitialSpawnEvent {
     pub index: u16,
 }
@@ -4635,7 +4636,7 @@ impl PlayerInitialSpawnEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CompetitiveVictoryEvent {}
 impl CompetitiveVictoryEvent {
     #[allow(unused_variables)]
@@ -4643,7 +4644,7 @@ impl CompetitiveVictoryEvent {
         Ok(CompetitiveVictoryEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CompetitiveStatsUpdateEvent {
     pub index: u16,
     pub kills_rank: u8,
@@ -4666,7 +4667,7 @@ impl CompetitiveStatsUpdateEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MiniGameWinEvent {
     pub team: u8,
     pub kind: u8,
@@ -4681,7 +4682,7 @@ impl MiniGameWinEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SentryOnGoActiveEvent {
     pub index: u16,
 }
@@ -4694,7 +4695,7 @@ impl SentryOnGoActiveEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DuckXpLevelUpEvent {
     pub level: u16,
 }
@@ -4707,7 +4708,7 @@ impl DuckXpLevelUpEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestLogOpenedEvent {}
 impl QuestLogOpenedEvent {
     #[allow(unused_variables)]
@@ -4715,7 +4716,7 @@ impl QuestLogOpenedEvent {
         Ok(QuestLogOpenedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SchemaUpdatedEvent {}
 impl SchemaUpdatedEvent {
     #[allow(unused_variables)]
@@ -4723,7 +4724,7 @@ impl SchemaUpdatedEvent {
         Ok(SchemaUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct LocalPlayerPickupWeaponEvent {}
 impl LocalPlayerPickupWeaponEvent {
     #[allow(unused_variables)]
@@ -4731,7 +4732,7 @@ impl LocalPlayerPickupWeaponEvent {
         Ok(LocalPlayerPickupWeaponEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RdPlayerScorePointsEvent {
     pub player: u16,
     pub method: u16,
@@ -4748,7 +4749,7 @@ impl RdPlayerScorePointsEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DemomanDetStickiesEvent {
     pub player: u16,
 }
@@ -4761,7 +4762,7 @@ impl DemomanDetStickiesEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestObjectiveCompletedEvent {
     pub quest_item_id_low: u32,
     pub quest_item_id_hi: u32,
@@ -4780,7 +4781,7 @@ impl QuestObjectiveCompletedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerScoreChangedEvent {
     pub player: u8,
     pub delta: u16,
@@ -4795,7 +4796,7 @@ impl PlayerScoreChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct KilledCappingPlayerEvent {
     pub cp: u8,
     pub killer: u8,
@@ -4814,7 +4815,7 @@ impl KilledCappingPlayerEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EnvironmentalDeathEvent {
     pub killer: u8,
     pub victim: u8,
@@ -4829,7 +4830,7 @@ impl EnvironmentalDeathEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ProjectileDirectHitEvent {
     pub attacker: u8,
     pub victim: u8,
@@ -4846,7 +4847,7 @@ impl ProjectileDirectHitEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassGetEvent {
     pub owner: u16,
 }
@@ -4859,7 +4860,7 @@ impl PassGetEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassScoreEvent {
     pub scorer: u16,
     pub assister: u16,
@@ -4876,7 +4877,7 @@ impl PassScoreEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassFreeEvent {
     pub owner: u16,
     pub attacker: u16,
@@ -4891,7 +4892,7 @@ impl PassFreeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassPassCaughtEvent {
     pub passer: u16,
     pub catcher: u16,
@@ -4910,7 +4911,7 @@ impl PassPassCaughtEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassBallStolenEvent {
     pub victim: u16,
     pub attacker: u16,
@@ -4925,7 +4926,7 @@ impl PassBallStolenEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PassBallBlockedEvent {
     pub owner: u16,
     pub blocker: u16,
@@ -4940,7 +4941,7 @@ impl PassBallBlockedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DamagePreventedEvent {
     pub preventor: u16,
     pub victim: u16,
@@ -4959,7 +4960,7 @@ impl DamagePreventedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenBossKilledEvent {
     pub boss: u16,
     pub killer: u16,
@@ -4974,7 +4975,7 @@ impl HalloweenBossKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscapedLootIslandEvent {
     pub player: u16,
 }
@@ -4987,7 +4988,7 @@ impl EscapedLootIslandEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TaggedPlayerAsItEvent {
     pub player: u16,
 }
@@ -5000,7 +5001,7 @@ impl TaggedPlayerAsItEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusStunnedEvent {
     pub player: u16,
 }
@@ -5013,7 +5014,7 @@ impl MerasmusStunnedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MerasmusPropFoundEvent {
     pub player: u16,
 }
@@ -5026,7 +5027,7 @@ impl MerasmusPropFoundEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenSkeletonKilledEvent {
     pub player: u16,
 }
@@ -5039,7 +5040,7 @@ impl HalloweenSkeletonKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct EscapeHellEvent {
     pub player: u16,
 }
@@ -5052,7 +5053,7 @@ impl EscapeHellEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CrossSpectralBridgeEvent {
     pub player: u16,
 }
@@ -5065,7 +5066,7 @@ impl CrossSpectralBridgeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MiniGameWonEvent {
     pub player: u16,
     pub game: u16,
@@ -5080,7 +5081,7 @@ impl MiniGameWonEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RespawnGhostEvent {
     pub reviver: u16,
     pub ghost: u16,
@@ -5095,7 +5096,7 @@ impl RespawnGhostEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct KillInHellEvent {
     pub killer: u16,
     pub victim: u16,
@@ -5110,7 +5111,7 @@ impl KillInHellEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenDuckCollectedEvent {
     pub collector: u16,
 }
@@ -5123,7 +5124,7 @@ impl HalloweenDuckCollectedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct SpecialScoreEvent {
     pub player: u8,
 }
@@ -5136,7 +5137,7 @@ impl SpecialScoreEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TeamLeaderKilledEvent {
     pub killer: u8,
     pub victim: u8,
@@ -5151,7 +5152,7 @@ impl TeamLeaderKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HalloweenSoulCollectedEvent {
     pub intended_target: u8,
     pub collecting_player: u8,
@@ -5168,7 +5169,7 @@ impl HalloweenSoulCollectedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RecalculateTruceEvent {}
 impl RecalculateTruceEvent {
     #[allow(unused_variables)]
@@ -5176,7 +5177,7 @@ impl RecalculateTruceEvent {
         Ok(RecalculateTruceEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DeadRingerCheatDeathEvent {
     pub spy: u8,
     pub attacker: u8,
@@ -5191,7 +5192,7 @@ impl DeadRingerCheatDeathEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CrossbowHealEvent {
     pub healer: u8,
     pub target: u8,
@@ -5208,7 +5209,7 @@ impl CrossbowHealEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DamageMitigatedEvent {
     pub mitigator: u8,
     pub damaged: u8,
@@ -5227,7 +5228,7 @@ impl DamageMitigatedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PayloadPushedEvent {
     pub pusher: u8,
     pub distance: u16,
@@ -5242,7 +5243,7 @@ impl PayloadPushedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerAbandonedMatchEvent {
     pub game_over: bool,
 }
@@ -5255,7 +5256,7 @@ impl PlayerAbandonedMatchEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ClDrawlineEvent {
     pub player: u8,
     pub panel: u8,
@@ -5276,7 +5277,7 @@ impl ClDrawlineEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RestartTimerTimeEvent {
     pub time: u8,
 }
@@ -5289,7 +5290,7 @@ impl RestartTimerTimeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct WinLimitChangedEvent {}
 impl WinLimitChangedEvent {
     #[allow(unused_variables)]
@@ -5297,7 +5298,7 @@ impl WinLimitChangedEvent {
         Ok(WinLimitChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct WinPanelShowScoresEvent {}
 impl WinPanelShowScoresEvent {
     #[allow(unused_variables)]
@@ -5305,7 +5306,7 @@ impl WinPanelShowScoresEvent {
         Ok(WinPanelShowScoresEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct TopStreamsRequestFinishedEvent {}
 impl TopStreamsRequestFinishedEvent {
     #[allow(unused_variables)]
@@ -5313,7 +5314,7 @@ impl TopStreamsRequestFinishedEvent {
         Ok(TopStreamsRequestFinishedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CompetitiveStateChangedEvent {}
 impl CompetitiveStateChangedEvent {
     #[allow(unused_variables)]
@@ -5321,7 +5322,7 @@ impl CompetitiveStateChangedEvent {
         Ok(CompetitiveStateChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GlobalWarDataUpdatedEvent {}
 impl GlobalWarDataUpdatedEvent {
     #[allow(unused_variables)]
@@ -5329,7 +5330,7 @@ impl GlobalWarDataUpdatedEvent {
         Ok(GlobalWarDataUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct StopWatchChangedEvent {}
 impl StopWatchChangedEvent {
     #[allow(unused_variables)]
@@ -5337,7 +5338,7 @@ impl StopWatchChangedEvent {
         Ok(StopWatchChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DsStopEvent {}
 impl DsStopEvent {
     #[allow(unused_variables)]
@@ -5345,7 +5346,7 @@ impl DsStopEvent {
         Ok(DsStopEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct DsScreenshotEvent {
     pub delay: f32,
 }
@@ -5358,7 +5359,7 @@ impl DsScreenshotEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ShowMatchSummaryEvent {}
 impl ShowMatchSummaryEvent {
     #[allow(unused_variables)]
@@ -5366,7 +5367,7 @@ impl ShowMatchSummaryEvent {
         Ok(ShowMatchSummaryEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ExperienceChangedEvent {}
 impl ExperienceChangedEvent {
     #[allow(unused_variables)]
@@ -5374,7 +5375,7 @@ impl ExperienceChangedEvent {
         Ok(ExperienceChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct BeginXpLerpEvent {}
 impl BeginXpLerpEvent {
     #[allow(unused_variables)]
@@ -5382,7 +5383,7 @@ impl BeginXpLerpEvent {
         Ok(BeginXpLerpEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MatchmakerStatsUpdatedEvent {}
 impl MatchmakerStatsUpdatedEvent {
     #[allow(unused_variables)]
@@ -5390,7 +5391,7 @@ impl MatchmakerStatsUpdatedEvent {
         Ok(MatchmakerStatsUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RematchVotePeriodOverEvent {
     pub success: bool,
 }
@@ -5403,7 +5404,7 @@ impl RematchVotePeriodOverEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct RematchFailedToCreateEvent {}
 impl RematchFailedToCreateEvent {
     #[allow(unused_variables)]
@@ -5411,7 +5412,7 @@ impl RematchFailedToCreateEvent {
         Ok(RematchFailedToCreateEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerRematchChangeEvent {}
 impl PlayerRematchChangeEvent {
     #[allow(unused_variables)]
@@ -5419,7 +5420,7 @@ impl PlayerRematchChangeEvent {
         Ok(PlayerRematchChangeEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PingUpdatedEvent {}
 impl PingUpdatedEvent {
     #[allow(unused_variables)]
@@ -5427,7 +5428,7 @@ impl PingUpdatedEvent {
         Ok(PingUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MMStatsUpdatedEvent {}
 impl MMStatsUpdatedEvent {
     #[allow(unused_variables)]
@@ -5435,7 +5436,7 @@ impl MMStatsUpdatedEvent {
         Ok(MMStatsUpdatedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerNextMapVoteChangeEvent {
     pub map_index: u8,
     pub vote: u8,
@@ -5450,7 +5451,7 @@ impl PlayerNextMapVoteChangeEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct VoteMapsChangedEvent {}
 impl VoteMapsChangedEvent {
     #[allow(unused_variables)]
@@ -5458,7 +5459,7 @@ impl VoteMapsChangedEvent {
         Ok(VoteMapsChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ProtoDefChangedEvent {
     pub kind: u8,
     pub definition_index: u32,
@@ -5479,7 +5480,7 @@ impl ProtoDefChangedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerDominationEvent {
     pub dominator: u16,
     pub dominated: u16,
@@ -5496,7 +5497,7 @@ impl PlayerDominationEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct PlayerRocketPackPushedEvent {
     pub pusher: u16,
     pub pushed: u16,
@@ -5511,7 +5512,7 @@ impl PlayerRocketPackPushedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestRequestEvent {
     pub request: u32,
     pub msg: String,
@@ -5526,7 +5527,7 @@ impl QuestRequestEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestResponseEvent {
     pub request: u32,
     pub success: bool,
@@ -5543,7 +5544,7 @@ impl QuestResponseEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestProgressEvent {
     pub owner: u16,
     pub scorer: u16,
@@ -5568,7 +5569,7 @@ impl QuestProgressEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ProjectileRemovedEvent {
     pub attacker: u8,
     pub weapon_def_index: u32,
@@ -5587,7 +5588,7 @@ impl ProjectileRemovedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestMapDataChangedEvent {}
 impl QuestMapDataChangedEvent {
     #[allow(unused_variables)]
@@ -5595,7 +5596,7 @@ impl QuestMapDataChangedEvent {
         Ok(QuestMapDataChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct GasDousedPlayerIgnitedEvent {
     pub igniter: u16,
     pub douser: u16,
@@ -5612,7 +5613,7 @@ impl GasDousedPlayerIgnitedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct QuestTurnInStateEvent {
     pub state: u16,
 }
@@ -5625,7 +5626,7 @@ impl QuestTurnInStateEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ItemsAcknowledgedEvent {}
 impl ItemsAcknowledgedEvent {
     #[allow(unused_variables)]
@@ -5633,7 +5634,7 @@ impl ItemsAcknowledgedEvent {
         Ok(ItemsAcknowledgedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct CapperKilledEvent {
     pub blocker: u16,
     pub victim: u16,
@@ -5648,7 +5649,7 @@ impl CapperKilledEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MainMenuStabilizedEvent {}
 impl MainMenuStabilizedEvent {
     #[allow(unused_variables)]
@@ -5656,7 +5657,7 @@ impl MainMenuStabilizedEvent {
         Ok(MainMenuStabilizedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct WorldStatusChangedEvent {}
 impl WorldStatusChangedEvent {
     #[allow(unused_variables)]
@@ -5664,7 +5665,7 @@ impl WorldStatusChangedEvent {
         Ok(WorldStatusChangedEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVStatusEvent {
     pub clients: u32,
     pub slots: u32,
@@ -5683,7 +5684,7 @@ impl HLTVStatusEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVCameramanEvent {
     pub index: u16,
 }
@@ -5696,7 +5697,7 @@ impl HLTVCameramanEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVRankCameraEvent {
     pub index: u8,
     pub rank: f32,
@@ -5713,7 +5714,7 @@ impl HLTVRankCameraEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVRankEntityEvent {
     pub index: u16,
     pub rank: f32,
@@ -5730,7 +5731,7 @@ impl HLTVRankEntityEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVFixedEvent {
     pub pos_x: u32,
     pub pos_y: u32,
@@ -5757,7 +5758,7 @@ impl HLTVFixedEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVChaseEvent {
     pub target_1: u16,
     pub target_2: u16,
@@ -5782,7 +5783,7 @@ impl HLTVChaseEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVMessageEvent {
     pub text: String,
 }
@@ -5795,7 +5796,7 @@ impl HLTVMessageEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVTitleEvent {
     pub text: String,
 }
@@ -5808,7 +5809,7 @@ impl HLTVTitleEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct HLTVChatEvent {
     pub text: String,
 }
@@ -5821,7 +5822,7 @@ impl HLTVChatEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayStartRecordEvent {}
 impl ReplayStartRecordEvent {
     #[allow(unused_variables)]
@@ -5829,7 +5830,7 @@ impl ReplayStartRecordEvent {
         Ok(ReplayStartRecordEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplaySessionInfoEvent {
     pub sn: String,
     pub di: u8,
@@ -5848,7 +5849,7 @@ impl ReplaySessionInfoEvent {
         })
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayEndRecordEvent {}
 impl ReplayEndRecordEvent {
     #[allow(unused_variables)]
@@ -5856,7 +5857,7 @@ impl ReplayEndRecordEvent {
         Ok(ReplayEndRecordEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayReplaysAvailableEvent {}
 impl ReplayReplaysAvailableEvent {
     #[allow(unused_variables)]
@@ -5864,7 +5865,7 @@ impl ReplayReplaysAvailableEvent {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
-#[derive(Debug, BitWrite, PartialEq)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ReplayServerErrorEvent {
     pub error: String,
 }
@@ -5877,7 +5878,7 @@ impl ReplayServerErrorEvent {
         })
     }
 }
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub enum GameEvent {
     ServerSpawn(Box<ServerSpawnEvent>),
     ServerChangeLevelFailed(ServerChangeLevelFailedEvent),
@@ -6282,7 +6283,7 @@ pub enum GameEvent {
     ReplayServerError(ReplayServerErrorEvent),
     Unknown(RawGameEvent),
 }
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameEventType {
     ServerSpawn,
     ServerChangeLevelFailed,

@@ -3,7 +3,7 @@ extern crate proc_macro;
 use fnv::FnvHashMap;
 use inflector::Inflector;
 use lazy_static::lazy_static;
-use proc_macro2::{Ident, Literal, Span, TokenStream};
+use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 use tf_demo_parser::demo::gameevent_gen::get_sizes;
 use tf_demo_parser::demo::gamevent::{GameEventDefinition, GameEventValueType};
@@ -229,6 +229,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         use crate::demo::Stream;
         use crate::{ParseError, Result};
         use bitbuffer::{BitRead, LittleEndian, BitWrite, BitWriteStream};
+        use serde::{Deserialize, Serialize};
     );
 
     let event_definitions = events.iter().map(|event| {
@@ -263,7 +264,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         };
 
         quote!(
-            #[derive(Debug, BitWrite, PartialEq)]
+            #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
             pub struct #name {
                 #(#fields)*
             }
@@ -378,13 +379,13 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
         #(#event_definitions)*
 
-        #[derive(Debug, PartialEq)]
+        #[derive(Debug, PartialEq, Serialize, Deserialize)]
         pub enum GameEvent {
             #(#event_variants)*
             Unknown(RawGameEvent),
         }
 
-        #[derive(Clone, Debug, PartialEq, Eq, Hash)]
+        #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
         pub enum GameEventType {
             #(#event_types)*
             Unknown(String),
