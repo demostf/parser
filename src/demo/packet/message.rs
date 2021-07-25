@@ -5,7 +5,13 @@ use crate::demo::message::{Message, MessageType};
 use crate::demo::parser::Encode;
 use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, BitRead, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct MessagePacketMeta {
     pub flags: u32, // TODO
@@ -14,6 +20,10 @@ pub struct MessagePacketMeta {
     pub sequence_out: u32,
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct MessagePacket<'a> {
@@ -22,6 +32,10 @@ pub struct MessagePacket<'a> {
     pub meta: MessagePacketMeta,
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct ViewAngles {
     pub origin: (Vector, Vector),

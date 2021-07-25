@@ -1,7 +1,13 @@
 use crate::{ReadResult, Stream};
 use bitbuffer::{BitRead, BitWrite, LittleEndian};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct ConsoleCmdPacket {
     pub tick: u32,

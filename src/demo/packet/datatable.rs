@@ -9,7 +9,13 @@ use serde::{Deserialize, Serialize};
 use std::cmp::min;
 use std::convert::TryFrom;
 use std::iter::once;
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(
     BitRead,
     BitWrite,
@@ -46,6 +52,10 @@ impl From<ClassId> for u16 {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(BitRead, BitWrite, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
 pub struct ServerClassName(String);
 
@@ -67,6 +77,10 @@ impl From<&str> for ServerClassName {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ServerClass {
     pub id: ClassId,
@@ -74,6 +88,10 @@ pub struct ServerClass {
     pub data_table: SendTableName,
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(
     BitRead,
     BitWrite,
@@ -109,6 +127,10 @@ impl From<&str> for SendTableName {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ParseSendTable {
     pub name: SendTableName,
@@ -331,6 +353,10 @@ impl ParseSendTable {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendTable {
     pub name: SendTableName,
@@ -339,6 +365,10 @@ pub struct SendTable {
     pub flattened_props: Vec<SendPropDefinition>,
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct DataTablePacket {
     pub tick: u32,

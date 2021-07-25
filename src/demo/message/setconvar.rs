@@ -1,8 +1,14 @@
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, Endianness};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
 use crate::ReadResult;
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
 pub struct ConVar {
     key: String,
@@ -21,6 +27,10 @@ impl<E: Endianness> BitRead<'_, E> for ConVar {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, BitRead, PartialEq, Serialize, Deserialize)]
 pub struct SetConVarMessage {
     length: u8,

@@ -21,7 +21,7 @@ name = "reencode_demo"
 path = "src/bin/reencode.rs"
 
 [dependencies]
-bitbuffer = { version = "0.10", features = ["serde"] }
+bitbuffer = { version = "0.10", features = ["serde"], path = "../../bitbuffer" }
 num_enum = "0.5"
 num-traits = "0.2"
 enumflags2 = { version = "0.7", features = ["serde"] }
@@ -37,6 +37,11 @@ better-panic = { version = "0.2", optional = true }
 no-panic = { version = "0.1", optional = true }
 fnv = "1"
 steamid-ng = "1"
+wasm-bindgen = { version = "0.2", optional = true }
+wasm-typescript-definition = { version = "0.1", optional = true }
+
+[features]
+wasm = ["wasm-bindgen", "bitbuffer/wasm-bindgen", "wasm-typescript-definition"]
 
 [dev-dependencies]
 pretty_assertions = "0.7"

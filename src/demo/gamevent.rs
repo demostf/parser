@@ -1,14 +1,18 @@
-use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
-use serde::{Deserialize, Serialize};
-
-use crate::{GameEventError, Result, Stream};
-
 pub use super::gameevent_gen::{GameEvent, GameEventType};
 use crate::demo::handle_utf8_error;
 use crate::demo::message::gameevent::GameEventTypeId;
+use crate::{GameEventError, Result, Stream};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use parse_display::Display;
+use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameEventDefinition {
     pub id: GameEventTypeId,
@@ -36,12 +40,20 @@ impl Ord for GameEventDefinition {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GameEventEntry {
     pub name: String,
     pub kind: GameEventValueType,
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Display, Serialize, Deserialize)]
 #[discriminant_bits = 3]
 pub enum GameEventValueType {
@@ -55,6 +67,10 @@ pub enum GameEventValueType {
     Local = 7,
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GameEventValue {
     String(String),
@@ -155,6 +171,10 @@ impl EventValue for () {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct RawGameEvent {
     pub event_type: GameEventType,

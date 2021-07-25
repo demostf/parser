@@ -17,6 +17,8 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::hash::Hash;
 use std::ops::BitOr;
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
 #[derive(
     BitRead,
@@ -58,6 +60,10 @@ impl From<&str> for SendPropName {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RawSendPropDefinition {
     pub prop_type: SendPropType,
@@ -356,6 +362,10 @@ impl BitWrite<LittleEndian> for SendPropFlags {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum FloatDefinition {
     Coord,
@@ -398,6 +408,10 @@ impl FloatDefinition {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendPropDefinition {
     pub identifier: SendPropIdentifier,
@@ -416,6 +430,10 @@ impl TryFrom<&RawSendPropDefinition> for SendPropDefinition {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SendPropParseDefinition {
     NormalVarInt {
@@ -543,6 +561,10 @@ impl TryFrom<&RawSendPropDefinition> for SendPropParseDefinition {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum SendPropValue {
@@ -1068,6 +1090,10 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(
     Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash, Display, Serialize, Deserialize,
 )]
@@ -1086,6 +1112,10 @@ impl From<u64> for SendPropIdentifier {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, Display, PartialEq, Serialize, Deserialize)]
 #[display("{index} = {value}")]
 pub struct SendProp {

@@ -1,7 +1,13 @@
 use bitbuffer::{BitRead, BitWrite};
 use parse_display::Display;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]
 #[display("({x}, {y}, {z})")]
 pub struct Vector {
@@ -16,6 +22,10 @@ impl PartialEq for Vector {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]
 #[display("({x}, {y})")]
 pub struct VectorXY {

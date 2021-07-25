@@ -1,8 +1,14 @@
 use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
 use crate::{ReadResult, Stream};
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct VoiceInitMessage {
     codec: String,
@@ -58,6 +64,10 @@ fn test_voice_init_roundtrip() {
     });
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]
@@ -69,6 +79,10 @@ pub struct VoiceDataMessage<'a> {
     data: Stream<'a>,
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct ParseSoundsMessage<'a> {

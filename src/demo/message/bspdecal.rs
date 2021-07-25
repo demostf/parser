@@ -1,10 +1,15 @@
-use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
-use serde::{Deserialize, Serialize};
-
 use crate::demo::sendprop::{read_bit_coord, write_bit_coord};
 use crate::demo::vector::Vector;
 use crate::{ReadResult, Stream};
+use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
+use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BSPDecalMessage {
     pub position: Vector,

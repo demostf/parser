@@ -1,6 +1,8 @@
 use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use parse_display::Display;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "wasm")]
+use wasm_bindgen::prelude::*;
 
 use crate::demo::gameevent_gen::GameEventType;
 use crate::demo::gamevent::{
@@ -9,6 +11,10 @@ use crate::demo::gamevent::{
 use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct GameEventMessage {
     pub event_type_id: GameEventTypeId,
@@ -115,6 +121,7 @@ impl ParseBitSkip<'_> for GameEventMessage {
     }
 }
 
+#[cfg_attr(feature = "wasm", wasm_bindgen::prelude::wasm_bindgen)]
 #[derive(
     BitRead,
     BitWrite,
@@ -144,6 +151,10 @@ impl From<GameEventTypeId> for u16 {
     }
 }
 
+#[cfg_attr(
+    feature = "wasm",
+    derive(wasm_typescript_definition::TypescriptDefinition)
+)]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct GameEventListMessage {
     pub event_list: Vec<GameEventDefinition>,
