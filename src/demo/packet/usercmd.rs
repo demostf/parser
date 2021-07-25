@@ -2,9 +2,9 @@ use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
 
 #[derive(Debug, PartialEq)]
 pub struct UserCmdPacket {
-    tick: u32,
-    sequence_out: u32,
-    cmd: UserCmd,
+    pub tick: u32,
+    pub sequence_out: u32,
+    pub cmd: UserCmd,
 }
 
 impl<'a> BitRead<'a, LittleEndian> for UserCmdPacket {

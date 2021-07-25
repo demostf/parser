@@ -31,6 +31,21 @@ pub enum Packet<'a> {
     StringTables(StringTablePacket<'a>),
 }
 
+impl Packet<'_> {
+    pub fn tick(&self) -> u32 {
+        match self {
+            Packet::Sigon(msg) => msg.tick,
+            Packet::Message(msg) => msg.tick,
+            Packet::SyncTick(msg) => msg.tick,
+            Packet::ConsoleCmd(msg) => msg.tick,
+            Packet::UserCmd(msg) => msg.tick,
+            Packet::DataTables(msg) => msg.tick,
+            Packet::Stop(msg) => msg.tick,
+            Packet::StringTables(msg) => msg.tick,
+        }
+    }
+}
+
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, Eq, PartialEq)]
 #[discriminant_bits = 8]
 #[repr(u8)]
