@@ -382,13 +382,7 @@ impl PacketEntitiesMessage {
         state: &ParserState,
     ) -> Result<()> {
         let bits = log_base2(state.server_classes.len()) + 1;
-        let (class_index, _class) = state
-            .server_classes
-            .iter()
-            .enumerate()
-            .find(|(_, class)| entity.server_class == class.id)
-            .ok_or(ParseError::UnknownServerClass(entity.server_class))?;
-        class_index.write_sized(stream, bits as usize)?;
+        u16::from(entity.server_class).write_sized(stream, bits as usize)?;
         entity.serial_number.write_sized(stream, 10)?;
 
         Ok(())

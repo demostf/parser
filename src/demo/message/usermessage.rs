@@ -74,6 +74,7 @@ pub enum UserMessageType {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
+#[serde(tag = "type")]
 pub enum UserMessage<'a> {
     SayText2(Box<SayText2Message>),
     Text(Box<TextMessage>),
@@ -81,7 +82,7 @@ pub enum UserMessage<'a> {
     Train(TrainMessage),
     VoiceSubtitle(VoiceSubtitleMessage),
     Shake(ShakeMessage),
-    Unknown(u8, UnknownUserMessage<'a>),
+    Unknown(UnknownUserMessage<'a>),
 }
 
 impl UserMessage<'_> {
@@ -93,7 +94,7 @@ impl UserMessage<'_> {
             UserMessage::Train(_) => UserMessageType::Train as u8,
             UserMessage::VoiceSubtitle(_) => UserMessageType::VoiceSubtitle as u8,
             UserMessage::Shake(_) => UserMessageType::Shake as u8,
-            UserMessage::Unknown(ty, _) => *ty,
+            UserMessage::Unknown(msg) => msg.raw_type,
         }
     }
 }
@@ -111,13 +112,19 @@ impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
                     UserMessageType::Train => UserMessage::Train(data.read()?),
                     UserMessageType::VoiceSubtitle => UserMessage::VoiceSubtitle(data.read()?),
                     UserMessageType::Shake => UserMessage::Shake(data.read()?),
-                    _ => UserMessage::Unknown(message_type as u8, data.read()?),
+                    _ => UserMessage::Unknown(UnknownUserMessage {
+                        raw_type: message_type as u8,
+                        data,
+                    }),
                 }
             }
             Err(BitError::UnmatchedDiscriminant { discriminant, .. }) => {
                 let length = stream.read_int(11)?;
-                let mut data = stream.read_bits(length)?;
-                UserMessage::Unknown(discriminant as u8, data.read()?)
+                let data = stream.read_bits(length)?;
+                UserMessage::Unknown(UnknownUserMessage {
+                    raw_type: discriminant as u8,
+                    data,
+                })
             }
             Err(e) => return Err(e),
         };
@@ -142,7 +149,7 @@ impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
             UserMessage::Train(body) => stream.write(body),
             UserMessage::VoiceSubtitle(body) => stream.write(body),
             UserMessage::Shake(body) => stream.write(body),
-            UserMessage::Unknown(_, body) => stream.write(body),
+            UserMessage::Unknown(body) => stream.write(&body.data),
         })?;
 
         Ok(())
@@ -368,19 +375,6 @@ pub struct ShakeMessage {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct UnknownUserMessage<'a> {
+    raw_type: u8,
     data: Stream<'a>,
-}
-
-impl<'a> BitRead<'a, LittleEndian> for UnknownUserMessage<'a> {
-    fn read(stream: &mut Stream<'a>) -> ReadResult<Self> {
-        Ok(UnknownUserMessage {
-            data: stream.read_bits(stream.bits_left())?,
-        })
-    }
-}
-
-impl<'a> BitWrite<LittleEndian> for UnknownUserMessage<'a> {
-    fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
-        self.data.write(stream)
-    }
 }

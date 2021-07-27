@@ -66,6 +66,7 @@ pub enum MessageType {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
+#[serde(tag = "type")]
 pub enum Message<'a> {
     Empty,
     File(FileMessage),

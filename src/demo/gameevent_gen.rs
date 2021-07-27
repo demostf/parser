@@ -6282,6 +6282,7 @@ impl ReplayServerErrorEvent {
 }
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
 pub enum GameEvent {
     ServerSpawn(Box<ServerSpawnEvent>),
     ServerChangeLevelFailed(ServerChangeLevelFailedEvent),

@@ -383,6 +383,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
         #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
         #[derive(Debug, PartialEq, Serialize, Deserialize)]
+        #[serde(tag = "type")]
         pub enum GameEvent {
             #(#event_variants)*
             Unknown(RawGameEvent),
