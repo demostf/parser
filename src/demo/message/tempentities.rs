@@ -10,7 +10,7 @@ use bitbuffer::{BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TempEntitiesMessage {
     pub events: Vec<EventInfo>,
 }

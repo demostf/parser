@@ -2,7 +2,7 @@ use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UserCmdPacket {
     pub tick: u32,
     pub sequence_out: u32,
@@ -33,7 +33,7 @@ impl BitWrite<LittleEndian> for UserCmdPacket {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize, Clone)]
 pub struct UserCmd {
     command_number: Option<u32>,
     tick_count: Option<u32>,
@@ -47,7 +47,7 @@ pub struct UserCmd {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize, Clone)]
 pub struct WeaponSelect {
     #[size = 11]
     select: u16,

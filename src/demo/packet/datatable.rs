@@ -346,7 +346,7 @@ pub struct SendTable {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DataTablePacket {
     pub tick: u32,
     pub tables: Vec<ParseSendTable>,

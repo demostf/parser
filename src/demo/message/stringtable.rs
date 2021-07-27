@@ -15,7 +15,7 @@ use std::borrow::Cow;
 use std::cmp::min;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct CreateStringTableMessage<'a> {
     pub table: StringTable<'a>,
@@ -238,7 +238,7 @@ fn test_create_string_table_roundtrip() {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct UpdateStringTableMessage<'a> {
     pub entries: Vec<(u16, StringTableEntry<'a>)>,

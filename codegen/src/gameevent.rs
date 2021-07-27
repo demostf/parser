@@ -265,7 +265,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
         quote!(
             #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
-            #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+            #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
             pub struct #name {
                 #(#fields)*
             }
@@ -382,7 +382,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
 
         #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
-        #[derive(Debug, PartialEq, Serialize, Deserialize)]
+        #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
         #[serde(tag = "type")]
         pub enum GameEvent {
             #(#event_variants)*

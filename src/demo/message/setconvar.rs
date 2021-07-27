@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::ReadResult;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ConVar {
     key: String,
     value: String,
@@ -23,7 +23,7 @@ impl<E: Endianness> BitRead<'_, E> for ConVar {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitRead, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, BitRead, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SetConVarMessage {
     length: u8,
     #[size = "length"]

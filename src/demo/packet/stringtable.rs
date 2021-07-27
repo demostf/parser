@@ -18,7 +18,7 @@ pub struct FixedUserDataSize {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTable<'a> {
     pub name: Cow<'a, str>,
@@ -216,7 +216,7 @@ impl fmt::Debug for StringTableEntry<'_> {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTablePacket<'a> {
     pub tick: u32,

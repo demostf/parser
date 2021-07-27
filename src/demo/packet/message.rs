@@ -7,7 +7,7 @@ use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitRead, BitWrite, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, BitRead, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MessagePacketMeta {
     pub flags: u32, // TODO
     pub view_angles: ViewAngles,
@@ -16,7 +16,7 @@ pub struct MessagePacketMeta {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct MessagePacket<'a> {
     pub tick: u32,

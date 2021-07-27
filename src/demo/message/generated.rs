@@ -4,7 +4,7 @@ use bitbuffer::{BitRead, BitWrite, LittleEndian};
 use serde::{Deserialize, Serialize};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FileMessage {
     pub transfer_id: u32,
     pub file_name: String,
@@ -12,7 +12,7 @@ pub struct FileMessage {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NetTickMessage {
     pub tick: u32,
     pub frame_time: u16,
@@ -20,26 +20,26 @@ pub struct NetTickMessage {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StringCmdMessage {
     pub command: String,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SignOnStateMessage {
     pub state: u8,
     pub count: u32,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PrintMessage {
     pub value: String,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerInfoMessage {
     pub version: u16,
     pub server_count: u32,
@@ -61,20 +61,20 @@ pub struct ServerInfoMessage {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SetPauseMessage {
     pub pause: bool,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SetViewMessage {
     #[size = 11]
     pub index: u16,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FixAngleMessage {
     pub relative: bool,
     pub x: u16,
@@ -83,7 +83,7 @@ pub struct FixAngleMessage {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct EntityMessage<'a> {
@@ -98,14 +98,14 @@ pub struct EntityMessage<'a> {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PreFetchMessage {
     #[size = 14]
     pub index: u16,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct MenuMessage<'a> {
@@ -116,14 +116,14 @@ pub struct MenuMessage<'a> {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GetCvarValueMessage {
     pub cookie: u32,
     pub value: String,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct CmdKeyValuesMessage<'a> {

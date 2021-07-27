@@ -158,7 +158,7 @@ impl EventValue for () {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RawGameEvent {
     pub event_type: GameEventType,
     pub values: Vec<GameEventValue>,

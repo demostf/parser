@@ -178,7 +178,7 @@ fn test_bit_var_roundtrip() {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PacketEntitiesMessage {
     pub entities: Vec<PacketEntity>,
     pub removed_entities: Vec<EntityId>,

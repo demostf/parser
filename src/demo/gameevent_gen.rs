@@ -3,7 +3,6 @@ use crate::demo::Stream;
 use crate::{ParseError, Result};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
-
 fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     stream: &mut Stream<'a>,
     entry: Option<&GameEventEntry>,
@@ -24,8 +23,8 @@ fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     }
     Ok(T::read(stream)?)
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
     pub address: String,
@@ -56,8 +55,8 @@ impl ServerSpawnEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerChangeLevelFailedEvent {
     pub level_name: String,
 }
@@ -70,8 +69,8 @@ impl ServerChangeLevelFailedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerShutdownEvent {
     pub reason: String,
 }
@@ -84,8 +83,8 @@ impl ServerShutdownEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerCvarEvent {
     pub cvar_name: String,
     pub cvar_value: String,
@@ -100,8 +99,8 @@ impl ServerCvarEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerMessageEvent {
     pub text: String,
 }
@@ -114,8 +113,8 @@ impl ServerMessageEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerAddBanEvent {
     pub name: String,
     pub user_id: u16,
@@ -140,8 +139,8 @@ impl ServerAddBanEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerRemoveBanEvent {
     pub network_id: String,
     pub ip: String,
@@ -158,8 +157,8 @@ impl ServerRemoveBanEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerConnectEvent {
     pub name: String,
     pub index: u8,
@@ -182,8 +181,8 @@ impl PlayerConnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerConnectClientEvent {
     pub name: String,
     pub index: u8,
@@ -204,8 +203,8 @@ impl PlayerConnectClientEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInfoEvent {
     pub name: String,
     pub index: u8,
@@ -226,8 +225,8 @@ impl PlayerInfoEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDisconnectEvent {
     pub user_id: u16,
     pub reason: String,
@@ -248,8 +247,8 @@ impl PlayerDisconnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerActivateEvent {
     pub user_id: u16,
 }
@@ -262,8 +261,8 @@ impl PlayerActivateEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSayEvent {
     pub user_id: u16,
     pub text: String,
@@ -278,8 +277,8 @@ impl PlayerSayEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientDisconnectEvent {
     pub message: String,
 }
@@ -292,8 +291,8 @@ impl ClientDisconnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientBeginConnectEvent {
     pub address: String,
     pub ip: u32,
@@ -312,8 +311,8 @@ impl ClientBeginConnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientConnectedEvent {
     pub address: String,
     pub ip: u32,
@@ -330,8 +329,8 @@ impl ClientConnectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientFullConnectEvent {
     pub address: String,
     pub ip: u32,
@@ -348,8 +347,8 @@ impl ClientFullConnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HostQuitEvent {}
 impl HostQuitEvent {
     #[allow(unused_variables)]
@@ -357,8 +356,8 @@ impl HostQuitEvent {
         Ok(HostQuitEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamInfoEvent {
     pub team_id: u8,
     pub team_name: String,
@@ -373,8 +372,8 @@ impl TeamInfoEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamScoreEvent {
     pub team_id: u8,
     pub score: u16,
@@ -389,8 +388,8 @@ impl TeamScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayBroadcastAudioEvent {
     pub team: u8,
     pub sound: String,
@@ -407,8 +406,8 @@ impl TeamPlayBroadcastAudioEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTeamEvent {
     pub user_id: u16,
     pub team: u8,
@@ -433,8 +432,8 @@ impl PlayerTeamEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerClassEvent {
     pub user_id: u16,
     pub class: String,
@@ -449,8 +448,8 @@ impl PlayerClassEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDeathEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -521,8 +520,8 @@ impl PlayerDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHurtEvent {
     pub user_id: u16,
     pub health: u16,
@@ -555,8 +554,8 @@ impl PlayerHurtEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChatEvent {
     pub team_only: bool,
     pub user_id: u16,
@@ -573,8 +572,8 @@ impl PlayerChatEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerScoreEvent {
     pub user_id: u16,
     pub kills: u16,
@@ -593,8 +592,8 @@ impl PlayerScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSpawnEvent {
     pub user_id: u16,
     pub team: u16,
@@ -611,8 +610,8 @@ impl PlayerSpawnEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerShootEvent {
     pub user_id: u16,
     pub weapon: u8,
@@ -629,8 +628,8 @@ impl PlayerShootEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUseEvent {
     pub user_id: u16,
     pub entity: u16,
@@ -645,8 +644,8 @@ impl PlayerUseEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChangeNameEvent {
     pub user_id: u16,
     pub old_name: String,
@@ -663,8 +662,8 @@ impl PlayerChangeNameEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHintMessageEvent {
     pub hint_message: String,
 }
@@ -677,8 +676,8 @@ impl PlayerHintMessageEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
 }
@@ -691,8 +690,8 @@ impl BasePlayerTeleportedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameInitEvent {}
 impl GameInitEvent {
     #[allow(unused_variables)]
@@ -700,8 +699,8 @@ impl GameInitEvent {
         Ok(GameInitEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameNewMapEvent {
     pub map_name: String,
 }
@@ -714,8 +713,8 @@ impl GameNewMapEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameStartEvent {
     pub rounds_limit: u32,
     pub time_limit: u32,
@@ -734,8 +733,8 @@ impl GameStartEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameEndEvent {
     pub winner: u8,
 }
@@ -748,8 +747,8 @@ impl GameEndEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RoundStartEvent {
     pub time_limit: u32,
     pub frag_limit: u32,
@@ -766,8 +765,8 @@ impl RoundStartEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RoundEndEvent {
     pub winner: u8,
     pub reason: u8,
@@ -784,8 +783,8 @@ impl RoundEndEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameMessageEvent {
     pub target: u8,
     pub text: String,
@@ -800,8 +799,8 @@ impl GameMessageEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BreakBreakableEvent {
     pub ent_index: u32,
     pub user_id: u16,
@@ -818,8 +817,8 @@ impl BreakBreakableEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BreakPropEvent {
     pub ent_index: u32,
     pub user_id: u16,
@@ -834,8 +833,8 @@ impl BreakPropEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EntityKilledEvent {
     pub ent_index_killed: u32,
     pub ent_index_attacker: u32,
@@ -854,8 +853,8 @@ impl EntityKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BonusUpdatedEvent {
     pub num_advanced: u16,
     pub num_bronze: u16,
@@ -874,8 +873,8 @@ impl BonusUpdatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEventEvent {
     pub achievement_name: String,
     pub cur_val: u16,
@@ -892,8 +891,8 @@ impl AchievementEventEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementIncrementEvent {
     pub achievement_id: u32,
     pub cur_val: u16,
@@ -910,8 +909,8 @@ impl AchievementIncrementEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PhysgunPickupEvent {
     pub ent_index: u32,
 }
@@ -924,8 +923,8 @@ impl PhysgunPickupEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
 }
@@ -938,8 +937,8 @@ impl FlareIgniteNpcEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl HelicopterGrenadePuntMissEvent {
     #[allow(unused_variables)]
@@ -947,8 +946,8 @@ impl HelicopterGrenadePuntMissEvent {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UserDataDownloadedEvent {}
 impl UserDataDownloadedEvent {
     #[allow(unused_variables)]
@@ -956,8 +955,8 @@ impl UserDataDownloadedEvent {
         Ok(UserDataDownloadedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
 }
@@ -970,8 +969,8 @@ impl RagdollDissolvedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChangedModeEvent {
     pub old_mode: u16,
     pub new_mode: u16,
@@ -988,8 +987,8 @@ impl HLTVChangedModeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChangedTargetEvent {
     pub mode: u16,
     pub old_target: u16,
@@ -1006,8 +1005,8 @@ impl HLTVChangedTargetEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteEndedEvent {}
 impl VoteEndedEvent {
     #[allow(unused_variables)]
@@ -1015,8 +1014,8 @@ impl VoteEndedEvent {
         Ok(VoteEndedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteStartedEvent {
     pub issue: String,
     pub param_1: String,
@@ -1035,8 +1034,8 @@ impl VoteStartedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteChangedEvent {
     pub vote_option_1: u8,
     pub vote_option_2: u8,
@@ -1059,8 +1058,8 @@ impl VoteChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VotePassedEvent {
     pub details: String,
     pub param_1: String,
@@ -1077,8 +1076,8 @@ impl VotePassedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteFailedEvent {
     pub team: u8,
 }
@@ -1091,8 +1090,8 @@ impl VoteFailedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteCastEvent {
     pub vote_option: u8,
     pub team: u16,
@@ -1109,8 +1108,8 @@ impl VoteCastEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteOptionsEvent {
     pub count: u8,
     pub option_1: String,
@@ -1133,8 +1132,8 @@ impl VoteOptionsEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplaySavedEvent {}
 impl ReplaySavedEvent {
     #[allow(unused_variables)]
@@ -1142,8 +1141,8 @@ impl ReplaySavedEvent {
         Ok(ReplaySavedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EnteredPerformanceModeEvent {}
 impl EnteredPerformanceModeEvent {
     #[allow(unused_variables)]
@@ -1151,8 +1150,8 @@ impl EnteredPerformanceModeEvent {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BrowseReplaysEvent {}
 impl BrowseReplaysEvent {
     #[allow(unused_variables)]
@@ -1160,8 +1159,8 @@ impl BrowseReplaysEvent {
         Ok(BrowseReplaysEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayYoutubeStatsEvent {
     pub views: u32,
     pub likes: u32,
@@ -1178,8 +1177,8 @@ impl ReplayYoutubeStatsEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct InventoryUpdatedEvent {}
 impl InventoryUpdatedEvent {
     #[allow(unused_variables)]
@@ -1187,8 +1186,8 @@ impl InventoryUpdatedEvent {
         Ok(InventoryUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CartUpdatedEvent {}
 impl CartUpdatedEvent {
     #[allow(unused_variables)]
@@ -1196,8 +1195,8 @@ impl CartUpdatedEvent {
         Ok(CartUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl StorePriceSheetUpdatedEvent {
     #[allow(unused_variables)]
@@ -1205,8 +1204,8 @@ impl StorePriceSheetUpdatedEvent {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EconInventoryConnectedEvent {}
 impl EconInventoryConnectedEvent {
     #[allow(unused_variables)]
@@ -1214,8 +1213,8 @@ impl EconInventoryConnectedEvent {
         Ok(EconInventoryConnectedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemSchemaInitializedEvent {}
 impl ItemSchemaInitializedEvent {
     #[allow(unused_variables)]
@@ -1223,8 +1222,8 @@ impl ItemSchemaInitializedEvent {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GcNewSessionEvent {}
 impl GcNewSessionEvent {
     #[allow(unused_variables)]
@@ -1232,8 +1231,8 @@ impl GcNewSessionEvent {
         Ok(GcNewSessionEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GcLostSessionEvent {}
 impl GcLostSessionEvent {
     #[allow(unused_variables)]
@@ -1241,8 +1240,8 @@ impl GcLostSessionEvent {
         Ok(GcLostSessionEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct IntroFinishEvent {
     pub player: u16,
 }
@@ -1255,8 +1254,8 @@ impl IntroFinishEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct IntroNextCameraEvent {
     pub player: u16,
 }
@@ -1269,8 +1268,8 @@ impl IntroNextCameraEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChangeClassEvent {
     pub user_id: u16,
     pub class: u16,
@@ -1285,8 +1284,8 @@ impl PlayerChangeClassEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
 }
@@ -1299,8 +1298,8 @@ impl TfMapTimeRemainingEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TfGameOverEvent {
     pub reason: String,
 }
@@ -1313,8 +1312,8 @@ impl TfGameOverEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CtfFlagCapturedEvent {
     pub capping_team: u16,
     pub capping_team_score: u16,
@@ -1329,8 +1328,8 @@ impl CtfFlagCapturedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointInitializedEvent {}
 impl ControlPointInitializedEvent {
     #[allow(unused_variables)]
@@ -1338,8 +1337,8 @@ impl ControlPointInitializedEvent {
         Ok(ControlPointInitializedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
 }
@@ -1352,8 +1351,8 @@ impl ControlPointUpdateImagesEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
 }
@@ -1366,8 +1365,8 @@ impl ControlPointUpdateLayoutEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
 }
@@ -1380,8 +1379,8 @@ impl ControlPointUpdateCappingEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
 }
@@ -1394,8 +1393,8 @@ impl ControlPointUpdateOwnerEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointStartTouchEvent {
     pub player: u16,
     pub area: u16,
@@ -1410,8 +1409,8 @@ impl ControlPointStartTouchEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointEndTouchEvent {
     pub player: u16,
     pub area: u16,
@@ -1426,8 +1425,8 @@ impl ControlPointEndTouchEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointPulseElementEvent {
     pub player: u16,
 }
@@ -1440,8 +1439,8 @@ impl ControlPointPulseElementEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointFakeCaptureEvent {
     pub player: u16,
     pub int_data: u16,
@@ -1456,8 +1455,8 @@ impl ControlPointFakeCaptureEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointFakeCaptureMultiplierEvent {
     pub player: u16,
     pub int_data: u16,
@@ -1472,8 +1471,8 @@ impl ControlPointFakeCaptureMultiplierEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
 }
@@ -1486,8 +1485,8 @@ impl TeamPlayRoundSelectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
 }
@@ -1500,8 +1499,8 @@ impl TeamPlayRoundStartEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundActiveEvent {}
 impl TeamPlayRoundActiveEvent {
     #[allow(unused_variables)]
@@ -1509,8 +1508,8 @@ impl TeamPlayRoundActiveEvent {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl TeamPlayWaitingBeginsEvent {
     #[allow(unused_variables)]
@@ -1518,8 +1517,8 @@ impl TeamPlayWaitingBeginsEvent {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl TeamPlayWaitingEndsEvent {
     #[allow(unused_variables)]
@@ -1527,8 +1526,8 @@ impl TeamPlayWaitingEndsEvent {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl TeamPlayWaitingAboutToEndEvent {
     #[allow(unused_variables)]
@@ -1536,8 +1535,8 @@ impl TeamPlayWaitingAboutToEndEvent {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRestartRoundEvent {}
 impl TeamPlayRestartRoundEvent {
     #[allow(unused_variables)]
@@ -1545,8 +1544,8 @@ impl TeamPlayRestartRoundEvent {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayReadyRestartEvent {}
 impl TeamPlayReadyRestartEvent {
     #[allow(unused_variables)]
@@ -1554,8 +1553,8 @@ impl TeamPlayReadyRestartEvent {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
 }
@@ -1568,8 +1567,8 @@ impl TeamPlayRoundRestartSecondsEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
 }
@@ -1582,8 +1581,8 @@ impl TeamPlayTeamReadyEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundWinEvent {
     pub team: u8,
     pub win_reason: u8,
@@ -1608,8 +1607,8 @@ impl TeamPlayRoundWinEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl TeamPlayUpdateTimerEvent {
     #[allow(unused_variables)]
@@ -1617,8 +1616,8 @@ impl TeamPlayUpdateTimerEvent {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
 }
@@ -1631,8 +1630,8 @@ impl TeamPlayRoundStalemateEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl TeamPlayOvertimeBeginEvent {
     #[allow(unused_variables)]
@@ -1640,8 +1639,8 @@ impl TeamPlayOvertimeBeginEvent {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl TeamPlayOvertimeEndEvent {
     #[allow(unused_variables)]
@@ -1649,8 +1648,8 @@ impl TeamPlayOvertimeEndEvent {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl TeamPlaySuddenDeathBeginEvent {
     #[allow(unused_variables)]
@@ -1658,8 +1657,8 @@ impl TeamPlaySuddenDeathBeginEvent {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl TeamPlaySuddenDeathEndEvent {
     #[allow(unused_variables)]
@@ -1667,8 +1666,8 @@ impl TeamPlaySuddenDeathEndEvent {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayGameOverEvent {
     pub reason: String,
 }
@@ -1681,8 +1680,8 @@ impl TeamPlayGameOverEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
 }
@@ -1695,8 +1694,8 @@ impl TeamPlayMapTimeRemainingEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
 }
@@ -1709,8 +1708,8 @@ impl TeamPlayTimerFlashEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTimerTimeAddedEvent {
     pub timer: u16,
     pub seconds_added: u16,
@@ -1725,8 +1724,8 @@ impl TeamPlayTimerTimeAddedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointStartCaptureEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1749,8 +1748,8 @@ impl TeamPlayPointStartCaptureEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointCapturedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1769,8 +1768,8 @@ impl TeamPlayPointCapturedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointLockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1787,8 +1786,8 @@ impl TeamPlayPointLockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointUnlockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1805,8 +1804,8 @@ impl TeamPlayPointUnlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayCaptureBrokenEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1823,8 +1822,8 @@ impl TeamPlayCaptureBrokenEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayCaptureBlockedEvent {
     pub cp: u8,
     pub cp_name: String,
@@ -1843,8 +1842,8 @@ impl TeamPlayCaptureBlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayFlagEventEvent {
     pub player: u16,
     pub carrier: u16,
@@ -1865,8 +1864,8 @@ impl TeamPlayFlagEventEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -1921,8 +1920,8 @@ impl TeamPlayWinPanelEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
     pub team: u8,
@@ -1937,8 +1936,8 @@ impl TeamPlayTeamBalancedPlayerEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl TeamPlaySetupFinishedEvent {
     #[allow(unused_variables)]
@@ -1946,8 +1945,8 @@ impl TeamPlaySetupFinishedEvent {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
 }
@@ -1960,8 +1959,8 @@ impl TeamPlayAlertEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TrainingCompleteEvent {
     pub next_map: String,
     pub map: String,
@@ -1978,8 +1977,8 @@ impl TrainingCompleteEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowFreezePanelEvent {
     pub killer: u16,
 }
@@ -1992,8 +1991,8 @@ impl ShowFreezePanelEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HideFreezePanelEvent {}
 impl HideFreezePanelEvent {
     #[allow(unused_variables)]
@@ -2001,8 +2000,8 @@ impl HideFreezePanelEvent {
         Ok(HideFreezePanelEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FreezeCamStartedEvent {}
 impl FreezeCamStartedEvent {
     #[allow(unused_variables)]
@@ -2010,8 +2009,8 @@ impl FreezeCamStartedEvent {
         Ok(FreezeCamStartedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl LocalPlayerChangeTeamEvent {
     #[allow(unused_variables)]
@@ -2019,8 +2018,8 @@ impl LocalPlayerChangeTeamEvent {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
 }
@@ -2033,8 +2032,8 @@ impl LocalPlayerScoreChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeClassEvent {}
 impl LocalPlayerChangeClassEvent {
     #[allow(unused_variables)]
@@ -2042,8 +2041,8 @@ impl LocalPlayerChangeClassEvent {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerRespawnEvent {}
 impl LocalPlayerRespawnEvent {
     #[allow(unused_variables)]
@@ -2051,8 +2050,8 @@ impl LocalPlayerRespawnEvent {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BuildingInfoChangedEvent {
     pub building_type: u8,
     pub object_mode: u8,
@@ -2069,8 +2068,8 @@ impl BuildingInfoChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
 }
@@ -2083,8 +2082,8 @@ impl LocalPlayerChangeDisguiseEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAccountChangedEvent {
     pub old_value: u16,
     pub new_value: u16,
@@ -2099,8 +2098,8 @@ impl PlayerAccountChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpyPdaResetEvent {}
 impl SpyPdaResetEvent {
     #[allow(unused_variables)]
@@ -2108,8 +2107,8 @@ impl SpyPdaResetEvent {
         Ok(SpyPdaResetEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlagStatusUpdateEvent {
     pub user_id: u16,
     pub ent_index: u32,
@@ -2124,8 +2123,8 @@ impl FlagStatusUpdateEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
 }
@@ -2138,8 +2137,8 @@ impl PlayerStatsUpdatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayingCommentaryEvent {}
 impl PlayingCommentaryEvent {
     #[allow(unused_variables)]
@@ -2147,8 +2146,8 @@ impl PlayingCommentaryEvent {
         Ok(PlayingCommentaryEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChargeDeployedEvent {
     pub user_id: u16,
     pub target_id: u16,
@@ -2163,8 +2162,8 @@ impl PlayerChargeDeployedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuiltObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2181,8 +2180,8 @@ impl PlayerBuiltObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUpgradedObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2201,8 +2200,8 @@ impl PlayerUpgradedObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCarryObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2219,8 +2218,8 @@ impl PlayerCarryObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDropObjectEvent {
     pub user_id: u16,
     pub object: u16,
@@ -2237,8 +2236,8 @@ impl PlayerDropObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectRemovedEvent {
     pub user_id: u16,
     pub object_type: u16,
@@ -2255,8 +2254,8 @@ impl ObjectRemovedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDestroyedEvent {
     pub user_id: u16,
     pub attacker: u16,
@@ -2283,8 +2282,8 @@ impl ObjectDestroyedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDetonatedEvent {
     pub user_id: u16,
     pub object_type: u16,
@@ -2301,8 +2300,8 @@ impl ObjectDetonatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEarnedEvent {
     pub player: u8,
     pub achievement: u16,
@@ -2317,8 +2316,8 @@ impl AchievementEarnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpecTargetUpdatedEvent {}
 impl SpecTargetUpdatedEvent {
     #[allow(unused_variables)]
@@ -2326,8 +2325,8 @@ impl SpecTargetUpdatedEvent {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TournamentStateUpdateEvent {
     pub user_id: u16,
     pub name_change: bool,
@@ -2346,8 +2345,8 @@ impl TournamentStateUpdateEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TournamentEnableCountdownEvent {}
 impl TournamentEnableCountdownEvent {
     #[allow(unused_variables)]
@@ -2355,8 +2354,8 @@ impl TournamentEnableCountdownEvent {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
 }
@@ -2369,8 +2368,8 @@ impl PlayerCalledForMedicEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAskedForBallEvent {
     pub user_id: u16,
 }
@@ -2383,8 +2382,8 @@ impl PlayerAskedForBallEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl LocalPlayerBecameObserverEvent {
     #[allow(unused_variables)]
@@ -2392,8 +2391,8 @@ impl LocalPlayerBecameObserverEvent {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerIgnitedInvEvent {
     pub pyro_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2410,8 +2409,8 @@ impl PlayerIgnitedInvEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerIgnitedEvent {
     pub pyro_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2428,8 +2427,8 @@ impl PlayerIgnitedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerExtinguishedEvent {
     pub victim: u8,
     pub healer: u8,
@@ -2446,8 +2445,8 @@ impl PlayerExtinguishedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTeleportedEvent {
     pub user_id: u16,
     pub builder_id: u16,
@@ -2464,8 +2463,8 @@ impl PlayerTeleportedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
 }
@@ -2478,8 +2477,8 @@ impl PlayerHealedMedicCallEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl LocalPlayerChargeReadyEvent {
     #[allow(unused_variables)]
@@ -2487,8 +2486,8 @@ impl LocalPlayerChargeReadyEvent {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerWindDownEvent {}
 impl LocalPlayerWindDownEvent {
     #[allow(unused_variables)]
@@ -2496,8 +2495,8 @@ impl LocalPlayerWindDownEvent {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInvulnedEvent {
     pub user_id: u16,
     pub medic_user_id: u16,
@@ -2512,8 +2511,8 @@ impl PlayerInvulnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortSpeedEvent {
     pub team: u8,
     pub speed: u8,
@@ -2530,8 +2529,8 @@ impl EscortSpeedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortProgressEvent {
     pub team: u8,
     pub progress: f32,
@@ -2548,8 +2547,8 @@ impl EscortProgressEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortRecedeEvent {
     pub team: u8,
     pub recede_time: f32,
@@ -2564,8 +2563,8 @@ impl EscortRecedeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameUIActivatedEvent {}
 impl GameUIActivatedEvent {
     #[allow(unused_variables)]
@@ -2573,8 +2572,8 @@ impl GameUIActivatedEvent {
         Ok(GameUIActivatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameUIHiddenEvent {}
 impl GameUIHiddenEvent {
     #[allow(unused_variables)]
@@ -2582,8 +2581,8 @@ impl GameUIHiddenEvent {
         Ok(GameUIHiddenEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerEscortScoreEvent {
     pub player: u8,
     pub points: u8,
@@ -2598,8 +2597,8 @@ impl PlayerEscortScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealOnHitEvent {
     pub amount: u16,
     pub ent_index: u8,
@@ -2616,8 +2615,8 @@ impl PlayerHealOnHitEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStealSandvichEvent {
     pub owner: u16,
     pub target: u16,
@@ -2632,8 +2631,8 @@ impl PlayerStealSandvichEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowClassLayoutEvent {
     pub show: bool,
 }
@@ -2646,8 +2645,8 @@ impl ShowClassLayoutEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowVsPanelEvent {
     pub show: bool,
 }
@@ -2660,8 +2659,8 @@ impl ShowVsPanelEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDamagedEvent {
     pub amount: u16,
     pub kind: u32,
@@ -2676,8 +2675,8 @@ impl PlayerDamagedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaPlayerNotificationEvent {
     pub player: u8,
     pub message: u8,
@@ -2692,8 +2691,8 @@ impl ArenaPlayerNotificationEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaMatchMaxStreakEvent {
     pub team: u8,
     pub streak: u8,
@@ -2708,8 +2707,8 @@ impl ArenaMatchMaxStreakEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaRoundStartEvent {}
 impl ArenaRoundStartEvent {
     #[allow(unused_variables)]
@@ -2717,8 +2716,8 @@ impl ArenaRoundStartEvent {
         Ok(ArenaRoundStartEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -2809,8 +2808,8 @@ impl ArenaWinPanelEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PveWinPanelEvent {
     pub panel_style: u8,
     pub winning_team: u8,
@@ -2827,8 +2826,8 @@ impl PveWinPanelEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AirDashEvent {
     pub player: u8,
 }
@@ -2841,8 +2840,8 @@ impl AirDashEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LandedEvent {
     pub player: u8,
 }
@@ -2855,8 +2854,8 @@ impl LandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
 }
@@ -2869,8 +2868,8 @@ impl PlayerDamageDodgedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStunnedEvent {
     pub stunner: u16,
     pub victim: u16,
@@ -2889,8 +2888,8 @@ impl PlayerStunnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoutGrandSlamEvent {
     pub scout_id: u16,
     pub target_id: u16,
@@ -2905,8 +2904,8 @@ impl ScoutGrandSlamEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoutSlamdollLandedEvent {
     pub target_index: u16,
     pub x: f32,
@@ -2925,8 +2924,8 @@ impl ScoutSlamdollLandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArrowImpactEvent {
     pub attached_entity: u16,
     pub shooter: u16,
@@ -2959,8 +2958,8 @@ impl ArrowImpactEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerJaratedEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2975,8 +2974,8 @@ impl PlayerJaratedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerJaratedFadeEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
@@ -2991,8 +2990,8 @@ impl PlayerJaratedFadeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerShieldBlockedEvent {
     pub attacker_ent_index: u8,
     pub blocker_ent_index: u8,
@@ -3007,8 +3006,8 @@ impl PlayerShieldBlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerPinnedEvent {
     pub pinned: u8,
 }
@@ -3021,8 +3020,8 @@ impl PlayerPinnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
 }
@@ -3035,8 +3034,8 @@ impl PlayerHealedByMedicEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSappedObjectEvent {
     pub user_id: u16,
     pub owner_id: u16,
@@ -3055,8 +3054,8 @@ impl PlayerSappedObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemFoundEvent {
     pub player: u8,
     pub quality: u8,
@@ -3081,8 +3080,8 @@ impl ItemFoundEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowAnnotationEvent {
     pub world_pos_x: f32,
     pub world_pos_y: f32,
@@ -3121,8 +3120,8 @@ impl ShowAnnotationEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HideAnnotationEvent {
     pub id: u32,
 }
@@ -3135,8 +3134,8 @@ impl HideAnnotationEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
 }
@@ -3149,8 +3148,8 @@ impl PostInventoryApplicationEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUnlockUpdatedEvent {
     pub index: u16,
     pub time: f32,
@@ -3165,8 +3164,8 @@ impl ControlPointUnlockUpdatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DeployBuffBannerEvent {
     pub buff_type: u8,
     pub buff_owner: u16,
@@ -3181,8 +3180,8 @@ impl DeployBuffBannerEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuffEvent {
     pub user_id: u16,
     pub buff_owner: u16,
@@ -3199,8 +3198,8 @@ impl PlayerBuffEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedicDeathEvent {
     pub user_id: u16,
     pub attacker: u16,
@@ -3219,8 +3218,8 @@ impl MedicDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct OvertimeNagEvent {}
 impl OvertimeNagEvent {
     #[allow(unused_variables)]
@@ -3228,8 +3227,8 @@ impl OvertimeNagEvent {
         Ok(OvertimeNagEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamsChangedEvent {}
 impl TeamsChangedEvent {
     #[allow(unused_variables)]
@@ -3237,8 +3236,8 @@ impl TeamsChangedEvent {
         Ok(TeamsChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
 }
@@ -3251,8 +3250,8 @@ impl HalloweenPumpkinGrabEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3267,8 +3266,8 @@ impl RocketJumpEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketJumpLandedEvent {
     pub user_id: u16,
 }
@@ -3281,8 +3280,8 @@ impl RocketJumpLandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StickyJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3297,8 +3296,8 @@ impl StickyJumpEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StickyJumpLandedEvent {
     pub user_id: u16,
 }
@@ -3311,8 +3310,8 @@ impl StickyJumpLandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketPackLaunchEvent {
     pub user_id: u16,
     pub play_sound: bool,
@@ -3327,8 +3326,8 @@ impl RocketPackLaunchEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketPackLandedEvent {
     pub user_id: u16,
 }
@@ -3341,8 +3340,8 @@ impl RocketPackLandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedicDefendedEvent {
     pub user_id: u16,
     pub medic: u16,
@@ -3357,8 +3356,8 @@ impl MedicDefendedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerHealedEvent {
     pub amount: u16,
 }
@@ -3371,8 +3370,8 @@ impl LocalPlayerHealedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
 }
@@ -3385,8 +3384,8 @@ impl PlayerDestroyedPipeBombEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDeflectedEvent {
     pub user_id: u16,
     pub owner_id: u16,
@@ -3405,8 +3404,8 @@ impl ObjectDeflectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerMvpEvent {
     pub player: u16,
 }
@@ -3419,8 +3418,8 @@ impl PlayerMvpEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RaidSpawnMobEvent {}
 impl RaidSpawnMobEvent {
     #[allow(unused_variables)]
@@ -3428,8 +3427,8 @@ impl RaidSpawnMobEvent {
         Ok(RaidSpawnMobEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RaidSpawnSquadEvent {}
 impl RaidSpawnSquadEvent {
     #[allow(unused_variables)]
@@ -3437,8 +3436,8 @@ impl RaidSpawnSquadEvent {
         Ok(RaidSpawnSquadEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NavBlockedEvent {
     pub area: u32,
     pub blocked: bool,
@@ -3453,8 +3452,8 @@ impl NavBlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PathTrackPassedEvent {
     pub index: u16,
 }
@@ -3467,8 +3466,8 @@ impl PathTrackPassedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NumCappersChangedEvent {
     pub index: u16,
     pub count: u8,
@@ -3483,8 +3482,8 @@ impl NumCappersChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRegenerateEvent {}
 impl PlayerRegenerateEvent {
     #[allow(unused_variables)]
@@ -3492,8 +3491,8 @@ impl PlayerRegenerateEvent {
         Ok(PlayerRegenerateEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UpdateStatusItemEvent {
     pub index: u8,
     pub object: u8,
@@ -3508,8 +3507,8 @@ impl UpdateStatusItemEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StatsResetRoundEvent {}
 impl StatsResetRoundEvent {
     #[allow(unused_variables)]
@@ -3517,8 +3516,8 @@ impl StatsResetRoundEvent {
         Ok(StatsResetRoundEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl ScoreStatsAccumulatedUpdateEvent {
     #[allow(unused_variables)]
@@ -3526,8 +3525,8 @@ impl ScoreStatsAccumulatedUpdateEvent {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl ScoreStatsAccumulatedResetEvent {
     #[allow(unused_variables)]
@@ -3535,8 +3534,8 @@ impl ScoreStatsAccumulatedResetEvent {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
 }
@@ -3549,8 +3548,8 @@ impl AchievementEarnedLocalEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedEvent {
     pub patient: u16,
     pub healer: u16,
@@ -3567,8 +3566,8 @@ impl PlayerHealedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BuildingHealedEvent {
     pub building: u16,
     pub healer: u16,
@@ -3585,8 +3584,8 @@ impl BuildingHealedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemPickupEvent {
     pub user_id: u16,
     pub item: String,
@@ -3601,8 +3600,8 @@ impl ItemPickupEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DuelStatusEvent {
     pub killer: u16,
     pub score_type: u16,
@@ -3625,8 +3624,8 @@ impl DuelStatusEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FishNoticeEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3669,8 +3668,8 @@ impl FishNoticeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FishNoticeArmEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3713,8 +3712,8 @@ impl FishNoticeArmEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SlapNoticeEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3757,8 +3756,8 @@ impl SlapNoticeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ThrowableHitEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -3803,8 +3802,8 @@ impl ThrowableHitEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PumpkinLordSummonedEvent {}
 impl PumpkinLordSummonedEvent {
     #[allow(unused_variables)]
@@ -3812,8 +3811,8 @@ impl PumpkinLordSummonedEvent {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PumpkinLordKilledEvent {}
 impl PumpkinLordKilledEvent {
     #[allow(unused_variables)]
@@ -3821,8 +3820,8 @@ impl PumpkinLordKilledEvent {
         Ok(PumpkinLordKilledEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusSummonedEvent {
     pub level: u16,
 }
@@ -3835,8 +3834,8 @@ impl MerasmusSummonedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusKilledEvent {
     pub level: u16,
 }
@@ -3849,8 +3848,8 @@ impl MerasmusKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusEscapeWarningEvent {
     pub level: u16,
     pub time_remaining: u8,
@@ -3865,8 +3864,8 @@ impl MerasmusEscapeWarningEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusEscapedEvent {
     pub level: u16,
 }
@@ -3879,8 +3878,8 @@ impl MerasmusEscapedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossSummonedEvent {
     pub level: u16,
 }
@@ -3893,8 +3892,8 @@ impl EyeballBossSummonedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossStunnedEvent {
     pub level: u16,
     pub player_ent_index: u8,
@@ -3909,8 +3908,8 @@ impl EyeballBossStunnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossKilledEvent {
     pub level: u16,
 }
@@ -3923,8 +3922,8 @@ impl EyeballBossKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossKillerEvent {
     pub level: u16,
     pub player_ent_index: u8,
@@ -3939,8 +3938,8 @@ impl EyeballBossKillerEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossEscapeImminentEvent {
     pub level: u16,
     pub time_remaining: u8,
@@ -3955,8 +3954,8 @@ impl EyeballBossEscapeImminentEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossEscapedEvent {
     pub level: u16,
 }
@@ -3969,8 +3968,8 @@ impl EyeballBossEscapedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NpcHurtEvent {
     pub ent_index: u16,
     pub health: u16,
@@ -3995,8 +3994,8 @@ impl NpcHurtEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointTimerUpdatedEvent {
     pub index: u16,
     pub time: f32,
@@ -4011,8 +4010,8 @@ impl ControlPointTimerUpdatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
 }
@@ -4025,8 +4024,8 @@ impl PlayerHighFiveStartEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
 }
@@ -4039,8 +4038,8 @@ impl PlayerHighFiveCancelEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveSuccessEvent {
     pub initiator_ent_index: u8,
     pub partner_ent_index: u8,
@@ -4055,8 +4054,8 @@ impl PlayerHighFiveSuccessEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBonusPointsEvent {
     pub points: u16,
     pub player_ent_index: u16,
@@ -4073,8 +4072,8 @@ impl PlayerBonusPointsEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUpgradedEvent {}
 impl PlayerUpgradedEvent {
     #[allow(unused_variables)]
@@ -4082,8 +4081,8 @@ impl PlayerUpgradedEvent {
         Ok(PlayerUpgradedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuybackEvent {
     pub player: u16,
     pub cost: u16,
@@ -4098,8 +4097,8 @@ impl PlayerBuybackEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUsedPowerUpBottleEvent {
     pub player: u16,
     pub kind: u16,
@@ -4116,8 +4115,8 @@ impl PlayerUsedPowerUpBottleEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
 }
@@ -4130,8 +4129,8 @@ impl ChristmasGiftGrabEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerKilledAchievementZoneEvent {
     pub attacker: u16,
     pub victim: u16,
@@ -4148,8 +4147,8 @@ impl PlayerKilledAchievementZoneEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyUpdatedEvent {}
 impl PartyUpdatedEvent {
     #[allow(unused_variables)]
@@ -4157,8 +4156,8 @@ impl PartyUpdatedEvent {
         Ok(PartyUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyPrefChangedEvent {}
 impl PartyPrefChangedEvent {
     #[allow(unused_variables)]
@@ -4166,8 +4165,8 @@ impl PartyPrefChangedEvent {
         Ok(PartyPrefChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyCriteriaChangedEvent {}
 impl PartyCriteriaChangedEvent {
     #[allow(unused_variables)]
@@ -4175,8 +4174,8 @@ impl PartyCriteriaChangedEvent {
         Ok(PartyCriteriaChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyInvitesChangedEvent {}
 impl PartyInvitesChangedEvent {
     #[allow(unused_variables)]
@@ -4184,8 +4183,8 @@ impl PartyInvitesChangedEvent {
         Ok(PartyInvitesChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyQueueStateChangedEvent {
     pub match_group: u16,
 }
@@ -4198,8 +4197,8 @@ impl PartyQueueStateChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyChatEvent {
     pub steam_id: String,
     pub text: String,
@@ -4216,8 +4215,8 @@ impl PartyChatEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyMemberJoinEvent {
     pub steam_id: String,
 }
@@ -4230,8 +4229,8 @@ impl PartyMemberJoinEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyMemberLeaveEvent {
     pub steam_id: String,
 }
@@ -4244,8 +4243,8 @@ impl PartyMemberLeaveEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MatchInvitesUpdatedEvent {}
 impl MatchInvitesUpdatedEvent {
     #[allow(unused_variables)]
@@ -4253,8 +4252,8 @@ impl MatchInvitesUpdatedEvent {
         Ok(MatchInvitesUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LobbyUpdatedEvent {}
 impl LobbyUpdatedEvent {
     #[allow(unused_variables)]
@@ -4262,8 +4261,8 @@ impl LobbyUpdatedEvent {
         Ok(LobbyUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMissionUpdateEvent {
     pub class: u16,
     pub count: u16,
@@ -4278,8 +4277,8 @@ impl MvmMissionUpdateEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RecalculateHolidaysEvent {}
 impl RecalculateHolidaysEvent {
     #[allow(unused_variables)]
@@ -4287,8 +4286,8 @@ impl RecalculateHolidaysEvent {
         Ok(RecalculateHolidaysEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
 }
@@ -4301,8 +4300,8 @@ impl PlayerCurrencyChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
 }
@@ -4315,8 +4314,8 @@ impl DoomsdayRocketOpenEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
 }
@@ -4329,8 +4328,8 @@ impl RemoveNemesisRelationshipsEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusWaveEvent {}
 impl MvmCreditBonusWaveEvent {
     #[allow(unused_variables)]
@@ -4338,8 +4337,8 @@ impl MvmCreditBonusWaveEvent {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusAllEvent {}
 impl MvmCreditBonusAllEvent {
     #[allow(unused_variables)]
@@ -4347,8 +4346,8 @@ impl MvmCreditBonusAllEvent {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl MvmCreditBonusAllAdvancedEvent {
     #[allow(unused_variables)]
@@ -4356,8 +4355,8 @@ impl MvmCreditBonusAllAdvancedEvent {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
 }
@@ -4370,8 +4369,8 @@ impl MvmQuickSentryUpgradeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl MvmTankDestroyedByPlayersEvent {
     #[allow(unused_variables)]
@@ -4379,8 +4378,8 @@ impl MvmTankDestroyedByPlayersEvent {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
 }
@@ -4393,8 +4392,8 @@ impl MvmKillRobotDeliveringBombEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmPickupCurrencyEvent {
     pub player: u16,
     pub currency: u16,
@@ -4409,8 +4408,8 @@ impl MvmPickupCurrencyEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
 }
@@ -4423,8 +4422,8 @@ impl MvmBombCarrierKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSentryBusterDetonateEvent {
     pub player: u16,
     pub det_x: f32,
@@ -4443,8 +4442,8 @@ impl MvmSentryBusterDetonateEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
 }
@@ -4457,8 +4456,8 @@ impl MvmScoutMarkedForDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
 }
@@ -4471,8 +4470,8 @@ impl MvmMedicPowerUpSharedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBeginWaveEvent {
     pub wave_index: u16,
     pub max_waves: u16,
@@ -4489,8 +4488,8 @@ impl MvmBeginWaveEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
 }
@@ -4503,8 +4502,8 @@ impl MvmWaveCompleteEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMissionCompleteEvent {
     pub mission: String,
 }
@@ -4517,8 +4516,8 @@ impl MvmMissionCompleteEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
 }
@@ -4531,8 +4530,8 @@ impl MvmBombResetByPlayerEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl MvmBombAlarmTriggeredEvent {
     #[allow(unused_variables)]
@@ -4540,8 +4539,8 @@ impl MvmBombAlarmTriggeredEvent {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
 }
@@ -4554,8 +4553,8 @@ impl MvmBombDeployResetByPlayerEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmWaveFailedEvent {}
 impl MvmWaveFailedEvent {
     #[allow(unused_variables)]
@@ -4563,8 +4562,8 @@ impl MvmWaveFailedEvent {
         Ok(MvmWaveFailedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmResetStatsEvent {}
 impl MvmResetStatsEvent {
     #[allow(unused_variables)]
@@ -4572,8 +4571,8 @@ impl MvmResetStatsEvent {
         Ok(MvmResetStatsEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamageResistedEvent {
     pub ent_index: u8,
 }
@@ -4586,8 +4585,8 @@ impl DamageResistedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerNotifyEvent {
     pub ent_index: u16,
     pub marker_ent_index: u16,
@@ -4602,8 +4601,8 @@ impl RevivePlayerNotifyEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
 }
@@ -4616,8 +4615,8 @@ impl RevivePlayerStoppedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
 }
@@ -4630,8 +4629,8 @@ impl RevivePlayerCompleteEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
 }
@@ -4644,8 +4643,8 @@ impl PlayerTurnedToGhostEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedigunShieldBlockedDamageEvent {
     pub user_id: u16,
     pub damage: f32,
@@ -4660,8 +4659,8 @@ impl MedigunShieldBlockedDamageEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
 }
@@ -4674,8 +4673,8 @@ impl MvmAdvWaveCompleteNoGatesEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSniperHeadshotCurrencyEvent {
     pub user_id: u16,
     pub currency: u16,
@@ -4690,8 +4689,8 @@ impl MvmSniperHeadshotCurrencyEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMannhattanPitEvent {}
 impl MvmMannhattanPitEvent {
     #[allow(unused_variables)]
@@ -4699,8 +4698,8 @@ impl MvmMannhattanPitEvent {
         Ok(MvmMannhattanPitEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FlagCarriedInDetectionZoneEvent {
     #[allow(unused_variables)]
@@ -4708,8 +4707,8 @@ impl FlagCarriedInDetectionZoneEvent {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl MvmAdvWaveKilledStunRadioEvent {
     #[allow(unused_variables)]
@@ -4717,8 +4716,8 @@ impl MvmAdvWaveKilledStunRadioEvent {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
     pub victim: u16,
@@ -4733,8 +4732,8 @@ impl PlayerDirectHitStunEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
 }
@@ -4747,8 +4746,8 @@ impl MvmSentryBusterKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UpgradesFileChangedEvent {
     pub path: String,
 }
@@ -4761,8 +4760,8 @@ impl UpgradesFileChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdTeamPointsChangedEvent {
     pub points: u16,
     pub team: u8,
@@ -4779,8 +4778,8 @@ impl RdTeamPointsChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRulesStateChangedEvent {}
 impl RdRulesStateChangedEvent {
     #[allow(unused_variables)]
@@ -4788,8 +4787,8 @@ impl RdRulesStateChangedEvent {
         Ok(RdRulesStateChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRobotKilledEvent {
     pub user_id: u16,
     pub victim_ent_index: u32,
@@ -4822,8 +4821,8 @@ impl RdRobotKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRobotImpactEvent {
     pub ent_index: u16,
     pub impulse_x: f32,
@@ -4842,8 +4841,8 @@ impl RdRobotImpactEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
 }
@@ -4856,8 +4855,8 @@ impl TeamPlayPreRoundTimeLeftEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ParachuteDeployEvent {
     pub index: u16,
 }
@@ -4870,8 +4869,8 @@ impl ParachuteDeployEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ParachuteHolsterEvent {
     pub index: u16,
 }
@@ -4884,8 +4883,8 @@ impl ParachuteHolsterEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KillRefillsMeterEvent {
     pub index: u16,
 }
@@ -4898,8 +4897,8 @@ impl KillRefillsMeterEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RpsTauntEventEvent {
     pub winner: u16,
     pub winner_rps: u8,
@@ -4918,8 +4917,8 @@ impl RpsTauntEventEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CongaKillEvent {
     pub index: u16,
 }
@@ -4932,8 +4931,8 @@ impl CongaKillEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInitialSpawnEvent {
     pub index: u16,
 }
@@ -4946,8 +4945,8 @@ impl PlayerInitialSpawnEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveVictoryEvent {}
 impl CompetitiveVictoryEvent {
     #[allow(unused_variables)]
@@ -4955,8 +4954,8 @@ impl CompetitiveVictoryEvent {
         Ok(CompetitiveVictoryEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveStatsUpdateEvent {
     pub index: u16,
     pub kills_rank: u8,
@@ -4979,8 +4978,8 @@ impl CompetitiveStatsUpdateEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MiniGameWinEvent {
     pub team: u8,
     pub kind: u8,
@@ -4995,8 +4994,8 @@ impl MiniGameWinEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SentryOnGoActiveEvent {
     pub index: u16,
 }
@@ -5009,8 +5008,8 @@ impl SentryOnGoActiveEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DuckXpLevelUpEvent {
     pub level: u16,
 }
@@ -5023,8 +5022,8 @@ impl DuckXpLevelUpEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestLogOpenedEvent {}
 impl QuestLogOpenedEvent {
     #[allow(unused_variables)]
@@ -5032,8 +5031,8 @@ impl QuestLogOpenedEvent {
         Ok(QuestLogOpenedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SchemaUpdatedEvent {}
 impl SchemaUpdatedEvent {
     #[allow(unused_variables)]
@@ -5041,8 +5040,8 @@ impl SchemaUpdatedEvent {
         Ok(SchemaUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerPickupWeaponEvent {}
 impl LocalPlayerPickupWeaponEvent {
     #[allow(unused_variables)]
@@ -5050,8 +5049,8 @@ impl LocalPlayerPickupWeaponEvent {
         Ok(LocalPlayerPickupWeaponEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdPlayerScorePointsEvent {
     pub player: u16,
     pub method: u16,
@@ -5068,8 +5067,8 @@ impl RdPlayerScorePointsEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DemomanDetStickiesEvent {
     pub player: u16,
 }
@@ -5082,8 +5081,8 @@ impl DemomanDetStickiesEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestObjectiveCompletedEvent {
     pub quest_item_id_low: u32,
     pub quest_item_id_hi: u32,
@@ -5102,8 +5101,8 @@ impl QuestObjectiveCompletedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerScoreChangedEvent {
     pub player: u8,
     pub delta: u16,
@@ -5118,8 +5117,8 @@ impl PlayerScoreChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KilledCappingPlayerEvent {
     pub cp: u8,
     pub killer: u8,
@@ -5138,8 +5137,8 @@ impl KilledCappingPlayerEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EnvironmentalDeathEvent {
     pub killer: u8,
     pub victim: u8,
@@ -5154,8 +5153,8 @@ impl EnvironmentalDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProjectileDirectHitEvent {
     pub attacker: u8,
     pub victim: u8,
@@ -5172,8 +5171,8 @@ impl ProjectileDirectHitEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassGetEvent {
     pub owner: u16,
 }
@@ -5186,8 +5185,8 @@ impl PassGetEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassScoreEvent {
     pub scorer: u16,
     pub assister: u16,
@@ -5204,8 +5203,8 @@ impl PassScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassFreeEvent {
     pub owner: u16,
     pub attacker: u16,
@@ -5220,8 +5219,8 @@ impl PassFreeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassPassCaughtEvent {
     pub passer: u16,
     pub catcher: u16,
@@ -5240,8 +5239,8 @@ impl PassPassCaughtEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassBallStolenEvent {
     pub victim: u16,
     pub attacker: u16,
@@ -5256,8 +5255,8 @@ impl PassBallStolenEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassBallBlockedEvent {
     pub owner: u16,
     pub blocker: u16,
@@ -5272,8 +5271,8 @@ impl PassBallBlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamagePreventedEvent {
     pub preventor: u16,
     pub victim: u16,
@@ -5292,8 +5291,8 @@ impl DamagePreventedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenBossKilledEvent {
     pub boss: u16,
     pub killer: u16,
@@ -5308,8 +5307,8 @@ impl HalloweenBossKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscapedLootIslandEvent {
     pub player: u16,
 }
@@ -5322,8 +5321,8 @@ impl EscapedLootIslandEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TaggedPlayerAsItEvent {
     pub player: u16,
 }
@@ -5336,8 +5335,8 @@ impl TaggedPlayerAsItEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusStunnedEvent {
     pub player: u16,
 }
@@ -5350,8 +5349,8 @@ impl MerasmusStunnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusPropFoundEvent {
     pub player: u16,
 }
@@ -5364,8 +5363,8 @@ impl MerasmusPropFoundEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenSkeletonKilledEvent {
     pub player: u16,
 }
@@ -5378,8 +5377,8 @@ impl HalloweenSkeletonKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscapeHellEvent {
     pub player: u16,
 }
@@ -5392,8 +5391,8 @@ impl EscapeHellEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CrossSpectralBridgeEvent {
     pub player: u16,
 }
@@ -5406,8 +5405,8 @@ impl CrossSpectralBridgeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MiniGameWonEvent {
     pub player: u16,
     pub game: u16,
@@ -5422,8 +5421,8 @@ impl MiniGameWonEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RespawnGhostEvent {
     pub reviver: u16,
     pub ghost: u16,
@@ -5438,8 +5437,8 @@ impl RespawnGhostEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KillInHellEvent {
     pub killer: u16,
     pub victim: u16,
@@ -5454,8 +5453,8 @@ impl KillInHellEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenDuckCollectedEvent {
     pub collector: u16,
 }
@@ -5468,8 +5467,8 @@ impl HalloweenDuckCollectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpecialScoreEvent {
     pub player: u8,
 }
@@ -5482,8 +5481,8 @@ impl SpecialScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamLeaderKilledEvent {
     pub killer: u8,
     pub victim: u8,
@@ -5498,8 +5497,8 @@ impl TeamLeaderKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenSoulCollectedEvent {
     pub intended_target: u8,
     pub collecting_player: u8,
@@ -5516,8 +5515,8 @@ impl HalloweenSoulCollectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RecalculateTruceEvent {}
 impl RecalculateTruceEvent {
     #[allow(unused_variables)]
@@ -5525,8 +5524,8 @@ impl RecalculateTruceEvent {
         Ok(RecalculateTruceEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DeadRingerCheatDeathEvent {
     pub spy: u8,
     pub attacker: u8,
@@ -5541,8 +5540,8 @@ impl DeadRingerCheatDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CrossbowHealEvent {
     pub healer: u8,
     pub target: u8,
@@ -5559,8 +5558,8 @@ impl CrossbowHealEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamageMitigatedEvent {
     pub mitigator: u8,
     pub damaged: u8,
@@ -5579,8 +5578,8 @@ impl DamageMitigatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PayloadPushedEvent {
     pub pusher: u8,
     pub distance: u16,
@@ -5595,8 +5594,8 @@ impl PayloadPushedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAbandonedMatchEvent {
     pub game_over: bool,
 }
@@ -5609,8 +5608,8 @@ impl PlayerAbandonedMatchEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClDrawlineEvent {
     pub player: u8,
     pub panel: u8,
@@ -5631,8 +5630,8 @@ impl ClDrawlineEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RestartTimerTimeEvent {
     pub time: u8,
 }
@@ -5645,8 +5644,8 @@ impl RestartTimerTimeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WinLimitChangedEvent {}
 impl WinLimitChangedEvent {
     #[allow(unused_variables)]
@@ -5654,8 +5653,8 @@ impl WinLimitChangedEvent {
         Ok(WinLimitChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WinPanelShowScoresEvent {}
 impl WinPanelShowScoresEvent {
     #[allow(unused_variables)]
@@ -5663,8 +5662,8 @@ impl WinPanelShowScoresEvent {
         Ok(WinPanelShowScoresEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TopStreamsRequestFinishedEvent {}
 impl TopStreamsRequestFinishedEvent {
     #[allow(unused_variables)]
@@ -5672,8 +5671,8 @@ impl TopStreamsRequestFinishedEvent {
         Ok(TopStreamsRequestFinishedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveStateChangedEvent {}
 impl CompetitiveStateChangedEvent {
     #[allow(unused_variables)]
@@ -5681,8 +5680,8 @@ impl CompetitiveStateChangedEvent {
         Ok(CompetitiveStateChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GlobalWarDataUpdatedEvent {}
 impl GlobalWarDataUpdatedEvent {
     #[allow(unused_variables)]
@@ -5690,8 +5689,8 @@ impl GlobalWarDataUpdatedEvent {
         Ok(GlobalWarDataUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StopWatchChangedEvent {}
 impl StopWatchChangedEvent {
     #[allow(unused_variables)]
@@ -5699,8 +5698,8 @@ impl StopWatchChangedEvent {
         Ok(StopWatchChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DsStopEvent {}
 impl DsStopEvent {
     #[allow(unused_variables)]
@@ -5708,8 +5707,8 @@ impl DsStopEvent {
         Ok(DsStopEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DsScreenshotEvent {
     pub delay: f32,
 }
@@ -5722,8 +5721,8 @@ impl DsScreenshotEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowMatchSummaryEvent {}
 impl ShowMatchSummaryEvent {
     #[allow(unused_variables)]
@@ -5731,8 +5730,8 @@ impl ShowMatchSummaryEvent {
         Ok(ShowMatchSummaryEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ExperienceChangedEvent {}
 impl ExperienceChangedEvent {
     #[allow(unused_variables)]
@@ -5740,8 +5739,8 @@ impl ExperienceChangedEvent {
         Ok(ExperienceChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BeginXpLerpEvent {}
 impl BeginXpLerpEvent {
     #[allow(unused_variables)]
@@ -5749,8 +5748,8 @@ impl BeginXpLerpEvent {
         Ok(BeginXpLerpEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MatchmakerStatsUpdatedEvent {}
 impl MatchmakerStatsUpdatedEvent {
     #[allow(unused_variables)]
@@ -5758,8 +5757,8 @@ impl MatchmakerStatsUpdatedEvent {
         Ok(MatchmakerStatsUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RematchVotePeriodOverEvent {
     pub success: bool,
 }
@@ -5772,8 +5771,8 @@ impl RematchVotePeriodOverEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RematchFailedToCreateEvent {}
 impl RematchFailedToCreateEvent {
     #[allow(unused_variables)]
@@ -5781,8 +5780,8 @@ impl RematchFailedToCreateEvent {
         Ok(RematchFailedToCreateEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRematchChangeEvent {}
 impl PlayerRematchChangeEvent {
     #[allow(unused_variables)]
@@ -5790,8 +5789,8 @@ impl PlayerRematchChangeEvent {
         Ok(PlayerRematchChangeEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PingUpdatedEvent {}
 impl PingUpdatedEvent {
     #[allow(unused_variables)]
@@ -5799,8 +5798,8 @@ impl PingUpdatedEvent {
         Ok(PingUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MMStatsUpdatedEvent {}
 impl MMStatsUpdatedEvent {
     #[allow(unused_variables)]
@@ -5808,8 +5807,8 @@ impl MMStatsUpdatedEvent {
         Ok(MMStatsUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerNextMapVoteChangeEvent {
     pub map_index: u8,
     pub vote: u8,
@@ -5824,8 +5823,8 @@ impl PlayerNextMapVoteChangeEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteMapsChangedEvent {}
 impl VoteMapsChangedEvent {
     #[allow(unused_variables)]
@@ -5833,8 +5832,8 @@ impl VoteMapsChangedEvent {
         Ok(VoteMapsChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProtoDefChangedEvent {
     pub kind: u8,
     pub definition_index: u32,
@@ -5855,8 +5854,8 @@ impl ProtoDefChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDominationEvent {
     pub dominator: u16,
     pub dominated: u16,
@@ -5873,8 +5872,8 @@ impl PlayerDominationEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRocketPackPushedEvent {
     pub pusher: u16,
     pub pushed: u16,
@@ -5889,8 +5888,8 @@ impl PlayerRocketPackPushedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestRequestEvent {
     pub request: u32,
     pub msg: String,
@@ -5905,8 +5904,8 @@ impl QuestRequestEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestResponseEvent {
     pub request: u32,
     pub success: bool,
@@ -5923,8 +5922,8 @@ impl QuestResponseEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestProgressEvent {
     pub owner: u16,
     pub scorer: u16,
@@ -5949,8 +5948,8 @@ impl QuestProgressEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProjectileRemovedEvent {
     pub attacker: u8,
     pub weapon_def_index: u32,
@@ -5969,8 +5968,8 @@ impl ProjectileRemovedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestMapDataChangedEvent {}
 impl QuestMapDataChangedEvent {
     #[allow(unused_variables)]
@@ -5978,8 +5977,8 @@ impl QuestMapDataChangedEvent {
         Ok(QuestMapDataChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GasDousedPlayerIgnitedEvent {
     pub igniter: u16,
     pub douser: u16,
@@ -5996,8 +5995,8 @@ impl GasDousedPlayerIgnitedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestTurnInStateEvent {
     pub state: u16,
 }
@@ -6010,8 +6009,8 @@ impl QuestTurnInStateEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemsAcknowledgedEvent {}
 impl ItemsAcknowledgedEvent {
     #[allow(unused_variables)]
@@ -6019,8 +6018,8 @@ impl ItemsAcknowledgedEvent {
         Ok(ItemsAcknowledgedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CapperKilledEvent {
     pub blocker: u16,
     pub victim: u16,
@@ -6035,8 +6034,8 @@ impl CapperKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MainMenuStabilizedEvent {}
 impl MainMenuStabilizedEvent {
     #[allow(unused_variables)]
@@ -6044,8 +6043,8 @@ impl MainMenuStabilizedEvent {
         Ok(MainMenuStabilizedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WorldStatusChangedEvent {}
 impl WorldStatusChangedEvent {
     #[allow(unused_variables)]
@@ -6053,8 +6052,8 @@ impl WorldStatusChangedEvent {
         Ok(WorldStatusChangedEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVStatusEvent {
     pub clients: u32,
     pub slots: u32,
@@ -6073,8 +6072,8 @@ impl HLTVStatusEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVCameramanEvent {
     pub index: u16,
 }
@@ -6087,8 +6086,8 @@ impl HLTVCameramanEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVRankCameraEvent {
     pub index: u8,
     pub rank: f32,
@@ -6105,8 +6104,8 @@ impl HLTVRankCameraEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVRankEntityEvent {
     pub index: u16,
     pub rank: f32,
@@ -6123,8 +6122,8 @@ impl HLTVRankEntityEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVFixedEvent {
     pub pos_x: u32,
     pub pos_y: u32,
@@ -6151,8 +6150,8 @@ impl HLTVFixedEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChaseEvent {
     pub target_1: u16,
     pub target_2: u16,
@@ -6177,8 +6176,8 @@ impl HLTVChaseEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVMessageEvent {
     pub text: String,
 }
@@ -6191,8 +6190,8 @@ impl HLTVMessageEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVTitleEvent {
     pub text: String,
 }
@@ -6205,8 +6204,8 @@ impl HLTVTitleEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChatEvent {
     pub text: String,
 }
@@ -6219,8 +6218,8 @@ impl HLTVChatEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayStartRecordEvent {}
 impl ReplayStartRecordEvent {
     #[allow(unused_variables)]
@@ -6228,8 +6227,8 @@ impl ReplayStartRecordEvent {
         Ok(ReplayStartRecordEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplaySessionInfoEvent {
     pub sn: String,
     pub di: u8,
@@ -6248,8 +6247,8 @@ impl ReplaySessionInfoEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayEndRecordEvent {}
 impl ReplayEndRecordEvent {
     #[allow(unused_variables)]
@@ -6257,8 +6256,8 @@ impl ReplayEndRecordEvent {
         Ok(ReplayEndRecordEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayReplaysAvailableEvent {}
 impl ReplayReplaysAvailableEvent {
     #[allow(unused_variables)]
@@ -6266,8 +6265,8 @@ impl ReplayReplaysAvailableEvent {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayServerErrorEvent {
     pub error: String,
 }
@@ -6280,8 +6279,8 @@ impl ReplayServerErrorEvent {
         })
     }
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(tag = "type")]
 pub enum GameEvent {
     ServerSpawn(Box<ServerSpawnEvent>),
@@ -6687,7 +6686,7 @@ pub enum GameEvent {
     ReplayServerError(ReplayServerErrorEvent),
     Unknown(RawGameEvent),
 }
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameEventType {
     ServerSpawn,

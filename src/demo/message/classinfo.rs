@@ -6,7 +6,7 @@ use crate::{ReadResult, Stream};
 use std::cmp::min;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitReadSized, BitWriteSized, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(BitReadSized, BitWriteSized, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClassInfoEntry {
     #[size = "input_size"]
     class_id: u16,
@@ -15,7 +15,7 @@ pub struct ClassInfoEntry {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClassInfoMessage {
     count: u16,
     create: bool,

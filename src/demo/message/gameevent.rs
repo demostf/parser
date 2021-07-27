@@ -10,7 +10,7 @@ use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, Stream};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameEventMessage {
     pub event_type_id: GameEventTypeId,
     pub event: GameEvent,
@@ -147,7 +147,7 @@ impl From<GameEventTypeId> for u16 {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameEventListMessage {
     pub event_list: Vec<GameEventDefinition>,
 }
