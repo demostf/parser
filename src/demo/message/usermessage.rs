@@ -227,8 +227,8 @@ pub struct SayText2Message {
 
 impl SayText2Message {
     pub fn plain_text(&self) -> String {
-        // 1: normal, 2: team, 3: team, 4: location
-        let mut text = self.text.replace(|c| c <= char::from(4), "");
+        // 1: normal, 2: old colors, 3: team, 4: location, 5 achievement, 6 custom
+        let mut text = self.text.replace(|c| c <= char::from(6), "");
         // 7: 6-char hex
         while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
             if c == char::from(7) {
