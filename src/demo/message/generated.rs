@@ -27,8 +27,22 @@ pub struct StringCmdMessage {
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[discriminant_bits = 8]
+pub enum SignOnState {
+    None = 0,
+    Challenge,
+    Connected,
+    New,
+    PreSpawn,
+    Spawn,
+    Full,
+    ChangeLevel,
+}
+
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SignOnStateMessage {
-    pub state: u8,
+    pub state: SignOnState,
     pub count: u32,
 }
 
