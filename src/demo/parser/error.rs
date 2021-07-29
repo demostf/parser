@@ -2,7 +2,7 @@ use crate::demo::gamevent::GameEventValueType;
 use crate::demo::message::gameevent::GameEventTypeId;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{ClassId, SendTableName};
-use crate::demo::sendprop::SendPropIdentifier;
+use crate::demo::sendprop::{SendPropIdentifier, SendPropValue};
 use bitbuffer::BitError;
 use err_derive::Error;
 use std::str::Utf8Error;
@@ -94,7 +94,10 @@ pub enum MalformedSendPropDefinitionError {
     #[error(display = "SendProp value out of range")]
     OutOfRange,
     #[error(display = "Wrong prop value type for definition")]
-    WrongPropType,
+    WrongPropType {
+        expected: &'static str,
+        value: SendPropValue,
+    },
 }
 
 #[derive(Debug, Error)]

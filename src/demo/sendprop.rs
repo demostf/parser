@@ -1031,7 +1031,10 @@ impl TryFrom<&SendPropValue> for i64 {
     fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::Integer(val) => Ok(*val),
-            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType {
+                expected: "integer",
+                value: value.clone(),
+            }),
         }
     }
 }
@@ -1041,7 +1044,10 @@ impl TryFrom<&SendPropValue> for Vector {
     fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::Vector(val) => Ok(*val),
-            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType {
+                expected: "vector",
+                value: value.clone(),
+            }),
         }
     }
 }
@@ -1051,7 +1057,10 @@ impl TryFrom<&SendPropValue> for VectorXY {
     fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::VectorXY(val) => Ok(*val),
-            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType {
+                expected: "vectorxy",
+                value: value.clone(),
+            }),
         }
     }
 }
@@ -1061,7 +1070,10 @@ impl TryFrom<&SendPropValue> for f32 {
     fn try_from(value: &SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::Float(val) => Ok(*val),
-            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType {
+                expected: "float",
+                value: value.clone(),
+            }),
         }
     }
 }
@@ -1071,7 +1083,10 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a str {
     fn try_from(value: &'a SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::String(val) => Ok(val.as_str()),
-            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType {
+                expected: "string",
+                value: value.clone(),
+            }),
         }
     }
 }
@@ -1081,7 +1096,10 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
     fn try_from(value: &'a SendPropValue) -> std::result::Result<Self, Self::Error> {
         match value {
             SendPropValue::Array(val) => Ok(val.as_slice()),
-            _ => Err(MalformedSendPropDefinitionError::WrongPropType),
+            _ => Err(MalformedSendPropDefinitionError::WrongPropType {
+                expected: "array",
+                value: value.clone(),
+            }),
         }
     }
 }
