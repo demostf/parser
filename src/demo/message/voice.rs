@@ -17,11 +17,14 @@ impl BitRead<'_, LittleEndian> for VoiceInitMessage {
         let quality = stream.read()?;
 
         let sampling_rate = if quality == 255 {
+            // v2 packets have variable rate
             stream.read()?
         } else if codec == "vaudio_celt" {
-            11025
+            // legacy sample rate for celt
+            22050
         } else {
-            0
+            // legacy sample rate for non-celt
+            11025
         };
 
         Ok(VoiceInitMessage {
