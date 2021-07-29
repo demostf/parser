@@ -5,6 +5,7 @@ use crate::demo::message::{Message, MessageType};
 use crate::demo::parser::Encode;
 use crate::demo::vector::Vector;
 use crate::{Parse, ParserState, ReadResult, Result, Stream};
+use tracing::{event, span, Level};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitRead, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
@@ -118,15 +119,20 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
         let meta = stream.read()?;
 
         let length: u32 = stream.read()?;
+        event!(Level::DEBUG, length, "reading packet data");
         let mut packet_data = stream.read_bits(length as usize * 8)?;
 
         let mut messages = Vec::with_capacity(8);
         while packet_data.bits_left() > 6 {
             let message_type = MessageType::read(&mut packet_data)?;
+            let _span =
+                span!(Level::INFO, "reading packet", message_type = ?message_type).entered();
 
             if state.should_parse_message(message_type) && message_type != MessageType::Empty {
+                event!(Level::INFO, "parsing message");
                 messages.push(Message::from_type(message_type, &mut packet_data, state)?);
             } else {
+                event!(Level::INFO, "skipping message");
                 Message::skip_type(message_type, &mut packet_data, state)?;
             }
         }

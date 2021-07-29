@@ -57,15 +57,14 @@ impl EntityDump {
             tick,
             server_class: classes[usize::from(entity.server_class)].name.clone(),
             id: entity.entity_index,
+            pvs: entity.pvs.into(),
             props: entity
-                .props
-                .into_iter()
+                .into_props()
                 .map(|prop| {
                     let (table_name, prop_name) = &prop_names[&prop.identifier];
                     (format!("{}.{}", table_name, prop_name), prop.value)
                 })
                 .collect(),
-            pvs: entity.pvs.into(),
         }
     }
 }

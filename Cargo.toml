@@ -43,6 +43,8 @@ no-panic = { version = "0.1", optional = true }
 fnv = "1"
 steamid-ng = "1"
 schemars = { version = "0.8", optional = true }
+tracing = "0.1"
+tracing-subscriber = "0.2"
 
 [features]
 schema = ["schemars", "bitbuffer/schemars"]

@@ -11,6 +11,7 @@ use self::synctick::SyncTickPacket;
 use self::usercmd::UserCmdPacket;
 use crate::demo::parser::Encode;
 use serde::{Deserialize, Serialize};
+use tracing::{event, span, Level};
 
 pub mod consolecmd;
 pub mod datatable;
@@ -48,6 +49,19 @@ impl Packet<'_> {
             Packet::StringTables(msg) => msg.tick,
         }
     }
+
+    pub fn set_tick(&mut self, tick: u32) {
+        match self {
+            Packet::Sigon(msg) => msg.tick = tick,
+            Packet::Message(msg) => msg.tick = tick,
+            Packet::SyncTick(msg) => msg.tick = tick,
+            Packet::ConsoleCmd(msg) => msg.tick = tick,
+            Packet::UserCmd(msg) => msg.tick = tick,
+            Packet::DataTables(msg) => msg.tick = tick,
+            Packet::Stop(msg) => msg.tick = tick,
+            Packet::StringTables(msg) => msg.tick = tick,
+        }
+    }
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -83,6 +97,8 @@ impl Packet<'_> {
 impl<'a> Parse<'a> for Packet<'a> {
     fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let packet_type = PacketType::read(stream)?;
+        let _span = span!(Level::INFO, "reading packet", packet_type = ?packet_type).entered();
+        event!(Level::INFO, "parsing packet");
         Ok(match packet_type {
             PacketType::Sigon => Packet::Sigon(MessagePacket::parse(stream, state)?),
             PacketType::Message => Packet::Message(MessagePacket::parse(stream, state)?),
