@@ -53,7 +53,7 @@ fn test_voice_init_roundtrip() {
     crate::test_roundtrip_write(VoiceInitMessage {
         codec: "foo".into(),
         quality: 0,
-        sampling_rate: 0,
+        sampling_rate: 11025,
     });
     crate::test_roundtrip_write(VoiceInitMessage {
         codec: "foo".into(),
