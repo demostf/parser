@@ -11,12 +11,12 @@ pub use crate::demo::parser::handler::{DemoHandler, MessageHandler, NullHandler}
 pub use crate::demo::parser::state::ParserState;
 use crate::Stream;
 
-mod analyser;
-mod error;
+pub mod analyser;
+pub mod error;
 pub mod gamestateanalyser;
 pub mod handler;
-mod messagetypeanalyser;
-mod state;
+pub mod messagetypeanalyser;
+pub mod state;
 
 pub use self::error::*;
 use crate::demo::parser::handler::BorrowMessageHandler;
