@@ -317,7 +317,7 @@ impl MessageHandler for Analyser {
                 self.state.interval_per_tick = message.interval_per_tick
             }
             Message::GameEvent(message) => self.handle_event(&message.event, tick),
-            Message::UserMessage(message) => self.handle_user_message(&message, tick),
+            Message::UserMessage(message) => self.handle_user_message(message, tick),
             _ => {}
         }
     }
