@@ -11,7 +11,7 @@ pub use crate::demo::{
 
 pub(crate) mod consthash;
 pub mod demo;
-mod nullhasher;
+pub(crate) mod nullhasher;
 
 #[cfg(test)]
 #[track_caller]
