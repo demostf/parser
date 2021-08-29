@@ -57,15 +57,11 @@ fn main() -> Result<(), MainError> {
                 match &mut packet {
                     Packet::Sigon(message_packet) | Packet::Message(message_packet) => {
                         message_packet.meta.view_angles = Default::default();
-                        message_packet
-                            .messages
-                            .iter_mut()
-                            .for_each(|msg| match msg {
-                                Message::ServerInfo(info) => {
-                                    info.stv = true;
-                                }
-                                _ => {}
-                            });
+                        message_packet.messages.iter_mut().for_each(|msg| {
+                            if let Message::ServerInfo(info) = msg {
+                                info.stv = true;
+                            }
+                        });
                     }
                     _ => {}
                 }

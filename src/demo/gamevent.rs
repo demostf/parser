@@ -168,7 +168,7 @@ impl RawGameEvent {
     pub fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut values: Vec<GameEventValue> = Vec::with_capacity(definition.entries.len());
         for entry in &definition.entries {
-            values.push(read_event_value(stream, &entry)?);
+            values.push(read_event_value(stream, entry)?);
         }
 
         Ok(RawGameEvent {

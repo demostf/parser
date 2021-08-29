@@ -731,7 +731,7 @@ pub fn encode_var_int_fixed(mut int: u32) -> u64 {
     let mut out = 0;
     for i in 0..4 {
         let byte: u8 = int as u8 & 0x7F;
-        out |= ((byte | 0x80) as u64) << i * 8;
+        out |= ((byte | 0x80) as u64) << (i * 8);
         int >>= 7;
     }
     out |= (int as u64) << 32;

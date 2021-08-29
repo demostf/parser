@@ -7902,7 +7902,7 @@ impl GameEventType {
             GameEventType::ReplayEndRecord => "replay_endrecord",
             GameEventType::ReplayReplaysAvailable => "replay_replaysavailable",
             GameEventType::ReplayServerError => "replay_servererror",
-            GameEventType::Unknown(ty) => &ty,
+            GameEventType::Unknown(ty) => ty,
         }
     }
 }
