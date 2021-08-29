@@ -136,7 +136,7 @@ impl<'a> RawPacketStream<'a> {
                     Ok(Some(packet))
                 }
                 Ok(packet) => Ok(Some(packet)),
-                Err(ParseError::ReadError(BitError::NotEnoughData { .. })) if false => {
+                Err(ParseError::ReadError(BitError::NotEnoughData { .. })) => {
                     self.ended = true;
                     self.incomplete = true;
                     Ok(None)

@@ -6,8 +6,8 @@ use crate::ReadResult;
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ConVar {
-    key: String,
-    value: String,
+    pub key: String,
+    pub value: String,
 }
 
 impl<E: Endianness> BitRead<'_, E> for ConVar {
@@ -25,9 +25,9 @@ impl<E: Endianness> BitRead<'_, E> for ConVar {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitRead, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SetConVarMessage {
-    length: u8,
+    pub length: u8,
     #[size = "length"]
-    vars: Vec<ConVar>,
+    pub vars: Vec<ConVar>,
 }
 
 impl<E: Endianness> BitWrite<E> for SetConVarMessage {
