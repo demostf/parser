@@ -38,7 +38,7 @@ pub enum MessageType {
     NetTick = 3,
     StringCmd = 4,
     SetConVar = 5,
-    SigOnState = 6,
+    SignOnState = 6,
     Print = 7,
     ServerInfo = 8,
     ClassInfo = 10,
@@ -73,7 +73,7 @@ pub enum Message<'a> {
     NetTick(NetTickMessage),
     StringCmd(StringCmdMessage),
     SetConVar(SetConVarMessage),
-    SigOnState(SignOnStateMessage),
+    SignOnState(SignOnStateMessage),
     Print(PrintMessage),
     ServerInfo(Box<ServerInfoMessage>),
     ClassInfo(ClassInfoMessage),
@@ -113,7 +113,7 @@ impl<'a> Message<'a> {
             Message::NetTick(_) => MessageType::NetTick,
             Message::StringCmd(_) => MessageType::StringCmd,
             Message::SetConVar(_) => MessageType::SetConVar,
-            Message::SigOnState(_) => MessageType::SigOnState,
+            Message::SignOnState(_) => MessageType::SignOnState,
             Message::Print(_) => MessageType::Print,
             Message::ServerInfo(_) => MessageType::ServerInfo,
             Message::ClassInfo(_) => MessageType::ClassInfo,
@@ -150,8 +150,8 @@ impl<'a> Message<'a> {
             MessageType::NetTick => Message::NetTick(NetTickMessage::parse(stream, state)?),
             MessageType::StringCmd => Message::StringCmd(StringCmdMessage::parse(stream, state)?),
             MessageType::SetConVar => Message::SetConVar(SetConVarMessage::parse(stream, state)?),
-            MessageType::SigOnState => {
-                Message::SigOnState(SignOnStateMessage::parse(stream, state)?)
+            MessageType::SignOnState => {
+                Message::SignOnState(SignOnStateMessage::parse(stream, state)?)
             }
             MessageType::Print => Message::Print(PrintMessage::parse(stream, state)?),
             MessageType::ServerInfo => {
@@ -209,7 +209,7 @@ impl<'a> Message<'a> {
             MessageType::NetTick => NetTickMessage::parse_skip(stream, state),
             MessageType::StringCmd => StringCmdMessage::parse_skip(stream, state),
             MessageType::SetConVar => SetConVarMessage::parse_skip(stream, state),
-            MessageType::SigOnState => SignOnStateMessage::parse_skip(stream, state),
+            MessageType::SignOnState => SignOnStateMessage::parse_skip(stream, state),
             MessageType::Print => PrintMessage::parse_skip(stream, state),
             MessageType::ServerInfo => ServerInfoMessage::parse_skip(stream, state),
             MessageType::ClassInfo => ClassInfoMessage::parse_skip(stream, state),
@@ -244,7 +244,7 @@ impl Encode for Message<'_> {
             Message::NetTick(message) => message.encode(stream, state),
             Message::StringCmd(message) => message.encode(stream, state),
             Message::SetConVar(message) => message.encode(stream, state),
-            Message::SigOnState(message) => message.encode(stream, state),
+            Message::SignOnState(message) => message.encode(stream, state),
             Message::Print(message) => message.encode(stream, state),
             Message::ServerInfo(message) => message.encode(stream, state),
             Message::ClassInfo(message) => message.encode(stream, state),

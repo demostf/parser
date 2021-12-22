@@ -26,7 +26,7 @@ pub mod usercmd;
 #[serde(bound(deserialize = "'a: 'static"))]
 #[serde(tag = "type")]
 pub enum Packet<'a> {
-    Sigon(MessagePacket<'a>),
+    Signon(MessagePacket<'a>),
     Message(MessagePacket<'a>),
     SyncTick(SyncTickPacket),
     ConsoleCmd(ConsoleCmdPacket),
@@ -39,7 +39,7 @@ pub enum Packet<'a> {
 impl Packet<'_> {
     pub fn tick(&self) -> u32 {
         match self {
-            Packet::Sigon(msg) => msg.tick,
+            Packet::Signon(msg) => msg.tick,
             Packet::Message(msg) => msg.tick,
             Packet::SyncTick(msg) => msg.tick,
             Packet::ConsoleCmd(msg) => msg.tick,
@@ -52,7 +52,7 @@ impl Packet<'_> {
 
     pub fn set_tick(&mut self, tick: u32) {
         match self {
-            Packet::Sigon(msg) => msg.tick = tick,
+            Packet::Signon(msg) => msg.tick = tick,
             Packet::Message(msg) => msg.tick = tick,
             Packet::SyncTick(msg) => msg.tick = tick,
             Packet::ConsoleCmd(msg) => msg.tick = tick,
@@ -69,7 +69,7 @@ impl Packet<'_> {
 #[discriminant_bits = 8]
 #[repr(u8)]
 pub enum PacketType {
-    Sigon = 1,
+    Signon = 1,
     Message = 2,
     SyncTick = 3,
     ConsoleCmd = 4,
@@ -82,7 +82,7 @@ pub enum PacketType {
 impl Packet<'_> {
     pub fn packet_type(&self) -> PacketType {
         match self {
-            Packet::Sigon(_) => PacketType::Sigon,
+            Packet::Signon(_) => PacketType::Signon,
             Packet::Message(_) => PacketType::Message,
             Packet::SyncTick(_) => PacketType::SyncTick,
             Packet::ConsoleCmd(_) => PacketType::ConsoleCmd,
@@ -100,7 +100,7 @@ impl<'a> Parse<'a> for Packet<'a> {
         let _span = span!(Level::INFO, "reading packet", packet_type = ?packet_type).entered();
         event!(Level::INFO, "parsing packet");
         Ok(match packet_type {
-            PacketType::Sigon => Packet::Sigon(MessagePacket::parse(stream, state)?),
+            PacketType::Signon => Packet::Signon(MessagePacket::parse(stream, state)?),
             PacketType::Message => Packet::Message(MessagePacket::parse(stream, state)?),
             PacketType::SyncTick => Packet::SyncTick(SyncTickPacket::parse(stream, state)?),
             PacketType::ConsoleCmd => Packet::ConsoleCmd(ConsoleCmdPacket::parse(stream, state)?),
@@ -118,7 +118,7 @@ impl Encode for Packet<'_> {
     fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
         self.packet_type().write(stream)?;
         match self {
-            Packet::Sigon(inner) => inner.encode(stream, state),
+            Packet::Signon(inner) => inner.encode(stream, state),
             Packet::Message(inner) => inner.encode(stream, state),
             Packet::SyncTick(inner) => inner.encode(stream, state),
             Packet::ConsoleCmd(inner) => inner.encode(stream, state),

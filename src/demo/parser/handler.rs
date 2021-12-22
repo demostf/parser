@@ -94,7 +94,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                     self.handle_string_table(table)
                 }
             }
-            Packet::Message(packet) | Packet::Sigon(packet) => {
+            Packet::Message(packet) | Packet::Signon(packet) => {
                 //self.tick = packet.tick;
                 for message in packet.messages {
                     match message {

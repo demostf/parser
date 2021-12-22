@@ -19,5 +19,5 @@ pub struct Header {
     pub duration: f32,
     pub ticks: u32,
     pub frames: u32,
-    pub sigon: u32,
+    pub signon: u32,
 }

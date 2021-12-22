@@ -69,8 +69,8 @@ fn re_encode_test(input_file: &str) {
         assert_eq!(packet.packet_type(), re_decoded.packet_type());
         match (&packet, &re_decoded) {
             (
-                Packet::Message(msg) | Packet::Sigon(msg),
-                Packet::Message(re_msg) | Packet::Sigon(re_msg),
+                Packet::Message(msg) | Packet::Signon(msg),
+                Packet::Message(re_msg) | Packet::Signon(re_msg),
             ) => {
                 assert_eq!(msg.tick, re_msg.tick);
                 assert_eq!(msg.meta, re_msg.meta);
