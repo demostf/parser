@@ -18,16 +18,16 @@ use std::convert::TryFrom;
 use std::ops::{Index, IndexMut};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct ChatMassage {
+pub struct ChatMessage {
     pub kind: ChatMessageKind,
     pub from: String,
     pub text: String,
     pub tick: u32,
 }
 
-impl ChatMassage {
+impl ChatMessage {
     pub fn from_message(message: &SayText2Message, tick: u32) -> Self {
-        ChatMassage {
+        ChatMessage {
             kind: message.kind,
             from: message.from.clone().unwrap_or_default(),
             text: message.plain_text(),
@@ -356,7 +356,7 @@ impl Analyser {
             } else {
                 self.state
                     .chat
-                    .push(ChatMassage::from_message(text_message, tick));
+                    .push(ChatMessage::from_message(text_message, tick));
             }
         }
     }
@@ -406,7 +406,7 @@ impl Analyser {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct MatchState {
-    pub chat: Vec<ChatMassage>,
+    pub chat: Vec<ChatMessage>,
     pub users: BTreeMap<UserId, UserInfo>,
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
