@@ -3,6 +3,7 @@ use crate::demo::Stream;
 use crate::{ParseError, Result};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
+
 fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     stream: &mut Stream<'a>,
     entry: Option<&GameEventEntry>,
@@ -23,6 +24,7 @@ fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     }
     Ok(T::read(stream)?)
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerSpawnEvent {
@@ -37,6 +39,7 @@ pub struct ServerSpawnEvent {
     pub dedicated: bool,
     pub password: bool,
 }
+
 impl ServerSpawnEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -55,11 +58,13 @@ impl ServerSpawnEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerChangeLevelFailedEvent {
     pub level_name: String,
 }
+
 impl ServerChangeLevelFailedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -69,11 +74,13 @@ impl ServerChangeLevelFailedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerShutdownEvent {
     pub reason: String,
 }
+
 impl ServerShutdownEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -83,12 +90,14 @@ impl ServerShutdownEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerCvarEvent {
     pub cvar_name: String,
     pub cvar_value: String,
 }
+
 impl ServerCvarEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -99,11 +108,13 @@ impl ServerCvarEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerMessageEvent {
     pub text: String,
 }
+
 impl ServerMessageEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -113,6 +124,7 @@ impl ServerMessageEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerAddBanEvent {
@@ -124,6 +136,7 @@ pub struct ServerAddBanEvent {
     pub by: String,
     pub kicked: bool,
 }
+
 impl ServerAddBanEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -139,6 +152,7 @@ impl ServerAddBanEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerRemoveBanEvent {
@@ -146,6 +160,7 @@ pub struct ServerRemoveBanEvent {
     pub ip: String,
     pub by: String,
 }
+
 impl ServerRemoveBanEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -157,6 +172,7 @@ impl ServerRemoveBanEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerConnectEvent {
@@ -167,6 +183,7 @@ pub struct PlayerConnectEvent {
     pub address: String,
     pub bot: u16,
 }
+
 impl PlayerConnectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -181,6 +198,7 @@ impl PlayerConnectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerConnectClientEvent {
@@ -190,6 +208,7 @@ pub struct PlayerConnectClientEvent {
     pub network_id: String,
     pub bot: u16,
 }
+
 impl PlayerConnectClientEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -203,6 +222,7 @@ impl PlayerConnectClientEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInfoEvent {
@@ -212,6 +232,7 @@ pub struct PlayerInfoEvent {
     pub network_id: String,
     pub bot: bool,
 }
+
 impl PlayerInfoEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -225,6 +246,7 @@ impl PlayerInfoEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDisconnectEvent {
@@ -234,6 +256,7 @@ pub struct PlayerDisconnectEvent {
     pub network_id: String,
     pub bot: u16,
 }
+
 impl PlayerDisconnectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -247,11 +270,13 @@ impl PlayerDisconnectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerActivateEvent {
     pub user_id: u16,
 }
+
 impl PlayerActivateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -261,12 +286,14 @@ impl PlayerActivateEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSayEvent {
     pub user_id: u16,
     pub text: String,
 }
+
 impl PlayerSayEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -277,11 +304,13 @@ impl PlayerSayEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientDisconnectEvent {
     pub message: String,
 }
+
 impl ClientDisconnectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -291,6 +320,7 @@ impl ClientDisconnectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientBeginConnectEvent {
@@ -299,6 +329,7 @@ pub struct ClientBeginConnectEvent {
     pub port: u16,
     pub source: String,
 }
+
 impl ClientBeginConnectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -311,6 +342,7 @@ impl ClientBeginConnectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientConnectedEvent {
@@ -318,6 +350,7 @@ pub struct ClientConnectedEvent {
     pub ip: u32,
     pub port: u16,
 }
+
 impl ClientConnectedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -329,6 +362,7 @@ impl ClientConnectedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientFullConnectEvent {
@@ -336,6 +370,7 @@ pub struct ClientFullConnectEvent {
     pub ip: u32,
     pub port: u16,
 }
+
 impl ClientFullConnectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -347,21 +382,25 @@ impl ClientFullConnectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HostQuitEvent {}
+
 impl HostQuitEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(HostQuitEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamInfoEvent {
     pub team_id: u8,
     pub team_name: String,
 }
+
 impl TeamInfoEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -372,12 +411,14 @@ impl TeamInfoEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamScoreEvent {
     pub team_id: u8,
     pub score: u16,
 }
+
 impl TeamScoreEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -388,6 +429,7 @@ impl TeamScoreEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayBroadcastAudioEvent {
@@ -395,6 +437,7 @@ pub struct TeamPlayBroadcastAudioEvent {
     pub sound: String,
     pub additional_flags: u16,
 }
+
 impl TeamPlayBroadcastAudioEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -406,6 +449,7 @@ impl TeamPlayBroadcastAudioEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTeamEvent {
@@ -417,6 +461,7 @@ pub struct PlayerTeamEvent {
     pub silent: bool,
     pub name: String,
 }
+
 impl PlayerTeamEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -432,12 +477,14 @@ impl PlayerTeamEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerClassEvent {
     pub user_id: u16,
     pub class: String,
 }
+
 impl PlayerClassEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -448,6 +495,7 @@ impl PlayerClassEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDeathEvent {
@@ -478,6 +526,7 @@ pub struct PlayerDeathEvent {
     pub weapon_def_index: u32,
     pub crit_type: u16,
 }
+
 impl PlayerDeathEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -520,6 +569,7 @@ impl PlayerDeathEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHurtEvent {
@@ -535,6 +585,7 @@ pub struct PlayerHurtEvent {
     pub weapon_id: u16,
     pub bonus_effect: u8,
 }
+
 impl PlayerHurtEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -554,6 +605,7 @@ impl PlayerHurtEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChatEvent {
@@ -561,6 +613,7 @@ pub struct PlayerChatEvent {
     pub user_id: u16,
     pub text: String,
 }
+
 impl PlayerChatEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -572,6 +625,7 @@ impl PlayerChatEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerScoreEvent {
@@ -580,6 +634,7 @@ pub struct PlayerScoreEvent {
     pub deaths: u16,
     pub score: u16,
 }
+
 impl PlayerScoreEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -592,6 +647,7 @@ impl PlayerScoreEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSpawnEvent {
@@ -599,6 +655,7 @@ pub struct PlayerSpawnEvent {
     pub team: u16,
     pub class: u16,
 }
+
 impl PlayerSpawnEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -610,6 +667,7 @@ impl PlayerSpawnEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerShootEvent {
@@ -617,6 +675,7 @@ pub struct PlayerShootEvent {
     pub weapon: u8,
     pub mode: u8,
 }
+
 impl PlayerShootEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -628,12 +687,14 @@ impl PlayerShootEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUseEvent {
     pub user_id: u16,
     pub entity: u16,
 }
+
 impl PlayerUseEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -644,6 +705,7 @@ impl PlayerUseEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChangeNameEvent {
@@ -651,6 +713,7 @@ pub struct PlayerChangeNameEvent {
     pub old_name: String,
     pub new_name: String,
 }
+
 impl PlayerChangeNameEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -662,11 +725,13 @@ impl PlayerChangeNameEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHintMessageEvent {
     pub hint_message: String,
 }
+
 impl PlayerHintMessageEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -676,11 +741,13 @@ impl PlayerHintMessageEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
 }
+
 impl BasePlayerTeleportedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -690,20 +757,24 @@ impl BasePlayerTeleportedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameInitEvent {}
+
 impl GameInitEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GameInitEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameNewMapEvent {
     pub map_name: String,
 }
+
 impl GameNewMapEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -713,6 +784,7 @@ impl GameNewMapEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameStartEvent {
@@ -721,6 +793,7 @@ pub struct GameStartEvent {
     pub frag_limit: u32,
     pub objective: String,
 }
+
 impl GameStartEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -733,11 +806,13 @@ impl GameStartEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameEndEvent {
     pub winner: u8,
 }
+
 impl GameEndEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -747,6 +822,7 @@ impl GameEndEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RoundStartEvent {
@@ -754,6 +830,7 @@ pub struct RoundStartEvent {
     pub frag_limit: u32,
     pub objective: String,
 }
+
 impl RoundStartEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -765,6 +842,7 @@ impl RoundStartEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RoundEndEvent {
@@ -772,6 +850,7 @@ pub struct RoundEndEvent {
     pub reason: u8,
     pub message: String,
 }
+
 impl RoundEndEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -783,12 +862,14 @@ impl RoundEndEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameMessageEvent {
     pub target: u8,
     pub text: String,
 }
+
 impl GameMessageEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -799,6 +880,7 @@ impl GameMessageEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BreakBreakableEvent {
@@ -806,6 +888,7 @@ pub struct BreakBreakableEvent {
     pub user_id: u16,
     pub material: u8,
 }
+
 impl BreakBreakableEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -817,12 +900,14 @@ impl BreakBreakableEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BreakPropEvent {
     pub ent_index: u32,
     pub user_id: u16,
 }
+
 impl BreakPropEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -833,6 +918,7 @@ impl BreakPropEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EntityKilledEvent {
@@ -841,6 +927,7 @@ pub struct EntityKilledEvent {
     pub ent_index_inflictor: u32,
     pub damage_bits: u32,
 }
+
 impl EntityKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -853,6 +940,7 @@ impl EntityKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BonusUpdatedEvent {
@@ -861,6 +949,7 @@ pub struct BonusUpdatedEvent {
     pub num_silver: u16,
     pub num_gold: u16,
 }
+
 impl BonusUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -873,6 +962,7 @@ impl BonusUpdatedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEventEvent {
@@ -880,6 +970,7 @@ pub struct AchievementEventEvent {
     pub cur_val: u16,
     pub max_val: u16,
 }
+
 impl AchievementEventEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -891,6 +982,7 @@ impl AchievementEventEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementIncrementEvent {
@@ -898,6 +990,7 @@ pub struct AchievementIncrementEvent {
     pub cur_val: u16,
     pub max_val: u16,
 }
+
 impl AchievementIncrementEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -909,11 +1002,13 @@ impl AchievementIncrementEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PhysgunPickupEvent {
     pub ent_index: u32,
 }
+
 impl PhysgunPickupEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -923,11 +1018,13 @@ impl PhysgunPickupEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
 }
+
 impl FlareIgniteNpcEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -937,29 +1034,35 @@ impl FlareIgniteNpcEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HelicopterGrenadePuntMissEvent {}
+
 impl HelicopterGrenadePuntMissEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UserDataDownloadedEvent {}
+
 impl UserDataDownloadedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(UserDataDownloadedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
 }
+
 impl RagdollDissolvedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -969,6 +1072,7 @@ impl RagdollDissolvedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChangedModeEvent {
@@ -976,6 +1080,7 @@ pub struct HLTVChangedModeEvent {
     pub new_mode: u16,
     pub obs_target: u16,
 }
+
 impl HLTVChangedModeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -987,6 +1092,7 @@ impl HLTVChangedModeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChangedTargetEvent {
@@ -994,6 +1100,7 @@ pub struct HLTVChangedTargetEvent {
     pub old_target: u16,
     pub obs_target: u16,
 }
+
 impl HLTVChangedTargetEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1005,15 +1112,18 @@ impl HLTVChangedTargetEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteEndedEvent {}
+
 impl VoteEndedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(VoteEndedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteStartedEvent {
@@ -1022,6 +1132,7 @@ pub struct VoteStartedEvent {
     pub team: u8,
     pub initiator: u32,
 }
+
 impl VoteStartedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1034,6 +1145,7 @@ impl VoteStartedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteChangedEvent {
@@ -1044,6 +1156,7 @@ pub struct VoteChangedEvent {
     pub vote_option_5: u8,
     pub potential_votes: u8,
 }
+
 impl VoteChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1058,6 +1171,7 @@ impl VoteChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VotePassedEvent {
@@ -1065,6 +1179,7 @@ pub struct VotePassedEvent {
     pub param_1: String,
     pub team: u8,
 }
+
 impl VotePassedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1076,11 +1191,13 @@ impl VotePassedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteFailedEvent {
     pub team: u8,
 }
+
 impl VoteFailedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1090,6 +1207,7 @@ impl VoteFailedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteCastEvent {
@@ -1097,6 +1215,7 @@ pub struct VoteCastEvent {
     pub team: u16,
     pub entity_id: u32,
 }
+
 impl VoteCastEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1108,6 +1227,7 @@ impl VoteCastEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteOptionsEvent {
@@ -1118,6 +1238,7 @@ pub struct VoteOptionsEvent {
     pub option_4: String,
     pub option_5: String,
 }
+
 impl VoteOptionsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1132,33 +1253,40 @@ impl VoteOptionsEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplaySavedEvent {}
+
 impl ReplaySavedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ReplaySavedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EnteredPerformanceModeEvent {}
+
 impl EnteredPerformanceModeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BrowseReplaysEvent {}
+
 impl BrowseReplaysEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(BrowseReplaysEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayYoutubeStatsEvent {
@@ -1166,6 +1294,7 @@ pub struct ReplayYoutubeStatsEvent {
     pub likes: u32,
     pub favorited: u32,
 }
+
 impl ReplayYoutubeStatsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1177,74 +1306,90 @@ impl ReplayYoutubeStatsEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct InventoryUpdatedEvent {}
+
 impl InventoryUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(InventoryUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CartUpdatedEvent {}
+
 impl CartUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(CartUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StorePriceSheetUpdatedEvent {}
+
 impl StorePriceSheetUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EconInventoryConnectedEvent {}
+
 impl EconInventoryConnectedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(EconInventoryConnectedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemSchemaInitializedEvent {}
+
 impl ItemSchemaInitializedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GcNewSessionEvent {}
+
 impl GcNewSessionEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GcNewSessionEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GcLostSessionEvent {}
+
 impl GcLostSessionEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GcLostSessionEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct IntroFinishEvent {
     pub player: u16,
 }
+
 impl IntroFinishEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1254,11 +1399,13 @@ impl IntroFinishEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct IntroNextCameraEvent {
     pub player: u16,
 }
+
 impl IntroNextCameraEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1268,12 +1415,14 @@ impl IntroNextCameraEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChangeClassEvent {
     pub user_id: u16,
     pub class: u16,
 }
+
 impl PlayerChangeClassEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1284,11 +1433,13 @@ impl PlayerChangeClassEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
 }
+
 impl TfMapTimeRemainingEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1298,11 +1449,13 @@ impl TfMapTimeRemainingEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TfGameOverEvent {
     pub reason: String,
 }
+
 impl TfGameOverEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1312,12 +1465,14 @@ impl TfGameOverEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CtfFlagCapturedEvent {
     pub capping_team: u16,
     pub capping_team_score: u16,
 }
+
 impl CtfFlagCapturedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1328,20 +1483,24 @@ impl CtfFlagCapturedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointInitializedEvent {}
+
 impl ControlPointInitializedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ControlPointInitializedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
 }
+
 impl ControlPointUpdateImagesEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1351,11 +1510,13 @@ impl ControlPointUpdateImagesEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
 }
+
 impl ControlPointUpdateLayoutEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1365,11 +1526,13 @@ impl ControlPointUpdateLayoutEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
 }
+
 impl ControlPointUpdateCappingEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1379,11 +1542,13 @@ impl ControlPointUpdateCappingEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
 }
+
 impl ControlPointUpdateOwnerEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1393,12 +1558,14 @@ impl ControlPointUpdateOwnerEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointStartTouchEvent {
     pub player: u16,
     pub area: u16,
 }
+
 impl ControlPointStartTouchEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1409,12 +1576,14 @@ impl ControlPointStartTouchEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointEndTouchEvent {
     pub player: u16,
     pub area: u16,
 }
+
 impl ControlPointEndTouchEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1425,11 +1594,13 @@ impl ControlPointEndTouchEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointPulseElementEvent {
     pub player: u16,
 }
+
 impl ControlPointPulseElementEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1439,12 +1610,14 @@ impl ControlPointPulseElementEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointFakeCaptureEvent {
     pub player: u16,
     pub int_data: u16,
 }
+
 impl ControlPointFakeCaptureEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1455,12 +1628,14 @@ impl ControlPointFakeCaptureEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointFakeCaptureMultiplierEvent {
     pub player: u16,
     pub int_data: u16,
 }
+
 impl ControlPointFakeCaptureMultiplierEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1471,11 +1646,13 @@ impl ControlPointFakeCaptureMultiplierEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
 }
+
 impl TeamPlayRoundSelectedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1485,11 +1662,13 @@ impl TeamPlayRoundSelectedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
 }
+
 impl TeamPlayRoundStartEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1499,65 +1678,79 @@ impl TeamPlayRoundStartEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundActiveEvent {}
+
 impl TeamPlayRoundActiveEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingBeginsEvent {}
+
 impl TeamPlayWaitingBeginsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingEndsEvent {}
+
 impl TeamPlayWaitingEndsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
+
 impl TeamPlayWaitingAboutToEndEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRestartRoundEvent {}
+
 impl TeamPlayRestartRoundEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayReadyRestartEvent {}
+
 impl TeamPlayReadyRestartEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
 }
+
 impl TeamPlayRoundRestartSecondsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1567,11 +1760,13 @@ impl TeamPlayRoundRestartSecondsEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
 }
+
 impl TeamPlayTeamReadyEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1581,6 +1776,7 @@ impl TeamPlayTeamReadyEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundWinEvent {
@@ -1592,6 +1788,7 @@ pub struct TeamPlayRoundWinEvent {
     pub losing_team_num_caps: u16,
     pub was_sudden_death: u8,
 }
+
 impl TeamPlayRoundWinEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1607,20 +1804,24 @@ impl TeamPlayRoundWinEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayUpdateTimerEvent {}
+
 impl TeamPlayUpdateTimerEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
 }
+
 impl TeamPlayRoundStalemateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1630,47 +1831,57 @@ impl TeamPlayRoundStalemateEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayOvertimeBeginEvent {}
+
 impl TeamPlayOvertimeBeginEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayOvertimeEndEvent {}
+
 impl TeamPlayOvertimeEndEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
+
 impl TeamPlaySuddenDeathBeginEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySuddenDeathEndEvent {}
+
 impl TeamPlaySuddenDeathEndEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayGameOverEvent {
     pub reason: String,
 }
+
 impl TeamPlayGameOverEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1680,11 +1891,13 @@ impl TeamPlayGameOverEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
 }
+
 impl TeamPlayMapTimeRemainingEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1694,11 +1907,13 @@ impl TeamPlayMapTimeRemainingEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
 }
+
 impl TeamPlayTimerFlashEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1708,12 +1923,14 @@ impl TeamPlayTimerFlashEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTimerTimeAddedEvent {
     pub timer: u16,
     pub seconds_added: u16,
 }
+
 impl TeamPlayTimerTimeAddedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1724,6 +1941,7 @@ impl TeamPlayTimerTimeAddedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointStartCaptureEvent {
@@ -1734,6 +1952,7 @@ pub struct TeamPlayPointStartCaptureEvent {
     pub cappers: String,
     pub cap_time: f32,
 }
+
 impl TeamPlayPointStartCaptureEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1748,6 +1967,7 @@ impl TeamPlayPointStartCaptureEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointCapturedEvent {
@@ -1756,6 +1976,7 @@ pub struct TeamPlayPointCapturedEvent {
     pub team: u8,
     pub cappers: String,
 }
+
 impl TeamPlayPointCapturedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1768,6 +1989,7 @@ impl TeamPlayPointCapturedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointLockedEvent {
@@ -1775,6 +1997,7 @@ pub struct TeamPlayPointLockedEvent {
     pub cp_name: String,
     pub team: u8,
 }
+
 impl TeamPlayPointLockedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1786,6 +2009,7 @@ impl TeamPlayPointLockedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointUnlockedEvent {
@@ -1793,6 +2017,7 @@ pub struct TeamPlayPointUnlockedEvent {
     pub cp_name: String,
     pub team: u8,
 }
+
 impl TeamPlayPointUnlockedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1804,6 +2029,7 @@ impl TeamPlayPointUnlockedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayCaptureBrokenEvent {
@@ -1811,6 +2037,7 @@ pub struct TeamPlayCaptureBrokenEvent {
     pub cp_name: String,
     pub time_remaining: f32,
 }
+
 impl TeamPlayCaptureBrokenEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1822,6 +2049,7 @@ impl TeamPlayCaptureBrokenEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayCaptureBlockedEvent {
@@ -1830,6 +2058,7 @@ pub struct TeamPlayCaptureBlockedEvent {
     pub blocker: u8,
     pub victim: u8,
 }
+
 impl TeamPlayCaptureBlockedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1842,6 +2071,7 @@ impl TeamPlayCaptureBlockedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayFlagEventEvent {
@@ -1851,6 +2081,7 @@ pub struct TeamPlayFlagEventEvent {
     pub home: u8,
     pub team: u8,
 }
+
 impl TeamPlayFlagEventEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1864,6 +2095,7 @@ impl TeamPlayFlagEventEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWinPanelEvent {
@@ -1888,6 +2120,7 @@ pub struct TeamPlayWinPanelEvent {
     pub kill_stream_player_1_count: u16,
     pub game_over: u8,
 }
+
 impl TeamPlayWinPanelEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1920,12 +2153,14 @@ impl TeamPlayWinPanelEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
     pub team: u8,
 }
+
 impl TeamPlayTeamBalancedPlayerEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1936,20 +2171,24 @@ impl TeamPlayTeamBalancedPlayerEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySetupFinishedEvent {}
+
 impl TeamPlaySetupFinishedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
 }
+
 impl TeamPlayAlertEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1959,6 +2198,7 @@ impl TeamPlayAlertEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TrainingCompleteEvent {
@@ -1966,6 +2206,7 @@ pub struct TrainingCompleteEvent {
     pub map: String,
     pub text: String,
 }
+
 impl TrainingCompleteEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1977,11 +2218,13 @@ impl TrainingCompleteEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowFreezePanelEvent {
     pub killer: u16,
 }
+
 impl ShowFreezePanelEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -1991,38 +2234,46 @@ impl ShowFreezePanelEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HideFreezePanelEvent {}
+
 impl HideFreezePanelEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(HideFreezePanelEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FreezeCamStartedEvent {}
+
 impl FreezeCamStartedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(FreezeCamStartedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeTeamEvent {}
+
 impl LocalPlayerChangeTeamEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
 }
+
 impl LocalPlayerScoreChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2032,24 +2283,29 @@ impl LocalPlayerScoreChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeClassEvent {}
+
 impl LocalPlayerChangeClassEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerRespawnEvent {}
+
 impl LocalPlayerRespawnEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BuildingInfoChangedEvent {
@@ -2057,6 +2313,7 @@ pub struct BuildingInfoChangedEvent {
     pub object_mode: u8,
     pub remove: u8,
 }
+
 impl BuildingInfoChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2068,11 +2325,13 @@ impl BuildingInfoChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
 }
+
 impl LocalPlayerChangeDisguiseEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2082,12 +2341,14 @@ impl LocalPlayerChangeDisguiseEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAccountChangedEvent {
     pub old_value: u16,
     pub new_value: u16,
 }
+
 impl PlayerAccountChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2098,21 +2359,25 @@ impl PlayerAccountChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpyPdaResetEvent {}
+
 impl SpyPdaResetEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(SpyPdaResetEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlagStatusUpdateEvent {
     pub user_id: u16,
     pub ent_index: u32,
 }
+
 impl FlagStatusUpdateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2123,11 +2388,13 @@ impl FlagStatusUpdateEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
 }
+
 impl PlayerStatsUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2137,21 +2404,25 @@ impl PlayerStatsUpdatedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayingCommentaryEvent {}
+
 impl PlayingCommentaryEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PlayingCommentaryEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChargeDeployedEvent {
     pub user_id: u16,
     pub target_id: u16,
 }
+
 impl PlayerChargeDeployedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2162,6 +2433,7 @@ impl PlayerChargeDeployedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuiltObjectEvent {
@@ -2169,6 +2441,7 @@ pub struct PlayerBuiltObjectEvent {
     pub object: u16,
     pub index: u16,
 }
+
 impl PlayerBuiltObjectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2180,6 +2453,7 @@ impl PlayerBuiltObjectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUpgradedObjectEvent {
@@ -2188,6 +2462,7 @@ pub struct PlayerUpgradedObjectEvent {
     pub index: u16,
     pub is_builder: bool,
 }
+
 impl PlayerUpgradedObjectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2200,6 +2475,7 @@ impl PlayerUpgradedObjectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCarryObjectEvent {
@@ -2207,6 +2483,7 @@ pub struct PlayerCarryObjectEvent {
     pub object: u16,
     pub index: u16,
 }
+
 impl PlayerCarryObjectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2218,6 +2495,7 @@ impl PlayerCarryObjectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDropObjectEvent {
@@ -2225,6 +2503,7 @@ pub struct PlayerDropObjectEvent {
     pub object: u16,
     pub index: u16,
 }
+
 impl PlayerDropObjectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2236,6 +2515,7 @@ impl PlayerDropObjectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectRemovedEvent {
@@ -2243,6 +2523,7 @@ pub struct ObjectRemovedEvent {
     pub object_type: u16,
     pub index: u16,
 }
+
 impl ObjectRemovedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2254,6 +2535,7 @@ impl ObjectRemovedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDestroyedEvent {
@@ -2266,6 +2548,7 @@ pub struct ObjectDestroyedEvent {
     pub index: u16,
     pub was_building: bool,
 }
+
 impl ObjectDestroyedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2282,6 +2565,7 @@ impl ObjectDestroyedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDetonatedEvent {
@@ -2289,6 +2573,7 @@ pub struct ObjectDetonatedEvent {
     pub object_type: u16,
     pub index: u16,
 }
+
 impl ObjectDetonatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2300,12 +2585,14 @@ impl ObjectDetonatedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEarnedEvent {
     pub player: u8,
     pub achievement: u16,
 }
+
 impl AchievementEarnedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2316,15 +2603,18 @@ impl AchievementEarnedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpecTargetUpdatedEvent {}
+
 impl SpecTargetUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TournamentStateUpdateEvent {
@@ -2333,6 +2623,7 @@ pub struct TournamentStateUpdateEvent {
     pub ready_state: u16,
     pub new_name: String,
 }
+
 impl TournamentStateUpdateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2345,20 +2636,24 @@ impl TournamentStateUpdateEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TournamentEnableCountdownEvent {}
+
 impl TournamentEnableCountdownEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
 }
+
 impl PlayerCalledForMedicEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2368,11 +2663,13 @@ impl PlayerCalledForMedicEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAskedForBallEvent {
     pub user_id: u16,
 }
+
 impl PlayerAskedForBallEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2382,15 +2679,18 @@ impl PlayerAskedForBallEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerBecameObserverEvent {}
+
 impl LocalPlayerBecameObserverEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerIgnitedInvEvent {
@@ -2398,6 +2698,7 @@ pub struct PlayerIgnitedInvEvent {
     pub victim_ent_index: u8,
     pub medic_ent_index: u8,
 }
+
 impl PlayerIgnitedInvEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2409,6 +2710,7 @@ impl PlayerIgnitedInvEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerIgnitedEvent {
@@ -2416,6 +2718,7 @@ pub struct PlayerIgnitedEvent {
     pub victim_ent_index: u8,
     pub weapon_id: u8,
 }
+
 impl PlayerIgnitedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2427,6 +2730,7 @@ impl PlayerIgnitedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerExtinguishedEvent {
@@ -2434,6 +2738,7 @@ pub struct PlayerExtinguishedEvent {
     pub healer: u8,
     pub item_definition_index: u16,
 }
+
 impl PlayerExtinguishedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2445,6 +2750,7 @@ impl PlayerExtinguishedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTeleportedEvent {
@@ -2452,6 +2758,7 @@ pub struct PlayerTeleportedEvent {
     pub builder_id: u16,
     pub dist: f32,
 }
+
 impl PlayerTeleportedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2463,11 +2770,13 @@ impl PlayerTeleportedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
 }
+
 impl PlayerHealedMedicCallEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2477,30 +2786,36 @@ impl PlayerHealedMedicCallEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChargeReadyEvent {}
+
 impl LocalPlayerChargeReadyEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerWindDownEvent {}
+
 impl LocalPlayerWindDownEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInvulnedEvent {
     pub user_id: u16,
     pub medic_user_id: u16,
 }
+
 impl PlayerInvulnedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2511,6 +2826,7 @@ impl PlayerInvulnedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortSpeedEvent {
@@ -2518,6 +2834,7 @@ pub struct EscortSpeedEvent {
     pub speed: u8,
     pub players: u8,
 }
+
 impl EscortSpeedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2529,6 +2846,7 @@ impl EscortSpeedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortProgressEvent {
@@ -2536,6 +2854,7 @@ pub struct EscortProgressEvent {
     pub progress: f32,
     pub reset: bool,
 }
+
 impl EscortProgressEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2547,12 +2866,14 @@ impl EscortProgressEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortRecedeEvent {
     pub team: u8,
     pub recede_time: f32,
 }
+
 impl EscortRecedeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2563,30 +2884,36 @@ impl EscortRecedeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameUIActivatedEvent {}
+
 impl GameUIActivatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GameUIActivatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameUIHiddenEvent {}
+
 impl GameUIHiddenEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GameUIHiddenEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerEscortScoreEvent {
     pub player: u8,
     pub points: u8,
 }
+
 impl PlayerEscortScoreEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2597,6 +2924,7 @@ impl PlayerEscortScoreEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealOnHitEvent {
@@ -2604,6 +2932,7 @@ pub struct PlayerHealOnHitEvent {
     pub ent_index: u8,
     pub weapon_def_index: u32,
 }
+
 impl PlayerHealOnHitEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2615,12 +2944,14 @@ impl PlayerHealOnHitEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStealSandvichEvent {
     pub owner: u16,
     pub target: u16,
 }
+
 impl PlayerStealSandvichEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2631,11 +2962,13 @@ impl PlayerStealSandvichEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowClassLayoutEvent {
     pub show: bool,
 }
+
 impl ShowClassLayoutEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2645,11 +2978,13 @@ impl ShowClassLayoutEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowVsPanelEvent {
     pub show: bool,
 }
+
 impl ShowVsPanelEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2659,12 +2994,14 @@ impl ShowVsPanelEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDamagedEvent {
     pub amount: u16,
     pub kind: u32,
 }
+
 impl PlayerDamagedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2675,12 +3012,14 @@ impl PlayerDamagedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaPlayerNotificationEvent {
     pub player: u8,
     pub message: u8,
 }
+
 impl ArenaPlayerNotificationEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2691,12 +3030,14 @@ impl ArenaPlayerNotificationEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaMatchMaxStreakEvent {
     pub team: u8,
     pub streak: u8,
 }
+
 impl ArenaMatchMaxStreakEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2707,15 +3048,18 @@ impl ArenaMatchMaxStreakEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaRoundStartEvent {}
+
 impl ArenaRoundStartEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ArenaRoundStartEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaWinPanelEvent {
@@ -2760,6 +3104,7 @@ pub struct ArenaWinPanelEvent {
     pub player_6_lifetime: u16,
     pub player_6_kills: u16,
 }
+
 impl ArenaWinPanelEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2808,6 +3153,7 @@ impl ArenaWinPanelEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PveWinPanelEvent {
@@ -2815,6 +3161,7 @@ pub struct PveWinPanelEvent {
     pub winning_team: u8,
     pub win_reason: u8,
 }
+
 impl PveWinPanelEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2826,11 +3173,13 @@ impl PveWinPanelEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AirDashEvent {
     pub player: u8,
 }
+
 impl AirDashEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2840,11 +3189,13 @@ impl AirDashEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LandedEvent {
     pub player: u8,
 }
+
 impl LandedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2854,11 +3205,13 @@ impl LandedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
 }
+
 impl PlayerDamageDodgedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2868,6 +3221,7 @@ impl PlayerDamageDodgedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStunnedEvent {
@@ -2876,6 +3230,7 @@ pub struct PlayerStunnedEvent {
     pub victim_capping: bool,
     pub big_stun: bool,
 }
+
 impl PlayerStunnedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2888,12 +3243,14 @@ impl PlayerStunnedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoutGrandSlamEvent {
     pub scout_id: u16,
     pub target_id: u16,
 }
+
 impl ScoutGrandSlamEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2904,6 +3261,7 @@ impl ScoutGrandSlamEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoutSlamdollLandedEvent {
@@ -2912,6 +3270,7 @@ pub struct ScoutSlamdollLandedEvent {
     pub y: f32,
     pub z: f32,
 }
+
 impl ScoutSlamdollLandedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2924,6 +3283,7 @@ impl ScoutSlamdollLandedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArrowImpactEvent {
@@ -2939,6 +3299,7 @@ pub struct ArrowImpactEvent {
     pub projectile_type: u16,
     pub is_crit: bool,
 }
+
 impl ArrowImpactEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2958,12 +3319,14 @@ impl ArrowImpactEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerJaratedEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
 }
+
 impl PlayerJaratedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2974,12 +3337,14 @@ impl PlayerJaratedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerJaratedFadeEvent {
     pub thrower_ent_index: u8,
     pub victim_ent_index: u8,
 }
+
 impl PlayerJaratedFadeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -2990,12 +3355,14 @@ impl PlayerJaratedFadeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerShieldBlockedEvent {
     pub attacker_ent_index: u8,
     pub blocker_ent_index: u8,
 }
+
 impl PlayerShieldBlockedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3006,11 +3373,13 @@ impl PlayerShieldBlockedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerPinnedEvent {
     pub pinned: u8,
 }
+
 impl PlayerPinnedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3020,11 +3389,13 @@ impl PlayerPinnedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
 }
+
 impl PlayerHealedByMedicEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3034,6 +3405,7 @@ impl PlayerHealedByMedicEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSappedObjectEvent {
@@ -3042,6 +3414,7 @@ pub struct PlayerSappedObjectEvent {
     pub object: u8,
     pub sapper_id: u16,
 }
+
 impl PlayerSappedObjectEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3054,6 +3427,7 @@ impl PlayerSappedObjectEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemFoundEvent {
@@ -3065,6 +3439,7 @@ pub struct ItemFoundEvent {
     pub is_unusual: u8,
     pub wear: f32,
 }
+
 impl ItemFoundEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3080,6 +3455,7 @@ impl ItemFoundEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowAnnotationEvent {
@@ -3098,6 +3474,7 @@ pub struct ShowAnnotationEvent {
     pub play_sound: String,
     pub show_effect: bool,
 }
+
 impl ShowAnnotationEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3120,11 +3497,13 @@ impl ShowAnnotationEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HideAnnotationEvent {
     pub id: u32,
 }
+
 impl HideAnnotationEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3134,11 +3513,13 @@ impl HideAnnotationEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
 }
+
 impl PostInventoryApplicationEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3148,12 +3529,14 @@ impl PostInventoryApplicationEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUnlockUpdatedEvent {
     pub index: u16,
     pub time: f32,
 }
+
 impl ControlPointUnlockUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3164,12 +3547,14 @@ impl ControlPointUnlockUpdatedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DeployBuffBannerEvent {
     pub buff_type: u8,
     pub buff_owner: u16,
 }
+
 impl DeployBuffBannerEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3180,6 +3565,7 @@ impl DeployBuffBannerEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuffEvent {
@@ -3187,6 +3573,7 @@ pub struct PlayerBuffEvent {
     pub buff_owner: u16,
     pub buff_type: u8,
 }
+
 impl PlayerBuffEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3198,6 +3585,7 @@ impl PlayerBuffEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedicDeathEvent {
@@ -3206,6 +3594,7 @@ pub struct MedicDeathEvent {
     pub healing: u16,
     pub charged: bool,
 }
+
 impl MedicDeathEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3218,29 +3607,35 @@ impl MedicDeathEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct OvertimeNagEvent {}
+
 impl OvertimeNagEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(OvertimeNagEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamsChangedEvent {}
+
 impl TeamsChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TeamsChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
 }
+
 impl HalloweenPumpkinGrabEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3250,12 +3645,14 @@ impl HalloweenPumpkinGrabEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
 }
+
 impl RocketJumpEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3266,11 +3663,13 @@ impl RocketJumpEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketJumpLandedEvent {
     pub user_id: u16,
 }
+
 impl RocketJumpLandedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3280,12 +3679,14 @@ impl RocketJumpLandedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StickyJumpEvent {
     pub user_id: u16,
     pub play_sound: bool,
 }
+
 impl StickyJumpEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3296,11 +3697,13 @@ impl StickyJumpEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StickyJumpLandedEvent {
     pub user_id: u16,
 }
+
 impl StickyJumpLandedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3310,12 +3713,14 @@ impl StickyJumpLandedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketPackLaunchEvent {
     pub user_id: u16,
     pub play_sound: bool,
 }
+
 impl RocketPackLaunchEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3326,11 +3731,13 @@ impl RocketPackLaunchEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketPackLandedEvent {
     pub user_id: u16,
 }
+
 impl RocketPackLandedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3340,12 +3747,14 @@ impl RocketPackLandedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedicDefendedEvent {
     pub user_id: u16,
     pub medic: u16,
 }
+
 impl MedicDefendedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3356,11 +3765,13 @@ impl MedicDefendedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerHealedEvent {
     pub amount: u16,
 }
+
 impl LocalPlayerHealedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3370,11 +3781,13 @@ impl LocalPlayerHealedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
 }
+
 impl PlayerDestroyedPipeBombEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3384,6 +3797,7 @@ impl PlayerDestroyedPipeBombEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDeflectedEvent {
@@ -3392,6 +3806,7 @@ pub struct ObjectDeflectedEvent {
     pub weapon_id: u16,
     pub object_ent_index: u16,
 }
+
 impl ObjectDeflectedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3404,11 +3819,13 @@ impl ObjectDeflectedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerMvpEvent {
     pub player: u16,
 }
+
 impl PlayerMvpEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3418,30 +3835,36 @@ impl PlayerMvpEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RaidSpawnMobEvent {}
+
 impl RaidSpawnMobEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RaidSpawnMobEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RaidSpawnSquadEvent {}
+
 impl RaidSpawnSquadEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RaidSpawnSquadEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NavBlockedEvent {
     pub area: u32,
     pub blocked: bool,
 }
+
 impl NavBlockedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3452,11 +3875,13 @@ impl NavBlockedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PathTrackPassedEvent {
     pub index: u16,
 }
+
 impl PathTrackPassedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3466,12 +3891,14 @@ impl PathTrackPassedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NumCappersChangedEvent {
     pub index: u16,
     pub count: u8,
 }
+
 impl NumCappersChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3482,21 +3909,25 @@ impl NumCappersChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRegenerateEvent {}
+
 impl PlayerRegenerateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PlayerRegenerateEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UpdateStatusItemEvent {
     pub index: u8,
     pub object: u8,
 }
+
 impl UpdateStatusItemEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3507,38 +3938,46 @@ impl UpdateStatusItemEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StatsResetRoundEvent {}
+
 impl StatsResetRoundEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(StatsResetRoundEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
+
 impl ScoreStatsAccumulatedUpdateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoreStatsAccumulatedResetEvent {}
+
 impl ScoreStatsAccumulatedResetEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
 }
+
 impl AchievementEarnedLocalEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3548,6 +3987,7 @@ impl AchievementEarnedLocalEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedEvent {
@@ -3555,6 +3995,7 @@ pub struct PlayerHealedEvent {
     pub healer: u16,
     pub amount: u16,
 }
+
 impl PlayerHealedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3566,6 +4007,7 @@ impl PlayerHealedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BuildingHealedEvent {
@@ -3573,6 +4015,7 @@ pub struct BuildingHealedEvent {
     pub healer: u16,
     pub amount: u16,
 }
+
 impl BuildingHealedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3584,12 +4027,14 @@ impl BuildingHealedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemPickupEvent {
     pub user_id: u16,
     pub item: String,
 }
+
 impl ItemPickupEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3600,6 +4045,7 @@ impl ItemPickupEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DuelStatusEvent {
@@ -3610,6 +4056,7 @@ pub struct DuelStatusEvent {
     pub initiator_score: u16,
     pub target_score: u16,
 }
+
 impl DuelStatusEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3624,6 +4071,7 @@ impl DuelStatusEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FishNoticeEvent {
@@ -3642,6 +4090,7 @@ pub struct FishNoticeEvent {
     pub silent_kill: bool,
     pub assister_fallback: String,
 }
+
 impl FishNoticeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3668,6 +4117,7 @@ impl FishNoticeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FishNoticeArmEvent {
@@ -3686,6 +4136,7 @@ pub struct FishNoticeArmEvent {
     pub silent_kill: bool,
     pub assister_fallback: String,
 }
+
 impl FishNoticeArmEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3712,6 +4163,7 @@ impl FishNoticeArmEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SlapNoticeEvent {
@@ -3730,6 +4182,7 @@ pub struct SlapNoticeEvent {
     pub silent_kill: bool,
     pub assister_fallback: String,
 }
+
 impl SlapNoticeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3756,6 +4209,7 @@ impl SlapNoticeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ThrowableHitEvent {
@@ -3775,6 +4229,7 @@ pub struct ThrowableHitEvent {
     pub assister_fallback: String,
     pub total_hits: u16,
 }
+
 impl ThrowableHitEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3802,29 +4257,35 @@ impl ThrowableHitEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PumpkinLordSummonedEvent {}
+
 impl PumpkinLordSummonedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PumpkinLordKilledEvent {}
+
 impl PumpkinLordKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PumpkinLordKilledEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusSummonedEvent {
     pub level: u16,
 }
+
 impl MerasmusSummonedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3834,11 +4295,13 @@ impl MerasmusSummonedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusKilledEvent {
     pub level: u16,
 }
+
 impl MerasmusKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3848,12 +4311,14 @@ impl MerasmusKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusEscapeWarningEvent {
     pub level: u16,
     pub time_remaining: u8,
 }
+
 impl MerasmusEscapeWarningEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3864,11 +4329,13 @@ impl MerasmusEscapeWarningEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusEscapedEvent {
     pub level: u16,
 }
+
 impl MerasmusEscapedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3878,11 +4345,13 @@ impl MerasmusEscapedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossSummonedEvent {
     pub level: u16,
 }
+
 impl EyeballBossSummonedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3892,12 +4361,14 @@ impl EyeballBossSummonedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossStunnedEvent {
     pub level: u16,
     pub player_ent_index: u8,
 }
+
 impl EyeballBossStunnedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3908,11 +4379,13 @@ impl EyeballBossStunnedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossKilledEvent {
     pub level: u16,
 }
+
 impl EyeballBossKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3922,12 +4395,14 @@ impl EyeballBossKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossKillerEvent {
     pub level: u16,
     pub player_ent_index: u8,
 }
+
 impl EyeballBossKillerEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3938,12 +4413,14 @@ impl EyeballBossKillerEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossEscapeImminentEvent {
     pub level: u16,
     pub time_remaining: u8,
 }
+
 impl EyeballBossEscapeImminentEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3954,11 +4431,13 @@ impl EyeballBossEscapeImminentEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossEscapedEvent {
     pub level: u16,
 }
+
 impl EyeballBossEscapedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3968,6 +4447,7 @@ impl EyeballBossEscapedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NpcHurtEvent {
@@ -3979,6 +4459,7 @@ pub struct NpcHurtEvent {
     pub crit: bool,
     pub boss: u16,
 }
+
 impl NpcHurtEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -3994,12 +4475,14 @@ impl NpcHurtEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointTimerUpdatedEvent {
     pub index: u16,
     pub time: f32,
 }
+
 impl ControlPointTimerUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4010,11 +4493,13 @@ impl ControlPointTimerUpdatedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
 }
+
 impl PlayerHighFiveStartEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4024,11 +4509,13 @@ impl PlayerHighFiveStartEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
 }
+
 impl PlayerHighFiveCancelEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4038,12 +4525,14 @@ impl PlayerHighFiveCancelEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveSuccessEvent {
     pub initiator_ent_index: u8,
     pub partner_ent_index: u8,
 }
+
 impl PlayerHighFiveSuccessEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4054,6 +4543,7 @@ impl PlayerHighFiveSuccessEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBonusPointsEvent {
@@ -4061,6 +4551,7 @@ pub struct PlayerBonusPointsEvent {
     pub player_ent_index: u16,
     pub source_ent_index: u16,
 }
+
 impl PlayerBonusPointsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4072,21 +4563,25 @@ impl PlayerBonusPointsEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUpgradedEvent {}
+
 impl PlayerUpgradedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PlayerUpgradedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuybackEvent {
     pub player: u16,
     pub cost: u16,
 }
+
 impl PlayerBuybackEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4097,6 +4592,7 @@ impl PlayerBuybackEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUsedPowerUpBottleEvent {
@@ -4104,6 +4600,7 @@ pub struct PlayerUsedPowerUpBottleEvent {
     pub kind: u16,
     pub time: f32,
 }
+
 impl PlayerUsedPowerUpBottleEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4115,11 +4612,13 @@ impl PlayerUsedPowerUpBottleEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
 }
+
 impl ChristmasGiftGrabEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4129,6 +4628,7 @@ impl ChristmasGiftGrabEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerKilledAchievementZoneEvent {
@@ -4136,6 +4636,7 @@ pub struct PlayerKilledAchievementZoneEvent {
     pub victim: u16,
     pub zone_id: u16,
 }
+
 impl PlayerKilledAchievementZoneEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4147,47 +4648,57 @@ impl PlayerKilledAchievementZoneEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyUpdatedEvent {}
+
 impl PartyUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PartyUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyPrefChangedEvent {}
+
 impl PartyPrefChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PartyPrefChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyCriteriaChangedEvent {}
+
 impl PartyCriteriaChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PartyCriteriaChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyInvitesChangedEvent {}
+
 impl PartyInvitesChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PartyInvitesChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyQueueStateChangedEvent {
     pub match_group: u16,
 }
+
 impl PartyQueueStateChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4197,6 +4708,7 @@ impl PartyQueueStateChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyChatEvent {
@@ -4204,6 +4716,7 @@ pub struct PartyChatEvent {
     pub text: String,
     pub kind: u16,
 }
+
 impl PartyChatEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4215,11 +4728,13 @@ impl PartyChatEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyMemberJoinEvent {
     pub steam_id: String,
 }
+
 impl PartyMemberJoinEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4229,11 +4744,13 @@ impl PartyMemberJoinEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyMemberLeaveEvent {
     pub steam_id: String,
 }
+
 impl PartyMemberLeaveEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4243,30 +4760,36 @@ impl PartyMemberLeaveEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MatchInvitesUpdatedEvent {}
+
 impl MatchInvitesUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MatchInvitesUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LobbyUpdatedEvent {}
+
 impl LobbyUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LobbyUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMissionUpdateEvent {
     pub class: u16,
     pub count: u16,
 }
+
 impl MvmMissionUpdateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4277,20 +4800,24 @@ impl MvmMissionUpdateEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RecalculateHolidaysEvent {}
+
 impl RecalculateHolidaysEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RecalculateHolidaysEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
 }
+
 impl PlayerCurrencyChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4300,11 +4827,13 @@ impl PlayerCurrencyChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
 }
+
 impl DoomsdayRocketOpenEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4314,11 +4843,13 @@ impl DoomsdayRocketOpenEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
 }
+
 impl RemoveNemesisRelationshipsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4328,38 +4859,46 @@ impl RemoveNemesisRelationshipsEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusWaveEvent {}
+
 impl MvmCreditBonusWaveEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusAllEvent {}
+
 impl MvmCreditBonusAllEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
+
 impl MvmCreditBonusAllAdvancedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
 }
+
 impl MvmQuickSentryUpgradeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4369,20 +4908,24 @@ impl MvmQuickSentryUpgradeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmTankDestroyedByPlayersEvent {}
+
 impl MvmTankDestroyedByPlayersEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
 }
+
 impl MvmKillRobotDeliveringBombEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4392,12 +4935,14 @@ impl MvmKillRobotDeliveringBombEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmPickupCurrencyEvent {
     pub player: u16,
     pub currency: u16,
 }
+
 impl MvmPickupCurrencyEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4408,11 +4953,13 @@ impl MvmPickupCurrencyEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
 }
+
 impl MvmBombCarrierKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4422,6 +4969,7 @@ impl MvmBombCarrierKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSentryBusterDetonateEvent {
@@ -4430,6 +4978,7 @@ pub struct MvmSentryBusterDetonateEvent {
     pub det_y: f32,
     pub det_z: f32,
 }
+
 impl MvmSentryBusterDetonateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4442,11 +4991,13 @@ impl MvmSentryBusterDetonateEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
 }
+
 impl MvmScoutMarkedForDeathEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4456,11 +5007,13 @@ impl MvmScoutMarkedForDeathEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
 }
+
 impl MvmMedicPowerUpSharedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4470,6 +5023,7 @@ impl MvmMedicPowerUpSharedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBeginWaveEvent {
@@ -4477,6 +5031,7 @@ pub struct MvmBeginWaveEvent {
     pub max_waves: u16,
     pub advanced: u16,
 }
+
 impl MvmBeginWaveEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4488,11 +5043,13 @@ impl MvmBeginWaveEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
 }
+
 impl MvmWaveCompleteEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4502,11 +5059,13 @@ impl MvmWaveCompleteEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMissionCompleteEvent {
     pub mission: String,
 }
+
 impl MvmMissionCompleteEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4516,11 +5075,13 @@ impl MvmMissionCompleteEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
 }
+
 impl MvmBombResetByPlayerEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4530,20 +5091,24 @@ impl MvmBombResetByPlayerEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombAlarmTriggeredEvent {}
+
 impl MvmBombAlarmTriggeredEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
 }
+
 impl MvmBombDeployResetByPlayerEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4553,29 +5118,35 @@ impl MvmBombDeployResetByPlayerEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmWaveFailedEvent {}
+
 impl MvmWaveFailedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmWaveFailedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmResetStatsEvent {}
+
 impl MvmResetStatsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmResetStatsEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamageResistedEvent {
     pub ent_index: u8,
 }
+
 impl DamageResistedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4585,12 +5156,14 @@ impl DamageResistedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerNotifyEvent {
     pub ent_index: u16,
     pub marker_ent_index: u16,
 }
+
 impl RevivePlayerNotifyEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4601,11 +5174,13 @@ impl RevivePlayerNotifyEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
 }
+
 impl RevivePlayerStoppedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4615,11 +5190,13 @@ impl RevivePlayerStoppedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
 }
+
 impl RevivePlayerCompleteEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4629,11 +5206,13 @@ impl RevivePlayerCompleteEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
 }
+
 impl PlayerTurnedToGhostEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4643,12 +5222,14 @@ impl PlayerTurnedToGhostEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedigunShieldBlockedDamageEvent {
     pub user_id: u16,
     pub damage: f32,
 }
+
 impl MedigunShieldBlockedDamageEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4659,11 +5240,13 @@ impl MedigunShieldBlockedDamageEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
 }
+
 impl MvmAdvWaveCompleteNoGatesEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4673,12 +5256,14 @@ impl MvmAdvWaveCompleteNoGatesEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSniperHeadshotCurrencyEvent {
     pub user_id: u16,
     pub currency: u16,
 }
+
 impl MvmSniperHeadshotCurrencyEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4689,39 +5274,47 @@ impl MvmSniperHeadshotCurrencyEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMannhattanPitEvent {}
+
 impl MvmMannhattanPitEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmMannhattanPitEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlagCarriedInDetectionZoneEvent {}
+
 impl FlagCarriedInDetectionZoneEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
+
 impl MvmAdvWaveKilledStunRadioEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
     pub victim: u16,
 }
+
 impl PlayerDirectHitStunEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4732,11 +5325,13 @@ impl PlayerDirectHitStunEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
 }
+
 impl MvmSentryBusterKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4746,11 +5341,13 @@ impl MvmSentryBusterKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UpgradesFileChangedEvent {
     pub path: String,
 }
+
 impl UpgradesFileChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4760,6 +5357,7 @@ impl UpgradesFileChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdTeamPointsChangedEvent {
@@ -4767,6 +5365,7 @@ pub struct RdTeamPointsChangedEvent {
     pub team: u8,
     pub method: u8,
 }
+
 impl RdTeamPointsChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4778,15 +5377,18 @@ impl RdTeamPointsChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRulesStateChangedEvent {}
+
 impl RdRulesStateChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RdRulesStateChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRobotKilledEvent {
@@ -4800,6 +5402,7 @@ pub struct RdRobotKilledEvent {
     pub custom_kill: u16,
     pub weapon_log_class_name: String,
 }
+
 impl RdRobotKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4821,6 +5424,7 @@ impl RdRobotKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRobotImpactEvent {
@@ -4829,6 +5433,7 @@ pub struct RdRobotImpactEvent {
     pub impulse_y: f32,
     pub impulse_z: f32,
 }
+
 impl RdRobotImpactEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4841,11 +5446,13 @@ impl RdRobotImpactEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
 }
+
 impl TeamPlayPreRoundTimeLeftEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4855,11 +5462,13 @@ impl TeamPlayPreRoundTimeLeftEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ParachuteDeployEvent {
     pub index: u16,
 }
+
 impl ParachuteDeployEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4869,11 +5478,13 @@ impl ParachuteDeployEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ParachuteHolsterEvent {
     pub index: u16,
 }
+
 impl ParachuteHolsterEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4883,11 +5494,13 @@ impl ParachuteHolsterEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KillRefillsMeterEvent {
     pub index: u16,
 }
+
 impl KillRefillsMeterEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4897,6 +5510,7 @@ impl KillRefillsMeterEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RpsTauntEventEvent {
@@ -4905,6 +5519,7 @@ pub struct RpsTauntEventEvent {
     pub loser: u16,
     pub loser_rps: u8,
 }
+
 impl RpsTauntEventEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4917,11 +5532,13 @@ impl RpsTauntEventEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CongaKillEvent {
     pub index: u16,
 }
+
 impl CongaKillEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4931,11 +5548,13 @@ impl CongaKillEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInitialSpawnEvent {
     pub index: u16,
 }
+
 impl PlayerInitialSpawnEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4945,15 +5564,18 @@ impl PlayerInitialSpawnEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveVictoryEvent {}
+
 impl CompetitiveVictoryEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(CompetitiveVictoryEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveStatsUpdateEvent {
@@ -4964,6 +5586,7 @@ pub struct CompetitiveStatsUpdateEvent {
     pub healing_rank: u8,
     pub support_rank: u8,
 }
+
 impl CompetitiveStatsUpdateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4978,12 +5601,14 @@ impl CompetitiveStatsUpdateEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MiniGameWinEvent {
     pub team: u8,
     pub kind: u8,
 }
+
 impl MiniGameWinEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -4994,11 +5619,13 @@ impl MiniGameWinEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SentryOnGoActiveEvent {
     pub index: u16,
 }
+
 impl SentryOnGoActiveEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5008,11 +5635,13 @@ impl SentryOnGoActiveEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DuckXpLevelUpEvent {
     pub level: u16,
 }
+
 impl DuckXpLevelUpEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5022,33 +5651,40 @@ impl DuckXpLevelUpEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestLogOpenedEvent {}
+
 impl QuestLogOpenedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(QuestLogOpenedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SchemaUpdatedEvent {}
+
 impl SchemaUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(SchemaUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerPickupWeaponEvent {}
+
 impl LocalPlayerPickupWeaponEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(LocalPlayerPickupWeaponEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdPlayerScorePointsEvent {
@@ -5056,6 +5692,7 @@ pub struct RdPlayerScorePointsEvent {
     pub method: u16,
     pub amount: u16,
 }
+
 impl RdPlayerScorePointsEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5067,11 +5704,13 @@ impl RdPlayerScorePointsEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DemomanDetStickiesEvent {
     pub player: u16,
 }
+
 impl DemomanDetStickiesEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5081,6 +5720,7 @@ impl DemomanDetStickiesEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestObjectiveCompletedEvent {
@@ -5089,6 +5729,7 @@ pub struct QuestObjectiveCompletedEvent {
     pub quest_objective_id: u32,
     pub scorer_user_id: u16,
 }
+
 impl QuestObjectiveCompletedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5101,12 +5742,14 @@ impl QuestObjectiveCompletedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerScoreChangedEvent {
     pub player: u8,
     pub delta: u16,
 }
+
 impl PlayerScoreChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5117,6 +5760,7 @@ impl PlayerScoreChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KilledCappingPlayerEvent {
@@ -5125,6 +5769,7 @@ pub struct KilledCappingPlayerEvent {
     pub victim: u8,
     pub assister: u8,
 }
+
 impl KilledCappingPlayerEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5137,12 +5782,14 @@ impl KilledCappingPlayerEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EnvironmentalDeathEvent {
     pub killer: u8,
     pub victim: u8,
 }
+
 impl EnvironmentalDeathEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5153,6 +5800,7 @@ impl EnvironmentalDeathEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProjectileDirectHitEvent {
@@ -5160,6 +5808,7 @@ pub struct ProjectileDirectHitEvent {
     pub victim: u8,
     pub weapon_def_index: u32,
 }
+
 impl ProjectileDirectHitEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5171,11 +5820,13 @@ impl ProjectileDirectHitEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassGetEvent {
     pub owner: u16,
 }
+
 impl PassGetEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5185,6 +5836,7 @@ impl PassGetEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassScoreEvent {
@@ -5192,6 +5844,7 @@ pub struct PassScoreEvent {
     pub assister: u16,
     pub points: u8,
 }
+
 impl PassScoreEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5203,12 +5856,14 @@ impl PassScoreEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassFreeEvent {
     pub owner: u16,
     pub attacker: u16,
 }
+
 impl PassFreeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5219,6 +5874,7 @@ impl PassFreeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassPassCaughtEvent {
@@ -5227,6 +5883,7 @@ pub struct PassPassCaughtEvent {
     pub dist: f32,
     pub duration: f32,
 }
+
 impl PassPassCaughtEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5239,12 +5896,14 @@ impl PassPassCaughtEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassBallStolenEvent {
     pub victim: u16,
     pub attacker: u16,
 }
+
 impl PassBallStolenEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5255,12 +5914,14 @@ impl PassBallStolenEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassBallBlockedEvent {
     pub owner: u16,
     pub blocker: u16,
 }
+
 impl PassBallBlockedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5271,6 +5932,7 @@ impl PassBallBlockedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamagePreventedEvent {
@@ -5279,6 +5941,7 @@ pub struct DamagePreventedEvent {
     pub amount: u16,
     pub condition: u16,
 }
+
 impl DamagePreventedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5291,12 +5954,14 @@ impl DamagePreventedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenBossKilledEvent {
     pub boss: u16,
     pub killer: u16,
 }
+
 impl HalloweenBossKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5307,11 +5972,13 @@ impl HalloweenBossKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscapedLootIslandEvent {
     pub player: u16,
 }
+
 impl EscapedLootIslandEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5321,11 +5988,13 @@ impl EscapedLootIslandEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TaggedPlayerAsItEvent {
     pub player: u16,
 }
+
 impl TaggedPlayerAsItEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5335,11 +6004,13 @@ impl TaggedPlayerAsItEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusStunnedEvent {
     pub player: u16,
 }
+
 impl MerasmusStunnedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5349,11 +6020,13 @@ impl MerasmusStunnedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusPropFoundEvent {
     pub player: u16,
 }
+
 impl MerasmusPropFoundEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5363,11 +6036,13 @@ impl MerasmusPropFoundEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenSkeletonKilledEvent {
     pub player: u16,
 }
+
 impl HalloweenSkeletonKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5377,11 +6052,13 @@ impl HalloweenSkeletonKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscapeHellEvent {
     pub player: u16,
 }
+
 impl EscapeHellEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5391,11 +6068,13 @@ impl EscapeHellEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CrossSpectralBridgeEvent {
     pub player: u16,
 }
+
 impl CrossSpectralBridgeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5405,12 +6084,14 @@ impl CrossSpectralBridgeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MiniGameWonEvent {
     pub player: u16,
     pub game: u16,
 }
+
 impl MiniGameWonEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5421,12 +6102,14 @@ impl MiniGameWonEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RespawnGhostEvent {
     pub reviver: u16,
     pub ghost: u16,
 }
+
 impl RespawnGhostEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5437,12 +6120,14 @@ impl RespawnGhostEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KillInHellEvent {
     pub killer: u16,
     pub victim: u16,
 }
+
 impl KillInHellEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5453,11 +6138,13 @@ impl KillInHellEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenDuckCollectedEvent {
     pub collector: u16,
 }
+
 impl HalloweenDuckCollectedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5467,11 +6154,13 @@ impl HalloweenDuckCollectedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpecialScoreEvent {
     pub player: u8,
 }
+
 impl SpecialScoreEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5481,12 +6170,14 @@ impl SpecialScoreEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamLeaderKilledEvent {
     pub killer: u8,
     pub victim: u8,
 }
+
 impl TeamLeaderKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5497,6 +6188,7 @@ impl TeamLeaderKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenSoulCollectedEvent {
@@ -5504,6 +6196,7 @@ pub struct HalloweenSoulCollectedEvent {
     pub collecting_player: u8,
     pub soul_count: u8,
 }
+
 impl HalloweenSoulCollectedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5515,21 +6208,25 @@ impl HalloweenSoulCollectedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RecalculateTruceEvent {}
+
 impl RecalculateTruceEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RecalculateTruceEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DeadRingerCheatDeathEvent {
     pub spy: u8,
     pub attacker: u8,
 }
+
 impl DeadRingerCheatDeathEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5540,6 +6237,7 @@ impl DeadRingerCheatDeathEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CrossbowHealEvent {
@@ -5547,6 +6245,7 @@ pub struct CrossbowHealEvent {
     pub target: u8,
     pub amount: u16,
 }
+
 impl CrossbowHealEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5558,6 +6257,7 @@ impl CrossbowHealEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamageMitigatedEvent {
@@ -5566,6 +6266,7 @@ pub struct DamageMitigatedEvent {
     pub amount: u16,
     pub item_definition_index: u16,
 }
+
 impl DamageMitigatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5578,12 +6279,14 @@ impl DamageMitigatedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PayloadPushedEvent {
     pub pusher: u8,
     pub distance: u16,
 }
+
 impl PayloadPushedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5594,11 +6297,13 @@ impl PayloadPushedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAbandonedMatchEvent {
     pub game_over: bool,
 }
+
 impl PlayerAbandonedMatchEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5608,6 +6313,7 @@ impl PlayerAbandonedMatchEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClDrawlineEvent {
@@ -5617,6 +6323,7 @@ pub struct ClDrawlineEvent {
     pub x: f32,
     pub y: f32,
 }
+
 impl ClDrawlineEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5630,11 +6337,13 @@ impl ClDrawlineEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RestartTimerTimeEvent {
     pub time: u8,
 }
+
 impl RestartTimerTimeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5644,74 +6353,90 @@ impl RestartTimerTimeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WinLimitChangedEvent {}
+
 impl WinLimitChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(WinLimitChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WinPanelShowScoresEvent {}
+
 impl WinPanelShowScoresEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(WinPanelShowScoresEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TopStreamsRequestFinishedEvent {}
+
 impl TopStreamsRequestFinishedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(TopStreamsRequestFinishedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveStateChangedEvent {}
+
 impl CompetitiveStateChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(CompetitiveStateChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GlobalWarDataUpdatedEvent {}
+
 impl GlobalWarDataUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(GlobalWarDataUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StopWatchChangedEvent {}
+
 impl StopWatchChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(StopWatchChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DsStopEvent {}
+
 impl DsStopEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(DsStopEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DsScreenshotEvent {
     pub delay: f32,
 }
+
 impl DsScreenshotEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5721,47 +6446,57 @@ impl DsScreenshotEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowMatchSummaryEvent {}
+
 impl ShowMatchSummaryEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ShowMatchSummaryEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ExperienceChangedEvent {}
+
 impl ExperienceChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ExperienceChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BeginXpLerpEvent {}
+
 impl BeginXpLerpEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(BeginXpLerpEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MatchmakerStatsUpdatedEvent {}
+
 impl MatchmakerStatsUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MatchmakerStatsUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RematchVotePeriodOverEvent {
     pub success: bool,
 }
+
 impl RematchVotePeriodOverEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5771,48 +6506,58 @@ impl RematchVotePeriodOverEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RematchFailedToCreateEvent {}
+
 impl RematchFailedToCreateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(RematchFailedToCreateEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRematchChangeEvent {}
+
 impl PlayerRematchChangeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PlayerRematchChangeEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PingUpdatedEvent {}
+
 impl PingUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(PingUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MMStatsUpdatedEvent {}
+
 impl MMStatsUpdatedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MMStatsUpdatedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerNextMapVoteChangeEvent {
     pub map_index: u8,
     pub vote: u8,
 }
+
 impl PlayerNextMapVoteChangeEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5823,15 +6568,18 @@ impl PlayerNextMapVoteChangeEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteMapsChangedEvent {}
+
 impl VoteMapsChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(VoteMapsChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProtoDefChangedEvent {
@@ -5841,6 +6589,7 @@ pub struct ProtoDefChangedEvent {
     pub deleted: bool,
     pub erase_history: bool,
 }
+
 impl ProtoDefChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5854,6 +6603,7 @@ impl ProtoDefChangedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDominationEvent {
@@ -5861,6 +6611,7 @@ pub struct PlayerDominationEvent {
     pub dominated: u16,
     pub dominations: u16,
 }
+
 impl PlayerDominationEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5872,12 +6623,14 @@ impl PlayerDominationEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRocketPackPushedEvent {
     pub pusher: u16,
     pub pushed: u16,
 }
+
 impl PlayerRocketPackPushedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5888,12 +6641,14 @@ impl PlayerRocketPackPushedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestRequestEvent {
     pub request: u32,
     pub msg: String,
 }
+
 impl QuestRequestEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5904,6 +6659,7 @@ impl QuestRequestEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestResponseEvent {
@@ -5911,6 +6667,7 @@ pub struct QuestResponseEvent {
     pub success: bool,
     pub msg: String,
 }
+
 impl QuestResponseEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5922,6 +6679,7 @@ impl QuestResponseEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestProgressEvent {
@@ -5931,6 +6689,7 @@ pub struct QuestProgressEvent {
     pub completed: bool,
     pub quest_definition_index: u32,
 }
+
 impl QuestProgressEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5948,6 +6707,7 @@ impl QuestProgressEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProjectileRemovedEvent {
@@ -5956,6 +6716,7 @@ pub struct ProjectileRemovedEvent {
     pub num_hit: u8,
     pub num_direct_hit: u8,
 }
+
 impl ProjectileRemovedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5968,15 +6729,18 @@ impl ProjectileRemovedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestMapDataChangedEvent {}
+
 impl QuestMapDataChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(QuestMapDataChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GasDousedPlayerIgnitedEvent {
@@ -5984,6 +6748,7 @@ pub struct GasDousedPlayerIgnitedEvent {
     pub douser: u16,
     pub victim: u16,
 }
+
 impl GasDousedPlayerIgnitedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -5995,11 +6760,13 @@ impl GasDousedPlayerIgnitedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestTurnInStateEvent {
     pub state: u16,
 }
+
 impl QuestTurnInStateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6009,21 +6776,25 @@ impl QuestTurnInStateEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemsAcknowledgedEvent {}
+
 impl ItemsAcknowledgedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ItemsAcknowledgedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CapperKilledEvent {
     pub blocker: u16,
     pub victim: u16,
 }
+
 impl CapperKilledEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6034,24 +6805,29 @@ impl CapperKilledEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MainMenuStabilizedEvent {}
+
 impl MainMenuStabilizedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(MainMenuStabilizedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WorldStatusChangedEvent {}
+
 impl WorldStatusChangedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(WorldStatusChangedEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVStatusEvent {
@@ -6060,6 +6836,7 @@ pub struct HLTVStatusEvent {
     pub proxies: u16,
     pub master: String,
 }
+
 impl HLTVStatusEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6072,11 +6849,13 @@ impl HLTVStatusEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVCameramanEvent {
     pub index: u16,
 }
+
 impl HLTVCameramanEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6086,6 +6865,7 @@ impl HLTVCameramanEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVRankCameraEvent {
@@ -6093,6 +6873,7 @@ pub struct HLTVRankCameraEvent {
     pub rank: f32,
     pub target: u16,
 }
+
 impl HLTVRankCameraEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6104,6 +6885,7 @@ impl HLTVRankCameraEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVRankEntityEvent {
@@ -6111,6 +6893,7 @@ pub struct HLTVRankEntityEvent {
     pub rank: f32,
     pub target: u16,
 }
+
 impl HLTVRankEntityEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6122,6 +6905,7 @@ impl HLTVRankEntityEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVFixedEvent {
@@ -6134,6 +6918,7 @@ pub struct HLTVFixedEvent {
     pub fov: f32,
     pub target: u16,
 }
+
 impl HLTVFixedEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6150,6 +6935,7 @@ impl HLTVFixedEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChaseEvent {
@@ -6161,6 +6947,7 @@ pub struct HLTVChaseEvent {
     pub inertia: u8,
     pub in_eye: u8,
 }
+
 impl HLTVChaseEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6176,11 +6963,13 @@ impl HLTVChaseEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVMessageEvent {
     pub text: String,
 }
+
 impl HLTVMessageEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6190,11 +6979,13 @@ impl HLTVMessageEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVTitleEvent {
     pub text: String,
 }
+
 impl HLTVTitleEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6204,11 +6995,13 @@ impl HLTVTitleEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChatEvent {
     pub text: String,
 }
+
 impl HLTVChatEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6218,15 +7011,18 @@ impl HLTVChatEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayStartRecordEvent {}
+
 impl ReplayStartRecordEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ReplayStartRecordEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplaySessionInfoEvent {
@@ -6235,6 +7031,7 @@ pub struct ReplaySessionInfoEvent {
     pub cb: u32,
     pub st: u32,
 }
+
 impl ReplaySessionInfoEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6247,29 +7044,35 @@ impl ReplaySessionInfoEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayEndRecordEvent {}
+
 impl ReplayEndRecordEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ReplayEndRecordEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayReplaysAvailableEvent {}
+
 impl ReplayReplaysAvailableEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayServerErrorEvent {
     pub error: String,
 }
+
 impl ReplayServerErrorEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
@@ -6279,6 +7082,7 @@ impl ReplayServerErrorEvent {
         })
     }
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(tag = "type")]
@@ -6686,6 +7490,7 @@ pub enum GameEvent {
     ReplayServerError(ReplayServerErrorEvent),
     Unknown(RawGameEvent),
 }
+
 #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameEventType {
@@ -7092,6 +7897,7 @@ pub enum GameEventType {
     ReplayServerError,
     Unknown(String),
 }
+
 impl GameEventType {
     pub fn from_type_name(name: &str) -> Self {
         match name {
@@ -7902,10 +8708,11 @@ impl GameEventType {
             GameEventType::ReplayEndRecord => "replay_endrecord",
             GameEventType::ReplayReplaysAvailable => "replay_replaysavailable",
             GameEventType::ReplayServerError => "replay_servererror",
-            GameEventType::Unknown(ty) => ty,
+            GameEventType::Unknown(ty) => &ty,
         }
     }
 }
+
 impl GameEvent {
     pub fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         Ok(match definition.event_type {
@@ -9514,8 +10321,9 @@ impl GameEvent {
         }
     }
 }
+
 pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
-    vec![
+    [
         ("ServerSpawn", std::mem::size_of::<ServerSpawnEvent>()),
         (
             "ServerChangeLevelFailed",
@@ -10701,6 +11509,7 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             std::mem::size_of::<ReplayServerErrorEvent>(),
         ),
     ]
-    .into_iter()
+    .iter()
+    .copied()
     .collect()
 }
