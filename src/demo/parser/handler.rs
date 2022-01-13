@@ -35,9 +35,7 @@ impl MessageHandler for NullHandler {
         false
     }
 
-    fn into_output(self, _state: &ParserState) -> Self::Output {
-        ()
-    }
+    fn into_output(self, _state: &ParserState) -> Self::Output {}
 }
 
 #[derive(Clone)]

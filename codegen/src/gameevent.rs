@@ -406,7 +406,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             pub fn as_str(&self) -> &str {
                 match self {
                     #(#type_to_names)*
-                    GameEventType::Unknown(ty) => &ty,
+                    GameEventType::Unknown(ty) => ty,
                 }
             }
         }
