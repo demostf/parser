@@ -38,13 +38,13 @@ err-derive = "0.3"
 parse-display = "0.5"
 main_error = "0.1"
 jemallocator = { version = "0.3", optional = true }
-better-panic = { version = "0.2", optional = true }
+better-panic = { version = "0.3", optional = true }
 no-panic = { version = "0.1", optional = true }
 fnv = "1"
 steamid-ng = "1"
 schemars = { version = "0.8", optional = true }
 tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 [features]
 schema = ["schemars", "bitbuffer/schemars"]
