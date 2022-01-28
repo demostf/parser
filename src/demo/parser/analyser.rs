@@ -1,7 +1,7 @@
 use std::collections::{BTreeMap, HashMap};
 
 use serde::{ser::SerializeMap, Deserialize, Serialize, Serializer};
-use serde_repr::{Deserialize_repr, Serialize_repr};
+use serde_repr::Deserialize_repr;
 
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
@@ -16,6 +16,7 @@ use crate::{ParserState, ReadResult, Stream};
 use num_enum::TryFromPrimitive;
 use std::convert::TryFrom;
 use std::ops::{Index, IndexMut};
+use parse_display::Display;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChatMassage {
@@ -66,7 +67,7 @@ impl Default for Team {
 }
 
 #[derive(
-    Debug, Clone, Serialize_repr, Deserialize_repr, Copy, PartialEq, Eq, Hash, TryFromPrimitive,
+    Debug, Clone, Serialize, Deserialize_repr, Copy, PartialEq, Eq, Hash, TryFromPrimitive, Display
 )]
 #[repr(u8)]
 pub enum Class {
