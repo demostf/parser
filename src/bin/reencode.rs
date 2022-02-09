@@ -13,7 +13,7 @@ use tf_demo_parser::demo::parser::{DemoHandler, Encode, RawPacketStream};
 use tf_demo_parser::{Demo, ParseError};
 
 const COPY_TYPES: &[PacketType] = &[
-    // PacketType::Sigon,
+    // PacketType::Signon,
     // PacketType::Message,
     // PacketType::SyncTick,   // bit perfect
     // PacketType::ConsoleCmd, // bit perfect
@@ -67,7 +67,7 @@ fn main() -> Result<(), MainError> {
                 packet_bits.write(&mut out_stream)?;
             } else {
                 match &mut packet {
-                    Packet::Sigon(message_packet) | Packet::Message(message_packet)
+                    Packet::Signon(message_packet) | Packet::Message(message_packet)
                         if strip_pov =>
                     {
                         message_packet.meta.view_angles = Default::default();
@@ -117,7 +117,7 @@ fn header_fixup(header: &mut Header, mut packets: RawPacketStream) -> Result<(),
     while let Some(packet) = packets.next(&handler.state_handler)? {
         ticks = packet.tick();
 
-        if let Packet::Sigon(message_packet) = &packet {
+        if let Packet::Signon(message_packet) = &packet {
             for message in &message_packet.messages {
                 if let Message::SetConVar(SetConVarMessage { vars, .. }) = message {
                     for cvar in vars {

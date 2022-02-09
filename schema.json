@@ -28,7 +28,7 @@
         "type": {
           "type": "string",
           "enum": [
-            "Sigon"
+            "Signon"
           ]
         }
       }
@@ -11497,7 +11497,7 @@
             "type": {
               "type": "string",
               "enum": [
-                "SigOnState"
+                "SignOnState"
               ]
             }
           }
