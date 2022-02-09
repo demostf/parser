@@ -1,8 +1,3 @@
-use std::collections::{BTreeMap, HashMap};
-
-use serde::{ser::SerializeMap, Deserialize, Serialize, Serializer};
-use serde_repr::Deserialize_repr;
-
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
@@ -14,9 +9,12 @@ use crate::demo::parser::handler::{BorrowMessageHandler, MessageHandler};
 use crate::demo::vector::Vector;
 use crate::{ParserState, ReadResult, Stream};
 use num_enum::TryFromPrimitive;
+use parse_display::{Display, FromStr};
+use serde::de::Error;
+use serde::{ser::SerializeMap, Deserialize, Deserializer, Serialize, Serializer};
+use std::collections::{BTreeMap, HashMap};
 use std::convert::TryFrom;
 use std::ops::{Index, IndexMut};
-use parse_display::Display;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChatMessage {
@@ -67,8 +65,9 @@ impl Default for Team {
 }
 
 #[derive(
-    Debug, Clone, Serialize, Deserialize_repr, Copy, PartialEq, Eq, Hash, TryFromPrimitive, Display
+    Debug, Clone, Serialize, Copy, PartialEq, Eq, Hash, TryFromPrimitive, Display, FromStr,
 )]
+#[display(style = "lowercase")]
 #[repr(u8)]
 pub enum Class {
     Other = 0,
@@ -81,6 +80,37 @@ pub enum Class {
     Pyro = 7,
     Spy = 8,
     Engineer = 9,
+}
+
+impl<'de> Deserialize<'de> for Class {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize, Debug)]
+        #[serde(untagged)]
+        enum IntOrStr<'a> {
+            Int(u8),
+            Str(&'a str),
+        }
+
+        let raw = IntOrStr::deserialize(deserializer)?;
+        match raw {
+            IntOrStr::Int(class) => Class::try_from_primitive(class).map_err(D::Error::custom),
+            IntOrStr::Str(class) if class.len() == 1 => {
+                Class::try_from_primitive(class.parse().map_err(D::Error::custom)?)
+                    .map_err(D::Error::custom)
+            }
+            IntOrStr::Str(class) => class.parse().map_err(D::Error::custom),
+        }
+    }
+}
+
+#[test]
+fn test_class_deserialize() {
+    assert_eq!(Class::Scout, serde_json::from_str(r#""scout""#).unwrap());
+    assert_eq!(Class::Scout, serde_json::from_str(r#""1""#).unwrap());
+    assert_eq!(Class::Scout, serde_json::from_str("1").unwrap());
 }
 
 impl Class {
