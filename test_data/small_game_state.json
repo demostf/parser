@@ -1,1 +1,31 @@
-{"players":[{"entity":1,"position":{"x":-3599.1775,"y":421.331,"z":298.0},"health":125,"max_health":125,"class":1,"team":"red","view_angle":0.0,"state":"Alive"}],"buildings":[],"world":{"boundary_min":{"x":-3882.0,"y":-4570.0,"z":-560.0},"boundary_max":{"x":5240.0,"y":3936.0,"z":1641.0}}}
+{
+  "players": [
+    {
+      "entity": 1,
+      "position": {
+        "x": -3599.1775,
+        "y": 421.331,
+        "z": 298.0
+      },
+      "health": 125,
+      "max_health": 125,
+      "class": 1,
+      "team": "red",
+      "view_angle": 0.0,
+      "state": "Alive"
+    }
+  ],
+  "buildings": [],
+  "world": {
+    "boundary_min": {
+      "x": -3882.0,
+      "y": -4570.0,
+      "z": -560.0
+    },
+    "boundary_max": {
+      "x": 5240.0,
+      "y": 3936.0,
+      "z": 1641.0
+    }
+  }
+}
