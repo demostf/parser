@@ -11,6 +11,12 @@ pub struct Vector {
     pub z: f32,
 }
 
+impl From<Vector> for [f32; 3] {
+    fn from(vec: Vector) -> Self {
+        [vec.x, vec.y, vec.z]
+    }
+}
+
 impl PartialEq for Vector {
     fn eq(&self, other: &Self) -> bool {
         (self.x - other.x < 0.001) && (self.y - other.y < 0.001) && (self.z - other.z < 0.001)

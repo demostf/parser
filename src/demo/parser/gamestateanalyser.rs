@@ -1,12 +1,14 @@
 use crate::demo::message::packetentities::{EntityId, PacketEntity};
 use crate::demo::message::Message;
 use crate::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass, ServerClassName};
+use crate::demo::packet::stringtable::StringTableEntry;
+use crate::demo::parser::analyser::UserInfo;
 pub use crate::demo::parser::analyser::{Class, Team, UserId};
 use crate::demo::parser::handler::BorrowMessageHandler;
 use crate::demo::parser::MessageHandler;
 use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropName, SendPropValue};
 use crate::demo::vector::{Vector, VectorXY};
-use crate::{MessageType, ParserState};
+use crate::{MessageType, ParserState, ReadResult, Stream};
 use fnv::FnvHashMap;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
@@ -42,7 +44,9 @@ pub struct Player {
     pub class: Class,
     pub team: Team,
     pub view_angle: f32,
+    pub pitch_angle: f32,
     pub state: PlayerState,
+    pub info: Option<UserInfo>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -127,7 +131,9 @@ impl GameState {
                     class: Class::Other,
                     team: Team::Other,
                     view_angle: 0.0,
+                    pitch_angle: 0.0,
                     state: PlayerState::Alive,
+                    info: None,
                 };
 
                 let index = self.players.len();
@@ -181,6 +187,15 @@ impl MessageHandler for GameStateAnalyser {
             .map(|class| &class.name)
             .cloned()
             .collect();
+    }
+
+    fn handle_string_entry(&mut self, table: &str, _index: usize, entry: &StringTableEntry) {
+        if table == "userinfo" {
+            let _ = self.parse_user_info(
+                entry.text.as_ref().map(|s| s.as_ref()),
+                entry.extra_data.as_ref().map(|data| data.data.clone()),
+            );
+        }
     }
 
     fn into_output(self, _state: &ParserState) -> Self::Output {
@@ -278,6 +293,9 @@ impl GameStateAnalyser {
                             "m_angEyeAngles[1]" => {
                                 player.view_angle = f32::try_from(&prop.value).unwrap_or_default()
                             }
+                            "m_angEyeAngles[0]" => {
+                                player.pitch_angle = f32::try_from(&prop.value).unwrap_or_default()
+                            }
                             _ => {}
                         }
                     }
@@ -306,5 +324,14 @@ impl GameStateAnalyser {
                 boundary_max: *boundary_max,
             })
         }
+    }
+
+    fn parse_user_info(&mut self, text: Option<&str>, data: Option<Stream>) -> ReadResult<()> {
+        if let Some(user_info) = crate::demo::data::UserInfo::parse_from_string_table(text, data)? {
+            let id = user_info.entity_id;
+            self.state.get_or_create_player(id).info = Some(user_info.into());
+        }
+
+        Ok(())
     }
 }

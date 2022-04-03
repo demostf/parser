@@ -177,8 +177,36 @@ impl<'a, A: MessageHandler> DemoTicker<'a, A> {
     }
 }
 
-impl<A: MessageHandler + BorrowMessageHandler> DemoTicker<'_, A> {
+impl<'a, A: MessageHandler + BorrowMessageHandler> DemoTicker<'a, A> {
     pub fn state(&self) -> &A::Output {
         self.handler.borrow_output()
     }
+
+    pub fn parser_state(&self) -> &ParserState {
+        self.handler.get_parser_state()
+    }
+
+    /// Process the next packet
+    pub fn next(&mut self) -> Result<Option<Tick<A::Output>>> {
+        Ok(
+            if let Some(packet) = self.packets.next(&self.handler.state_handler)? {
+                let tick = packet.tick();
+                self.handler.handle_packet(packet)?;
+
+                Some(Tick {
+                    state: self.handler.borrow_output(),
+                    parser_state: self.handler.get_parser_state(),
+                    tick,
+                })
+            } else {
+                None
+            },
+        )
+    }
+}
+
+pub struct Tick<'a, State> {
+    pub state: &'a State,
+    pub parser_state: &'a ParserState,
+    pub tick: u32,
 }

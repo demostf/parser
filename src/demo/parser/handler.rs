@@ -23,7 +23,7 @@ pub trait MessageHandler {
 }
 
 pub trait BorrowMessageHandler: MessageHandler {
-    fn borrow_output(&self, state: &ParserState) -> &Self::Output;
+    fn borrow_output(&self, _state: &ParserState) -> &Self::Output;
 }
 
 pub struct NullHandler;
@@ -162,12 +162,12 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         self.analyser.into_output(&self.state_handler)
     }
 
-    pub fn get_parser_state(&'a self) -> &ParserState {
+    pub fn get_parser_state(&self) -> &ParserState {
         &self.state_handler
     }
 }
 
-impl<'a, T: MessageHandler + BorrowMessageHandler> DemoHandler<'a, T> {
+impl<T: MessageHandler + BorrowMessageHandler> DemoHandler<'_, T> {
     pub fn borrow_output(&self) -> &T::Output {
         self.analyser.borrow_output(&self.state_handler)
     }
