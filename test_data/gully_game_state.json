@@ -9,10 +9,18 @@
       },
       "health": 125,
       "max_health": 125,
-      "class": 1,
+      "class": "scout",
       "team": "blue",
       "view_angle": 64.04692,
-      "state": "Alive"
+      "pitch_angle": 12.352943,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "distraughtduck4",
+        "userId": 3,
+        "steamId": "[U:1:78023051]",
+        "team": "other"
+      }
     },
     {
       "entity": 3,
@@ -23,10 +31,18 @@
       },
       "health": 135,
       "max_health": 200,
-      "class": 3,
+      "class": "soldier",
       "team": "red",
       "view_angle": 28.504398,
-      "state": "Alive"
+      "pitch_angle": 14.470596,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "phazil",
+        "userId": 4,
+        "steamId": "[U:1:151261665]",
+        "team": "other"
+      }
     },
     {
       "entity": 4,
@@ -37,10 +53,18 @@
       },
       "health": 104,
       "max_health": 150,
-      "class": 5,
+      "class": "medic",
       "team": "red",
       "view_angle": 355.0733,
-      "state": "Death"
+      "pitch_angle": 12.352943,
+      "state": "Death",
+      "info": {
+        "classes": {},
+        "name": "Boog",
+        "userId": 5,
+        "steamId": "[U:1:105458702]",
+        "team": "other"
+      }
     },
     {
       "entity": 5,
@@ -51,10 +75,18 @@
       },
       "health": 175,
       "max_health": 175,
-      "class": 4,
+      "class": "demoman",
       "team": "blue",
       "view_angle": 33.079178,
-      "state": "Alive"
+      "pitch_angle": 1.7647095,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "tridud",
+        "userId": 6,
+        "steamId": "[U:1:81747492]",
+        "team": "other"
+      }
     },
     {
       "entity": 6,
@@ -65,10 +97,18 @@
       },
       "health": 125,
       "max_health": 125,
-      "class": 1,
+      "class": "scout",
       "team": "blue",
       "view_angle": 180.17595,
-      "state": "Alive"
+      "pitch_angle": 0.35294342,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "geo_",
+        "userId": 7,
+        "steamId": "[U:1:50363269]",
+        "team": "other"
+      }
     },
     {
       "entity": 7,
@@ -79,10 +119,18 @@
       },
       "health": 150,
       "max_health": 150,
-      "class": 5,
+      "class": "medic",
       "team": "blue",
       "view_angle": 180.17595,
-      "state": "Alive"
+      "pitch_angle": 0.35294342,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "freak u ___",
+        "userId": 7,
+        "steamId": "[U:1:50363269]",
+        "team": "other"
+      }
     },
     {
       "entity": 8,
@@ -93,66 +141,18 @@
       },
       "health": 260,
       "max_health": 175,
-      "class": 4,
+      "class": "demoman",
       "team": "red",
       "view_angle": 355.42523,
-      "state": "Alive"
-    },
-    {
-      "entity": 10,
-      "position": {
-        "x": 5046.0,
-        "y": -953.25,
-        "z": 296.0
-      },
-      "health": 200,
-      "max_health": 200,
-      "class": 3,
-      "team": "blue",
-      "view_angle": 180.17595,
-      "state": "Alive"
-    },
-    {
-      "entity": 12,
-      "position": {
-        "x": 3954.25,
-        "y": -1329.875,
-        "z": 232.0
-      },
-      "health": 132,
-      "max_health": 125,
-      "class": 2,
-      "team": "red",
-      "view_angle": 17.947214,
-      "state": "Alive"
-    },
-    {
-      "entity": 13,
-      "position": {
-        "x": 4563.5,
-        "y": -1381.375,
-        "z": 369.125
-      },
-      "health": 1,
-      "max_health": 200,
-      "class": 3,
-      "team": "red",
-      "view_angle": 9.853373,
-      "state": "Death"
-    },
-    {
-      "entity": 11,
-      "position": {
-        "x": 5046.0,
-        "y": -1141.0,
-        "z": 296.0
-      },
-      "health": 175,
-      "max_health": 175,
-      "class": 7,
-      "team": "other",
-      "view_angle": 180.17595,
-      "state": "Alive"
+      "pitch_angle": 8.823532,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "purple_dildo420",
+        "userId": 9,
+        "steamId": "[U:1:103356736]",
+        "team": "other"
+      }
     },
     {
       "entity": 9,
@@ -163,10 +163,106 @@
       },
       "health": 125,
       "max_health": 125,
-      "class": 1,
-      "team": "other",
+      "class": "scout",
+      "team": "red",
       "view_angle": 110.14663,
-      "state": "Alive"
+      "pitch_angle": 15.176476,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "schy",
+        "userId": 10,
+        "steamId": "[U:1:85558037]",
+        "team": "other"
+      }
+    },
+    {
+      "entity": 10,
+      "position": {
+        "x": 5046.0,
+        "y": -953.25,
+        "z": 296.0
+      },
+      "health": 200,
+      "max_health": 200,
+      "class": "soldier",
+      "team": "blue",
+      "view_angle": 180.17595,
+      "pitch_angle": 0.35294342,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "__",
+        "userId": 11,
+        "steamId": "[U:1:101328438]",
+        "team": "other"
+      }
+    },
+    {
+      "entity": 11,
+      "position": {
+        "x": 5046.0,
+        "y": -1141.0,
+        "z": 296.0
+      },
+      "health": 175,
+      "max_health": 175,
+      "class": "pyro",
+      "team": "blue",
+      "view_angle": 180.17595,
+      "pitch_angle": 0.35294342,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "jinta",
+        "userId": 12,
+        "steamId": "[U:1:63292929]",
+        "team": "other"
+      }
+    },
+    {
+      "entity": 12,
+      "position": {
+        "x": 3954.25,
+        "y": -1329.875,
+        "z": 232.0
+      },
+      "health": 132,
+      "max_health": 125,
+      "class": "sniper",
+      "team": "red",
+      "view_angle": 17.947214,
+      "pitch_angle": 8.117653,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "xfa",
+        "userId": 13,
+        "steamId": "[U:1:91304212]",
+        "team": "other"
+      }
+    },
+    {
+      "entity": 13,
+      "position": {
+        "x": 4563.5,
+        "y": -1381.375,
+        "z": 369.125
+      },
+      "health": 1,
+      "max_health": 200,
+      "class": "soldier",
+      "team": "red",
+      "view_angle": 9.853373,
+      "pitch_angle": 15.176476,
+      "state": "Death",
+      "info": {
+        "classes": {},
+        "name": "mother",
+        "userId": 14,
+        "steamId": "[U:1:82128674]",
+        "team": "other"
+      }
     }
   ],
   "buildings": [],

@@ -9,10 +9,18 @@
       },
       "health": 125,
       "max_health": 125,
-      "class": 1,
+      "class": "scout",
       "team": "red",
       "view_angle": 0.0,
-      "state": "Alive"
+      "pitch_angle": 0.35294342,
+      "state": "Alive",
+      "info": {
+        "classes": {},
+        "name": "Icewind | demos.tf",
+        "userId": 2,
+        "steamId": "[U:1:64229260]",
+        "team": "other"
+      }
     }
   ],
   "buildings": [],
