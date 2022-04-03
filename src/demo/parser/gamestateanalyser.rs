@@ -263,44 +263,56 @@ impl GameStateAnalyser {
     pub fn handle_player_entity(&mut self, entity: &PacketEntity) {
         let player = self.state.get_or_create_player(entity.entity_index);
 
+        const HEALTH_PROP: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BasePlayer", "m_iHealth");
+        const MAX_HEALTH_PROP: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BasePlayer", "m_iMaxHealth");
+        const LIFE_STATE_PROP: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BasePlayer", "m_lifeState");
+
+        const LOCAL_ORIGIN: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFLocalPlayerExclusive", "m_vecOrigin");
+        const NON_LOCAL_ORIGIN: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFNonLocalPlayerExclusive", "m_vecOrigin");
+        const LOCAL_ORIGIN_Z: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFLocalPlayerExclusive", "m_vecOrigin[2]");
+        const NON_LOCAL_ORIGIN_Z: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFNonLocalPlayerExclusive", "m_vecOrigin[2]");
+        const LOCAL_EYE_ANGLES: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFLocalPlayerExclusive", "m_angEyeAngles[1]");
+        const NON_LOCAL_EYE_ANGLES: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[1]");
+        const LOCAL_PITCH_ANGLES: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFLocalPlayerExclusive", "m_angEyeAngles[0]");
+        const NON_LOCAL_PITCH_ANGLES: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[0]");
+
         for prop in entity.props() {
-            if let Some((table_name, prop_name)) = self.prop_names.get(&prop.identifier) {
-                match table_name.as_str() {
-                    "DT_BasePlayer" => match prop_name.as_str() {
-                        "m_iHealth" => {
-                            player.health = i64::try_from(&prop.value).unwrap_or_default() as u16
-                        }
-                        "m_iMaxHealth" => {
-                            player.max_health =
-                                i64::try_from(&prop.value).unwrap_or_default() as u16
-                        }
-                        "m_lifeState" => {
-                            player.state =
-                                PlayerState::new(i64::try_from(&prop.value).unwrap_or_default())
-                        }
-                        _ => {}
-                    },
-                    "DT_TFLocalPlayerExclusive" | "DT_TFNonLocalPlayerExclusive" => {
-                        match prop_name.as_str() {
-                            "m_vecOrigin" => {
-                                let pos_xy = VectorXY::try_from(&prop.value).unwrap_or_default();
-                                player.position.x = pos_xy.x;
-                                player.position.y = pos_xy.y;
-                            }
-                            "m_vecOrigin[2]" => {
-                                player.position.z = f32::try_from(&prop.value).unwrap_or_default()
-                            }
-                            "m_angEyeAngles[1]" => {
-                                player.view_angle = f32::try_from(&prop.value).unwrap_or_default()
-                            }
-                            "m_angEyeAngles[0]" => {
-                                player.pitch_angle = f32::try_from(&prop.value).unwrap_or_default()
-                            }
-                            _ => {}
-                        }
-                    }
-                    _ => {}
+            match prop.identifier {
+                HEALTH_PROP => {
+                    player.health = i64::try_from(&prop.value).unwrap_or_default() as u16
                 }
+                MAX_HEALTH_PROP => {
+                    player.max_health = i64::try_from(&prop.value).unwrap_or_default() as u16
+                }
+                LIFE_STATE_PROP => {
+                    player.state = PlayerState::new(i64::try_from(&prop.value).unwrap_or_default())
+                }
+                LOCAL_ORIGIN | NON_LOCAL_ORIGIN => {
+                    let pos_xy = VectorXY::try_from(&prop.value).unwrap_or_default();
+                    player.position.x = pos_xy.x;
+                    player.position.y = pos_xy.y;
+                }
+                LOCAL_ORIGIN_Z | NON_LOCAL_ORIGIN_Z => {
+                    player.position.z = f32::try_from(&prop.value).unwrap_or_default()
+                }
+                LOCAL_EYE_ANGLES | NON_LOCAL_EYE_ANGLES => {
+                    player.view_angle = f32::try_from(&prop.value).unwrap_or_default()
+                }
+                LOCAL_PITCH_ANGLES | NON_LOCAL_PITCH_ANGLES => {
+                    player.pitch_angle = f32::try_from(&prop.value).unwrap_or_default()
+                }
+                _ => {}
             }
         }
     }

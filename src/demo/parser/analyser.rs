@@ -68,6 +68,7 @@ impl Default for Team {
     Debug, Clone, Serialize, Copy, PartialEq, Eq, Hash, TryFromPrimitive, Display, FromStr,
 )]
 #[display(style = "lowercase")]
+#[serde(rename_all = "lowercase")]
 #[repr(u8)]
 pub enum Class {
     Other = 0,
