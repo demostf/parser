@@ -5,6 +5,7 @@ use crate::demo::packet::Packet;
 use crate::Result;
 
 use crate::demo::header::Header;
+use crate::demo::packet::message::MessagePacketMeta;
 use crate::ParserState;
 use std::borrow::Cow;
 
@@ -13,11 +14,15 @@ pub trait MessageHandler {
 
     fn does_handle(message_type: MessageType) -> bool;
 
+    fn handle_header(&mut self, _header: &Header) {}
+
     fn handle_message(&mut self, _message: &Message, _tick: u32) {}
 
     fn handle_string_entry(&mut self, _table: &str, _index: usize, _entries: &StringTableEntry) {}
 
     fn handle_data_tables(&mut self, _tables: &[ParseSendTable], _server_classes: &[ServerClass]) {}
+
+    fn handle_packet_meta(&mut self, _meta: &MessagePacketMeta) {}
 
     fn into_output(self, state: &ParserState) -> Self::Output;
 }
@@ -82,6 +87,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
 
     pub fn handle_header(&mut self, header: &Header) {
         self.state_handler.protocol_version = header.protocol;
+        self.analyser.handle_header(header);
     }
 
     pub fn handle_packet(&mut self, packet: Packet<'a>) -> Result<()> {
@@ -95,6 +101,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                 }
             }
             Packet::Message(packet) | Packet::Signon(packet) => {
+                self.analyser.handle_packet_meta(&packet.meta);
                 //self.tick = packet.tick;
                 for message in packet.messages {
                     match message {
