@@ -198,6 +198,8 @@ impl<'a> ParserState {
             Message::PacketEntities(ent_message) => {
                 for removed in ent_message.removed_entities.iter() {
                     self.entity_classes.remove(removed);
+                    self.instance_baselines[0].remove(removed);
+                    self.instance_baselines[1].remove(removed);
                 }
 
                 for entity in ent_message.entities.iter() {
@@ -233,6 +235,7 @@ impl<'a> ParserState {
             if let (Some(extra), Ok(class_id)) = (&entry.extra_data, entry.text().parse()) {
                 let baseline = StaticBaseline::new(class_id, extra.data.to_owned());
                 self.static_baselines.insert(class_id, baseline);
+                self.parsed_static_baselines.borrow_mut().remove(&class_id);
             }
         }
     }
