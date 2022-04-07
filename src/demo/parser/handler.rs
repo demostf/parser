@@ -22,7 +22,7 @@ pub trait MessageHandler {
 
     fn handle_data_tables(&mut self, _tables: &[ParseSendTable], _server_classes: &[ServerClass]) {}
 
-    fn handle_packet_meta(&mut self, _meta: &MessagePacketMeta) {}
+    fn handle_packet_meta(&mut self, _tick: u32, _meta: &MessagePacketMeta) {}
 
     fn into_output(self, state: &ParserState) -> Self::Output;
 }
@@ -101,7 +101,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                 }
             }
             Packet::Message(packet) | Packet::Signon(packet) => {
-                self.analyser.handle_packet_meta(&packet.meta);
+                self.analyser.handle_packet_meta(packet.tick, &packet.meta);
                 //self.tick = packet.tick;
                 for message in packet.messages {
                     match message {
