@@ -1,8 +1,7 @@
-use fnv::{FnvHashMap, FnvHashSet};
+use fnv::FnvHashMap;
 use proc_macro2::TokenStream;
 use quote::quote;
-use std::collections::HashSet;
-use tf_demo_parser::demo::message::Message;
+use std::collections::HashMap;
 use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass};
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::demo::sendprop::{SendPropIdentifier, SendPropName};
@@ -16,7 +15,6 @@ struct PropInfo {
 
 #[derive(Default)]
 struct PropAnalyzer {
-    props: FnvHashSet<SendPropIdentifier>,
     prop_names: FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
 }
 
@@ -27,23 +25,18 @@ impl MessageHandler for PropAnalyzer {
         matches!(message_type, MessageType::PacketEntities)
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32) {
-        if let Message::PacketEntities(message) = message {
-            for entity in &message.entities {
-                for prop in &entity.props {
-                    self.props.insert(prop.identifier);
-                }
-            }
-        }
-    }
-
     fn handle_data_tables(
         &mut self,
         parse_tables: &[ParseSendTable],
         _server_classes: &[ServerClass],
     ) {
-        let mut numeric_tables: FnvHashSet<String> = HashSet::default();
+        let mut numeric_tables: FnvHashMap<String, usize> = HashMap::default();
         for table in parse_tables {
+            if table.props.iter().any(|prop| {
+                prop.name == "lengthproxy" || prop.name.as_str().starts_with("lengthprop")
+            }) {
+                continue;
+            }
             for prop_def in &table.props {
                 self.prop_names.insert(
                     prop_def.identifier(),
@@ -52,13 +45,63 @@ impl MessageHandler for PropAnalyzer {
                 let name = prop_def.name.as_str();
                 if name.len() == 3 && table.name.as_str().len() > 3 {
                     if let Ok(_) = name.parse::<u8>() {
-                        numeric_tables.insert(table.name.to_string());
+                        let size = match table.name.as_str() {
+                            "m_nNextMapVoteOptions" => 3,
+                            "m_nStreaks"
+                            | "m_nNumNodeHillData"
+                            | "m_nModelIndexOverrides"
+                            | "m_nMinigameTeamScore"
+                            | "m_iTeamBaseIcons"
+                            | "m_iTeam"
+                            | "m_iNumTeamMembers"
+                            | "m_hProps"
+                            | "m_flNextRespawnWave"
+                            | "m_flEncodedController"
+                            | "m_eWinningMethod"
+                            | "m_chPoseIndex"
+                            | "m_bTrackAlarm"
+                            | "m_bTeamReady"
+                            | "m_bTeamCanCap"
+                            | "m_TeamRespawnWaveTimes" => 4,
+                            "m_nVoteOptionCount" => 5,
+                            "m_iWarnOnCap"
+                            | "m_iTeamInZone"
+                            | "m_iOwner"
+                            | "m_iControlPointParents"
+                            | "m_iCappingTeam"
+                            | "m_iCPGroup"
+                            | "m_hControlPointEnts"
+                            | "m_flUnlockTimes"
+                            | "m_flPathDistance"
+                            | "m_flLazyCapPerc"
+                            | "m_flCPTimerTimes"
+                            | "m_bInMiniRound"
+                            | "m_bCPLocked"
+                            | "m_bCPIsVisible"
+                            | "m_bCPCapRateScalesWithPlayers"
+                            | "m_bBlocked" => 8,
+                            "m_nAttachIndex" | "m_hAttachEntity" => 10,
+                            "m_nMannVsMachineWaveClassFlags"
+                            | "m_nMannVsMachineWaveClassFlags2"
+                            | "m_nMannVsMachineWaveClassCounts2"
+                            | "m_nMannVsMachineWaveClassCounts"
+                            | "m_bMannVsMachineWaveClassActive2"
+                            | "m_bMannVsMachineWaveClassActive" => 12,
+                            "m_chCurrentSlideLists" => 16,
+                            "m_bHillIsDownhill" => 20,
+                            "m_chAreaPortalBits" | "m_chAreaBits" => 24,
+                            "m_hMyWeapons" => 48,
+                            "m_iTeamReqCappers" | "m_iTeamOverlays" | "m_iTeamIcons" => 8 * 8,
+                            "m_flexWeight" | "m_flPoseParameter" => 96,
+                            _ => 65,
+                        };
+                        numeric_tables.insert(table.name.to_string(), size);
                     }
                 }
             }
         }
-        for table in numeric_tables {
-            for num in 0..256 {
+        for (table, size) in numeric_tables {
+            for num in 0..=size {
                 let prop_name = SendPropName::from(format!("{:03}", num));
                 self.prop_names.insert(
                     SendPropIdentifier::new(&table, prop_name.as_str()),
