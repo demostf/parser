@@ -206,7 +206,9 @@ impl From<HashMap<Class, u8>> for ClassList {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Default,
+)]
 pub struct UserId(pub u8);
 
 impl From<u32> for UserId {
