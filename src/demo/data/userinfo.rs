@@ -1,5 +1,6 @@
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::stringtable::{ExtraData, StringTableEntry};
+use crate::demo::parser::analyser::UserId;
 use crate::{ReadResult, Stream};
 use bitbuffer::{BitRead, BitReadBuffer, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
 
@@ -24,7 +25,7 @@ struct RawPlayerInfo {
 pub struct PlayerInfo {
     #[size = 32]
     pub name: String,
-    pub user_id: u32,
+    pub user_id: UserId,
     #[size = 32]
     pub steam_id: String,
     pub extra: u32, // all my sources say these 4 bytes don't exist
@@ -44,7 +45,7 @@ impl From<RawPlayerInfo> for PlayerInfo {
             name: String::from_utf8_lossy(&raw.name_bytes)
                 .trim_end_matches('\0')
                 .to_string(),
-            user_id: raw.user_id,
+            user_id: raw.user_id.into(),
             steam_id: raw.steam_id,
             extra: raw.extra,
             friends_id: raw.friends_id,

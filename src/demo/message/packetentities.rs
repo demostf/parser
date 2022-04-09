@@ -38,6 +38,18 @@ impl From<u32> for EntityId {
     }
 }
 
+impl From<EntityId> for u32 {
+    fn from(id: EntityId) -> Self {
+        id.0
+    }
+}
+
+impl PartialEq<u32> for EntityId {
+    fn eq(&self, other: &u32) -> bool {
+        self.0 == *other
+    }
+}
+
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
     BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Eq, Serialize_repr, Deserialize_repr,

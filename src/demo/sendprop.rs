@@ -1,6 +1,9 @@
-use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
+use bitbuffer::{
+    BitRead, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, Endianness, LittleEndian,
+};
 use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 use crate::{ParseError, ReadResult, Result, Stream};
 
@@ -10,52 +13,48 @@ use crate::consthash::ConstFnvHash;
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
 use crate::demo::parser::MalformedSendPropDefinitionError;
+use crate::demo::sendprop_gen::get_prop_names;
 use num_traits::Signed;
 use parse_display::Display;
 use std::cmp::min;
 use std::convert::{TryFrom, TryInto};
-use std::fmt;
+use std::fmt::{self, Display, Formatter};
 use std::hash::Hash;
 use std::ops::BitOr;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
-    BitRead,
-    BitWrite,
-    PartialEq,
-    Eq,
-    Hash,
-    Debug,
-    Display,
-    Clone,
-    Serialize,
-    Deserialize,
-    Ord,
-    PartialOrd,
+    BitWrite, PartialEq, Eq, Hash, Debug, Display, Clone, Serialize, Deserialize, Ord, PartialOrd,
 )]
-pub struct SendPropName(String);
+pub struct SendPropName(Cow<'static, str>);
 
 impl SendPropName {
     pub fn as_str(&self) -> &str {
-        self.0.as_str()
+        self.0.as_ref()
+    }
+}
+
+impl<E: Endianness> BitRead<'_, E> for SendPropName {
+    fn read(stream: &mut BitReadStream<'_, E>) -> bitbuffer::Result<Self> {
+        String::read(stream).map(SendPropName::from)
     }
 }
 
 impl PartialEq<&str> for SendPropName {
     fn eq(&self, other: &&str) -> bool {
-        self.0.as_str() == *other
+        self.as_str() == *other
     }
 }
 
 impl From<String> for SendPropName {
     fn from(value: String) -> Self {
-        Self(value)
+        Self(Cow::Owned(value))
     }
 }
 
-impl From<&str> for SendPropName {
-    fn from(value: &str) -> Self {
-        value.to_string().into()
+impl From<&'static str> for SendPropName {
+    fn from(value: &'static str) -> Self {
+        SendPropName(Cow::Borrowed(value))
     }
 }
 
@@ -1105,9 +1104,7 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(
-    Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash, Display, Serialize, Deserialize,
-)]
+#[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct SendPropIdentifier(u64);
 
 impl SendPropIdentifier {
@@ -1115,11 +1112,34 @@ impl SendPropIdentifier {
         let hasher = ConstFnvHash::new().push_string(table).push_string(prop);
         SendPropIdentifier(hasher.finish())
     }
+
+    pub fn table_name(&self) -> Option<SendTableName> {
+        get_prop_names(*self).map(|(table, _)| table.into())
+    }
+
+    pub fn prop_name(&self) -> Option<SendPropName> {
+        get_prop_names(*self).map(|(_, prop)| prop.into())
+    }
 }
 
 impl From<u64> for SendPropIdentifier {
     fn from(raw: u64) -> Self {
         SendPropIdentifier(raw)
+    }
+}
+
+impl From<SendPropIdentifier> for u64 {
+    fn from(identifier: SendPropIdentifier) -> Self {
+        identifier.0
+    }
+}
+
+impl Display for SendPropIdentifier {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match get_prop_names(*self) {
+            Some((table, prop)) => write!(f, "{}.{}", table, prop),
+            None => write!(f, "Prop name {} not known", self.0),
+        }
     }
 }
 

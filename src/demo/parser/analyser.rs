@@ -8,6 +8,7 @@ use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::{BorrowMessageHandler, MessageHandler};
 use crate::demo::vector::Vector;
 use crate::{ParserState, ReadResult, Stream};
+use bitbuffer::{BitWrite, BitWriteStream, Endianness};
 use num_enum::TryFromPrimitive;
 use parse_display::{Display, FromStr};
 use serde::de::Error;
@@ -211,6 +212,12 @@ impl From<HashMap<Class, u8>> for ClassList {
 )]
 pub struct UserId(pub u8);
 
+impl<E: Endianness> BitWrite<E> for UserId {
+    fn write(&self, stream: &mut BitWriteStream<E>) -> ReadResult<()> {
+        (self.0 as u32).write(stream)
+    }
+}
+
 impl From<u32> for UserId {
     fn from(int: u32) -> Self {
         UserId((int & 255) as u8)
@@ -220,6 +227,24 @@ impl From<u32> for UserId {
 impl From<u16> for UserId {
     fn from(int: u16) -> Self {
         UserId((int & 255) as u8)
+    }
+}
+
+impl From<UserId> for u8 {
+    fn from(id: UserId) -> Self {
+        id.0
+    }
+}
+
+impl From<UserId> for u32 {
+    fn from(id: UserId) -> Self {
+        id.0 as u32
+    }
+}
+
+impl PartialEq<u8> for UserId {
+    fn eq(&self, other: &u8) -> bool {
+        self.0 == *other
     }
 }
 

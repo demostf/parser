@@ -10,6 +10,7 @@ pub mod message;
 pub mod packet;
 pub mod parser;
 pub mod sendprop;
+mod sendprop_gen;
 pub mod vector;
 
 pub type Buffer<'a> = BitReadBuffer<'a, LittleEndian>;

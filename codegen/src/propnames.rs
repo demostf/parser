@@ -72,8 +72,7 @@ pub fn generate_prop_names(demo: Demo) -> TokenStream {
         .unwrap();
 
     let imports = quote!(
-        use tf_demo_parser::demo::packet::datatable::SendTableName;
-        use tf_demo_parser::demo::sendprop::{SendPropIdentifier, SendPropName};
+        use crate::demo::sendprop::SendPropIdentifier;
     );
 
     let matches = props.into_iter().map(|prop| {

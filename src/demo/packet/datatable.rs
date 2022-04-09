@@ -3,9 +3,12 @@ use crate::demo::sendprop::{
     RawSendPropDefinition, SendPropDefinition, SendPropFlag, SendPropIdentifier, SendPropType,
 };
 use crate::{Parse, ParseError, ParserState, Result, Stream};
-use bitbuffer::{BitRead, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
+use bitbuffer::{
+    BitRead, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, Endianness, LittleEndian,
+};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use std::cmp::min;
 use std::convert::TryFrom;
 use std::iter::once;
@@ -79,7 +82,6 @@ pub struct ServerClass {
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
-    BitRead,
     BitWrite,
     PartialEq,
     Eq,
@@ -93,23 +95,29 @@ pub struct ServerClass {
     Ord,
     Default,
 )]
-pub struct SendTableName(String);
+pub struct SendTableName(Cow<'static, str>);
 
 impl SendTableName {
     pub fn as_str(&self) -> &str {
-        self.0.as_str()
+        self.0.as_ref()
+    }
+}
+
+impl<E: Endianness> BitRead<'_, E> for SendTableName {
+    fn read(stream: &mut BitReadStream<'_, E>) -> bitbuffer::Result<Self> {
+        String::read(stream).map(SendTableName::from)
     }
 }
 
 impl From<String> for SendTableName {
     fn from(value: String) -> Self {
-        Self(value)
+        Self(Cow::Owned(value))
     }
 }
 
-impl From<&str> for SendTableName {
-    fn from(value: &str) -> Self {
-        Self(value.into())
+impl From<&'static str> for SendTableName {
+    fn from(value: &'static str) -> Self {
+        Self(Cow::Borrowed(value))
     }
 }
 
