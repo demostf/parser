@@ -205,6 +205,8 @@ impl<'a> ParserState {
                 for entity in ent_message.entities.iter() {
                     if entity.pvs == PVS::Delete {
                         self.entity_classes.remove(&entity.entity_index);
+                        self.instance_baselines[0].remove(&entity.entity_index);
+                        self.instance_baselines[1].remove(&entity.entity_index);
                     }
                     self.entity_classes
                         .insert(entity.entity_index, entity.server_class);
