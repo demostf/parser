@@ -1,6 +1,7 @@
 use fnv::{FnvHashMap, FnvHashSet};
 use proc_macro2::TokenStream;
 use quote::quote;
+use std::collections::HashSet;
 use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass};
 use tf_demo_parser::demo::parser::MessageHandler;
@@ -41,11 +42,27 @@ impl MessageHandler for PropAnalyzer {
         parse_tables: &[ParseSendTable],
         _server_classes: &[ServerClass],
     ) {
+        let mut numeric_tables: FnvHashSet<String> = HashSet::default();
         for table in parse_tables {
             for prop_def in &table.props {
                 self.prop_names.insert(
                     prop_def.identifier(),
                     (table.name.clone(), prop_def.name.clone()),
+                );
+                let name = prop_def.name.as_str();
+                if name.len() == 3 && table.name.as_str().len() > 3 {
+                    if let Ok(_) = name.parse::<u8>() {
+                        numeric_tables.insert(table.name.to_string());
+                    }
+                }
+            }
+        }
+        for table in numeric_tables {
+            for num in 0..256 {
+                let prop_name = SendPropName::from(format!("{:03}", num));
+                self.prop_names.insert(
+                    SendPropIdentifier::new(&table, prop_name.as_str()),
+                    (table.clone().into(), prop_name),
                 );
             }
         }
@@ -61,7 +78,11 @@ impl MessageHandler for PropAnalyzer {
                 prop_name: prop_name.to_string(),
             })
             .collect();
-        props.sort_by(|a, b| a.identifier.cmp(&b.identifier));
+        props.sort_by(|a, b| {
+            a.table_name
+                .cmp(&b.table_name)
+                .then(a.prop_name.cmp(&b.prop_name))
+        });
         props
     }
 }

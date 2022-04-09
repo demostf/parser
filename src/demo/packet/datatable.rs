@@ -121,6 +121,12 @@ impl From<&'static str> for SendTableName {
     }
 }
 
+impl PartialEq<&str> for SendTableName {
+    fn eq(&self, other: &&str) -> bool {
+        self.as_str() == *other
+    }
+}
+
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ParseSendTable {
