@@ -218,7 +218,7 @@ impl<'a> ParserState {
                 if ent_message.updated_base_line {
                     let old_index = ent_message.base_line as usize;
                     let new_index = 1 - old_index;
-                    self.instance_baselines.swap(0, 1);
+                    self.instance_baselines[new_index] = self.instance_baselines[old_index].clone();
 
                     for entity in ent_message.entities {
                         self.instance_baselines[new_index]

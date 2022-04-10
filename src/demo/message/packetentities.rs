@@ -87,19 +87,19 @@ impl fmt::Display for PacketEntity {
 }
 
 impl PacketEntity {
-    pub fn mut_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
-        self.props_mut().find(|prop| prop.identifier == *index)
+    fn mut_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
+        self.props.iter_mut().find(|prop| prop.identifier == *index)
     }
 
     pub fn get_prop_by_identifier(&self, index: &SendPropIdentifier) -> Option<&SendProp> {
         self.props().find(|prop| prop.identifier == *index)
     }
 
-    pub fn apply_update(&mut self, props: Vec<SendProp>) {
+    pub fn apply_update(&mut self, props: &[SendProp]) {
         for prop in props {
             match self.mut_prop_by_identifier(&prop.identifier) {
-                Some(existing_prop) => existing_prop.value = prop.value,
-                None => self.props.push(prop),
+                Some(existing_prop) => existing_prop.value = prop.value.clone(),
+                None => self.props.push(prop.clone()),
             }
         }
     }
@@ -111,10 +111,6 @@ impl PacketEntity {
 
     pub fn props(&self) -> impl Iterator<Item = &SendProp> {
         self.baseline_props.iter().chain(self.props.iter())
-    }
-
-    pub fn props_mut(&mut self) -> impl Iterator<Item = &mut SendProp> {
-        self.baseline_props.iter_mut().chain(self.props.iter_mut())
     }
 
     pub fn into_props(self) -> impl Iterator<Item = SendProp> {
