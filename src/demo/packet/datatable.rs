@@ -12,6 +12,7 @@ use std::borrow::Cow;
 use std::cmp::min;
 use std::convert::TryFrom;
 use std::iter::once;
+use std::ops::Deref;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
@@ -124,6 +125,20 @@ impl From<&'static str> for SendTableName {
 impl PartialEq<&str> for SendTableName {
     fn eq(&self, other: &&str) -> bool {
         self.as_str() == *other
+    }
+}
+
+impl AsRef<str> for SendTableName {
+    fn as_ref(&self) -> &str {
+        self.0.as_ref()
+    }
+}
+
+impl Deref for SendTableName {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        self.0.deref()
     }
 }
 

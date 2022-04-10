@@ -1,12 +1,3 @@
-use bitbuffer::{
-    BitRead, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, Endianness, LittleEndian,
-};
-use enumflags2::{bitflags, BitFlags};
-use serde::{Deserialize, Serialize};
-use std::borrow::Cow;
-
-use crate::{ParseError, ReadResult, Result, Stream};
-
 use super::packet::datatable::ParseSendTable;
 use super::vector::{Vector, VectorXY};
 use crate::consthash::ConstFnvHash;
@@ -14,13 +5,20 @@ use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::SendTableName;
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop_gen::get_prop_names;
+use crate::{ParseError, ReadResult, Result, Stream};
+use bitbuffer::{
+    BitRead, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, Endianness, LittleEndian,
+};
+use enumflags2::{bitflags, BitFlags};
 use num_traits::Signed;
 use parse_display::Display;
+use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 use std::cmp::min;
 use std::convert::{TryFrom, TryInto};
 use std::fmt::{self, Display, Formatter};
 use std::hash::Hash;
-use std::ops::BitOr;
+use std::ops::{BitOr, Deref};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
@@ -55,6 +53,20 @@ impl From<String> for SendPropName {
 impl From<&'static str> for SendPropName {
     fn from(value: &'static str) -> Self {
         SendPropName(Cow::Borrowed(value))
+    }
+}
+
+impl AsRef<str> for SendPropName {
+    fn as_ref(&self) -> &str {
+        self.0.as_ref()
+    }
+}
+
+impl Deref for SendPropName {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        self.0.deref()
     }
 }
 
@@ -1113,12 +1125,25 @@ impl SendPropIdentifier {
         SendPropIdentifier(hasher.finish())
     }
 
+    /// This returns an option because only props known at compile time will return a name here
+    ///
+    /// If you need to know the name of every property you need to keep a map yourself
     pub fn table_name(&self) -> Option<SendTableName> {
         get_prop_names(*self).map(|(table, _)| table.into())
     }
 
+    /// This returns an option because only props known at compile time will return a name here
+    ///
+    /// If you need to know the name of every property you need to keep a map yourself
     pub fn prop_name(&self) -> Option<SendPropName> {
         get_prop_names(*self).map(|(_, prop)| prop.into())
+    }
+
+    /// This returns an option because only props known at compile time will return a name here
+    ///
+    /// If you need to know the name of every property you need to keep a map yourself
+    pub fn names(&self) -> Option<(SendTableName, SendPropName)> {
+        get_prop_names(*self).map(|(table, prop)| (table.into(), prop.into()))
     }
 }
 
