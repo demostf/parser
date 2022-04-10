@@ -56,11 +56,11 @@ impl PartialEq<u32> for EntityId {
 )]
 #[discriminant_bits = 2]
 #[repr(u8)]
-pub enum PVS {
-    Preserve = 0,
-    Leave = 1,
-    Enter = 2,
-    Delete = 3,
+pub enum UpdateType {
+    Preserve = 0b00,
+    Leave = 0b01,
+    Enter = 0b10,
+    Delete = 0b11,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -71,7 +71,7 @@ pub struct PacketEntity {
     pub baseline_props: Vec<SendProp>,
     pub props: Vec<SendProp>,
     pub in_pvs: bool,
-    pub pvs: PVS,
+    pub update_type: UpdateType,
     pub serial_number: u32,
     pub delay: Option<f32>,
 }
@@ -207,7 +207,7 @@ fn get_send_table(state: &ParserState, class: ClassId) -> Result<&SendTable> {
 fn get_entity_for_update(
     state: &ParserState,
     entity_index: EntityId,
-    pvs: PVS,
+    pvs: UpdateType,
 ) -> Result<PacketEntity> {
     let class_id = *state
         .entity_classes
@@ -220,7 +220,7 @@ fn get_entity_for_update(
         baseline_props: vec![],
         props: Vec::with_capacity(8),
         in_pvs: false,
-        pvs,
+        update_type: pvs,
         serial_number: 0,
         delay: None,
     })
@@ -247,23 +247,23 @@ impl Parse<'_> for PacketEntitiesMessage {
             last_index = last_index.saturating_add(diff as i32).saturating_add(1);
             let entity_index = EntityId::from(last_index as u32);
 
-            let pvs = data.read()?;
-            if pvs == PVS::Enter {
+            let update_type = data.read()?;
+            if update_type == UpdateType::Enter {
                 let mut entity =
                     Self::read_enter(&mut data, entity_index, state, base_line as usize)?;
                 let send_table = get_send_table(state, entity.server_class)?;
                 Self::read_update(&mut data, send_table, &mut entity.props)?;
 
                 entities.push(entity);
-            } else if pvs == PVS::Preserve {
-                let mut entity = get_entity_for_update(state, entity_index, pvs)?;
+            } else if update_type == UpdateType::Preserve {
+                let mut entity = get_entity_for_update(state, entity_index, update_type)?;
                 let send_table = get_send_table(state, entity.server_class)?;
 
                 Self::read_update(&mut data, send_table, &mut entity.props)?;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {
-                let entity = get_entity_for_update(state, entity_index, pvs)?;
+                let entity = get_entity_for_update(state, entity_index, update_type)?;
                 entities.push(entity);
             } else {
                 entities.push(PacketEntity {
@@ -272,7 +272,7 @@ impl Parse<'_> for PacketEntitiesMessage {
                     baseline_props: vec![],
                     props: vec![],
                     in_pvs: false,
-                    pvs,
+                    update_type,
                     serial_number: 0,
                     delay: None,
                 });
@@ -318,15 +318,15 @@ impl Encode for PacketEntitiesMessage {
                 write_bit_var(diff as u32, stream)?;
                 last_index = entity.entity_index.0 as i32;
 
-                entity.pvs.write(stream)?;
+                entity.update_type.write(stream)?;
 
                 let send_table = get_send_table(state, entity.server_class)?;
-                match entity.pvs {
-                    PVS::Enter => {
+                match entity.update_type {
+                    UpdateType::Enter => {
                         Self::write_enter(entity, stream, state)?;
                         Self::write_update(&entity.props, stream, send_table)?;
                     }
-                    PVS::Preserve => {
+                    UpdateType::Preserve => {
                         Self::write_update(&entity.props, stream, send_table)?;
                     }
                     _ => {}
@@ -373,7 +373,7 @@ impl PacketEntitiesMessage {
             baseline_props,
             props: vec![],
             in_pvs: true,
-            pvs: PVS::Enter,
+            update_type: UpdateType::Enter,
             serial_number: serial,
             delay: None,
         })
@@ -543,7 +543,7 @@ fn test_packet_entitier_message_roundtrip() {
                 baseline_props: vec![],
                 props: vec![],
                 in_pvs: true,
-                pvs: PVS::Enter,
+                update_type: UpdateType::Enter,
                 serial_number: 0,
                 delay: None,
             }],
@@ -564,7 +564,7 @@ fn test_packet_entitier_message_roundtrip() {
                     baseline_props: vec![],
                     props: vec![],
                     in_pvs: true,
-                    pvs: PVS::Enter,
+                    update_type: UpdateType::Enter,
                     serial_number: 0,
                     delay: None,
                 },
@@ -585,7 +585,7 @@ fn test_packet_entitier_message_roundtrip() {
                         },
                     ],
                     in_pvs: false,
-                    pvs: PVS::Preserve,
+                    update_type: UpdateType::Preserve,
                     serial_number: 0,
                     delay: None,
                 },
@@ -606,7 +606,7 @@ fn test_packet_entitier_message_roundtrip() {
                         },
                     ],
                     in_pvs: true,
-                    pvs: PVS::Enter,
+                    update_type: UpdateType::Enter,
                     serial_number: 0,
                     delay: None,
                 },

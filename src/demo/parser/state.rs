@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::demo::gamevent::GameEventDefinition;
 
-use crate::demo::message::packetentities::{EntityId, PacketEntitiesMessage, PVS};
+use crate::demo::message::packetentities::{EntityId, PacketEntitiesMessage, UpdateType};
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{
@@ -203,7 +203,7 @@ impl<'a> ParserState {
                 }
 
                 for entity in ent_message.entities.iter() {
-                    if entity.pvs == PVS::Delete {
+                    if entity.update_type == UpdateType::Delete {
                         self.entity_classes.remove(&entity.entity_index);
                         self.instance_baselines[0].remove(&entity.entity_index);
                         self.instance_baselines[1].remove(&entity.entity_index);

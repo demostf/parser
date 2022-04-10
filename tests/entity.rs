@@ -6,7 +6,7 @@ use test_case::test_case;
 use fnv::FnvHashMap;
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
-use tf_demo_parser::demo::message::packetentities::{EntityId, PacketEntity, PVS};
+use tf_demo_parser::demo::message::packetentities::{EntityId, PacketEntity, UpdateType};
 use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::packet::datatable::{
     ParseSendTable, SendTableName, ServerClass, ServerClassName,
@@ -25,13 +25,13 @@ pub enum PVSCompat {
     Delete = 6,
 }
 
-impl From<PVS> for PVSCompat {
-    fn from(pvs: PVS) -> Self {
+impl From<UpdateType> for PVSCompat {
+    fn from(pvs: UpdateType) -> Self {
         match pvs {
-            PVS::Preserve => PVSCompat::Preserve,
-            PVS::Leave => PVSCompat::Leave,
-            PVS::Enter => PVSCompat::Enter,
-            PVS::Delete => PVSCompat::Delete,
+            UpdateType::Preserve => PVSCompat::Preserve,
+            UpdateType::Leave => PVSCompat::Leave,
+            UpdateType::Enter => PVSCompat::Enter,
+            UpdateType::Delete => PVSCompat::Delete,
         }
     }
 }
@@ -57,7 +57,7 @@ impl EntityDump {
             tick,
             server_class: classes[usize::from(entity.server_class)].name.clone(),
             id: entity.entity_index,
-            pvs: entity.pvs.into(),
+            pvs: entity.update_type.into(),
             props: entity
                 .into_props()
                 .map(|prop| {
