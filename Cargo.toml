@@ -51,7 +51,7 @@ schema = ["schemars", "bitbuffer/schemars"]
 
 [dev-dependencies]
 pretty_assertions = "1"
-test-case = "1"
+test-case = "2.0.2"
 iai = "0.1"
 
 [profile.release]
