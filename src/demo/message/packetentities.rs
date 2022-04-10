@@ -249,8 +249,13 @@ impl Parse<'_> for PacketEntitiesMessage {
 
             let update_type = data.read()?;
             if update_type == UpdateType::Enter {
-                let mut entity =
-                    Self::read_enter(&mut data, entity_index, state, base_line as usize)?;
+                let mut entity = Self::read_enter(
+                    &mut data,
+                    entity_index,
+                    state,
+                    base_line as usize,
+                    delta.is_some(),
+                )?;
                 let send_table = get_send_table(state, entity.server_class)?;
                 Self::read_update(&mut data, send_table, &mut entity.props)?;
 
@@ -354,6 +359,7 @@ impl PacketEntitiesMessage {
         entity_index: EntityId,
         state: &ParserState,
         baseline_index: usize,
+        is_delta: bool,
     ) -> Result<PacketEntity> {
         let bits = log_base2(state.server_classes.len()) + 1;
         let class_index: ClassId = stream.read_sized::<u16>(bits as usize)?.into();
@@ -364,8 +370,13 @@ impl PacketEntitiesMessage {
             .get(usize::from(class_index))
             .ok_or(ParseError::UnknownServerClass(class_index))?;
 
-        let baseline_props =
-            state.get_baseline(baseline_index, entity_index, class_index, send_table)?;
+        let baseline_props = state.get_baseline(
+            baseline_index,
+            entity_index,
+            class_index,
+            send_table,
+            is_delta,
+        )?;
 
         Ok(PacketEntity {
             server_class: class_index,

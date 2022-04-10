@@ -33,7 +33,7 @@ pub struct ParserState {
     pub entity_classes: HashMap<EntityId, ClassId, NullHasherBuilder>,
     pub send_tables: Vec<SendTable>, // indexed by ClassId
     pub server_classes: Vec<ServerClass>,
-    pub instance_baselines: [HashMap<EntityId, Vec<SendProp>, NullHasherBuilder>; 2],
+    pub instance_baselines: [HashMap<EntityId, (Vec<SendProp>, ClassId), NullHasherBuilder>; 2],
     pub demo_meta: DemoMeta,
     analyser_handles: fn(message_type: MessageType) -> bool,
     handle_entities: bool,
@@ -109,10 +109,13 @@ impl<'a> ParserState {
         entity_index: EntityId,
         class_id: ClassId,
         send_table: &SendTable,
+        is_delta: bool,
     ) -> Result<Vec<SendProp>> {
         match self.instance_baselines[baseline_index].get(&entity_index) {
-            Some(baseline) => Ok(baseline.clone()),
-            None => match self.static_baselines.get(&class_id) {
+            Some((baseline, baseline_class)) if baseline_class == &class_id && is_delta => {
+                Ok(baseline.clone())
+            }
+            _ => match self.static_baselines.get(&class_id) {
                 Some(_static_baseline) => self.get_static_baseline(class_id, send_table),
                 None => Ok(Vec::with_capacity(8)),
             },
@@ -219,7 +222,7 @@ impl<'a> ParserState {
 
                     for entity in ent_message.entities {
                         self.instance_baselines[new_index]
-                            .insert(entity.entity_index, entity.props);
+                            .insert(entity.entity_index, (entity.props, entity.server_class));
                     }
                 }
             }
