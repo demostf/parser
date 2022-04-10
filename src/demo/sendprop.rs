@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::cmp::min;
 use std::convert::{TryFrom, TryInto};
-use std::fmt::{self, Display, Formatter};
+use std::fmt::{self, Debug, Display, Formatter};
 use std::hash::Hash;
 use std::ops::{BitOr, Deref};
 
@@ -635,11 +635,11 @@ impl PartialEq for SendPropValue {
 impl fmt::Display for SendPropValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            SendPropValue::Vector(vector) => vector.fmt(f),
-            SendPropValue::VectorXY(vector) => vector.fmt(f),
-            SendPropValue::Integer(int) => int.fmt(f),
-            SendPropValue::Float(float) => float.fmt(f),
-            SendPropValue::String(string) => string.fmt(f),
+            SendPropValue::Vector(vector) => Display::fmt(vector, f),
+            SendPropValue::VectorXY(vector) => Display::fmt(vector, f),
+            SendPropValue::Integer(int) => Display::fmt(int, f),
+            SendPropValue::Float(float) => Display::fmt(float, f),
+            SendPropValue::String(string) => Display::fmt(string, f),
             SendPropValue::Array(array) => {
                 write!(f, "[")?;
                 for child in array {
@@ -1169,12 +1169,18 @@ impl Display for SendPropIdentifier {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, Clone, Display, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Display, PartialEq, Serialize, Deserialize)]
 #[display("{index} = {value}")]
 pub struct SendProp {
     pub index: u32,
     pub identifier: SendPropIdentifier,
     pub value: SendPropValue,
+}
+
+impl Debug for SendProp {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{} = {}", self.identifier, self.value)
+    }
 }
 
 pub fn read_var_int(stream: &mut Stream, signed: bool) -> ReadResult<i32> {
