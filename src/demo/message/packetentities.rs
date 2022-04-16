@@ -253,14 +253,14 @@ impl Parse<'_> for PacketEntitiesMessage {
                     delta.is_some(),
                 )?;
                 let send_table = get_send_table(state, entity.server_class)?;
-                Self::read_update(&mut data, send_table, &mut entity.props)?;
+                Self::read_update(&mut data, send_table, &mut entity.props, entity_index)?;
 
                 entities.push(entity);
             } else if update_type == UpdateType::Preserve {
                 let mut entity = get_entity_for_update(state, entity_index, update_type)?;
                 let send_table = get_send_table(state, entity.server_class)?;
 
-                Self::read_update(&mut data, send_table, &mut entity.props)?;
+                Self::read_update(&mut data, send_table, &mut entity.props, entity_index)?;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {
@@ -402,6 +402,7 @@ impl PacketEntitiesMessage {
         stream: &mut Stream,
         send_table: &SendTable,
         props: &mut Vec<SendProp>,
+        _entity_index: EntityId,
     ) -> Result<()> {
         let mut index: i32 = -1;
 

@@ -3,7 +3,9 @@ use std::collections::HashMap;
 
 use crate::demo::gamevent::GameEventDefinition;
 
-use crate::demo::message::packetentities::{EntityId, PacketEntitiesMessage, UpdateType};
+use crate::demo::message::packetentities::{
+    EntityId, PacketEntitiesMessage, PacketEntity, UpdateType,
+};
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{
@@ -54,7 +56,12 @@ impl StaticBaseline {
 
     pub fn parse(&self, send_table: &SendTable) -> Result<Vec<SendProp>> {
         let mut props = Vec::with_capacity(8);
-        PacketEntitiesMessage::read_update(&mut self.raw.clone(), send_table, &mut props)?;
+        PacketEntitiesMessage::read_update(
+            &mut self.raw.clone(),
+            send_table,
+            &mut props,
+            0.into(),
+        )?;
         Ok(props)
     }
 }
@@ -201,15 +208,11 @@ impl<'a> ParserState {
             Message::PacketEntities(ent_message) => {
                 for removed in ent_message.removed_entities.iter() {
                     self.entity_classes.remove(removed);
-                    self.instance_baselines[0].remove(removed);
-                    self.instance_baselines[1].remove(removed);
                 }
 
                 for entity in ent_message.entities.iter() {
                     if entity.update_type == UpdateType::Delete {
                         self.entity_classes.remove(&entity.entity_index);
-                        self.instance_baselines[0].remove(&entity.entity_index);
-                        self.instance_baselines[1].remove(&entity.entity_index);
                     }
                     self.entity_classes
                         .insert(entity.entity_index, entity.server_class);
@@ -221,8 +224,32 @@ impl<'a> ParserState {
                     self.instance_baselines[new_index] = self.instance_baselines[old_index].clone();
 
                     for entity in ent_message.entities {
-                        self.instance_baselines[new_index]
-                            .insert(entity.entity_index, (entity.props, entity.server_class));
+                        if entity.update_type == UpdateType::Enter {
+                            let updated_baseline = match self.instance_baselines[old_index]
+                                .get(&entity.entity_index)
+                            {
+                                Some((baseline_props, baseline_class))
+                                    if *baseline_class == entity.server_class
+                                        && ent_message.delta.is_some() =>
+                                {
+                                    let mut entity = PacketEntity {
+                                        server_class: entity.server_class,
+                                        entity_index: entity.entity_index,
+                                        baseline_props: vec![],
+                                        props: vec![],
+                                        in_pvs: false,
+                                        update_type: UpdateType::Preserve,
+                                        serial_number: 0,
+                                        delay: None,
+                                    };
+                                    entity.apply_update(baseline_props);
+                                    (entity.props, entity.server_class)
+                                }
+                                _ => (entity.props, entity.server_class),
+                            };
+                            self.instance_baselines[new_index]
+                                .insert(entity.entity_index, updated_baseline);
+                        }
                     }
                 }
             }
