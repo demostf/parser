@@ -35,7 +35,7 @@ pub struct ParserState {
     pub entity_classes: HashMap<EntityId, ClassId, NullHasherBuilder>,
     pub send_tables: Vec<SendTable>, // indexed by ClassId
     pub server_classes: Vec<ServerClass>,
-    pub instance_baselines: [HashMap<EntityId, (Vec<SendProp>, ClassId), NullHasherBuilder>; 2],
+    pub instance_baselines: [HashMap<EntityId, PacketEntity, NullHasherBuilder>; 2],
     pub demo_meta: DemoMeta,
     analyser_handles: fn(message_type: MessageType) -> bool,
     handle_entities: bool,
@@ -119,8 +119,8 @@ impl<'a> ParserState {
         is_delta: bool,
     ) -> Result<Vec<SendProp>> {
         match self.instance_baselines[baseline_index].get(&entity_index) {
-            Some((baseline, baseline_class)) if baseline_class == &class_id && is_delta => {
-                Ok(baseline.clone())
+            Some(baseline) if baseline.server_class == class_id && is_delta => {
+                Ok(baseline.props.clone())
             }
             _ => match self.static_baselines.get(&class_id) {
                 Some(_static_baseline) => self.get_static_baseline(class_id, send_table),
@@ -228,27 +228,18 @@ impl<'a> ParserState {
                             let updated_baseline = match self.instance_baselines[old_index]
                                 .get(&entity.entity_index)
                             {
-                                Some((baseline_props, baseline_class))
-                                    if *baseline_class == entity.server_class
+                                Some(baseline_entity)
+                                    if baseline_entity.server_class == entity.server_class
                                         && ent_message.delta.is_some() =>
                                 {
-                                    let mut entity = PacketEntity {
-                                        server_class: entity.server_class,
-                                        entity_index: entity.entity_index,
-                                        baseline_props: vec![],
-                                        props: vec![],
-                                        in_pvs: false,
-                                        update_type: UpdateType::Preserve,
-                                        serial_number: 0,
-                                        delay: None,
-                                    };
-                                    entity.apply_update(baseline_props);
-                                    (entity.props, entity.server_class)
+                                    let mut updated_baseline = baseline_entity.clone();
+                                    updated_baseline.apply_update(&entity.props);
+                                    updated_baseline
                                 }
-                                _ => (entity.props, entity.server_class),
+                                _ => entity,
                             };
                             self.instance_baselines[new_index]
-                                .insert(entity.entity_index, updated_baseline);
+                                .insert(updated_baseline.entity_index, updated_baseline);
                         }
                     }
                 }
