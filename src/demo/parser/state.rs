@@ -18,6 +18,7 @@ use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
+use tracing::warn;
 
 #[derive(Default, Clone, Serialize, Deserialize)]
 pub struct DemoMeta {
@@ -159,7 +160,7 @@ impl<'a> ParserState {
                 if let Some(table) = send_tables.remove(&class.data_table) {
                     self.send_tables.push(table);
                 } else {
-                    eprintln!("class without table? {} {}", class.name, class.data_table);
+                    warn!(class = debug(class), "class without table");
                 }
             }
         }
