@@ -72,7 +72,11 @@ pub enum ParseError {
         _0,
         _1
     )]
-    PropIndexOutOfBounds { index: i32, prop_count: usize },
+    PropIndexOutOfBounds {
+        index: i32,
+        prop_count: usize,
+        table: String,
+    },
     #[error(display = "An attempt was made to update an unknown entity: {}", _0)]
     UnknownEntity(EntityId),
     #[error(display = "No sendprop definition found for property")]

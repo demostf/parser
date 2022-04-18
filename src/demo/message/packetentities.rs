@@ -423,6 +423,7 @@ impl PacketEntitiesMessage {
                     return Err(ParseError::PropIndexOutOfBounds {
                         index,
                         prop_count: send_table.flattened_props.len(),
+                        table: send_table.name.to_string(),
                     });
                 }
             }
@@ -438,13 +439,14 @@ impl PacketEntitiesMessage {
     ) -> Result<()> {
         let mut last_index: i32 = -1;
 
+        let mut props: Vec<&SendProp> = props.into_iter().collect();
+        props.sort_by(|a, b| a.index.cmp(&b.index));
+
         for prop in props {
             true.write(stream)?;
 
             let index = prop.index as usize;
-            if index >= send_table.flattened_props.len() {
-                dbg!(&send_table.name);
-            }
+
             let definition =
                 send_table
                     .flattened_props
@@ -452,6 +454,7 @@ impl PacketEntitiesMessage {
                     .ok_or(ParseError::PropIndexOutOfBounds {
                         index: index as i32,
                         prop_count: send_table.flattened_props.len(),
+                        table: send_table.name.to_string(),
                     })?;
             write_bit_var((index as i32 - last_index - 1) as u32, stream)?;
             last_index = index as i32;
