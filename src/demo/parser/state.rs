@@ -106,7 +106,13 @@ impl<'a> ParserState {
                     let props = static_baseline.parse(send_table)?;
                     cached.entry(class_id).or_insert(props).clone()
                 }
-                None => Vec::with_capacity(8),
+                None => {
+                    warn!(
+                        class_id = display(class_id),
+                        "class without static baseline"
+                    );
+                    Vec::with_capacity(8)
+                }
             },
         })
     }
@@ -125,7 +131,13 @@ impl<'a> ParserState {
             }
             _ => match self.static_baselines.get(&class_id) {
                 Some(_static_baseline) => self.get_static_baseline(class_id, send_table),
-                None => Ok(Vec::with_capacity(8)),
+                None => {
+                    warn!(
+                        class_id = display(class_id),
+                        "class without static baseline"
+                    );
+                    Ok(Vec::with_capacity(8))
+                }
             },
         }
     }

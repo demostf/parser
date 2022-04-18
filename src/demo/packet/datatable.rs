@@ -51,6 +51,12 @@ impl From<ClassId> for u16 {
     }
 }
 
+impl PartialEq<u16> for ClassId {
+    fn eq(&self, other: &u16) -> bool {
+        self.0 == *other
+    }
+}
+
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
 pub struct ServerClassName(String);
@@ -70,6 +76,26 @@ impl From<String> for ServerClassName {
 impl From<&str> for ServerClassName {
     fn from(value: &str) -> Self {
         Self(value.into())
+    }
+}
+
+impl PartialEq<&str> for ServerClassName {
+    fn eq(&self, other: &&str) -> bool {
+        self.as_str() == *other
+    }
+}
+
+impl AsRef<str> for ServerClassName {
+    fn as_ref(&self) -> &str {
+        self.0.as_ref()
+    }
+}
+
+impl Deref for ServerClassName {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        self.0.deref()
     }
 }
 

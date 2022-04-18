@@ -45,7 +45,6 @@ steamid-ng = "1"
 schemars = { version = "0.8", optional = true }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-criterion = "0.3.5"
 
 [features]
 schema = ["schemars", "bitbuffer/schemars"]
@@ -54,6 +53,7 @@ schema = ["schemars", "bitbuffer/schemars"]
 pretty_assertions = "1"
 test-case = "2.0.2"
 iai = "0.1"
+criterion = "0.3.5"
 
 [profile.release]
 lto = true
