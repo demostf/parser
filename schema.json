@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Packet",
-  "anyOf": [
+  "oneOf": [
     {
       "type": "object",
       "required": [
@@ -365,7 +365,7 @@
       }
     },
     "GameEvent": {
-      "anyOf": [
+      "oneOf": [
         {
           "type": "object",
           "required": [
@@ -10818,7 +10818,7 @@
       }
     },
     "GameEventType": {
-      "anyOf": [
+      "oneOf": [
         {
           "type": "string",
           "enum": [
@@ -11245,7 +11245,7 @@
       "minimum": 0.0
     },
     "GameEventValue": {
-      "anyOf": [
+      "oneOf": [
         {
           "type": "string",
           "enum": [
@@ -11356,7 +11356,7 @@
       ]
     },
     "Message": {
-      "anyOf": [
+      "oneOf": [
         {
           "type": "object",
           "required": [
@@ -11490,9 +11490,7 @@
               "minimum": 0.0
             },
             "state": {
-              "type": "integer",
-              "format": "uint8",
-              "minimum": 0.0
+              "$ref": "#/definitions/SignOnState"
             },
             "type": {
               "type": "string",
@@ -11922,7 +11920,7 @@
         },
         {
           "type": "object",
-          "anyOf": [
+          "oneOf": [
             {
               "type": "object",
               "required": [
@@ -12419,26 +12417,24 @@
         }
       }
     },
-    "PVS": {
-      "type": "string",
-      "enum": [
-        "Preserve",
-        "Leave",
-        "Enter",
-        "Delete"
-      ]
-    },
     "PacketEntity": {
       "type": "object",
       "required": [
+        "baseline_props",
         "entity_index",
         "in_pvs",
         "props",
-        "pvs",
         "serial_number",
-        "server_class"
+        "server_class",
+        "update_type"
       ],
       "properties": {
+        "baseline_props": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SendProp"
+          }
+        },
         "delay": {
           "type": [
             "number",
@@ -12458,9 +12454,6 @@
             "$ref": "#/definitions/SendProp"
           }
         },
-        "pvs": {
-          "$ref": "#/definitions/PVS"
-        },
         "serial_number": {
           "type": "integer",
           "format": "uint32",
@@ -12468,6 +12461,9 @@
         },
         "server_class": {
           "$ref": "#/definitions/ClassId"
+        },
+        "update_type": {
+          "$ref": "#/definitions/UpdateType"
         }
       }
     },
@@ -12673,6 +12669,19 @@
     "ServerClassName": {
       "type": "string"
     },
+    "SignOnState": {
+      "type": "string",
+      "enum": [
+        "None",
+        "Challenge",
+        "Connected",
+        "New",
+        "PreSpawn",
+        "Spawn",
+        "Full",
+        "ChangeLevel"
+      ]
+    },
     "StringTable": {
       "type": "object",
       "required": [
@@ -12752,6 +12761,15 @@
           ]
         }
       }
+    },
+    "UpdateType": {
+      "type": "string",
+      "enum": [
+        "Preserve",
+        "Leave",
+        "Enter",
+        "Delete"
+      ]
     },
     "UserCmd": {
       "type": "object",

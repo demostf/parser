@@ -1,7 +1,7 @@
 use super::gamevent::{EventValue, GameEventDefinition, GameEventEntry, RawGameEvent};
 use crate::demo::Stream;
 use crate::{ParseError, Result};
-use bitbuffer::{BitRead, LittleEndian, BitWrite, BitWriteStream};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     stream: &mut Stream<'a>,
@@ -23,7 +23,7 @@ fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     }
     Ok(T::read(stream)?)
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerSpawnEvent {
     pub hostname: String,
@@ -55,7 +55,7 @@ impl ServerSpawnEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerChangeLevelFailedEvent {
     pub level_name: String,
@@ -69,7 +69,7 @@ impl ServerChangeLevelFailedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerShutdownEvent {
     pub reason: String,
@@ -83,7 +83,7 @@ impl ServerShutdownEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerCvarEvent {
     pub cvar_name: String,
@@ -99,7 +99,7 @@ impl ServerCvarEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerMessageEvent {
     pub text: String,
@@ -113,7 +113,7 @@ impl ServerMessageEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerAddBanEvent {
     pub name: String,
@@ -139,7 +139,7 @@ impl ServerAddBanEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ServerRemoveBanEvent {
     pub network_id: String,
@@ -157,7 +157,7 @@ impl ServerRemoveBanEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerConnectEvent {
     pub name: String,
@@ -181,7 +181,7 @@ impl PlayerConnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerConnectClientEvent {
     pub name: String,
@@ -203,7 +203,7 @@ impl PlayerConnectClientEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInfoEvent {
     pub name: String,
@@ -225,7 +225,7 @@ impl PlayerInfoEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDisconnectEvent {
     pub user_id: u16,
@@ -247,7 +247,7 @@ impl PlayerDisconnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerActivateEvent {
     pub user_id: u16,
@@ -261,7 +261,7 @@ impl PlayerActivateEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSayEvent {
     pub user_id: u16,
@@ -277,7 +277,7 @@ impl PlayerSayEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientDisconnectEvent {
     pub message: String,
@@ -291,7 +291,7 @@ impl ClientDisconnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientBeginConnectEvent {
     pub address: String,
@@ -311,7 +311,7 @@ impl ClientBeginConnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientConnectedEvent {
     pub address: String,
@@ -329,7 +329,7 @@ impl ClientConnectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClientFullConnectEvent {
     pub address: String,
@@ -347,7 +347,7 @@ impl ClientFullConnectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HostQuitEvent {}
 impl HostQuitEvent {
@@ -356,7 +356,7 @@ impl HostQuitEvent {
         Ok(HostQuitEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamInfoEvent {
     pub team_id: u8,
@@ -372,7 +372,7 @@ impl TeamInfoEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamScoreEvent {
     pub team_id: u8,
@@ -388,7 +388,7 @@ impl TeamScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayBroadcastAudioEvent {
     pub team: u8,
@@ -406,7 +406,7 @@ impl TeamPlayBroadcastAudioEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTeamEvent {
     pub user_id: u16,
@@ -432,7 +432,7 @@ impl PlayerTeamEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerClassEvent {
     pub user_id: u16,
@@ -448,7 +448,7 @@ impl PlayerClassEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDeathEvent {
     pub user_id: u16,
@@ -484,59 +484,43 @@ impl PlayerDeathEvent {
         let mut iter = definition.entries.iter();
         Ok(PlayerDeathEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            player_penetrate_count: read_value::<
-                u16,
-            >(stream, iter.next(), "player_penetrate_count")?,
-            assister_fallback: read_value::<
-                String,
-            >(stream, iter.next(), "assister_fallback")?,
-            kill_streak_total: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_streak_total")?,
+            player_penetrate_count: read_value::<u16>(
+                stream,
+                iter.next(),
+                "player_penetrate_count",
+            )?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
+            kill_streak_total: read_value::<u16>(stream, iter.next(), "kill_streak_total")?,
             kill_streak_wep: read_value::<u16>(stream, iter.next(), "kill_streak_wep")?,
-            kill_streak_assist: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_streak_assist")?,
-            kill_streak_victim: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_streak_victim")?,
+            kill_streak_assist: read_value::<u16>(stream, iter.next(), "kill_streak_assist")?,
+            kill_streak_victim: read_value::<u16>(stream, iter.next(), "kill_streak_victim")?,
             ducks_streaked: read_value::<u16>(stream, iter.next(), "ducks_streaked")?,
-            duck_streak_total: read_value::<
-                u16,
-            >(stream, iter.next(), "duck_streak_total")?,
-            duck_streak_assist: read_value::<
-                u16,
-            >(stream, iter.next(), "duck_streak_assist")?,
-            duck_streak_victim: read_value::<
-                u16,
-            >(stream, iter.next(), "duck_streak_victim")?,
+            duck_streak_total: read_value::<u16>(stream, iter.next(), "duck_streak_total")?,
+            duck_streak_assist: read_value::<u16>(stream, iter.next(), "duck_streak_assist")?,
+            duck_streak_victim: read_value::<u16>(stream, iter.next(), "duck_streak_victim")?,
             rocket_jump: read_value::<bool>(stream, iter.next(), "rocket_jump")?,
-            weapon_def_index: read_value::<
-                u32,
-            >(stream, iter.next(), "weapon_def_index")?,
+            weapon_def_index: read_value::<u32>(stream, iter.next(), "weapon_def_index")?,
             crit_type: read_value::<u16>(stream, iter.next(), "crit_type")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHurtEvent {
     pub user_id: u16,
@@ -561,9 +545,7 @@ impl PlayerHurtEvent {
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             damage_amount: read_value::<u16>(stream, iter.next(), "damage_amount")?,
             custom: read_value::<u16>(stream, iter.next(), "custom")?,
-            show_disguised_crit: read_value::<
-                bool,
-            >(stream, iter.next(), "show_disguised_crit")?,
+            show_disguised_crit: read_value::<bool>(stream, iter.next(), "show_disguised_crit")?,
             crit: read_value::<bool>(stream, iter.next(), "crit")?,
             mini_crit: read_value::<bool>(stream, iter.next(), "mini_crit")?,
             all_see_crit: read_value::<bool>(stream, iter.next(), "all_see_crit")?,
@@ -572,7 +554,7 @@ impl PlayerHurtEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChatEvent {
     pub team_only: bool,
@@ -590,7 +572,7 @@ impl PlayerChatEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerScoreEvent {
     pub user_id: u16,
@@ -610,7 +592,7 @@ impl PlayerScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSpawnEvent {
     pub user_id: u16,
@@ -628,7 +610,7 @@ impl PlayerSpawnEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerShootEvent {
     pub user_id: u16,
@@ -646,7 +628,7 @@ impl PlayerShootEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUseEvent {
     pub user_id: u16,
@@ -662,7 +644,7 @@ impl PlayerUseEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChangeNameEvent {
     pub user_id: u16,
@@ -680,7 +662,7 @@ impl PlayerChangeNameEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHintMessageEvent {
     pub hint_message: String,
@@ -694,7 +676,7 @@ impl PlayerHintMessageEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BasePlayerTeleportedEvent {
     pub ent_index: u16,
@@ -708,7 +690,7 @@ impl BasePlayerTeleportedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameInitEvent {}
 impl GameInitEvent {
@@ -717,7 +699,7 @@ impl GameInitEvent {
         Ok(GameInitEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameNewMapEvent {
     pub map_name: String,
@@ -731,7 +713,7 @@ impl GameNewMapEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameStartEvent {
     pub rounds_limit: u32,
@@ -751,7 +733,7 @@ impl GameStartEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameEndEvent {
     pub winner: u8,
@@ -765,7 +747,7 @@ impl GameEndEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RoundStartEvent {
     pub time_limit: u32,
@@ -783,7 +765,7 @@ impl RoundStartEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RoundEndEvent {
     pub winner: u8,
@@ -801,7 +783,7 @@ impl RoundEndEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameMessageEvent {
     pub target: u8,
@@ -817,7 +799,7 @@ impl GameMessageEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BreakBreakableEvent {
     pub ent_index: u32,
@@ -835,7 +817,7 @@ impl BreakBreakableEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BreakPropEvent {
     pub ent_index: u32,
@@ -851,7 +833,7 @@ impl BreakPropEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EntityKilledEvent {
     pub ent_index_killed: u32,
@@ -864,20 +846,14 @@ impl EntityKilledEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(EntityKilledEvent {
-            ent_index_killed: read_value::<
-                u32,
-            >(stream, iter.next(), "ent_index_killed")?,
-            ent_index_attacker: read_value::<
-                u32,
-            >(stream, iter.next(), "ent_index_attacker")?,
-            ent_index_inflictor: read_value::<
-                u32,
-            >(stream, iter.next(), "ent_index_inflictor")?,
+            ent_index_killed: read_value::<u32>(stream, iter.next(), "ent_index_killed")?,
+            ent_index_attacker: read_value::<u32>(stream, iter.next(), "ent_index_attacker")?,
+            ent_index_inflictor: read_value::<u32>(stream, iter.next(), "ent_index_inflictor")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BonusUpdatedEvent {
     pub num_advanced: u16,
@@ -897,7 +873,7 @@ impl BonusUpdatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEventEvent {
     pub achievement_name: String,
@@ -909,15 +885,13 @@ impl AchievementEventEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(AchievementEventEvent {
-            achievement_name: read_value::<
-                String,
-            >(stream, iter.next(), "achievement_name")?,
+            achievement_name: read_value::<String>(stream, iter.next(), "achievement_name")?,
             cur_val: read_value::<u16>(stream, iter.next(), "cur_val")?,
             max_val: read_value::<u16>(stream, iter.next(), "max_val")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementIncrementEvent {
     pub achievement_id: u32,
@@ -935,7 +909,7 @@ impl AchievementIncrementEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PhysgunPickupEvent {
     pub ent_index: u32,
@@ -949,7 +923,7 @@ impl PhysgunPickupEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlareIgniteNpcEvent {
     pub ent_index: u32,
@@ -963,7 +937,7 @@ impl FlareIgniteNpcEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HelicopterGrenadePuntMissEvent {}
 impl HelicopterGrenadePuntMissEvent {
@@ -972,7 +946,7 @@ impl HelicopterGrenadePuntMissEvent {
         Ok(HelicopterGrenadePuntMissEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UserDataDownloadedEvent {}
 impl UserDataDownloadedEvent {
@@ -981,7 +955,7 @@ impl UserDataDownloadedEvent {
         Ok(UserDataDownloadedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RagdollDissolvedEvent {
     pub ent_index: u32,
@@ -995,7 +969,7 @@ impl RagdollDissolvedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChangedModeEvent {
     pub old_mode: u16,
@@ -1013,7 +987,7 @@ impl HLTVChangedModeEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChangedTargetEvent {
     pub mode: u16,
@@ -1031,7 +1005,7 @@ impl HLTVChangedTargetEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteEndedEvent {}
 impl VoteEndedEvent {
@@ -1040,7 +1014,7 @@ impl VoteEndedEvent {
         Ok(VoteEndedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteStartedEvent {
     pub issue: String,
@@ -1060,7 +1034,7 @@ impl VoteStartedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteChangedEvent {
     pub vote_option_1: u8,
@@ -1084,7 +1058,7 @@ impl VoteChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VotePassedEvent {
     pub details: String,
@@ -1102,7 +1076,7 @@ impl VotePassedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteFailedEvent {
     pub team: u8,
@@ -1116,7 +1090,7 @@ impl VoteFailedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteCastEvent {
     pub vote_option: u8,
@@ -1134,7 +1108,7 @@ impl VoteCastEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteOptionsEvent {
     pub count: u8,
@@ -1158,7 +1132,7 @@ impl VoteOptionsEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplaySavedEvent {}
 impl ReplaySavedEvent {
@@ -1167,7 +1141,7 @@ impl ReplaySavedEvent {
         Ok(ReplaySavedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EnteredPerformanceModeEvent {}
 impl EnteredPerformanceModeEvent {
@@ -1176,7 +1150,7 @@ impl EnteredPerformanceModeEvent {
         Ok(EnteredPerformanceModeEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BrowseReplaysEvent {}
 impl BrowseReplaysEvent {
@@ -1185,7 +1159,7 @@ impl BrowseReplaysEvent {
         Ok(BrowseReplaysEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayYoutubeStatsEvent {
     pub views: u32,
@@ -1203,7 +1177,7 @@ impl ReplayYoutubeStatsEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct InventoryUpdatedEvent {}
 impl InventoryUpdatedEvent {
@@ -1212,7 +1186,7 @@ impl InventoryUpdatedEvent {
         Ok(InventoryUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CartUpdatedEvent {}
 impl CartUpdatedEvent {
@@ -1221,7 +1195,7 @@ impl CartUpdatedEvent {
         Ok(CartUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StorePriceSheetUpdatedEvent {}
 impl StorePriceSheetUpdatedEvent {
@@ -1230,7 +1204,7 @@ impl StorePriceSheetUpdatedEvent {
         Ok(StorePriceSheetUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EconInventoryConnectedEvent {}
 impl EconInventoryConnectedEvent {
@@ -1239,7 +1213,7 @@ impl EconInventoryConnectedEvent {
         Ok(EconInventoryConnectedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemSchemaInitializedEvent {}
 impl ItemSchemaInitializedEvent {
@@ -1248,7 +1222,7 @@ impl ItemSchemaInitializedEvent {
         Ok(ItemSchemaInitializedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GcNewSessionEvent {}
 impl GcNewSessionEvent {
@@ -1257,7 +1231,7 @@ impl GcNewSessionEvent {
         Ok(GcNewSessionEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GcLostSessionEvent {}
 impl GcLostSessionEvent {
@@ -1266,7 +1240,7 @@ impl GcLostSessionEvent {
         Ok(GcLostSessionEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct IntroFinishEvent {
     pub player: u16,
@@ -1280,7 +1254,7 @@ impl IntroFinishEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct IntroNextCameraEvent {
     pub player: u16,
@@ -1294,7 +1268,7 @@ impl IntroNextCameraEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChangeClassEvent {
     pub user_id: u16,
@@ -1310,7 +1284,7 @@ impl PlayerChangeClassEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TfMapTimeRemainingEvent {
     pub seconds: u32,
@@ -1324,7 +1298,7 @@ impl TfMapTimeRemainingEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TfGameOverEvent {
     pub reason: String,
@@ -1338,7 +1312,7 @@ impl TfGameOverEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CtfFlagCapturedEvent {
     pub capping_team: u16,
@@ -1350,13 +1324,11 @@ impl CtfFlagCapturedEvent {
         let mut iter = definition.entries.iter();
         Ok(CtfFlagCapturedEvent {
             capping_team: read_value::<u16>(stream, iter.next(), "capping_team")?,
-            capping_team_score: read_value::<
-                u16,
-            >(stream, iter.next(), "capping_team_score")?,
+            capping_team_score: read_value::<u16>(stream, iter.next(), "capping_team_score")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointInitializedEvent {}
 impl ControlPointInitializedEvent {
@@ -1365,7 +1337,7 @@ impl ControlPointInitializedEvent {
         Ok(ControlPointInitializedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateImagesEvent {
     pub index: u16,
@@ -1379,7 +1351,7 @@ impl ControlPointUpdateImagesEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateLayoutEvent {
     pub index: u16,
@@ -1393,7 +1365,7 @@ impl ControlPointUpdateLayoutEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateCappingEvent {
     pub index: u16,
@@ -1407,7 +1379,7 @@ impl ControlPointUpdateCappingEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUpdateOwnerEvent {
     pub index: u16,
@@ -1421,7 +1393,7 @@ impl ControlPointUpdateOwnerEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointStartTouchEvent {
     pub player: u16,
@@ -1437,7 +1409,7 @@ impl ControlPointStartTouchEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointEndTouchEvent {
     pub player: u16,
@@ -1453,7 +1425,7 @@ impl ControlPointEndTouchEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointPulseElementEvent {
     pub player: u16,
@@ -1467,7 +1439,7 @@ impl ControlPointPulseElementEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointFakeCaptureEvent {
     pub player: u16,
@@ -1483,7 +1455,7 @@ impl ControlPointFakeCaptureEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointFakeCaptureMultiplierEvent {
     pub player: u16,
@@ -1499,7 +1471,7 @@ impl ControlPointFakeCaptureMultiplierEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundSelectedEvent {
     pub round: String,
@@ -1513,7 +1485,7 @@ impl TeamPlayRoundSelectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundStartEvent {
     pub full_reset: bool,
@@ -1527,7 +1499,7 @@ impl TeamPlayRoundStartEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundActiveEvent {}
 impl TeamPlayRoundActiveEvent {
@@ -1536,7 +1508,7 @@ impl TeamPlayRoundActiveEvent {
         Ok(TeamPlayRoundActiveEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingBeginsEvent {}
 impl TeamPlayWaitingBeginsEvent {
@@ -1545,7 +1517,7 @@ impl TeamPlayWaitingBeginsEvent {
         Ok(TeamPlayWaitingBeginsEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingEndsEvent {}
 impl TeamPlayWaitingEndsEvent {
@@ -1554,7 +1526,7 @@ impl TeamPlayWaitingEndsEvent {
         Ok(TeamPlayWaitingEndsEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWaitingAboutToEndEvent {}
 impl TeamPlayWaitingAboutToEndEvent {
@@ -1563,7 +1535,7 @@ impl TeamPlayWaitingAboutToEndEvent {
         Ok(TeamPlayWaitingAboutToEndEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRestartRoundEvent {}
 impl TeamPlayRestartRoundEvent {
@@ -1572,7 +1544,7 @@ impl TeamPlayRestartRoundEvent {
         Ok(TeamPlayRestartRoundEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayReadyRestartEvent {}
 impl TeamPlayReadyRestartEvent {
@@ -1581,7 +1553,7 @@ impl TeamPlayReadyRestartEvent {
         Ok(TeamPlayReadyRestartEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundRestartSecondsEvent {
     pub seconds: u16,
@@ -1595,7 +1567,7 @@ impl TeamPlayRoundRestartSecondsEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTeamReadyEvent {
     pub team: u8,
@@ -1609,7 +1581,7 @@ impl TeamPlayTeamReadyEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundWinEvent {
     pub team: u8,
@@ -1630,14 +1602,12 @@ impl TeamPlayRoundWinEvent {
             flag_cap_limit: read_value::<u16>(stream, iter.next(), "flag_cap_limit")?,
             full_round: read_value::<u16>(stream, iter.next(), "full_round")?,
             round_time: read_value::<f32>(stream, iter.next(), "round_time")?,
-            losing_team_num_caps: read_value::<
-                u16,
-            >(stream, iter.next(), "losing_team_num_caps")?,
+            losing_team_num_caps: read_value::<u16>(stream, iter.next(), "losing_team_num_caps")?,
             was_sudden_death: read_value::<u8>(stream, iter.next(), "was_sudden_death")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayUpdateTimerEvent {}
 impl TeamPlayUpdateTimerEvent {
@@ -1646,7 +1616,7 @@ impl TeamPlayUpdateTimerEvent {
         Ok(TeamPlayUpdateTimerEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayRoundStalemateEvent {
     pub reason: u8,
@@ -1660,7 +1630,7 @@ impl TeamPlayRoundStalemateEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayOvertimeBeginEvent {}
 impl TeamPlayOvertimeBeginEvent {
@@ -1669,7 +1639,7 @@ impl TeamPlayOvertimeBeginEvent {
         Ok(TeamPlayOvertimeBeginEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayOvertimeEndEvent {}
 impl TeamPlayOvertimeEndEvent {
@@ -1678,7 +1648,7 @@ impl TeamPlayOvertimeEndEvent {
         Ok(TeamPlayOvertimeEndEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySuddenDeathBeginEvent {}
 impl TeamPlaySuddenDeathBeginEvent {
@@ -1687,7 +1657,7 @@ impl TeamPlaySuddenDeathBeginEvent {
         Ok(TeamPlaySuddenDeathBeginEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySuddenDeathEndEvent {}
 impl TeamPlaySuddenDeathEndEvent {
@@ -1696,7 +1666,7 @@ impl TeamPlaySuddenDeathEndEvent {
         Ok(TeamPlaySuddenDeathEndEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayGameOverEvent {
     pub reason: String,
@@ -1710,7 +1680,7 @@ impl TeamPlayGameOverEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayMapTimeRemainingEvent {
     pub seconds: u16,
@@ -1724,7 +1694,7 @@ impl TeamPlayMapTimeRemainingEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTimerFlashEvent {
     pub time_remaining: u16,
@@ -1738,7 +1708,7 @@ impl TeamPlayTimerFlashEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTimerTimeAddedEvent {
     pub timer: u16,
@@ -1754,7 +1724,7 @@ impl TeamPlayTimerTimeAddedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointStartCaptureEvent {
     pub cp: u8,
@@ -1778,7 +1748,7 @@ impl TeamPlayPointStartCaptureEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointCapturedEvent {
     pub cp: u8,
@@ -1798,7 +1768,7 @@ impl TeamPlayPointCapturedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointLockedEvent {
     pub cp: u8,
@@ -1816,7 +1786,7 @@ impl TeamPlayPointLockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPointUnlockedEvent {
     pub cp: u8,
@@ -1834,7 +1804,7 @@ impl TeamPlayPointUnlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayCaptureBrokenEvent {
     pub cp: u8,
@@ -1852,7 +1822,7 @@ impl TeamPlayCaptureBrokenEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayCaptureBlockedEvent {
     pub cp: u8,
@@ -1872,7 +1842,7 @@ impl TeamPlayCaptureBlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayFlagEventEvent {
     pub player: u16,
@@ -1894,7 +1864,7 @@ impl TeamPlayFlagEventEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayWinPanelEvent {
     pub panel_style: u8,
@@ -1933,26 +1903,24 @@ impl TeamPlayWinPanelEvent {
             blue_score_prev: read_value::<u16>(stream, iter.next(), "blue_score_prev")?,
             red_score_prev: read_value::<u16>(stream, iter.next(), "red_score_prev")?,
             round_complete: read_value::<u16>(stream, iter.next(), "round_complete")?,
-            rounds_remaining: read_value::<
-                u16,
-            >(stream, iter.next(), "rounds_remaining")?,
+            rounds_remaining: read_value::<u16>(stream, iter.next(), "rounds_remaining")?,
             player_1: read_value::<u16>(stream, iter.next(), "player_1")?,
             player_1_points: read_value::<u16>(stream, iter.next(), "player_1_points")?,
             player_2: read_value::<u16>(stream, iter.next(), "player_2")?,
             player_2_points: read_value::<u16>(stream, iter.next(), "player_2_points")?,
             player_3: read_value::<u16>(stream, iter.next(), "player_3")?,
             player_3_points: read_value::<u16>(stream, iter.next(), "player_3_points")?,
-            kill_stream_player_1: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_stream_player_1")?,
-            kill_stream_player_1_count: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_stream_player_1_count")?,
+            kill_stream_player_1: read_value::<u16>(stream, iter.next(), "kill_stream_player_1")?,
+            kill_stream_player_1_count: read_value::<u16>(
+                stream,
+                iter.next(),
+                "kill_stream_player_1_count",
+            )?,
             game_over: read_value::<u8>(stream, iter.next(), "game_over")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayTeamBalancedPlayerEvent {
     pub player: u16,
@@ -1968,7 +1936,7 @@ impl TeamPlayTeamBalancedPlayerEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlaySetupFinishedEvent {}
 impl TeamPlaySetupFinishedEvent {
@@ -1977,7 +1945,7 @@ impl TeamPlaySetupFinishedEvent {
         Ok(TeamPlaySetupFinishedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayAlertEvent {
     pub alert_type: u16,
@@ -1991,7 +1959,7 @@ impl TeamPlayAlertEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TrainingCompleteEvent {
     pub next_map: String,
@@ -2009,7 +1977,7 @@ impl TrainingCompleteEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowFreezePanelEvent {
     pub killer: u16,
@@ -2023,7 +1991,7 @@ impl ShowFreezePanelEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HideFreezePanelEvent {}
 impl HideFreezePanelEvent {
@@ -2032,7 +2000,7 @@ impl HideFreezePanelEvent {
         Ok(HideFreezePanelEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FreezeCamStartedEvent {}
 impl FreezeCamStartedEvent {
@@ -2041,7 +2009,7 @@ impl FreezeCamStartedEvent {
         Ok(FreezeCamStartedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeTeamEvent {}
 impl LocalPlayerChangeTeamEvent {
@@ -2050,7 +2018,7 @@ impl LocalPlayerChangeTeamEvent {
         Ok(LocalPlayerChangeTeamEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerScoreChangedEvent {
     pub score: u16,
@@ -2064,7 +2032,7 @@ impl LocalPlayerScoreChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeClassEvent {}
 impl LocalPlayerChangeClassEvent {
@@ -2073,7 +2041,7 @@ impl LocalPlayerChangeClassEvent {
         Ok(LocalPlayerChangeClassEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerRespawnEvent {}
 impl LocalPlayerRespawnEvent {
@@ -2082,7 +2050,7 @@ impl LocalPlayerRespawnEvent {
         Ok(LocalPlayerRespawnEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BuildingInfoChangedEvent {
     pub building_type: u8,
@@ -2100,7 +2068,7 @@ impl BuildingInfoChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChangeDisguiseEvent {
     pub disguised: bool,
@@ -2114,7 +2082,7 @@ impl LocalPlayerChangeDisguiseEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAccountChangedEvent {
     pub old_value: u16,
@@ -2130,7 +2098,7 @@ impl PlayerAccountChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpyPdaResetEvent {}
 impl SpyPdaResetEvent {
@@ -2139,7 +2107,7 @@ impl SpyPdaResetEvent {
         Ok(SpyPdaResetEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlagStatusUpdateEvent {
     pub user_id: u16,
@@ -2155,7 +2123,7 @@ impl FlagStatusUpdateEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStatsUpdatedEvent {
     pub force_upload: bool,
@@ -2169,7 +2137,7 @@ impl PlayerStatsUpdatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayingCommentaryEvent {}
 impl PlayingCommentaryEvent {
@@ -2178,7 +2146,7 @@ impl PlayingCommentaryEvent {
         Ok(PlayingCommentaryEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerChargeDeployedEvent {
     pub user_id: u16,
@@ -2194,7 +2162,7 @@ impl PlayerChargeDeployedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuiltObjectEvent {
     pub user_id: u16,
@@ -2212,7 +2180,7 @@ impl PlayerBuiltObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUpgradedObjectEvent {
     pub user_id: u16,
@@ -2232,7 +2200,7 @@ impl PlayerUpgradedObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCarryObjectEvent {
     pub user_id: u16,
@@ -2250,7 +2218,7 @@ impl PlayerCarryObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDropObjectEvent {
     pub user_id: u16,
@@ -2268,7 +2236,7 @@ impl PlayerDropObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectRemovedEvent {
     pub user_id: u16,
@@ -2286,7 +2254,7 @@ impl ObjectRemovedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDestroyedEvent {
     pub user_id: u16,
@@ -2314,7 +2282,7 @@ impl ObjectDestroyedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDetonatedEvent {
     pub user_id: u16,
@@ -2332,7 +2300,7 @@ impl ObjectDetonatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEarnedEvent {
     pub player: u8,
@@ -2348,7 +2316,7 @@ impl AchievementEarnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpecTargetUpdatedEvent {}
 impl SpecTargetUpdatedEvent {
@@ -2357,7 +2325,7 @@ impl SpecTargetUpdatedEvent {
         Ok(SpecTargetUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TournamentStateUpdateEvent {
     pub user_id: u16,
@@ -2377,7 +2345,7 @@ impl TournamentStateUpdateEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TournamentEnableCountdownEvent {}
 impl TournamentEnableCountdownEvent {
@@ -2386,7 +2354,7 @@ impl TournamentEnableCountdownEvent {
         Ok(TournamentEnableCountdownEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCalledForMedicEvent {
     pub user_id: u16,
@@ -2400,7 +2368,7 @@ impl PlayerCalledForMedicEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAskedForBallEvent {
     pub user_id: u16,
@@ -2414,7 +2382,7 @@ impl PlayerAskedForBallEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerBecameObserverEvent {}
 impl LocalPlayerBecameObserverEvent {
@@ -2423,7 +2391,7 @@ impl LocalPlayerBecameObserverEvent {
         Ok(LocalPlayerBecameObserverEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerIgnitedInvEvent {
     pub pyro_ent_index: u8,
@@ -2441,7 +2409,7 @@ impl PlayerIgnitedInvEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerIgnitedEvent {
     pub pyro_ent_index: u8,
@@ -2459,7 +2427,7 @@ impl PlayerIgnitedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerExtinguishedEvent {
     pub victim: u8,
@@ -2473,13 +2441,11 @@ impl PlayerExtinguishedEvent {
         Ok(PlayerExtinguishedEvent {
             victim: read_value::<u8>(stream, iter.next(), "victim")?,
             healer: read_value::<u8>(stream, iter.next(), "healer")?,
-            item_definition_index: read_value::<
-                u16,
-            >(stream, iter.next(), "item_definition_index")?,
+            item_definition_index: read_value::<u16>(stream, iter.next(), "item_definition_index")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTeleportedEvent {
     pub user_id: u16,
@@ -2497,7 +2463,7 @@ impl PlayerTeleportedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedMedicCallEvent {
     pub user_id: u16,
@@ -2511,7 +2477,7 @@ impl PlayerHealedMedicCallEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerChargeReadyEvent {}
 impl LocalPlayerChargeReadyEvent {
@@ -2520,7 +2486,7 @@ impl LocalPlayerChargeReadyEvent {
         Ok(LocalPlayerChargeReadyEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerWindDownEvent {}
 impl LocalPlayerWindDownEvent {
@@ -2529,7 +2495,7 @@ impl LocalPlayerWindDownEvent {
         Ok(LocalPlayerWindDownEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInvulnedEvent {
     pub user_id: u16,
@@ -2545,7 +2511,7 @@ impl PlayerInvulnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortSpeedEvent {
     pub team: u8,
@@ -2563,7 +2529,7 @@ impl EscortSpeedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortProgressEvent {
     pub team: u8,
@@ -2581,7 +2547,7 @@ impl EscortProgressEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscortRecedeEvent {
     pub team: u8,
@@ -2597,7 +2563,7 @@ impl EscortRecedeEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameUIActivatedEvent {}
 impl GameUIActivatedEvent {
@@ -2606,7 +2572,7 @@ impl GameUIActivatedEvent {
         Ok(GameUIActivatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameUIHiddenEvent {}
 impl GameUIHiddenEvent {
@@ -2615,7 +2581,7 @@ impl GameUIHiddenEvent {
         Ok(GameUIHiddenEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerEscortScoreEvent {
     pub player: u8,
@@ -2631,7 +2597,7 @@ impl PlayerEscortScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealOnHitEvent {
     pub amount: u16,
@@ -2649,7 +2615,7 @@ impl PlayerHealOnHitEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStealSandvichEvent {
     pub owner: u16,
@@ -2665,7 +2631,7 @@ impl PlayerStealSandvichEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowClassLayoutEvent {
     pub show: bool,
@@ -2679,7 +2645,7 @@ impl ShowClassLayoutEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowVsPanelEvent {
     pub show: bool,
@@ -2693,7 +2659,7 @@ impl ShowVsPanelEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDamagedEvent {
     pub amount: u16,
@@ -2709,7 +2675,7 @@ impl PlayerDamagedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaPlayerNotificationEvent {
     pub player: u8,
@@ -2725,7 +2691,7 @@ impl ArenaPlayerNotificationEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaMatchMaxStreakEvent {
     pub team: u8,
@@ -2741,7 +2707,7 @@ impl ArenaMatchMaxStreakEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaRoundStartEvent {}
 impl ArenaRoundStartEvent {
@@ -2750,7 +2716,7 @@ impl ArenaRoundStartEvent {
         Ok(ArenaRoundStartEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArenaWinPanelEvent {
     pub panel_style: u8,
@@ -2811,62 +2777,38 @@ impl ArenaWinPanelEvent {
             round_complete: read_value::<u16>(stream, iter.next(), "round_complete")?,
             player_1: read_value::<u16>(stream, iter.next(), "player_1")?,
             player_1_damage: read_value::<u16>(stream, iter.next(), "player_1_damage")?,
-            player_1_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_1_healing")?,
-            player_1_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_1_lifetime")?,
+            player_1_healing: read_value::<u16>(stream, iter.next(), "player_1_healing")?,
+            player_1_lifetime: read_value::<u16>(stream, iter.next(), "player_1_lifetime")?,
             player_1_kills: read_value::<u16>(stream, iter.next(), "player_1_kills")?,
             player_2: read_value::<u16>(stream, iter.next(), "player_2")?,
             player_2_damage: read_value::<u16>(stream, iter.next(), "player_2_damage")?,
-            player_2_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_2_healing")?,
-            player_2_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_2_lifetime")?,
+            player_2_healing: read_value::<u16>(stream, iter.next(), "player_2_healing")?,
+            player_2_lifetime: read_value::<u16>(stream, iter.next(), "player_2_lifetime")?,
             player_2_kills: read_value::<u16>(stream, iter.next(), "player_2_kills")?,
             player_3: read_value::<u16>(stream, iter.next(), "player_3")?,
             player_3_damage: read_value::<u16>(stream, iter.next(), "player_3_damage")?,
-            player_3_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_3_healing")?,
-            player_3_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_3_lifetime")?,
+            player_3_healing: read_value::<u16>(stream, iter.next(), "player_3_healing")?,
+            player_3_lifetime: read_value::<u16>(stream, iter.next(), "player_3_lifetime")?,
             player_3_kills: read_value::<u16>(stream, iter.next(), "player_3_kills")?,
             player_4: read_value::<u16>(stream, iter.next(), "player_4")?,
             player_4_damage: read_value::<u16>(stream, iter.next(), "player_4_damage")?,
-            player_4_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_4_healing")?,
-            player_4_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_4_lifetime")?,
+            player_4_healing: read_value::<u16>(stream, iter.next(), "player_4_healing")?,
+            player_4_lifetime: read_value::<u16>(stream, iter.next(), "player_4_lifetime")?,
             player_4_kills: read_value::<u16>(stream, iter.next(), "player_4_kills")?,
             player_5: read_value::<u16>(stream, iter.next(), "player_5")?,
             player_5_damage: read_value::<u16>(stream, iter.next(), "player_5_damage")?,
-            player_5_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_5_healing")?,
-            player_5_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_5_lifetime")?,
+            player_5_healing: read_value::<u16>(stream, iter.next(), "player_5_healing")?,
+            player_5_lifetime: read_value::<u16>(stream, iter.next(), "player_5_lifetime")?,
             player_5_kills: read_value::<u16>(stream, iter.next(), "player_5_kills")?,
             player_6: read_value::<u16>(stream, iter.next(), "player_6")?,
             player_6_damage: read_value::<u16>(stream, iter.next(), "player_6_damage")?,
-            player_6_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_6_healing")?,
-            player_6_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_6_lifetime")?,
+            player_6_healing: read_value::<u16>(stream, iter.next(), "player_6_healing")?,
+            player_6_lifetime: read_value::<u16>(stream, iter.next(), "player_6_lifetime")?,
             player_6_kills: read_value::<u16>(stream, iter.next(), "player_6_kills")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PveWinPanelEvent {
     pub panel_style: u8,
@@ -2884,7 +2826,7 @@ impl PveWinPanelEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AirDashEvent {
     pub player: u8,
@@ -2898,7 +2840,7 @@ impl AirDashEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LandedEvent {
     pub player: u8,
@@ -2912,7 +2854,7 @@ impl LandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDamageDodgedEvent {
     pub damage: u16,
@@ -2926,7 +2868,7 @@ impl PlayerDamageDodgedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerStunnedEvent {
     pub stunner: u16,
@@ -2946,7 +2888,7 @@ impl PlayerStunnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoutGrandSlamEvent {
     pub scout_id: u16,
@@ -2962,7 +2904,7 @@ impl ScoutGrandSlamEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoutSlamdollLandedEvent {
     pub target_index: u16,
@@ -2982,7 +2924,7 @@ impl ScoutSlamdollLandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ArrowImpactEvent {
     pub attached_entity: u16,
@@ -3004,9 +2946,7 @@ impl ArrowImpactEvent {
         Ok(ArrowImpactEvent {
             attached_entity: read_value::<u16>(stream, iter.next(), "attached_entity")?,
             shooter: read_value::<u16>(stream, iter.next(), "shooter")?,
-            bone_index_attached: read_value::<
-                u16,
-            >(stream, iter.next(), "bone_index_attached")?,
+            bone_index_attached: read_value::<u16>(stream, iter.next(), "bone_index_attached")?,
             bone_position_x: read_value::<f32>(stream, iter.next(), "bone_position_x")?,
             bone_position_y: read_value::<f32>(stream, iter.next(), "bone_position_y")?,
             bone_position_z: read_value::<f32>(stream, iter.next(), "bone_position_z")?,
@@ -3018,7 +2958,7 @@ impl ArrowImpactEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerJaratedEvent {
     pub thrower_ent_index: u8,
@@ -3029,14 +2969,12 @@ impl PlayerJaratedEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerJaratedEvent {
-            thrower_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "thrower_ent_index")?,
+            thrower_ent_index: read_value::<u8>(stream, iter.next(), "thrower_ent_index")?,
             victim_ent_index: read_value::<u8>(stream, iter.next(), "victim_ent_index")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerJaratedFadeEvent {
     pub thrower_ent_index: u8,
@@ -3047,14 +2985,12 @@ impl PlayerJaratedFadeEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerJaratedFadeEvent {
-            thrower_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "thrower_ent_index")?,
+            thrower_ent_index: read_value::<u8>(stream, iter.next(), "thrower_ent_index")?,
             victim_ent_index: read_value::<u8>(stream, iter.next(), "victim_ent_index")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerShieldBlockedEvent {
     pub attacker_ent_index: u8,
@@ -3065,16 +3001,12 @@ impl PlayerShieldBlockedEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerShieldBlockedEvent {
-            attacker_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "attacker_ent_index")?,
-            blocker_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "blocker_ent_index")?,
+            attacker_ent_index: read_value::<u8>(stream, iter.next(), "attacker_ent_index")?,
+            blocker_ent_index: read_value::<u8>(stream, iter.next(), "blocker_ent_index")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerPinnedEvent {
     pub pinned: u8,
@@ -3088,7 +3020,7 @@ impl PlayerPinnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedByMedicEvent {
     pub medic: u8,
@@ -3102,7 +3034,7 @@ impl PlayerHealedByMedicEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerSappedObjectEvent {
     pub user_id: u16,
@@ -3122,7 +3054,7 @@ impl PlayerSappedObjectEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemFoundEvent {
     pub player: u8,
@@ -3148,7 +3080,7 @@ impl ItemFoundEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowAnnotationEvent {
     pub world_pos_x: f32,
@@ -3180,19 +3112,15 @@ impl ShowAnnotationEvent {
             id: read_value::<u32>(stream, iter.next(), "id")?,
             text: read_value::<String>(stream, iter.next(), "text")?,
             lifetime: read_value::<f32>(stream, iter.next(), "lifetime")?,
-            visibility_bit_field: read_value::<
-                u32,
-            >(stream, iter.next(), "visibility_bit_field")?,
-            follow_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "follow_ent_index")?,
+            visibility_bit_field: read_value::<u32>(stream, iter.next(), "visibility_bit_field")?,
+            follow_ent_index: read_value::<u32>(stream, iter.next(), "follow_ent_index")?,
             show_distance: read_value::<bool>(stream, iter.next(), "show_distance")?,
             play_sound: read_value::<String>(stream, iter.next(), "play_sound")?,
             show_effect: read_value::<bool>(stream, iter.next(), "show_effect")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HideAnnotationEvent {
     pub id: u32,
@@ -3206,7 +3134,7 @@ impl HideAnnotationEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PostInventoryApplicationEvent {
     pub user_id: u16,
@@ -3220,7 +3148,7 @@ impl PostInventoryApplicationEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointUnlockUpdatedEvent {
     pub index: u16,
@@ -3236,7 +3164,7 @@ impl ControlPointUnlockUpdatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DeployBuffBannerEvent {
     pub buff_type: u8,
@@ -3252,7 +3180,7 @@ impl DeployBuffBannerEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuffEvent {
     pub user_id: u16,
@@ -3270,7 +3198,7 @@ impl PlayerBuffEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedicDeathEvent {
     pub user_id: u16,
@@ -3290,7 +3218,7 @@ impl MedicDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct OvertimeNagEvent {}
 impl OvertimeNagEvent {
@@ -3299,7 +3227,7 @@ impl OvertimeNagEvent {
         Ok(OvertimeNagEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamsChangedEvent {}
 impl TeamsChangedEvent {
@@ -3308,7 +3236,7 @@ impl TeamsChangedEvent {
         Ok(TeamsChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenPumpkinGrabEvent {
     pub user_id: u16,
@@ -3322,7 +3250,7 @@ impl HalloweenPumpkinGrabEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketJumpEvent {
     pub user_id: u16,
@@ -3338,7 +3266,7 @@ impl RocketJumpEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketJumpLandedEvent {
     pub user_id: u16,
@@ -3352,7 +3280,7 @@ impl RocketJumpLandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StickyJumpEvent {
     pub user_id: u16,
@@ -3368,7 +3296,7 @@ impl StickyJumpEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StickyJumpLandedEvent {
     pub user_id: u16,
@@ -3382,7 +3310,7 @@ impl StickyJumpLandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketPackLaunchEvent {
     pub user_id: u16,
@@ -3398,7 +3326,7 @@ impl RocketPackLaunchEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RocketPackLandedEvent {
     pub user_id: u16,
@@ -3412,7 +3340,7 @@ impl RocketPackLandedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedicDefendedEvent {
     pub user_id: u16,
@@ -3428,7 +3356,7 @@ impl MedicDefendedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerHealedEvent {
     pub amount: u16,
@@ -3442,7 +3370,7 @@ impl LocalPlayerHealedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDestroyedPipeBombEvent {
     pub user_id: u16,
@@ -3456,7 +3384,7 @@ impl PlayerDestroyedPipeBombEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ObjectDeflectedEvent {
     pub user_id: u16,
@@ -3476,7 +3404,7 @@ impl ObjectDeflectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerMvpEvent {
     pub player: u16,
@@ -3490,7 +3418,7 @@ impl PlayerMvpEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RaidSpawnMobEvent {}
 impl RaidSpawnMobEvent {
@@ -3499,7 +3427,7 @@ impl RaidSpawnMobEvent {
         Ok(RaidSpawnMobEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RaidSpawnSquadEvent {}
 impl RaidSpawnSquadEvent {
@@ -3508,7 +3436,7 @@ impl RaidSpawnSquadEvent {
         Ok(RaidSpawnSquadEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NavBlockedEvent {
     pub area: u32,
@@ -3524,7 +3452,7 @@ impl NavBlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PathTrackPassedEvent {
     pub index: u16,
@@ -3538,7 +3466,7 @@ impl PathTrackPassedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NumCappersChangedEvent {
     pub index: u16,
@@ -3554,7 +3482,7 @@ impl NumCappersChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRegenerateEvent {}
 impl PlayerRegenerateEvent {
@@ -3563,7 +3491,7 @@ impl PlayerRegenerateEvent {
         Ok(PlayerRegenerateEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UpdateStatusItemEvent {
     pub index: u8,
@@ -3579,7 +3507,7 @@ impl UpdateStatusItemEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StatsResetRoundEvent {}
 impl StatsResetRoundEvent {
@@ -3588,17 +3516,16 @@ impl StatsResetRoundEvent {
         Ok(StatsResetRoundEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl ScoreStatsAccumulatedUpdateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
-        Ok(ScoreStatsAccumulatedUpdateEvent {
-        })
+        Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ScoreStatsAccumulatedResetEvent {}
 impl ScoreStatsAccumulatedResetEvent {
@@ -3607,7 +3534,7 @@ impl ScoreStatsAccumulatedResetEvent {
         Ok(ScoreStatsAccumulatedResetEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct AchievementEarnedLocalEvent {
     pub achievement: u16,
@@ -3621,7 +3548,7 @@ impl AchievementEarnedLocalEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHealedEvent {
     pub patient: u16,
@@ -3639,7 +3566,7 @@ impl PlayerHealedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BuildingHealedEvent {
     pub building: u16,
@@ -3657,7 +3584,7 @@ impl BuildingHealedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemPickupEvent {
     pub user_id: u16,
@@ -3673,7 +3600,7 @@ impl ItemPickupEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DuelStatusEvent {
     pub killer: u16,
@@ -3697,7 +3624,7 @@ impl DuelStatusEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FishNoticeEvent {
     pub user_id: u16,
@@ -3721,31 +3648,27 @@ impl FishNoticeEvent {
         let mut iter = definition.entries.iter();
         Ok(FishNoticeEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            assister_fallback: read_value::<
-                String,
-            >(stream, iter.next(), "assister_fallback")?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FishNoticeArmEvent {
     pub user_id: u16,
@@ -3769,31 +3692,27 @@ impl FishNoticeArmEvent {
         let mut iter = definition.entries.iter();
         Ok(FishNoticeArmEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            assister_fallback: read_value::<
-                String,
-            >(stream, iter.next(), "assister_fallback")?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SlapNoticeEvent {
     pub user_id: u16,
@@ -3817,31 +3736,27 @@ impl SlapNoticeEvent {
         let mut iter = definition.entries.iter();
         Ok(SlapNoticeEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            assister_fallback: read_value::<
-                String,
-            >(stream, iter.next(), "assister_fallback")?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ThrowableHitEvent {
     pub user_id: u16,
@@ -3866,32 +3781,28 @@ impl ThrowableHitEvent {
         let mut iter = definition.entries.iter();
         Ok(ThrowableHitEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            assister_fallback: read_value::<
-                String,
-            >(stream, iter.next(), "assister_fallback")?,
+            assister_fallback: read_value::<String>(stream, iter.next(), "assister_fallback")?,
             total_hits: read_value::<u16>(stream, iter.next(), "total_hits")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PumpkinLordSummonedEvent {}
 impl PumpkinLordSummonedEvent {
@@ -3900,7 +3811,7 @@ impl PumpkinLordSummonedEvent {
         Ok(PumpkinLordSummonedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PumpkinLordKilledEvent {}
 impl PumpkinLordKilledEvent {
@@ -3909,7 +3820,7 @@ impl PumpkinLordKilledEvent {
         Ok(PumpkinLordKilledEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusSummonedEvent {
     pub level: u16,
@@ -3923,7 +3834,7 @@ impl MerasmusSummonedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusKilledEvent {
     pub level: u16,
@@ -3937,7 +3848,7 @@ impl MerasmusKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusEscapeWarningEvent {
     pub level: u16,
@@ -3953,7 +3864,7 @@ impl MerasmusEscapeWarningEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusEscapedEvent {
     pub level: u16,
@@ -3967,7 +3878,7 @@ impl MerasmusEscapedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossSummonedEvent {
     pub level: u16,
@@ -3981,7 +3892,7 @@ impl EyeballBossSummonedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossStunnedEvent {
     pub level: u16,
@@ -3997,7 +3908,7 @@ impl EyeballBossStunnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossKilledEvent {
     pub level: u16,
@@ -4011,7 +3922,7 @@ impl EyeballBossKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossKillerEvent {
     pub level: u16,
@@ -4027,7 +3938,7 @@ impl EyeballBossKillerEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossEscapeImminentEvent {
     pub level: u16,
@@ -4043,7 +3954,7 @@ impl EyeballBossEscapeImminentEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EyeballBossEscapedEvent {
     pub level: u16,
@@ -4057,7 +3968,7 @@ impl EyeballBossEscapedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NpcHurtEvent {
     pub ent_index: u16,
@@ -4083,7 +3994,7 @@ impl NpcHurtEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ControlPointTimerUpdatedEvent {
     pub index: u16,
@@ -4099,7 +4010,7 @@ impl ControlPointTimerUpdatedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveStartEvent {
     pub ent_index: u8,
@@ -4113,7 +4024,7 @@ impl PlayerHighFiveStartEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveCancelEvent {
     pub ent_index: u8,
@@ -4127,7 +4038,7 @@ impl PlayerHighFiveCancelEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerHighFiveSuccessEvent {
     pub initiator_ent_index: u8,
@@ -4138,16 +4049,12 @@ impl PlayerHighFiveSuccessEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerHighFiveSuccessEvent {
-            initiator_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "initiator_ent_index")?,
-            partner_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "partner_ent_index")?,
+            initiator_ent_index: read_value::<u8>(stream, iter.next(), "initiator_ent_index")?,
+            partner_ent_index: read_value::<u8>(stream, iter.next(), "partner_ent_index")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBonusPointsEvent {
     pub points: u16,
@@ -4160,14 +4067,12 @@ impl PlayerBonusPointsEvent {
         let mut iter = definition.entries.iter();
         Ok(PlayerBonusPointsEvent {
             points: read_value::<u16>(stream, iter.next(), "points")?,
-            player_ent_index: read_value::<
-                u16,
-            >(stream, iter.next(), "player_ent_index")?,
+            player_ent_index: read_value::<u16>(stream, iter.next(), "player_ent_index")?,
             source_ent_index: read_value::<u16>(stream, iter.next(), "source_ent_index")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUpgradedEvent {}
 impl PlayerUpgradedEvent {
@@ -4176,7 +4081,7 @@ impl PlayerUpgradedEvent {
         Ok(PlayerUpgradedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerBuybackEvent {
     pub player: u16,
@@ -4192,7 +4097,7 @@ impl PlayerBuybackEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerUsedPowerUpBottleEvent {
     pub player: u16,
@@ -4210,7 +4115,7 @@ impl PlayerUsedPowerUpBottleEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ChristmasGiftGrabEvent {
     pub user_id: u16,
@@ -4224,7 +4129,7 @@ impl ChristmasGiftGrabEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerKilledAchievementZoneEvent {
     pub attacker: u16,
@@ -4242,7 +4147,7 @@ impl PlayerKilledAchievementZoneEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyUpdatedEvent {}
 impl PartyUpdatedEvent {
@@ -4251,7 +4156,7 @@ impl PartyUpdatedEvent {
         Ok(PartyUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyPrefChangedEvent {}
 impl PartyPrefChangedEvent {
@@ -4260,7 +4165,7 @@ impl PartyPrefChangedEvent {
         Ok(PartyPrefChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyCriteriaChangedEvent {}
 impl PartyCriteriaChangedEvent {
@@ -4269,7 +4174,7 @@ impl PartyCriteriaChangedEvent {
         Ok(PartyCriteriaChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyInvitesChangedEvent {}
 impl PartyInvitesChangedEvent {
@@ -4278,7 +4183,7 @@ impl PartyInvitesChangedEvent {
         Ok(PartyInvitesChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyQueueStateChangedEvent {
     pub match_group: u16,
@@ -4292,7 +4197,7 @@ impl PartyQueueStateChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyChatEvent {
     pub steam_id: String,
@@ -4310,7 +4215,7 @@ impl PartyChatEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyMemberJoinEvent {
     pub steam_id: String,
@@ -4324,7 +4229,7 @@ impl PartyMemberJoinEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PartyMemberLeaveEvent {
     pub steam_id: String,
@@ -4338,7 +4243,7 @@ impl PartyMemberLeaveEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MatchInvitesUpdatedEvent {}
 impl MatchInvitesUpdatedEvent {
@@ -4347,7 +4252,7 @@ impl MatchInvitesUpdatedEvent {
         Ok(MatchInvitesUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LobbyUpdatedEvent {}
 impl LobbyUpdatedEvent {
@@ -4356,7 +4261,7 @@ impl LobbyUpdatedEvent {
         Ok(LobbyUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMissionUpdateEvent {
     pub class: u16,
@@ -4372,7 +4277,7 @@ impl MvmMissionUpdateEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RecalculateHolidaysEvent {}
 impl RecalculateHolidaysEvent {
@@ -4381,7 +4286,7 @@ impl RecalculateHolidaysEvent {
         Ok(RecalculateHolidaysEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerCurrencyChangedEvent {
     pub currency: u16,
@@ -4395,7 +4300,7 @@ impl PlayerCurrencyChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DoomsdayRocketOpenEvent {
     pub team: u8,
@@ -4409,7 +4314,7 @@ impl DoomsdayRocketOpenEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RemoveNemesisRelationshipsEvent {
     pub player: u16,
@@ -4423,7 +4328,7 @@ impl RemoveNemesisRelationshipsEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusWaveEvent {}
 impl MvmCreditBonusWaveEvent {
@@ -4432,7 +4337,7 @@ impl MvmCreditBonusWaveEvent {
         Ok(MvmCreditBonusWaveEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusAllEvent {}
 impl MvmCreditBonusAllEvent {
@@ -4441,7 +4346,7 @@ impl MvmCreditBonusAllEvent {
         Ok(MvmCreditBonusAllEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmCreditBonusAllAdvancedEvent {}
 impl MvmCreditBonusAllAdvancedEvent {
@@ -4450,7 +4355,7 @@ impl MvmCreditBonusAllAdvancedEvent {
         Ok(MvmCreditBonusAllAdvancedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmQuickSentryUpgradeEvent {
     pub player: u16,
@@ -4464,7 +4369,7 @@ impl MvmQuickSentryUpgradeEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmTankDestroyedByPlayersEvent {}
 impl MvmTankDestroyedByPlayersEvent {
@@ -4473,7 +4378,7 @@ impl MvmTankDestroyedByPlayersEvent {
         Ok(MvmTankDestroyedByPlayersEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmKillRobotDeliveringBombEvent {
     pub player: u16,
@@ -4487,7 +4392,7 @@ impl MvmKillRobotDeliveringBombEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmPickupCurrencyEvent {
     pub player: u16,
@@ -4503,7 +4408,7 @@ impl MvmPickupCurrencyEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombCarrierKilledEvent {
     pub level: u16,
@@ -4517,7 +4422,7 @@ impl MvmBombCarrierKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSentryBusterDetonateEvent {
     pub player: u16,
@@ -4537,7 +4442,7 @@ impl MvmSentryBusterDetonateEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmScoutMarkedForDeathEvent {
     pub player: u16,
@@ -4551,7 +4456,7 @@ impl MvmScoutMarkedForDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMedicPowerUpSharedEvent {
     pub player: u16,
@@ -4565,7 +4470,7 @@ impl MvmMedicPowerUpSharedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBeginWaveEvent {
     pub wave_index: u16,
@@ -4583,7 +4488,7 @@ impl MvmBeginWaveEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmWaveCompleteEvent {
     pub advanced: bool,
@@ -4597,7 +4502,7 @@ impl MvmWaveCompleteEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMissionCompleteEvent {
     pub mission: String,
@@ -4611,7 +4516,7 @@ impl MvmMissionCompleteEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombResetByPlayerEvent {
     pub player: u16,
@@ -4625,7 +4530,7 @@ impl MvmBombResetByPlayerEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombAlarmTriggeredEvent {}
 impl MvmBombAlarmTriggeredEvent {
@@ -4634,7 +4539,7 @@ impl MvmBombAlarmTriggeredEvent {
         Ok(MvmBombAlarmTriggeredEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmBombDeployResetByPlayerEvent {
     pub player: u16,
@@ -4648,7 +4553,7 @@ impl MvmBombDeployResetByPlayerEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmWaveFailedEvent {}
 impl MvmWaveFailedEvent {
@@ -4657,7 +4562,7 @@ impl MvmWaveFailedEvent {
         Ok(MvmWaveFailedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmResetStatsEvent {}
 impl MvmResetStatsEvent {
@@ -4666,7 +4571,7 @@ impl MvmResetStatsEvent {
         Ok(MvmResetStatsEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamageResistedEvent {
     pub ent_index: u8,
@@ -4680,7 +4585,7 @@ impl DamageResistedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerNotifyEvent {
     pub ent_index: u16,
@@ -4696,7 +4601,7 @@ impl RevivePlayerNotifyEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerStoppedEvent {
     pub ent_index: u16,
@@ -4710,7 +4615,7 @@ impl RevivePlayerStoppedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RevivePlayerCompleteEvent {
     pub ent_index: u16,
@@ -4724,7 +4629,7 @@ impl RevivePlayerCompleteEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerTurnedToGhostEvent {
     pub user_id: u16,
@@ -4738,7 +4643,7 @@ impl PlayerTurnedToGhostEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MedigunShieldBlockedDamageEvent {
     pub user_id: u16,
@@ -4754,7 +4659,7 @@ impl MedigunShieldBlockedDamageEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmAdvWaveCompleteNoGatesEvent {
     pub index: u16,
@@ -4768,7 +4673,7 @@ impl MvmAdvWaveCompleteNoGatesEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSniperHeadshotCurrencyEvent {
     pub user_id: u16,
@@ -4784,7 +4689,7 @@ impl MvmSniperHeadshotCurrencyEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmMannhattanPitEvent {}
 impl MvmMannhattanPitEvent {
@@ -4793,7 +4698,7 @@ impl MvmMannhattanPitEvent {
         Ok(MvmMannhattanPitEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct FlagCarriedInDetectionZoneEvent {}
 impl FlagCarriedInDetectionZoneEvent {
@@ -4802,7 +4707,7 @@ impl FlagCarriedInDetectionZoneEvent {
         Ok(FlagCarriedInDetectionZoneEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmAdvWaveKilledStunRadioEvent {}
 impl MvmAdvWaveKilledStunRadioEvent {
@@ -4811,7 +4716,7 @@ impl MvmAdvWaveKilledStunRadioEvent {
         Ok(MvmAdvWaveKilledStunRadioEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDirectHitStunEvent {
     pub attacker: u16,
@@ -4827,7 +4732,7 @@ impl PlayerDirectHitStunEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MvmSentryBusterKilledEvent {
     pub sentry_buster: u16,
@@ -4841,7 +4746,7 @@ impl MvmSentryBusterKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UpgradesFileChangedEvent {
     pub path: String,
@@ -4855,7 +4760,7 @@ impl UpgradesFileChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdTeamPointsChangedEvent {
     pub points: u16,
@@ -4873,7 +4778,7 @@ impl RdTeamPointsChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRulesStateChangedEvent {}
 impl RdRulesStateChangedEvent {
@@ -4882,7 +4787,7 @@ impl RdRulesStateChangedEvent {
         Ok(RdRulesStateChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRobotKilledEvent {
     pub user_id: u16,
@@ -4901,24 +4806,22 @@ impl RdRobotKilledEvent {
         let mut iter = definition.entries.iter();
         Ok(RdRobotKilledEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
-            weapon_log_class_name: read_value::<
-                String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdRobotImpactEvent {
     pub ent_index: u16,
@@ -4938,7 +4841,7 @@ impl RdRobotImpactEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamPlayPreRoundTimeLeftEvent {
     pub time: u16,
@@ -4952,7 +4855,7 @@ impl TeamPlayPreRoundTimeLeftEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ParachuteDeployEvent {
     pub index: u16,
@@ -4966,7 +4869,7 @@ impl ParachuteDeployEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ParachuteHolsterEvent {
     pub index: u16,
@@ -4980,7 +4883,7 @@ impl ParachuteHolsterEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KillRefillsMeterEvent {
     pub index: u16,
@@ -4994,7 +4897,7 @@ impl KillRefillsMeterEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RpsTauntEventEvent {
     pub winner: u16,
@@ -5014,7 +4917,7 @@ impl RpsTauntEventEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CongaKillEvent {
     pub index: u16,
@@ -5028,7 +4931,7 @@ impl CongaKillEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerInitialSpawnEvent {
     pub index: u16,
@@ -5042,7 +4945,7 @@ impl PlayerInitialSpawnEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveVictoryEvent {}
 impl CompetitiveVictoryEvent {
@@ -5051,7 +4954,7 @@ impl CompetitiveVictoryEvent {
         Ok(CompetitiveVictoryEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveStatsUpdateEvent {
     pub index: u16,
@@ -5075,7 +4978,7 @@ impl CompetitiveStatsUpdateEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MiniGameWinEvent {
     pub team: u8,
@@ -5091,7 +4994,7 @@ impl MiniGameWinEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SentryOnGoActiveEvent {
     pub index: u16,
@@ -5105,7 +5008,7 @@ impl SentryOnGoActiveEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DuckXpLevelUpEvent {
     pub level: u16,
@@ -5119,7 +5022,7 @@ impl DuckXpLevelUpEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestLogOpenedEvent {}
 impl QuestLogOpenedEvent {
@@ -5128,7 +5031,7 @@ impl QuestLogOpenedEvent {
         Ok(QuestLogOpenedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SchemaUpdatedEvent {}
 impl SchemaUpdatedEvent {
@@ -5137,7 +5040,7 @@ impl SchemaUpdatedEvent {
         Ok(SchemaUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct LocalPlayerPickupWeaponEvent {}
 impl LocalPlayerPickupWeaponEvent {
@@ -5146,7 +5049,7 @@ impl LocalPlayerPickupWeaponEvent {
         Ok(LocalPlayerPickupWeaponEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RdPlayerScorePointsEvent {
     pub player: u16,
@@ -5164,7 +5067,7 @@ impl RdPlayerScorePointsEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DemomanDetStickiesEvent {
     pub player: u16,
@@ -5178,7 +5081,7 @@ impl DemomanDetStickiesEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestObjectiveCompletedEvent {
     pub quest_item_id_low: u32,
@@ -5191,20 +5094,14 @@ impl QuestObjectiveCompletedEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(QuestObjectiveCompletedEvent {
-            quest_item_id_low: read_value::<
-                u32,
-            >(stream, iter.next(), "quest_item_id_low")?,
-            quest_item_id_hi: read_value::<
-                u32,
-            >(stream, iter.next(), "quest_item_id_hi")?,
-            quest_objective_id: read_value::<
-                u32,
-            >(stream, iter.next(), "quest_objective_id")?,
+            quest_item_id_low: read_value::<u32>(stream, iter.next(), "quest_item_id_low")?,
+            quest_item_id_hi: read_value::<u32>(stream, iter.next(), "quest_item_id_hi")?,
+            quest_objective_id: read_value::<u32>(stream, iter.next(), "quest_objective_id")?,
             scorer_user_id: read_value::<u16>(stream, iter.next(), "scorer_user_id")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerScoreChangedEvent {
     pub player: u8,
@@ -5220,7 +5117,7 @@ impl PlayerScoreChangedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KilledCappingPlayerEvent {
     pub cp: u8,
@@ -5240,7 +5137,7 @@ impl KilledCappingPlayerEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EnvironmentalDeathEvent {
     pub killer: u8,
@@ -5256,7 +5153,7 @@ impl EnvironmentalDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProjectileDirectHitEvent {
     pub attacker: u8,
@@ -5274,7 +5171,7 @@ impl ProjectileDirectHitEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassGetEvent {
     pub owner: u16,
@@ -5288,7 +5185,7 @@ impl PassGetEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassScoreEvent {
     pub scorer: u16,
@@ -5306,7 +5203,7 @@ impl PassScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassFreeEvent {
     pub owner: u16,
@@ -5322,7 +5219,7 @@ impl PassFreeEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassPassCaughtEvent {
     pub passer: u16,
@@ -5342,7 +5239,7 @@ impl PassPassCaughtEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassBallStolenEvent {
     pub victim: u16,
@@ -5358,7 +5255,7 @@ impl PassBallStolenEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PassBallBlockedEvent {
     pub owner: u16,
@@ -5374,7 +5271,7 @@ impl PassBallBlockedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamagePreventedEvent {
     pub preventor: u16,
@@ -5394,7 +5291,7 @@ impl DamagePreventedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenBossKilledEvent {
     pub boss: u16,
@@ -5410,7 +5307,7 @@ impl HalloweenBossKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscapedLootIslandEvent {
     pub player: u16,
@@ -5424,7 +5321,7 @@ impl EscapedLootIslandEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TaggedPlayerAsItEvent {
     pub player: u16,
@@ -5438,7 +5335,7 @@ impl TaggedPlayerAsItEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusStunnedEvent {
     pub player: u16,
@@ -5452,7 +5349,7 @@ impl MerasmusStunnedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MerasmusPropFoundEvent {
     pub player: u16,
@@ -5466,7 +5363,7 @@ impl MerasmusPropFoundEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenSkeletonKilledEvent {
     pub player: u16,
@@ -5480,7 +5377,7 @@ impl HalloweenSkeletonKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscapeHellEvent {
     pub player: u16,
@@ -5494,7 +5391,7 @@ impl EscapeHellEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CrossSpectralBridgeEvent {
     pub player: u16,
@@ -5508,7 +5405,7 @@ impl CrossSpectralBridgeEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MiniGameWonEvent {
     pub player: u16,
@@ -5524,7 +5421,7 @@ impl MiniGameWonEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RespawnGhostEvent {
     pub reviver: u16,
@@ -5540,7 +5437,7 @@ impl RespawnGhostEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct KillInHellEvent {
     pub killer: u16,
@@ -5556,7 +5453,7 @@ impl KillInHellEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenDuckCollectedEvent {
     pub collector: u16,
@@ -5570,7 +5467,7 @@ impl HalloweenDuckCollectedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct SpecialScoreEvent {
     pub player: u8,
@@ -5584,7 +5481,7 @@ impl SpecialScoreEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TeamLeaderKilledEvent {
     pub killer: u8,
@@ -5600,7 +5497,7 @@ impl TeamLeaderKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HalloweenSoulCollectedEvent {
     pub intended_target: u8,
@@ -5613,14 +5510,12 @@ impl HalloweenSoulCollectedEvent {
         let mut iter = definition.entries.iter();
         Ok(HalloweenSoulCollectedEvent {
             intended_target: read_value::<u8>(stream, iter.next(), "intended_target")?,
-            collecting_player: read_value::<
-                u8,
-            >(stream, iter.next(), "collecting_player")?,
+            collecting_player: read_value::<u8>(stream, iter.next(), "collecting_player")?,
             soul_count: read_value::<u8>(stream, iter.next(), "soul_count")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RecalculateTruceEvent {}
 impl RecalculateTruceEvent {
@@ -5629,7 +5524,7 @@ impl RecalculateTruceEvent {
         Ok(RecalculateTruceEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DeadRingerCheatDeathEvent {
     pub spy: u8,
@@ -5645,7 +5540,7 @@ impl DeadRingerCheatDeathEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CrossbowHealEvent {
     pub healer: u8,
@@ -5663,7 +5558,7 @@ impl CrossbowHealEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DamageMitigatedEvent {
     pub mitigator: u8,
@@ -5679,13 +5574,11 @@ impl DamageMitigatedEvent {
             mitigator: read_value::<u8>(stream, iter.next(), "mitigator")?,
             damaged: read_value::<u8>(stream, iter.next(), "damaged")?,
             amount: read_value::<u16>(stream, iter.next(), "amount")?,
-            item_definition_index: read_value::<
-                u16,
-            >(stream, iter.next(), "item_definition_index")?,
+            item_definition_index: read_value::<u16>(stream, iter.next(), "item_definition_index")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PayloadPushedEvent {
     pub pusher: u8,
@@ -5701,7 +5594,7 @@ impl PayloadPushedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerAbandonedMatchEvent {
     pub game_over: bool,
@@ -5715,7 +5608,7 @@ impl PlayerAbandonedMatchEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ClDrawlineEvent {
     pub player: u8,
@@ -5737,7 +5630,7 @@ impl ClDrawlineEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RestartTimerTimeEvent {
     pub time: u8,
@@ -5751,7 +5644,7 @@ impl RestartTimerTimeEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WinLimitChangedEvent {}
 impl WinLimitChangedEvent {
@@ -5760,7 +5653,7 @@ impl WinLimitChangedEvent {
         Ok(WinLimitChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WinPanelShowScoresEvent {}
 impl WinPanelShowScoresEvent {
@@ -5769,7 +5662,7 @@ impl WinPanelShowScoresEvent {
         Ok(WinPanelShowScoresEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct TopStreamsRequestFinishedEvent {}
 impl TopStreamsRequestFinishedEvent {
@@ -5778,7 +5671,7 @@ impl TopStreamsRequestFinishedEvent {
         Ok(TopStreamsRequestFinishedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CompetitiveStateChangedEvent {}
 impl CompetitiveStateChangedEvent {
@@ -5787,7 +5680,7 @@ impl CompetitiveStateChangedEvent {
         Ok(CompetitiveStateChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GlobalWarDataUpdatedEvent {}
 impl GlobalWarDataUpdatedEvent {
@@ -5796,7 +5689,7 @@ impl GlobalWarDataUpdatedEvent {
         Ok(GlobalWarDataUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct StopWatchChangedEvent {}
 impl StopWatchChangedEvent {
@@ -5805,7 +5698,7 @@ impl StopWatchChangedEvent {
         Ok(StopWatchChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DsStopEvent {}
 impl DsStopEvent {
@@ -5814,7 +5707,7 @@ impl DsStopEvent {
         Ok(DsStopEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DsScreenshotEvent {
     pub delay: f32,
@@ -5828,7 +5721,7 @@ impl DsScreenshotEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ShowMatchSummaryEvent {}
 impl ShowMatchSummaryEvent {
@@ -5837,7 +5730,7 @@ impl ShowMatchSummaryEvent {
         Ok(ShowMatchSummaryEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ExperienceChangedEvent {}
 impl ExperienceChangedEvent {
@@ -5846,7 +5739,7 @@ impl ExperienceChangedEvent {
         Ok(ExperienceChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct BeginXpLerpEvent {}
 impl BeginXpLerpEvent {
@@ -5855,7 +5748,7 @@ impl BeginXpLerpEvent {
         Ok(BeginXpLerpEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MatchmakerStatsUpdatedEvent {}
 impl MatchmakerStatsUpdatedEvent {
@@ -5864,7 +5757,7 @@ impl MatchmakerStatsUpdatedEvent {
         Ok(MatchmakerStatsUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RematchVotePeriodOverEvent {
     pub success: bool,
@@ -5878,7 +5771,7 @@ impl RematchVotePeriodOverEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct RematchFailedToCreateEvent {}
 impl RematchFailedToCreateEvent {
@@ -5887,7 +5780,7 @@ impl RematchFailedToCreateEvent {
         Ok(RematchFailedToCreateEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRematchChangeEvent {}
 impl PlayerRematchChangeEvent {
@@ -5896,7 +5789,7 @@ impl PlayerRematchChangeEvent {
         Ok(PlayerRematchChangeEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PingUpdatedEvent {}
 impl PingUpdatedEvent {
@@ -5905,7 +5798,7 @@ impl PingUpdatedEvent {
         Ok(PingUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MMStatsUpdatedEvent {}
 impl MMStatsUpdatedEvent {
@@ -5914,7 +5807,7 @@ impl MMStatsUpdatedEvent {
         Ok(MMStatsUpdatedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerNextMapVoteChangeEvent {
     pub map_index: u8,
@@ -5930,7 +5823,7 @@ impl PlayerNextMapVoteChangeEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteMapsChangedEvent {}
 impl VoteMapsChangedEvent {
@@ -5939,7 +5832,7 @@ impl VoteMapsChangedEvent {
         Ok(VoteMapsChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProtoDefChangedEvent {
     pub kind: u8,
@@ -5954,16 +5847,14 @@ impl ProtoDefChangedEvent {
         let mut iter = definition.entries.iter();
         Ok(ProtoDefChangedEvent {
             kind: read_value::<u8>(stream, iter.next(), "kind")?,
-            definition_index: read_value::<
-                u32,
-            >(stream, iter.next(), "definition_index")?,
+            definition_index: read_value::<u32>(stream, iter.next(), "definition_index")?,
             created: read_value::<bool>(stream, iter.next(), "created")?,
             deleted: read_value::<bool>(stream, iter.next(), "deleted")?,
             erase_history: read_value::<bool>(stream, iter.next(), "erase_history")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerDominationEvent {
     pub dominator: u16,
@@ -5981,7 +5872,7 @@ impl PlayerDominationEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PlayerRocketPackPushedEvent {
     pub pusher: u16,
@@ -5997,7 +5888,7 @@ impl PlayerRocketPackPushedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestRequestEvent {
     pub request: u32,
@@ -6013,7 +5904,7 @@ impl QuestRequestEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestResponseEvent {
     pub request: u32,
@@ -6031,7 +5922,7 @@ impl QuestResponseEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestProgressEvent {
     pub owner: u16,
@@ -6049,13 +5940,15 @@ impl QuestProgressEvent {
             scorer: read_value::<u16>(stream, iter.next(), "scorer")?,
             kind: read_value::<u8>(stream, iter.next(), "kind")?,
             completed: read_value::<bool>(stream, iter.next(), "completed")?,
-            quest_definition_index: read_value::<
-                u32,
-            >(stream, iter.next(), "quest_definition_index")?,
+            quest_definition_index: read_value::<u32>(
+                stream,
+                iter.next(),
+                "quest_definition_index",
+            )?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ProjectileRemovedEvent {
     pub attacker: u8,
@@ -6069,15 +5962,13 @@ impl ProjectileRemovedEvent {
         let mut iter = definition.entries.iter();
         Ok(ProjectileRemovedEvent {
             attacker: read_value::<u8>(stream, iter.next(), "attacker")?,
-            weapon_def_index: read_value::<
-                u32,
-            >(stream, iter.next(), "weapon_def_index")?,
+            weapon_def_index: read_value::<u32>(stream, iter.next(), "weapon_def_index")?,
             num_hit: read_value::<u8>(stream, iter.next(), "num_hit")?,
             num_direct_hit: read_value::<u8>(stream, iter.next(), "num_direct_hit")?,
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestMapDataChangedEvent {}
 impl QuestMapDataChangedEvent {
@@ -6086,7 +5977,7 @@ impl QuestMapDataChangedEvent {
         Ok(QuestMapDataChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GasDousedPlayerIgnitedEvent {
     pub igniter: u16,
@@ -6104,7 +5995,7 @@ impl GasDousedPlayerIgnitedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct QuestTurnInStateEvent {
     pub state: u16,
@@ -6118,7 +6009,7 @@ impl QuestTurnInStateEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ItemsAcknowledgedEvent {}
 impl ItemsAcknowledgedEvent {
@@ -6127,7 +6018,7 @@ impl ItemsAcknowledgedEvent {
         Ok(ItemsAcknowledgedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct CapperKilledEvent {
     pub blocker: u16,
@@ -6143,7 +6034,7 @@ impl CapperKilledEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct MainMenuStabilizedEvent {}
 impl MainMenuStabilizedEvent {
@@ -6152,7 +6043,7 @@ impl MainMenuStabilizedEvent {
         Ok(MainMenuStabilizedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct WorldStatusChangedEvent {}
 impl WorldStatusChangedEvent {
@@ -6161,7 +6052,7 @@ impl WorldStatusChangedEvent {
         Ok(WorldStatusChangedEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVStatusEvent {
     pub clients: u32,
@@ -6181,7 +6072,7 @@ impl HLTVStatusEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVCameramanEvent {
     pub index: u16,
@@ -6195,7 +6086,7 @@ impl HLTVCameramanEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVRankCameraEvent {
     pub index: u8,
@@ -6213,7 +6104,7 @@ impl HLTVRankCameraEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVRankEntityEvent {
     pub index: u16,
@@ -6231,7 +6122,7 @@ impl HLTVRankEntityEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVFixedEvent {
     pub pos_x: u32,
@@ -6259,7 +6150,7 @@ impl HLTVFixedEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChaseEvent {
     pub target_1: u16,
@@ -6285,7 +6176,7 @@ impl HLTVChaseEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVMessageEvent {
     pub text: String,
@@ -6299,7 +6190,7 @@ impl HLTVMessageEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVTitleEvent {
     pub text: String,
@@ -6313,7 +6204,7 @@ impl HLTVTitleEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct HLTVChatEvent {
     pub text: String,
@@ -6327,7 +6218,7 @@ impl HLTVChatEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayStartRecordEvent {}
 impl ReplayStartRecordEvent {
@@ -6336,7 +6227,7 @@ impl ReplayStartRecordEvent {
         Ok(ReplayStartRecordEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplaySessionInfoEvent {
     pub sn: String,
@@ -6356,7 +6247,7 @@ impl ReplaySessionInfoEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayEndRecordEvent {}
 impl ReplayEndRecordEvent {
@@ -6365,7 +6256,7 @@ impl ReplayEndRecordEvent {
         Ok(ReplayEndRecordEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayReplaysAvailableEvent {}
 impl ReplayReplaysAvailableEvent {
@@ -6374,7 +6265,7 @@ impl ReplayReplaysAvailableEvent {
         Ok(ReplayReplaysAvailableEvent {})
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ReplayServerErrorEvent {
     pub error: String,
@@ -6388,7 +6279,7 @@ impl ReplayServerErrorEvent {
         })
     }
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(tag = "type")]
 pub enum GameEvent {
@@ -6795,7 +6686,7 @@ pub enum GameEvent {
     ReplayServerError(ReplayServerErrorEvent),
     Unknown(RawGameEvent),
 }
-#[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameEventType {
     ServerSpawn,
@@ -7290,9 +7181,7 @@ impl GameEventType {
             "controlpoint_endtouch" => GameEventType::ControlPointEndTouch,
             "controlpoint_pulse_element" => GameEventType::ControlPointPulseElement,
             "controlpoint_fake_capture" => GameEventType::ControlPointFakeCapture,
-            "controlpoint_fake_capture_mult" => {
-                GameEventType::ControlPointFakeCaptureMultiplier
-            }
+            "controlpoint_fake_capture_mult" => GameEventType::ControlPointFakeCaptureMultiplier,
             "teamplay_round_selected" => GameEventType::TeamPlayRoundSelected,
             "teamplay_round_start" => GameEventType::TeamPlayRoundStart,
             "teamplay_round_active" => GameEventType::TeamPlayRoundActive,
@@ -7301,9 +7190,7 @@ impl GameEventType {
             "teamplay_waiting_abouttoend" => GameEventType::TeamPlayWaitingAboutToEnd,
             "teamplay_restart_round" => GameEventType::TeamPlayRestartRound,
             "teamplay_ready_restart" => GameEventType::TeamPlayReadyRestart,
-            "teamplay_round_restart_seconds" => {
-                GameEventType::TeamPlayRoundRestartSeconds
-            }
+            "teamplay_round_restart_seconds" => GameEventType::TeamPlayRoundRestartSeconds,
             "teamplay_team_ready" => GameEventType::TeamPlayTeamReady,
             "teamplay_round_win" => GameEventType::TeamPlayRoundWin,
             "teamplay_update_timer" => GameEventType::TeamPlayUpdateTimer,
@@ -7457,9 +7344,7 @@ impl GameEventType {
             "player_buyback" => GameEventType::PlayerBuyback,
             "player_used_powerup_bottle" => GameEventType::PlayerUsedPowerUpBottle,
             "christmas_gift_grab" => GameEventType::ChristmasGiftGrab,
-            "player_killed_achievement_zone" => {
-                GameEventType::PlayerKilledAchievementZone
-            }
+            "player_killed_achievement_zone" => GameEventType::PlayerKilledAchievementZone,
             "party_updated" => GameEventType::PartyUpdated,
             "party_pref_changed" => GameEventType::PartyPrefChanged,
             "party_criteria_changed" => GameEventType::PartyCriteriaChanged,
@@ -7491,9 +7376,7 @@ impl GameEventType {
             "mvm_mission_complete" => GameEventType::MvmMissionComplete,
             "mvm_bomb_reset_by_player" => GameEventType::MvmBombResetByPlayer,
             "mvm_bomb_alarm_triggered" => GameEventType::MvmBombAlarmTriggered,
-            "mvm_bomb_deploy_reset_by_player" => {
-                GameEventType::MvmBombDeployResetByPlayer
-            }
+            "mvm_bomb_deploy_reset_by_player" => GameEventType::MvmBombDeployResetByPlayer,
             "mvm_wave_failed" => GameEventType::MvmWaveFailed,
             "mvm_reset_stats" => GameEventType::MvmResetStats,
             "damage_resisted" => GameEventType::DamageResisted,
@@ -7704,9 +7587,7 @@ impl GameEventType {
             GameEventType::ControlPointEndTouch => "controlpoint_endtouch",
             GameEventType::ControlPointPulseElement => "controlpoint_pulse_element",
             GameEventType::ControlPointFakeCapture => "controlpoint_fake_capture",
-            GameEventType::ControlPointFakeCaptureMultiplier => {
-                "controlpoint_fake_capture_mult"
-            }
+            GameEventType::ControlPointFakeCaptureMultiplier => "controlpoint_fake_capture_mult",
             GameEventType::TeamPlayRoundSelected => "teamplay_round_selected",
             GameEventType::TeamPlayRoundStart => "teamplay_round_start",
             GameEventType::TeamPlayRoundActive => "teamplay_round_active",
@@ -7715,9 +7596,7 @@ impl GameEventType {
             GameEventType::TeamPlayWaitingAboutToEnd => "teamplay_waiting_abouttoend",
             GameEventType::TeamPlayRestartRound => "teamplay_restart_round",
             GameEventType::TeamPlayReadyRestart => "teamplay_ready_restart",
-            GameEventType::TeamPlayRoundRestartSeconds => {
-                "teamplay_round_restart_seconds"
-            }
+            GameEventType::TeamPlayRoundRestartSeconds => "teamplay_round_restart_seconds",
             GameEventType::TeamPlayTeamReady => "teamplay_team_ready",
             GameEventType::TeamPlayRoundWin => "teamplay_round_win",
             GameEventType::TeamPlayUpdateTimer => "teamplay_update_timer",
@@ -7871,9 +7750,7 @@ impl GameEventType {
             GameEventType::PlayerBuyback => "player_buyback",
             GameEventType::PlayerUsedPowerUpBottle => "player_used_powerup_bottle",
             GameEventType::ChristmasGiftGrab => "christmas_gift_grab",
-            GameEventType::PlayerKilledAchievementZone => {
-                "player_killed_achievement_zone"
-            }
+            GameEventType::PlayerKilledAchievementZone => "player_killed_achievement_zone",
             GameEventType::PartyUpdated => "party_updated",
             GameEventType::PartyPrefChanged => "party_pref_changed",
             GameEventType::PartyCriteriaChanged => "party_criteria_changed",
@@ -7905,9 +7782,7 @@ impl GameEventType {
             GameEventType::MvmMissionComplete => "mvm_mission_complete",
             GameEventType::MvmBombResetByPlayer => "mvm_bomb_reset_by_player",
             GameEventType::MvmBombAlarmTriggered => "mvm_bomb_alarm_triggered",
-            GameEventType::MvmBombDeployResetByPlayer => {
-                "mvm_bomb_deploy_reset_by_player"
-            }
+            GameEventType::MvmBombDeployResetByPlayer => "mvm_bomb_deploy_reset_by_player",
             GameEventType::MvmWaveFailed => "mvm_wave_failed",
             GameEventType::MvmResetStats => "mvm_reset_stats",
             GameEventType::DamageResisted => "damage_resisted",
@@ -8033,1843 +7908,1206 @@ impl GameEventType {
 }
 impl GameEvent {
     pub fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
-        Ok(
-            match definition.event_type {
-                GameEventType::ServerSpawn => {
-                    GameEvent::ServerSpawn(
-                        Box::new(<ServerSpawnEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::ServerChangeLevelFailed => {
-                    GameEvent::ServerChangeLevelFailed(
-                        ServerChangeLevelFailedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ServerShutdown => {
-                    GameEvent::ServerShutdown(
-                        ServerShutdownEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ServerCvar => {
-                    GameEvent::ServerCvar(ServerCvarEvent::read(stream, definition)?)
-                }
-                GameEventType::ServerMessage => {
-                    GameEvent::ServerMessage(
-                        ServerMessageEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ServerAddBan => {
-                    GameEvent::ServerAddBan(
-                        Box::new(<ServerAddBanEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::ServerRemoveBan => {
-                    GameEvent::ServerRemoveBan(
-                        ServerRemoveBanEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerConnect => {
-                    GameEvent::PlayerConnect(
-                        PlayerConnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerConnectClient => {
-                    GameEvent::PlayerConnectClient(
-                        PlayerConnectClientEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerInfo => {
-                    GameEvent::PlayerInfo(PlayerInfoEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerDisconnect => {
-                    GameEvent::PlayerDisconnect(
-                        PlayerDisconnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerActivate => {
-                    GameEvent::PlayerActivate(
-                        PlayerActivateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerSay => {
-                    GameEvent::PlayerSay(PlayerSayEvent::read(stream, definition)?)
-                }
-                GameEventType::ClientDisconnect => {
-                    GameEvent::ClientDisconnect(
-                        ClientDisconnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ClientBeginConnect => {
-                    GameEvent::ClientBeginConnect(
-                        ClientBeginConnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ClientConnected => {
-                    GameEvent::ClientConnected(
-                        ClientConnectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ClientFullConnect => {
-                    GameEvent::ClientFullConnect(
-                        ClientFullConnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HostQuit => {
-                    GameEvent::HostQuit(HostQuitEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamInfo => {
-                    GameEvent::TeamInfo(TeamInfoEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamScore => {
-                    GameEvent::TeamScore(TeamScoreEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamPlayBroadcastAudio => {
-                    GameEvent::TeamPlayBroadcastAudio(
-                        TeamPlayBroadcastAudioEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerTeam => {
-                    GameEvent::PlayerTeam(PlayerTeamEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerClass => {
-                    GameEvent::PlayerClass(PlayerClassEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerDeath => {
-                    GameEvent::PlayerDeath(
-                        Box::new(<PlayerDeathEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::PlayerHurt => {
-                    GameEvent::PlayerHurt(PlayerHurtEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerChat => {
-                    GameEvent::PlayerChat(PlayerChatEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerScore => {
-                    GameEvent::PlayerScore(PlayerScoreEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerSpawn => {
-                    GameEvent::PlayerSpawn(PlayerSpawnEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerShoot => {
-                    GameEvent::PlayerShoot(PlayerShootEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerUse => {
-                    GameEvent::PlayerUse(PlayerUseEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerChangeName => {
-                    GameEvent::PlayerChangeName(
-                        PlayerChangeNameEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHintMessage => {
-                    GameEvent::PlayerHintMessage(
-                        PlayerHintMessageEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BasePlayerTeleported => {
-                    GameEvent::BasePlayerTeleported(
-                        BasePlayerTeleportedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GameInit => {
-                    GameEvent::GameInit(GameInitEvent::read(stream, definition)?)
-                }
-                GameEventType::GameNewMap => {
-                    GameEvent::GameNewMap(GameNewMapEvent::read(stream, definition)?)
-                }
-                GameEventType::GameStart => {
-                    GameEvent::GameStart(GameStartEvent::read(stream, definition)?)
-                }
-                GameEventType::GameEnd => {
-                    GameEvent::GameEnd(GameEndEvent::read(stream, definition)?)
-                }
-                GameEventType::RoundStart => {
-                    GameEvent::RoundStart(RoundStartEvent::read(stream, definition)?)
-                }
-                GameEventType::RoundEnd => {
-                    GameEvent::RoundEnd(RoundEndEvent::read(stream, definition)?)
-                }
-                GameEventType::GameMessage => {
-                    GameEvent::GameMessage(GameMessageEvent::read(stream, definition)?)
-                }
-                GameEventType::BreakBreakable => {
-                    GameEvent::BreakBreakable(
-                        BreakBreakableEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BreakProp => {
-                    GameEvent::BreakProp(BreakPropEvent::read(stream, definition)?)
-                }
-                GameEventType::EntityKilled => {
-                    GameEvent::EntityKilled(EntityKilledEvent::read(stream, definition)?)
-                }
-                GameEventType::BonusUpdated => {
-                    GameEvent::BonusUpdated(BonusUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::AchievementEvent => {
-                    GameEvent::AchievementEvent(
-                        AchievementEventEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::AchievementIncrement => {
-                    GameEvent::AchievementIncrement(
-                        AchievementIncrementEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PhysgunPickup => {
-                    GameEvent::PhysgunPickup(
-                        PhysgunPickupEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::FlareIgniteNpc => {
-                    GameEvent::FlareIgniteNpc(
-                        FlareIgniteNpcEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HelicopterGrenadePuntMiss => {
-                    GameEvent::HelicopterGrenadePuntMiss(
-                        HelicopterGrenadePuntMissEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::UserDataDownloaded => {
-                    GameEvent::UserDataDownloaded(
-                        UserDataDownloadedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RagdollDissolved => {
-                    GameEvent::RagdollDissolved(
-                        RagdollDissolvedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVChangedMode => {
-                    GameEvent::HLTVChangedMode(
-                        HLTVChangedModeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVChangedTarget => {
-                    GameEvent::HLTVChangedTarget(
-                        HLTVChangedTargetEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::VoteEnded => {
-                    GameEvent::VoteEnded(VoteEndedEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteStarted => {
-                    GameEvent::VoteStarted(VoteStartedEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteChanged => {
-                    GameEvent::VoteChanged(VoteChangedEvent::read(stream, definition)?)
-                }
-                GameEventType::VotePassed => {
-                    GameEvent::VotePassed(VotePassedEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteFailed => {
-                    GameEvent::VoteFailed(VoteFailedEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteCast => {
-                    GameEvent::VoteCast(VoteCastEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteOptions => {
-                    GameEvent::VoteOptions(
-                        Box::new(<VoteOptionsEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::ReplaySaved => {
-                    GameEvent::ReplaySaved(ReplaySavedEvent::read(stream, definition)?)
-                }
-                GameEventType::EnteredPerformanceMode => {
-                    GameEvent::EnteredPerformanceMode(
-                        EnteredPerformanceModeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BrowseReplays => {
-                    GameEvent::BrowseReplays(
-                        BrowseReplaysEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplayYoutubeStats => {
-                    GameEvent::ReplayYoutubeStats(
-                        ReplayYoutubeStatsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::InventoryUpdated => {
-                    GameEvent::InventoryUpdated(
-                        InventoryUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CartUpdated => {
-                    GameEvent::CartUpdated(CartUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::StorePriceSheetUpdated => {
-                    GameEvent::StorePriceSheetUpdated(
-                        StorePriceSheetUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EconInventoryConnected => {
-                    GameEvent::EconInventoryConnected(
-                        EconInventoryConnectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ItemSchemaInitialized => {
-                    GameEvent::ItemSchemaInitialized(
-                        ItemSchemaInitializedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GcNewSession => {
-                    GameEvent::GcNewSession(GcNewSessionEvent::read(stream, definition)?)
-                }
-                GameEventType::GcLostSession => {
-                    GameEvent::GcLostSession(
-                        GcLostSessionEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::IntroFinish => {
-                    GameEvent::IntroFinish(IntroFinishEvent::read(stream, definition)?)
-                }
-                GameEventType::IntroNextCamera => {
-                    GameEvent::IntroNextCamera(
-                        IntroNextCameraEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerChangeClass => {
-                    GameEvent::PlayerChangeClass(
-                        PlayerChangeClassEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TfMapTimeRemaining => {
-                    GameEvent::TfMapTimeRemaining(
-                        TfMapTimeRemainingEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TfGameOver => {
-                    GameEvent::TfGameOver(TfGameOverEvent::read(stream, definition)?)
-                }
-                GameEventType::CtfFlagCaptured => {
-                    GameEvent::CtfFlagCaptured(
-                        CtfFlagCapturedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointInitialized => {
-                    GameEvent::ControlPointInitialized(
-                        ControlPointInitializedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUpdateImages => {
-                    GameEvent::ControlPointUpdateImages(
-                        ControlPointUpdateImagesEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUpdateLayout => {
-                    GameEvent::ControlPointUpdateLayout(
-                        ControlPointUpdateLayoutEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUpdateCapping => {
-                    GameEvent::ControlPointUpdateCapping(
-                        ControlPointUpdateCappingEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUpdateOwner => {
-                    GameEvent::ControlPointUpdateOwner(
-                        ControlPointUpdateOwnerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointStartTouch => {
-                    GameEvent::ControlPointStartTouch(
-                        ControlPointStartTouchEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointEndTouch => {
-                    GameEvent::ControlPointEndTouch(
-                        ControlPointEndTouchEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointPulseElement => {
-                    GameEvent::ControlPointPulseElement(
-                        ControlPointPulseElementEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointFakeCapture => {
-                    GameEvent::ControlPointFakeCapture(
-                        ControlPointFakeCaptureEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointFakeCaptureMultiplier => {
-                    GameEvent::ControlPointFakeCaptureMultiplier(
-                        ControlPointFakeCaptureMultiplierEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundSelected => {
-                    GameEvent::TeamPlayRoundSelected(
-                        TeamPlayRoundSelectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundStart => {
-                    GameEvent::TeamPlayRoundStart(
-                        TeamPlayRoundStartEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundActive => {
-                    GameEvent::TeamPlayRoundActive(
-                        TeamPlayRoundActiveEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayWaitingBegins => {
-                    GameEvent::TeamPlayWaitingBegins(
-                        TeamPlayWaitingBeginsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayWaitingEnds => {
-                    GameEvent::TeamPlayWaitingEnds(
-                        TeamPlayWaitingEndsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayWaitingAboutToEnd => {
-                    GameEvent::TeamPlayWaitingAboutToEnd(
-                        TeamPlayWaitingAboutToEndEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRestartRound => {
-                    GameEvent::TeamPlayRestartRound(
-                        TeamPlayRestartRoundEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayReadyRestart => {
-                    GameEvent::TeamPlayReadyRestart(
-                        TeamPlayReadyRestartEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundRestartSeconds => {
-                    GameEvent::TeamPlayRoundRestartSeconds(
-                        TeamPlayRoundRestartSecondsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayTeamReady => {
-                    GameEvent::TeamPlayTeamReady(
-                        TeamPlayTeamReadyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundWin => {
-                    GameEvent::TeamPlayRoundWin(
-                        TeamPlayRoundWinEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayUpdateTimer => {
-                    GameEvent::TeamPlayUpdateTimer(
-                        TeamPlayUpdateTimerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundStalemate => {
-                    GameEvent::TeamPlayRoundStalemate(
-                        TeamPlayRoundStalemateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayOvertimeBegin => {
-                    GameEvent::TeamPlayOvertimeBegin(
-                        TeamPlayOvertimeBeginEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayOvertimeEnd => {
-                    GameEvent::TeamPlayOvertimeEnd(
-                        TeamPlayOvertimeEndEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlaySuddenDeathBegin => {
-                    GameEvent::TeamPlaySuddenDeathBegin(
-                        TeamPlaySuddenDeathBeginEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlaySuddenDeathEnd => {
-                    GameEvent::TeamPlaySuddenDeathEnd(
-                        TeamPlaySuddenDeathEndEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayGameOver => {
-                    GameEvent::TeamPlayGameOver(
-                        TeamPlayGameOverEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayMapTimeRemaining => {
-                    GameEvent::TeamPlayMapTimeRemaining(
-                        TeamPlayMapTimeRemainingEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayTimerFlash => {
-                    GameEvent::TeamPlayTimerFlash(
-                        TeamPlayTimerFlashEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayTimerTimeAdded => {
-                    GameEvent::TeamPlayTimerTimeAdded(
-                        TeamPlayTimerTimeAddedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPointStartCapture => {
-                    GameEvent::TeamPlayPointStartCapture(
-                        TeamPlayPointStartCaptureEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPointCaptured => {
-                    GameEvent::TeamPlayPointCaptured(
-                        TeamPlayPointCapturedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPointLocked => {
-                    GameEvent::TeamPlayPointLocked(
-                        TeamPlayPointLockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPointUnlocked => {
-                    GameEvent::TeamPlayPointUnlocked(
-                        TeamPlayPointUnlockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayCaptureBroken => {
-                    GameEvent::TeamPlayCaptureBroken(
-                        TeamPlayCaptureBrokenEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayCaptureBlocked => {
-                    GameEvent::TeamPlayCaptureBlocked(
-                        TeamPlayCaptureBlockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayFlagEvent => {
-                    GameEvent::TeamPlayFlagEvent(
-                        TeamPlayFlagEventEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayWinPanel => {
-                    GameEvent::TeamPlayWinPanel(
-                        TeamPlayWinPanelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayTeamBalancedPlayer => {
-                    GameEvent::TeamPlayTeamBalancedPlayer(
-                        TeamPlayTeamBalancedPlayerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlaySetupFinished => {
-                    GameEvent::TeamPlaySetupFinished(
-                        TeamPlaySetupFinishedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayAlert => {
-                    GameEvent::TeamPlayAlert(
-                        TeamPlayAlertEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TrainingComplete => {
-                    GameEvent::TrainingComplete(
-                        TrainingCompleteEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ShowFreezePanel => {
-                    GameEvent::ShowFreezePanel(
-                        ShowFreezePanelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HideFreezePanel => {
-                    GameEvent::HideFreezePanel(
-                        HideFreezePanelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::FreezeCamStarted => {
-                    GameEvent::FreezeCamStarted(
-                        FreezeCamStartedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerChangeTeam => {
-                    GameEvent::LocalPlayerChangeTeam(
-                        LocalPlayerChangeTeamEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerScoreChanged => {
-                    GameEvent::LocalPlayerScoreChanged(
-                        LocalPlayerScoreChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerChangeClass => {
-                    GameEvent::LocalPlayerChangeClass(
-                        LocalPlayerChangeClassEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerRespawn => {
-                    GameEvent::LocalPlayerRespawn(
-                        LocalPlayerRespawnEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BuildingInfoChanged => {
-                    GameEvent::BuildingInfoChanged(
-                        BuildingInfoChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerChangeDisguise => {
-                    GameEvent::LocalPlayerChangeDisguise(
-                        LocalPlayerChangeDisguiseEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerAccountChanged => {
-                    GameEvent::PlayerAccountChanged(
-                        PlayerAccountChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SpyPdaReset => {
-                    GameEvent::SpyPdaReset(SpyPdaResetEvent::read(stream, definition)?)
-                }
-                GameEventType::FlagStatusUpdate => {
-                    GameEvent::FlagStatusUpdate(
-                        FlagStatusUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerStatsUpdated => {
-                    GameEvent::PlayerStatsUpdated(
-                        PlayerStatsUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayingCommentary => {
-                    GameEvent::PlayingCommentary(
-                        PlayingCommentaryEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerChargeDeployed => {
-                    GameEvent::PlayerChargeDeployed(
-                        PlayerChargeDeployedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerBuiltObject => {
-                    GameEvent::PlayerBuiltObject(
-                        PlayerBuiltObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerUpgradedObject => {
-                    GameEvent::PlayerUpgradedObject(
-                        PlayerUpgradedObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerCarryObject => {
-                    GameEvent::PlayerCarryObject(
-                        PlayerCarryObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerDropObject => {
-                    GameEvent::PlayerDropObject(
-                        PlayerDropObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ObjectRemoved => {
-                    GameEvent::ObjectRemoved(
-                        ObjectRemovedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ObjectDestroyed => {
-                    GameEvent::ObjectDestroyed(
-                        ObjectDestroyedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ObjectDetonated => {
-                    GameEvent::ObjectDetonated(
-                        ObjectDetonatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::AchievementEarned => {
-                    GameEvent::AchievementEarned(
-                        AchievementEarnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SpecTargetUpdated => {
-                    GameEvent::SpecTargetUpdated(
-                        SpecTargetUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TournamentStateUpdate => {
-                    GameEvent::TournamentStateUpdate(
-                        TournamentStateUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TournamentEnableCountdown => {
-                    GameEvent::TournamentEnableCountdown(
-                        TournamentEnableCountdownEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerCalledForMedic => {
-                    GameEvent::PlayerCalledForMedic(
-                        PlayerCalledForMedicEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerAskedForBall => {
-                    GameEvent::PlayerAskedForBall(
-                        PlayerAskedForBallEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerBecameObserver => {
-                    GameEvent::LocalPlayerBecameObserver(
-                        LocalPlayerBecameObserverEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerIgnitedInv => {
-                    GameEvent::PlayerIgnitedInv(
-                        PlayerIgnitedInvEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerIgnited => {
-                    GameEvent::PlayerIgnited(
-                        PlayerIgnitedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerExtinguished => {
-                    GameEvent::PlayerExtinguished(
-                        PlayerExtinguishedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerTeleported => {
-                    GameEvent::PlayerTeleported(
-                        PlayerTeleportedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHealedMedicCall => {
-                    GameEvent::PlayerHealedMedicCall(
-                        PlayerHealedMedicCallEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerChargeReady => {
-                    GameEvent::LocalPlayerChargeReady(
-                        LocalPlayerChargeReadyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerWindDown => {
-                    GameEvent::LocalPlayerWindDown(
-                        LocalPlayerWindDownEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerInvulned => {
-                    GameEvent::PlayerInvulned(
-                        PlayerInvulnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EscortSpeed => {
-                    GameEvent::EscortSpeed(EscortSpeedEvent::read(stream, definition)?)
-                }
-                GameEventType::EscortProgress => {
-                    GameEvent::EscortProgress(
-                        EscortProgressEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EscortRecede => {
-                    GameEvent::EscortRecede(EscortRecedeEvent::read(stream, definition)?)
-                }
-                GameEventType::GameUIActivated => {
-                    GameEvent::GameUIActivated(
-                        GameUIActivatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GameUIHidden => {
-                    GameEvent::GameUIHidden(GameUIHiddenEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerEscortScore => {
-                    GameEvent::PlayerEscortScore(
-                        PlayerEscortScoreEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHealOnHit => {
-                    GameEvent::PlayerHealOnHit(
-                        PlayerHealOnHitEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerStealSandvich => {
-                    GameEvent::PlayerStealSandvich(
-                        PlayerStealSandvichEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ShowClassLayout => {
-                    GameEvent::ShowClassLayout(
-                        ShowClassLayoutEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ShowVsPanel => {
-                    GameEvent::ShowVsPanel(ShowVsPanelEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerDamaged => {
-                    GameEvent::PlayerDamaged(
-                        PlayerDamagedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArenaPlayerNotification => {
-                    GameEvent::ArenaPlayerNotification(
-                        ArenaPlayerNotificationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArenaMatchMaxStreak => {
-                    GameEvent::ArenaMatchMaxStreak(
-                        ArenaMatchMaxStreakEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArenaRoundStart => {
-                    GameEvent::ArenaRoundStart(
-                        ArenaRoundStartEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArenaWinPanel => {
-                    GameEvent::ArenaWinPanel(
-                        ArenaWinPanelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PveWinPanel => {
-                    GameEvent::PveWinPanel(PveWinPanelEvent::read(stream, definition)?)
-                }
-                GameEventType::AirDash => {
-                    GameEvent::AirDash(AirDashEvent::read(stream, definition)?)
-                }
-                GameEventType::Landed => {
-                    GameEvent::Landed(LandedEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerDamageDodged => {
-                    GameEvent::PlayerDamageDodged(
-                        PlayerDamageDodgedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerStunned => {
-                    GameEvent::PlayerStunned(
-                        PlayerStunnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ScoutGrandSlam => {
-                    GameEvent::ScoutGrandSlam(
-                        ScoutGrandSlamEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ScoutSlamdollLanded => {
-                    GameEvent::ScoutSlamdollLanded(
-                        ScoutSlamdollLandedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArrowImpact => {
-                    GameEvent::ArrowImpact(ArrowImpactEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerJarated => {
-                    GameEvent::PlayerJarated(
-                        PlayerJaratedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerJaratedFade => {
-                    GameEvent::PlayerJaratedFade(
-                        PlayerJaratedFadeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerShieldBlocked => {
-                    GameEvent::PlayerShieldBlocked(
-                        PlayerShieldBlockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerPinned => {
-                    GameEvent::PlayerPinned(PlayerPinnedEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerHealedByMedic => {
-                    GameEvent::PlayerHealedByMedic(
-                        PlayerHealedByMedicEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerSappedObject => {
-                    GameEvent::PlayerSappedObject(
-                        PlayerSappedObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ItemFound => {
-                    GameEvent::ItemFound(ItemFoundEvent::read(stream, definition)?)
-                }
-                GameEventType::ShowAnnotation => {
-                    GameEvent::ShowAnnotation(
-                        ShowAnnotationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HideAnnotation => {
-                    GameEvent::HideAnnotation(
-                        HideAnnotationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PostInventoryApplication => {
-                    GameEvent::PostInventoryApplication(
-                        PostInventoryApplicationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUnlockUpdated => {
-                    GameEvent::ControlPointUnlockUpdated(
-                        ControlPointUnlockUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DeployBuffBanner => {
-                    GameEvent::DeployBuffBanner(
-                        DeployBuffBannerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerBuff => {
-                    GameEvent::PlayerBuff(PlayerBuffEvent::read(stream, definition)?)
-                }
-                GameEventType::MedicDeath => {
-                    GameEvent::MedicDeath(MedicDeathEvent::read(stream, definition)?)
-                }
-                GameEventType::OvertimeNag => {
-                    GameEvent::OvertimeNag(OvertimeNagEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamsChanged => {
-                    GameEvent::TeamsChanged(TeamsChangedEvent::read(stream, definition)?)
-                }
-                GameEventType::HalloweenPumpkinGrab => {
-                    GameEvent::HalloweenPumpkinGrab(
-                        HalloweenPumpkinGrabEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RocketJump => {
-                    GameEvent::RocketJump(RocketJumpEvent::read(stream, definition)?)
-                }
-                GameEventType::RocketJumpLanded => {
-                    GameEvent::RocketJumpLanded(
-                        RocketJumpLandedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::StickyJump => {
-                    GameEvent::StickyJump(StickyJumpEvent::read(stream, definition)?)
-                }
-                GameEventType::StickyJumpLanded => {
-                    GameEvent::StickyJumpLanded(
-                        StickyJumpLandedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RocketPackLaunch => {
-                    GameEvent::RocketPackLaunch(
-                        RocketPackLaunchEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RocketPackLanded => {
-                    GameEvent::RocketPackLanded(
-                        RocketPackLandedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MedicDefended => {
-                    GameEvent::MedicDefended(
-                        MedicDefendedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerHealed => {
-                    GameEvent::LocalPlayerHealed(
-                        LocalPlayerHealedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerDestroyedPipeBomb => {
-                    GameEvent::PlayerDestroyedPipeBomb(
-                        PlayerDestroyedPipeBombEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ObjectDeflected => {
-                    GameEvent::ObjectDeflected(
-                        ObjectDeflectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerMvp => {
-                    GameEvent::PlayerMvp(PlayerMvpEvent::read(stream, definition)?)
-                }
-                GameEventType::RaidSpawnMob => {
-                    GameEvent::RaidSpawnMob(RaidSpawnMobEvent::read(stream, definition)?)
-                }
-                GameEventType::RaidSpawnSquad => {
-                    GameEvent::RaidSpawnSquad(
-                        RaidSpawnSquadEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::NavBlocked => {
-                    GameEvent::NavBlocked(NavBlockedEvent::read(stream, definition)?)
-                }
-                GameEventType::PathTrackPassed => {
-                    GameEvent::PathTrackPassed(
-                        PathTrackPassedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::NumCappersChanged => {
-                    GameEvent::NumCappersChanged(
-                        NumCappersChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerRegenerate => {
-                    GameEvent::PlayerRegenerate(
-                        PlayerRegenerateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::UpdateStatusItem => {
-                    GameEvent::UpdateStatusItem(
-                        UpdateStatusItemEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::StatsResetRound => {
-                    GameEvent::StatsResetRound(
-                        StatsResetRoundEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ScoreStatsAccumulatedUpdate => {
-                    GameEvent::ScoreStatsAccumulatedUpdate(
-                        ScoreStatsAccumulatedUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ScoreStatsAccumulatedReset => {
-                    GameEvent::ScoreStatsAccumulatedReset(
-                        ScoreStatsAccumulatedResetEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::AchievementEarnedLocal => {
-                    GameEvent::AchievementEarnedLocal(
-                        AchievementEarnedLocalEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHealed => {
-                    GameEvent::PlayerHealed(PlayerHealedEvent::read(stream, definition)?)
-                }
-                GameEventType::BuildingHealed => {
-                    GameEvent::BuildingHealed(
-                        BuildingHealedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ItemPickup => {
-                    GameEvent::ItemPickup(ItemPickupEvent::read(stream, definition)?)
-                }
-                GameEventType::DuelStatus => {
-                    GameEvent::DuelStatus(DuelStatusEvent::read(stream, definition)?)
-                }
-                GameEventType::FishNotice => {
-                    GameEvent::FishNotice(FishNoticeEvent::read(stream, definition)?)
-                }
-                GameEventType::FishNoticeArm => {
-                    GameEvent::FishNoticeArm(
-                        FishNoticeArmEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SlapNotice => {
-                    GameEvent::SlapNotice(SlapNoticeEvent::read(stream, definition)?)
-                }
-                GameEventType::ThrowableHit => {
-                    GameEvent::ThrowableHit(ThrowableHitEvent::read(stream, definition)?)
-                }
-                GameEventType::PumpkinLordSummoned => {
-                    GameEvent::PumpkinLordSummoned(
-                        PumpkinLordSummonedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PumpkinLordKilled => {
-                    GameEvent::PumpkinLordKilled(
-                        PumpkinLordKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusSummoned => {
-                    GameEvent::MerasmusSummoned(
-                        MerasmusSummonedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusKilled => {
-                    GameEvent::MerasmusKilled(
-                        MerasmusKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusEscapeWarning => {
-                    GameEvent::MerasmusEscapeWarning(
-                        MerasmusEscapeWarningEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusEscaped => {
-                    GameEvent::MerasmusEscaped(
-                        MerasmusEscapedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossSummoned => {
-                    GameEvent::EyeballBossSummoned(
-                        EyeballBossSummonedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossStunned => {
-                    GameEvent::EyeballBossStunned(
-                        EyeballBossStunnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossKilled => {
-                    GameEvent::EyeballBossKilled(
-                        EyeballBossKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossKiller => {
-                    GameEvent::EyeballBossKiller(
-                        EyeballBossKillerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossEscapeImminent => {
-                    GameEvent::EyeballBossEscapeImminent(
-                        EyeballBossEscapeImminentEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossEscaped => {
-                    GameEvent::EyeballBossEscaped(
-                        EyeballBossEscapedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::NpcHurt => {
-                    GameEvent::NpcHurt(NpcHurtEvent::read(stream, definition)?)
-                }
-                GameEventType::ControlPointTimerUpdated => {
-                    GameEvent::ControlPointTimerUpdated(
-                        ControlPointTimerUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHighFiveStart => {
-                    GameEvent::PlayerHighFiveStart(
-                        PlayerHighFiveStartEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHighFiveCancel => {
-                    GameEvent::PlayerHighFiveCancel(
-                        PlayerHighFiveCancelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHighFiveSuccess => {
-                    GameEvent::PlayerHighFiveSuccess(
-                        PlayerHighFiveSuccessEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerBonusPoints => {
-                    GameEvent::PlayerBonusPoints(
-                        PlayerBonusPointsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerUpgraded => {
-                    GameEvent::PlayerUpgraded(
-                        PlayerUpgradedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerBuyback => {
-                    GameEvent::PlayerBuyback(
-                        PlayerBuybackEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerUsedPowerUpBottle => {
-                    GameEvent::PlayerUsedPowerUpBottle(
-                        PlayerUsedPowerUpBottleEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ChristmasGiftGrab => {
-                    GameEvent::ChristmasGiftGrab(
-                        ChristmasGiftGrabEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerKilledAchievementZone => {
-                    GameEvent::PlayerKilledAchievementZone(
-                        PlayerKilledAchievementZoneEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyUpdated => {
-                    GameEvent::PartyUpdated(PartyUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::PartyPrefChanged => {
-                    GameEvent::PartyPrefChanged(
-                        PartyPrefChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyCriteriaChanged => {
-                    GameEvent::PartyCriteriaChanged(
-                        PartyCriteriaChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyInvitesChanged => {
-                    GameEvent::PartyInvitesChanged(
-                        PartyInvitesChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyQueueStateChanged => {
-                    GameEvent::PartyQueueStateChanged(
-                        PartyQueueStateChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyChat => {
-                    GameEvent::PartyChat(PartyChatEvent::read(stream, definition)?)
-                }
-                GameEventType::PartyMemberJoin => {
-                    GameEvent::PartyMemberJoin(
-                        PartyMemberJoinEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyMemberLeave => {
-                    GameEvent::PartyMemberLeave(
-                        PartyMemberLeaveEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MatchInvitesUpdated => {
-                    GameEvent::MatchInvitesUpdated(
-                        MatchInvitesUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LobbyUpdated => {
-                    GameEvent::LobbyUpdated(LobbyUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::MvmMissionUpdate => {
-                    GameEvent::MvmMissionUpdate(
-                        MvmMissionUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RecalculateHolidays => {
-                    GameEvent::RecalculateHolidays(
-                        RecalculateHolidaysEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerCurrencyChanged => {
-                    GameEvent::PlayerCurrencyChanged(
-                        PlayerCurrencyChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DoomsdayRocketOpen => {
-                    GameEvent::DoomsdayRocketOpen(
-                        DoomsdayRocketOpenEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RemoveNemesisRelationships => {
-                    GameEvent::RemoveNemesisRelationships(
-                        RemoveNemesisRelationshipsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmCreditBonusWave => {
-                    GameEvent::MvmCreditBonusWave(
-                        MvmCreditBonusWaveEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmCreditBonusAll => {
-                    GameEvent::MvmCreditBonusAll(
-                        MvmCreditBonusAllEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmCreditBonusAllAdvanced => {
-                    GameEvent::MvmCreditBonusAllAdvanced(
-                        MvmCreditBonusAllAdvancedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmQuickSentryUpgrade => {
-                    GameEvent::MvmQuickSentryUpgrade(
-                        MvmQuickSentryUpgradeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmTankDestroyedByPlayers => {
-                    GameEvent::MvmTankDestroyedByPlayers(
-                        MvmTankDestroyedByPlayersEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmKillRobotDeliveringBomb => {
-                    GameEvent::MvmKillRobotDeliveringBomb(
-                        MvmKillRobotDeliveringBombEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmPickupCurrency => {
-                    GameEvent::MvmPickupCurrency(
-                        MvmPickupCurrencyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBombCarrierKilled => {
-                    GameEvent::MvmBombCarrierKilled(
-                        MvmBombCarrierKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmSentryBusterDetonate => {
-                    GameEvent::MvmSentryBusterDetonate(
-                        MvmSentryBusterDetonateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmScoutMarkedForDeath => {
-                    GameEvent::MvmScoutMarkedForDeath(
-                        MvmScoutMarkedForDeathEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmMedicPowerUpShared => {
-                    GameEvent::MvmMedicPowerUpShared(
-                        MvmMedicPowerUpSharedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBeginWave => {
-                    GameEvent::MvmBeginWave(MvmBeginWaveEvent::read(stream, definition)?)
-                }
-                GameEventType::MvmWaveComplete => {
-                    GameEvent::MvmWaveComplete(
-                        MvmWaveCompleteEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmMissionComplete => {
-                    GameEvent::MvmMissionComplete(
-                        MvmMissionCompleteEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBombResetByPlayer => {
-                    GameEvent::MvmBombResetByPlayer(
-                        MvmBombResetByPlayerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBombAlarmTriggered => {
-                    GameEvent::MvmBombAlarmTriggered(
-                        MvmBombAlarmTriggeredEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBombDeployResetByPlayer => {
-                    GameEvent::MvmBombDeployResetByPlayer(
-                        MvmBombDeployResetByPlayerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmWaveFailed => {
-                    GameEvent::MvmWaveFailed(
-                        MvmWaveFailedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmResetStats => {
-                    GameEvent::MvmResetStats(
-                        MvmResetStatsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DamageResisted => {
-                    GameEvent::DamageResisted(
-                        DamageResistedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RevivePlayerNotify => {
-                    GameEvent::RevivePlayerNotify(
-                        RevivePlayerNotifyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RevivePlayerStopped => {
-                    GameEvent::RevivePlayerStopped(
-                        RevivePlayerStoppedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RevivePlayerComplete => {
-                    GameEvent::RevivePlayerComplete(
-                        RevivePlayerCompleteEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerTurnedToGhost => {
-                    GameEvent::PlayerTurnedToGhost(
-                        PlayerTurnedToGhostEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MedigunShieldBlockedDamage => {
-                    GameEvent::MedigunShieldBlockedDamage(
-                        MedigunShieldBlockedDamageEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmAdvWaveCompleteNoGates => {
-                    GameEvent::MvmAdvWaveCompleteNoGates(
-                        MvmAdvWaveCompleteNoGatesEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmSniperHeadshotCurrency => {
-                    GameEvent::MvmSniperHeadshotCurrency(
-                        MvmSniperHeadshotCurrencyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmMannhattanPit => {
-                    GameEvent::MvmMannhattanPit(
-                        MvmMannhattanPitEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::FlagCarriedInDetectionZone => {
-                    GameEvent::FlagCarriedInDetectionZone(
-                        FlagCarriedInDetectionZoneEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmAdvWaveKilledStunRadio => {
-                    GameEvent::MvmAdvWaveKilledStunRadio(
-                        MvmAdvWaveKilledStunRadioEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerDirectHitStun => {
-                    GameEvent::PlayerDirectHitStun(
-                        PlayerDirectHitStunEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmSentryBusterKilled => {
-                    GameEvent::MvmSentryBusterKilled(
-                        MvmSentryBusterKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::UpgradesFileChanged => {
-                    GameEvent::UpgradesFileChanged(
-                        UpgradesFileChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdTeamPointsChanged => {
-                    GameEvent::RdTeamPointsChanged(
-                        RdTeamPointsChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdRulesStateChanged => {
-                    GameEvent::RdRulesStateChanged(
-                        RdRulesStateChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdRobotKilled => {
-                    GameEvent::RdRobotKilled(
-                        RdRobotKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdRobotImpact => {
-                    GameEvent::RdRobotImpact(
-                        RdRobotImpactEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPreRoundTimeLeft => {
-                    GameEvent::TeamPlayPreRoundTimeLeft(
-                        TeamPlayPreRoundTimeLeftEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ParachuteDeploy => {
-                    GameEvent::ParachuteDeploy(
-                        ParachuteDeployEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ParachuteHolster => {
-                    GameEvent::ParachuteHolster(
-                        ParachuteHolsterEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::KillRefillsMeter => {
-                    GameEvent::KillRefillsMeter(
-                        KillRefillsMeterEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RpsTauntEvent => {
-                    GameEvent::RpsTauntEvent(
-                        RpsTauntEventEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CongaKill => {
-                    GameEvent::CongaKill(CongaKillEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerInitialSpawn => {
-                    GameEvent::PlayerInitialSpawn(
-                        PlayerInitialSpawnEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CompetitiveVictory => {
-                    GameEvent::CompetitiveVictory(
-                        CompetitiveVictoryEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CompetitiveStatsUpdate => {
-                    GameEvent::CompetitiveStatsUpdate(
-                        CompetitiveStatsUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MiniGameWin => {
-                    GameEvent::MiniGameWin(MiniGameWinEvent::read(stream, definition)?)
-                }
-                GameEventType::SentryOnGoActive => {
-                    GameEvent::SentryOnGoActive(
-                        SentryOnGoActiveEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DuckXpLevelUp => {
-                    GameEvent::DuckXpLevelUp(
-                        DuckXpLevelUpEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestLogOpened => {
-                    GameEvent::QuestLogOpened(
-                        QuestLogOpenedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SchemaUpdated => {
-                    GameEvent::SchemaUpdated(
-                        SchemaUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerPickupWeapon => {
-                    GameEvent::LocalPlayerPickupWeapon(
-                        LocalPlayerPickupWeaponEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdPlayerScorePoints => {
-                    GameEvent::RdPlayerScorePoints(
-                        RdPlayerScorePointsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DemomanDetStickies => {
-                    GameEvent::DemomanDetStickies(
-                        DemomanDetStickiesEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestObjectiveCompleted => {
-                    GameEvent::QuestObjectiveCompleted(
-                        QuestObjectiveCompletedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerScoreChanged => {
-                    GameEvent::PlayerScoreChanged(
-                        PlayerScoreChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::KilledCappingPlayer => {
-                    GameEvent::KilledCappingPlayer(
-                        KilledCappingPlayerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EnvironmentalDeath => {
-                    GameEvent::EnvironmentalDeath(
-                        EnvironmentalDeathEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ProjectileDirectHit => {
-                    GameEvent::ProjectileDirectHit(
-                        ProjectileDirectHitEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PassGet => {
-                    GameEvent::PassGet(PassGetEvent::read(stream, definition)?)
-                }
-                GameEventType::PassScore => {
-                    GameEvent::PassScore(PassScoreEvent::read(stream, definition)?)
-                }
-                GameEventType::PassFree => {
-                    GameEvent::PassFree(PassFreeEvent::read(stream, definition)?)
-                }
-                GameEventType::PassPassCaught => {
-                    GameEvent::PassPassCaught(
-                        PassPassCaughtEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PassBallStolen => {
-                    GameEvent::PassBallStolen(
-                        PassBallStolenEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PassBallBlocked => {
-                    GameEvent::PassBallBlocked(
-                        PassBallBlockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DamagePrevented => {
-                    GameEvent::DamagePrevented(
-                        DamagePreventedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HalloweenBossKilled => {
-                    GameEvent::HalloweenBossKilled(
-                        HalloweenBossKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EscapedLootIsland => {
-                    GameEvent::EscapedLootIsland(
-                        EscapedLootIslandEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TaggedPlayerAsIt => {
-                    GameEvent::TaggedPlayerAsIt(
-                        TaggedPlayerAsItEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusStunned => {
-                    GameEvent::MerasmusStunned(
-                        MerasmusStunnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusPropFound => {
-                    GameEvent::MerasmusPropFound(
-                        MerasmusPropFoundEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HalloweenSkeletonKilled => {
-                    GameEvent::HalloweenSkeletonKilled(
-                        HalloweenSkeletonKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EscapeHell => {
-                    GameEvent::EscapeHell(EscapeHellEvent::read(stream, definition)?)
-                }
-                GameEventType::CrossSpectralBridge => {
-                    GameEvent::CrossSpectralBridge(
-                        CrossSpectralBridgeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MiniGameWon => {
-                    GameEvent::MiniGameWon(MiniGameWonEvent::read(stream, definition)?)
-                }
-                GameEventType::RespawnGhost => {
-                    GameEvent::RespawnGhost(RespawnGhostEvent::read(stream, definition)?)
-                }
-                GameEventType::KillInHell => {
-                    GameEvent::KillInHell(KillInHellEvent::read(stream, definition)?)
-                }
-                GameEventType::HalloweenDuckCollected => {
-                    GameEvent::HalloweenDuckCollected(
-                        HalloweenDuckCollectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SpecialScore => {
-                    GameEvent::SpecialScore(SpecialScoreEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamLeaderKilled => {
-                    GameEvent::TeamLeaderKilled(
-                        TeamLeaderKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HalloweenSoulCollected => {
-                    GameEvent::HalloweenSoulCollected(
-                        HalloweenSoulCollectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RecalculateTruce => {
-                    GameEvent::RecalculateTruce(
-                        RecalculateTruceEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DeadRingerCheatDeath => {
-                    GameEvent::DeadRingerCheatDeath(
-                        DeadRingerCheatDeathEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CrossbowHeal => {
-                    GameEvent::CrossbowHeal(CrossbowHealEvent::read(stream, definition)?)
-                }
-                GameEventType::DamageMitigated => {
-                    GameEvent::DamageMitigated(
-                        DamageMitigatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PayloadPushed => {
-                    GameEvent::PayloadPushed(
-                        PayloadPushedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerAbandonedMatch => {
-                    GameEvent::PlayerAbandonedMatch(
-                        PlayerAbandonedMatchEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ClDrawline => {
-                    GameEvent::ClDrawline(ClDrawlineEvent::read(stream, definition)?)
-                }
-                GameEventType::RestartTimerTime => {
-                    GameEvent::RestartTimerTime(
-                        RestartTimerTimeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::WinLimitChanged => {
-                    GameEvent::WinLimitChanged(
-                        WinLimitChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::WinPanelShowScores => {
-                    GameEvent::WinPanelShowScores(
-                        WinPanelShowScoresEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TopStreamsRequestFinished => {
-                    GameEvent::TopStreamsRequestFinished(
-                        TopStreamsRequestFinishedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CompetitiveStateChanged => {
-                    GameEvent::CompetitiveStateChanged(
-                        CompetitiveStateChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GlobalWarDataUpdated => {
-                    GameEvent::GlobalWarDataUpdated(
-                        GlobalWarDataUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::StopWatchChanged => {
-                    GameEvent::StopWatchChanged(
-                        StopWatchChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DsStop => {
-                    GameEvent::DsStop(DsStopEvent::read(stream, definition)?)
-                }
-                GameEventType::DsScreenshot => {
-                    GameEvent::DsScreenshot(DsScreenshotEvent::read(stream, definition)?)
-                }
-                GameEventType::ShowMatchSummary => {
-                    GameEvent::ShowMatchSummary(
-                        ShowMatchSummaryEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ExperienceChanged => {
-                    GameEvent::ExperienceChanged(
-                        ExperienceChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BeginXpLerp => {
-                    GameEvent::BeginXpLerp(BeginXpLerpEvent::read(stream, definition)?)
-                }
-                GameEventType::MatchmakerStatsUpdated => {
-                    GameEvent::MatchmakerStatsUpdated(
-                        MatchmakerStatsUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RematchVotePeriodOver => {
-                    GameEvent::RematchVotePeriodOver(
-                        RematchVotePeriodOverEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RematchFailedToCreate => {
-                    GameEvent::RematchFailedToCreate(
-                        RematchFailedToCreateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerRematchChange => {
-                    GameEvent::PlayerRematchChange(
-                        PlayerRematchChangeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PingUpdated => {
-                    GameEvent::PingUpdated(PingUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::MMStatsUpdated => {
-                    GameEvent::MMStatsUpdated(
-                        MMStatsUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerNextMapVoteChange => {
-                    GameEvent::PlayerNextMapVoteChange(
-                        PlayerNextMapVoteChangeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::VoteMapsChanged => {
-                    GameEvent::VoteMapsChanged(
-                        VoteMapsChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ProtoDefChanged => {
-                    GameEvent::ProtoDefChanged(
-                        ProtoDefChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerDomination => {
-                    GameEvent::PlayerDomination(
-                        PlayerDominationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerRocketPackPushed => {
-                    GameEvent::PlayerRocketPackPushed(
-                        PlayerRocketPackPushedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestRequest => {
-                    GameEvent::QuestRequest(QuestRequestEvent::read(stream, definition)?)
-                }
-                GameEventType::QuestResponse => {
-                    GameEvent::QuestResponse(
-                        QuestResponseEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestProgress => {
-                    GameEvent::QuestProgress(
-                        QuestProgressEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ProjectileRemoved => {
-                    GameEvent::ProjectileRemoved(
-                        ProjectileRemovedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestMapDataChanged => {
-                    GameEvent::QuestMapDataChanged(
-                        QuestMapDataChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GasDousedPlayerIgnited => {
-                    GameEvent::GasDousedPlayerIgnited(
-                        GasDousedPlayerIgnitedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestTurnInState => {
-                    GameEvent::QuestTurnInState(
-                        QuestTurnInStateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ItemsAcknowledged => {
-                    GameEvent::ItemsAcknowledged(
-                        ItemsAcknowledgedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CapperKilled => {
-                    GameEvent::CapperKilled(CapperKilledEvent::read(stream, definition)?)
-                }
-                GameEventType::MainMenuStabilized => {
-                    GameEvent::MainMenuStabilized(
-                        MainMenuStabilizedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::WorldStatusChanged => {
-                    GameEvent::WorldStatusChanged(
-                        WorldStatusChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVStatus => {
-                    GameEvent::HLTVStatus(HLTVStatusEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVCameraman => {
-                    GameEvent::HLTVCameraman(
-                        HLTVCameramanEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVRankCamera => {
-                    GameEvent::HLTVRankCamera(
-                        HLTVRankCameraEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVRankEntity => {
-                    GameEvent::HLTVRankEntity(
-                        HLTVRankEntityEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVFixed => {
-                    GameEvent::HLTVFixed(HLTVFixedEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVChase => {
-                    GameEvent::HLTVChase(HLTVChaseEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVMessage => {
-                    GameEvent::HLTVMessage(HLTVMessageEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVTitle => {
-                    GameEvent::HLTVTitle(HLTVTitleEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVChat => {
-                    GameEvent::HLTVChat(HLTVChatEvent::read(stream, definition)?)
-                }
-                GameEventType::ReplayStartRecord => {
-                    GameEvent::ReplayStartRecord(
-                        ReplayStartRecordEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplaySessionInfo => {
-                    GameEvent::ReplaySessionInfo(
-                        ReplaySessionInfoEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplayEndRecord => {
-                    GameEvent::ReplayEndRecord(
-                        ReplayEndRecordEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplayReplaysAvailable => {
-                    GameEvent::ReplayReplaysAvailable(
-                        ReplayReplaysAvailableEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplayServerError => {
-                    GameEvent::ReplayServerError(
-                        ReplayServerErrorEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::Unknown(_) => {
-                    GameEvent::Unknown(RawGameEvent::read(stream, definition)?)
-                }
-            },
-        )
+        Ok(match definition.event_type {
+            GameEventType::ServerSpawn => {
+                GameEvent::ServerSpawn(Box::new(<ServerSpawnEvent>::read(stream, definition)?))
+            }
+            GameEventType::ServerChangeLevelFailed => GameEvent::ServerChangeLevelFailed(
+                ServerChangeLevelFailedEvent::read(stream, definition)?,
+            ),
+            GameEventType::ServerShutdown => {
+                GameEvent::ServerShutdown(ServerShutdownEvent::read(stream, definition)?)
+            }
+            GameEventType::ServerCvar => {
+                GameEvent::ServerCvar(ServerCvarEvent::read(stream, definition)?)
+            }
+            GameEventType::ServerMessage => {
+                GameEvent::ServerMessage(ServerMessageEvent::read(stream, definition)?)
+            }
+            GameEventType::ServerAddBan => {
+                GameEvent::ServerAddBan(Box::new(<ServerAddBanEvent>::read(stream, definition)?))
+            }
+            GameEventType::ServerRemoveBan => {
+                GameEvent::ServerRemoveBan(ServerRemoveBanEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerConnect => {
+                GameEvent::PlayerConnect(PlayerConnectEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerConnectClient => {
+                GameEvent::PlayerConnectClient(PlayerConnectClientEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerInfo => {
+                GameEvent::PlayerInfo(PlayerInfoEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDisconnect => {
+                GameEvent::PlayerDisconnect(PlayerDisconnectEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerActivate => {
+                GameEvent::PlayerActivate(PlayerActivateEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerSay => {
+                GameEvent::PlayerSay(PlayerSayEvent::read(stream, definition)?)
+            }
+            GameEventType::ClientDisconnect => {
+                GameEvent::ClientDisconnect(ClientDisconnectEvent::read(stream, definition)?)
+            }
+            GameEventType::ClientBeginConnect => {
+                GameEvent::ClientBeginConnect(ClientBeginConnectEvent::read(stream, definition)?)
+            }
+            GameEventType::ClientConnected => {
+                GameEvent::ClientConnected(ClientConnectedEvent::read(stream, definition)?)
+            }
+            GameEventType::ClientFullConnect => {
+                GameEvent::ClientFullConnect(ClientFullConnectEvent::read(stream, definition)?)
+            }
+            GameEventType::HostQuit => {
+                GameEvent::HostQuit(HostQuitEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamInfo => {
+                GameEvent::TeamInfo(TeamInfoEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamScore => {
+                GameEvent::TeamScore(TeamScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayBroadcastAudio => GameEvent::TeamPlayBroadcastAudio(
+                TeamPlayBroadcastAudioEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerTeam => {
+                GameEvent::PlayerTeam(PlayerTeamEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerClass => {
+                GameEvent::PlayerClass(PlayerClassEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDeath => {
+                GameEvent::PlayerDeath(Box::new(<PlayerDeathEvent>::read(stream, definition)?))
+            }
+            GameEventType::PlayerHurt => {
+                GameEvent::PlayerHurt(PlayerHurtEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerChat => {
+                GameEvent::PlayerChat(PlayerChatEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerScore => {
+                GameEvent::PlayerScore(PlayerScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerSpawn => {
+                GameEvent::PlayerSpawn(PlayerSpawnEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerShoot => {
+                GameEvent::PlayerShoot(PlayerShootEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerUse => {
+                GameEvent::PlayerUse(PlayerUseEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerChangeName => {
+                GameEvent::PlayerChangeName(PlayerChangeNameEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHintMessage => {
+                GameEvent::PlayerHintMessage(PlayerHintMessageEvent::read(stream, definition)?)
+            }
+            GameEventType::BasePlayerTeleported => GameEvent::BasePlayerTeleported(
+                BasePlayerTeleportedEvent::read(stream, definition)?,
+            ),
+            GameEventType::GameInit => {
+                GameEvent::GameInit(GameInitEvent::read(stream, definition)?)
+            }
+            GameEventType::GameNewMap => {
+                GameEvent::GameNewMap(GameNewMapEvent::read(stream, definition)?)
+            }
+            GameEventType::GameStart => {
+                GameEvent::GameStart(GameStartEvent::read(stream, definition)?)
+            }
+            GameEventType::GameEnd => GameEvent::GameEnd(GameEndEvent::read(stream, definition)?),
+            GameEventType::RoundStart => {
+                GameEvent::RoundStart(RoundStartEvent::read(stream, definition)?)
+            }
+            GameEventType::RoundEnd => {
+                GameEvent::RoundEnd(RoundEndEvent::read(stream, definition)?)
+            }
+            GameEventType::GameMessage => {
+                GameEvent::GameMessage(GameMessageEvent::read(stream, definition)?)
+            }
+            GameEventType::BreakBreakable => {
+                GameEvent::BreakBreakable(BreakBreakableEvent::read(stream, definition)?)
+            }
+            GameEventType::BreakProp => {
+                GameEvent::BreakProp(BreakPropEvent::read(stream, definition)?)
+            }
+            GameEventType::EntityKilled => {
+                GameEvent::EntityKilled(EntityKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::BonusUpdated => {
+                GameEvent::BonusUpdated(BonusUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::AchievementEvent => {
+                GameEvent::AchievementEvent(AchievementEventEvent::read(stream, definition)?)
+            }
+            GameEventType::AchievementIncrement => GameEvent::AchievementIncrement(
+                AchievementIncrementEvent::read(stream, definition)?,
+            ),
+            GameEventType::PhysgunPickup => {
+                GameEvent::PhysgunPickup(PhysgunPickupEvent::read(stream, definition)?)
+            }
+            GameEventType::FlareIgniteNpc => {
+                GameEvent::FlareIgniteNpc(FlareIgniteNpcEvent::read(stream, definition)?)
+            }
+            GameEventType::HelicopterGrenadePuntMiss => GameEvent::HelicopterGrenadePuntMiss(
+                HelicopterGrenadePuntMissEvent::read(stream, definition)?,
+            ),
+            GameEventType::UserDataDownloaded => {
+                GameEvent::UserDataDownloaded(UserDataDownloadedEvent::read(stream, definition)?)
+            }
+            GameEventType::RagdollDissolved => {
+                GameEvent::RagdollDissolved(RagdollDissolvedEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVChangedMode => {
+                GameEvent::HLTVChangedMode(HLTVChangedModeEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVChangedTarget => {
+                GameEvent::HLTVChangedTarget(HLTVChangedTargetEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteEnded => {
+                GameEvent::VoteEnded(VoteEndedEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteStarted => {
+                GameEvent::VoteStarted(VoteStartedEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteChanged => {
+                GameEvent::VoteChanged(VoteChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::VotePassed => {
+                GameEvent::VotePassed(VotePassedEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteFailed => {
+                GameEvent::VoteFailed(VoteFailedEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteCast => {
+                GameEvent::VoteCast(VoteCastEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteOptions => {
+                GameEvent::VoteOptions(Box::new(<VoteOptionsEvent>::read(stream, definition)?))
+            }
+            GameEventType::ReplaySaved => {
+                GameEvent::ReplaySaved(ReplaySavedEvent::read(stream, definition)?)
+            }
+            GameEventType::EnteredPerformanceMode => GameEvent::EnteredPerformanceMode(
+                EnteredPerformanceModeEvent::read(stream, definition)?,
+            ),
+            GameEventType::BrowseReplays => {
+                GameEvent::BrowseReplays(BrowseReplaysEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplayYoutubeStats => {
+                GameEvent::ReplayYoutubeStats(ReplayYoutubeStatsEvent::read(stream, definition)?)
+            }
+            GameEventType::InventoryUpdated => {
+                GameEvent::InventoryUpdated(InventoryUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::CartUpdated => {
+                GameEvent::CartUpdated(CartUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::StorePriceSheetUpdated => GameEvent::StorePriceSheetUpdated(
+                StorePriceSheetUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::EconInventoryConnected => GameEvent::EconInventoryConnected(
+                EconInventoryConnectedEvent::read(stream, definition)?,
+            ),
+            GameEventType::ItemSchemaInitialized => GameEvent::ItemSchemaInitialized(
+                ItemSchemaInitializedEvent::read(stream, definition)?,
+            ),
+            GameEventType::GcNewSession => {
+                GameEvent::GcNewSession(GcNewSessionEvent::read(stream, definition)?)
+            }
+            GameEventType::GcLostSession => {
+                GameEvent::GcLostSession(GcLostSessionEvent::read(stream, definition)?)
+            }
+            GameEventType::IntroFinish => {
+                GameEvent::IntroFinish(IntroFinishEvent::read(stream, definition)?)
+            }
+            GameEventType::IntroNextCamera => {
+                GameEvent::IntroNextCamera(IntroNextCameraEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerChangeClass => {
+                GameEvent::PlayerChangeClass(PlayerChangeClassEvent::read(stream, definition)?)
+            }
+            GameEventType::TfMapTimeRemaining => {
+                GameEvent::TfMapTimeRemaining(TfMapTimeRemainingEvent::read(stream, definition)?)
+            }
+            GameEventType::TfGameOver => {
+                GameEvent::TfGameOver(TfGameOverEvent::read(stream, definition)?)
+            }
+            GameEventType::CtfFlagCaptured => {
+                GameEvent::CtfFlagCaptured(CtfFlagCapturedEvent::read(stream, definition)?)
+            }
+            GameEventType::ControlPointInitialized => GameEvent::ControlPointInitialized(
+                ControlPointInitializedEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUpdateImages => GameEvent::ControlPointUpdateImages(
+                ControlPointUpdateImagesEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUpdateLayout => GameEvent::ControlPointUpdateLayout(
+                ControlPointUpdateLayoutEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUpdateCapping => GameEvent::ControlPointUpdateCapping(
+                ControlPointUpdateCappingEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUpdateOwner => GameEvent::ControlPointUpdateOwner(
+                ControlPointUpdateOwnerEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointStartTouch => GameEvent::ControlPointStartTouch(
+                ControlPointStartTouchEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointEndTouch => GameEvent::ControlPointEndTouch(
+                ControlPointEndTouchEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointPulseElement => GameEvent::ControlPointPulseElement(
+                ControlPointPulseElementEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointFakeCapture => GameEvent::ControlPointFakeCapture(
+                ControlPointFakeCaptureEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointFakeCaptureMultiplier => {
+                GameEvent::ControlPointFakeCaptureMultiplier(
+                    ControlPointFakeCaptureMultiplierEvent::read(stream, definition)?,
+                )
+            }
+            GameEventType::TeamPlayRoundSelected => GameEvent::TeamPlayRoundSelected(
+                TeamPlayRoundSelectedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayRoundStart => {
+                GameEvent::TeamPlayRoundStart(TeamPlayRoundStartEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayRoundActive => {
+                GameEvent::TeamPlayRoundActive(TeamPlayRoundActiveEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayWaitingBegins => GameEvent::TeamPlayWaitingBegins(
+                TeamPlayWaitingBeginsEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayWaitingEnds => {
+                GameEvent::TeamPlayWaitingEnds(TeamPlayWaitingEndsEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayWaitingAboutToEnd => GameEvent::TeamPlayWaitingAboutToEnd(
+                TeamPlayWaitingAboutToEndEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayRestartRound => GameEvent::TeamPlayRestartRound(
+                TeamPlayRestartRoundEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayReadyRestart => GameEvent::TeamPlayReadyRestart(
+                TeamPlayReadyRestartEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayRoundRestartSeconds => GameEvent::TeamPlayRoundRestartSeconds(
+                TeamPlayRoundRestartSecondsEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayTeamReady => {
+                GameEvent::TeamPlayTeamReady(TeamPlayTeamReadyEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayRoundWin => {
+                GameEvent::TeamPlayRoundWin(TeamPlayRoundWinEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayUpdateTimer => {
+                GameEvent::TeamPlayUpdateTimer(TeamPlayUpdateTimerEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayRoundStalemate => GameEvent::TeamPlayRoundStalemate(
+                TeamPlayRoundStalemateEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayOvertimeBegin => GameEvent::TeamPlayOvertimeBegin(
+                TeamPlayOvertimeBeginEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayOvertimeEnd => {
+                GameEvent::TeamPlayOvertimeEnd(TeamPlayOvertimeEndEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlaySuddenDeathBegin => GameEvent::TeamPlaySuddenDeathBegin(
+                TeamPlaySuddenDeathBeginEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlaySuddenDeathEnd => GameEvent::TeamPlaySuddenDeathEnd(
+                TeamPlaySuddenDeathEndEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayGameOver => {
+                GameEvent::TeamPlayGameOver(TeamPlayGameOverEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayMapTimeRemaining => GameEvent::TeamPlayMapTimeRemaining(
+                TeamPlayMapTimeRemainingEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayTimerFlash => {
+                GameEvent::TeamPlayTimerFlash(TeamPlayTimerFlashEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayTimerTimeAdded => GameEvent::TeamPlayTimerTimeAdded(
+                TeamPlayTimerTimeAddedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayPointStartCapture => GameEvent::TeamPlayPointStartCapture(
+                TeamPlayPointStartCaptureEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayPointCaptured => GameEvent::TeamPlayPointCaptured(
+                TeamPlayPointCapturedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayPointLocked => {
+                GameEvent::TeamPlayPointLocked(TeamPlayPointLockedEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayPointUnlocked => GameEvent::TeamPlayPointUnlocked(
+                TeamPlayPointUnlockedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayCaptureBroken => GameEvent::TeamPlayCaptureBroken(
+                TeamPlayCaptureBrokenEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayCaptureBlocked => GameEvent::TeamPlayCaptureBlocked(
+                TeamPlayCaptureBlockedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayFlagEvent => {
+                GameEvent::TeamPlayFlagEvent(TeamPlayFlagEventEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayWinPanel => {
+                GameEvent::TeamPlayWinPanel(TeamPlayWinPanelEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayTeamBalancedPlayer => GameEvent::TeamPlayTeamBalancedPlayer(
+                TeamPlayTeamBalancedPlayerEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlaySetupFinished => GameEvent::TeamPlaySetupFinished(
+                TeamPlaySetupFinishedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayAlert => {
+                GameEvent::TeamPlayAlert(TeamPlayAlertEvent::read(stream, definition)?)
+            }
+            GameEventType::TrainingComplete => {
+                GameEvent::TrainingComplete(TrainingCompleteEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowFreezePanel => {
+                GameEvent::ShowFreezePanel(ShowFreezePanelEvent::read(stream, definition)?)
+            }
+            GameEventType::HideFreezePanel => {
+                GameEvent::HideFreezePanel(HideFreezePanelEvent::read(stream, definition)?)
+            }
+            GameEventType::FreezeCamStarted => {
+                GameEvent::FreezeCamStarted(FreezeCamStartedEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerChangeTeam => GameEvent::LocalPlayerChangeTeam(
+                LocalPlayerChangeTeamEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerScoreChanged => GameEvent::LocalPlayerScoreChanged(
+                LocalPlayerScoreChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerChangeClass => GameEvent::LocalPlayerChangeClass(
+                LocalPlayerChangeClassEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerRespawn => {
+                GameEvent::LocalPlayerRespawn(LocalPlayerRespawnEvent::read(stream, definition)?)
+            }
+            GameEventType::BuildingInfoChanged => {
+                GameEvent::BuildingInfoChanged(BuildingInfoChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerChangeDisguise => GameEvent::LocalPlayerChangeDisguise(
+                LocalPlayerChangeDisguiseEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerAccountChanged => GameEvent::PlayerAccountChanged(
+                PlayerAccountChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::SpyPdaReset => {
+                GameEvent::SpyPdaReset(SpyPdaResetEvent::read(stream, definition)?)
+            }
+            GameEventType::FlagStatusUpdate => {
+                GameEvent::FlagStatusUpdate(FlagStatusUpdateEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerStatsUpdated => {
+                GameEvent::PlayerStatsUpdated(PlayerStatsUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayingCommentary => {
+                GameEvent::PlayingCommentary(PlayingCommentaryEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerChargeDeployed => GameEvent::PlayerChargeDeployed(
+                PlayerChargeDeployedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerBuiltObject => {
+                GameEvent::PlayerBuiltObject(PlayerBuiltObjectEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerUpgradedObject => GameEvent::PlayerUpgradedObject(
+                PlayerUpgradedObjectEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerCarryObject => {
+                GameEvent::PlayerCarryObject(PlayerCarryObjectEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDropObject => {
+                GameEvent::PlayerDropObject(PlayerDropObjectEvent::read(stream, definition)?)
+            }
+            GameEventType::ObjectRemoved => {
+                GameEvent::ObjectRemoved(ObjectRemovedEvent::read(stream, definition)?)
+            }
+            GameEventType::ObjectDestroyed => {
+                GameEvent::ObjectDestroyed(ObjectDestroyedEvent::read(stream, definition)?)
+            }
+            GameEventType::ObjectDetonated => {
+                GameEvent::ObjectDetonated(ObjectDetonatedEvent::read(stream, definition)?)
+            }
+            GameEventType::AchievementEarned => {
+                GameEvent::AchievementEarned(AchievementEarnedEvent::read(stream, definition)?)
+            }
+            GameEventType::SpecTargetUpdated => {
+                GameEvent::SpecTargetUpdated(SpecTargetUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::TournamentStateUpdate => GameEvent::TournamentStateUpdate(
+                TournamentStateUpdateEvent::read(stream, definition)?,
+            ),
+            GameEventType::TournamentEnableCountdown => GameEvent::TournamentEnableCountdown(
+                TournamentEnableCountdownEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerCalledForMedic => GameEvent::PlayerCalledForMedic(
+                PlayerCalledForMedicEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerAskedForBall => {
+                GameEvent::PlayerAskedForBall(PlayerAskedForBallEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerBecameObserver => GameEvent::LocalPlayerBecameObserver(
+                LocalPlayerBecameObserverEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerIgnitedInv => {
+                GameEvent::PlayerIgnitedInv(PlayerIgnitedInvEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerIgnited => {
+                GameEvent::PlayerIgnited(PlayerIgnitedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerExtinguished => {
+                GameEvent::PlayerExtinguished(PlayerExtinguishedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerTeleported => {
+                GameEvent::PlayerTeleported(PlayerTeleportedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHealedMedicCall => GameEvent::PlayerHealedMedicCall(
+                PlayerHealedMedicCallEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerChargeReady => GameEvent::LocalPlayerChargeReady(
+                LocalPlayerChargeReadyEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerWindDown => {
+                GameEvent::LocalPlayerWindDown(LocalPlayerWindDownEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerInvulned => {
+                GameEvent::PlayerInvulned(PlayerInvulnedEvent::read(stream, definition)?)
+            }
+            GameEventType::EscortSpeed => {
+                GameEvent::EscortSpeed(EscortSpeedEvent::read(stream, definition)?)
+            }
+            GameEventType::EscortProgress => {
+                GameEvent::EscortProgress(EscortProgressEvent::read(stream, definition)?)
+            }
+            GameEventType::EscortRecede => {
+                GameEvent::EscortRecede(EscortRecedeEvent::read(stream, definition)?)
+            }
+            GameEventType::GameUIActivated => {
+                GameEvent::GameUIActivated(GameUIActivatedEvent::read(stream, definition)?)
+            }
+            GameEventType::GameUIHidden => {
+                GameEvent::GameUIHidden(GameUIHiddenEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerEscortScore => {
+                GameEvent::PlayerEscortScore(PlayerEscortScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHealOnHit => {
+                GameEvent::PlayerHealOnHit(PlayerHealOnHitEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerStealSandvich => {
+                GameEvent::PlayerStealSandvich(PlayerStealSandvichEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowClassLayout => {
+                GameEvent::ShowClassLayout(ShowClassLayoutEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowVsPanel => {
+                GameEvent::ShowVsPanel(ShowVsPanelEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDamaged => {
+                GameEvent::PlayerDamaged(PlayerDamagedEvent::read(stream, definition)?)
+            }
+            GameEventType::ArenaPlayerNotification => GameEvent::ArenaPlayerNotification(
+                ArenaPlayerNotificationEvent::read(stream, definition)?,
+            ),
+            GameEventType::ArenaMatchMaxStreak => {
+                GameEvent::ArenaMatchMaxStreak(ArenaMatchMaxStreakEvent::read(stream, definition)?)
+            }
+            GameEventType::ArenaRoundStart => {
+                GameEvent::ArenaRoundStart(ArenaRoundStartEvent::read(stream, definition)?)
+            }
+            GameEventType::ArenaWinPanel => {
+                GameEvent::ArenaWinPanel(ArenaWinPanelEvent::read(stream, definition)?)
+            }
+            GameEventType::PveWinPanel => {
+                GameEvent::PveWinPanel(PveWinPanelEvent::read(stream, definition)?)
+            }
+            GameEventType::AirDash => GameEvent::AirDash(AirDashEvent::read(stream, definition)?),
+            GameEventType::Landed => GameEvent::Landed(LandedEvent::read(stream, definition)?),
+            GameEventType::PlayerDamageDodged => {
+                GameEvent::PlayerDamageDodged(PlayerDamageDodgedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerStunned => {
+                GameEvent::PlayerStunned(PlayerStunnedEvent::read(stream, definition)?)
+            }
+            GameEventType::ScoutGrandSlam => {
+                GameEvent::ScoutGrandSlam(ScoutGrandSlamEvent::read(stream, definition)?)
+            }
+            GameEventType::ScoutSlamdollLanded => {
+                GameEvent::ScoutSlamdollLanded(ScoutSlamdollLandedEvent::read(stream, definition)?)
+            }
+            GameEventType::ArrowImpact => {
+                GameEvent::ArrowImpact(ArrowImpactEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerJarated => {
+                GameEvent::PlayerJarated(PlayerJaratedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerJaratedFade => {
+                GameEvent::PlayerJaratedFade(PlayerJaratedFadeEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerShieldBlocked => {
+                GameEvent::PlayerShieldBlocked(PlayerShieldBlockedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerPinned => {
+                GameEvent::PlayerPinned(PlayerPinnedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHealedByMedic => {
+                GameEvent::PlayerHealedByMedic(PlayerHealedByMedicEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerSappedObject => {
+                GameEvent::PlayerSappedObject(PlayerSappedObjectEvent::read(stream, definition)?)
+            }
+            GameEventType::ItemFound => {
+                GameEvent::ItemFound(ItemFoundEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowAnnotation => {
+                GameEvent::ShowAnnotation(ShowAnnotationEvent::read(stream, definition)?)
+            }
+            GameEventType::HideAnnotation => {
+                GameEvent::HideAnnotation(HideAnnotationEvent::read(stream, definition)?)
+            }
+            GameEventType::PostInventoryApplication => GameEvent::PostInventoryApplication(
+                PostInventoryApplicationEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUnlockUpdated => GameEvent::ControlPointUnlockUpdated(
+                ControlPointUnlockUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::DeployBuffBanner => {
+                GameEvent::DeployBuffBanner(DeployBuffBannerEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerBuff => {
+                GameEvent::PlayerBuff(PlayerBuffEvent::read(stream, definition)?)
+            }
+            GameEventType::MedicDeath => {
+                GameEvent::MedicDeath(MedicDeathEvent::read(stream, definition)?)
+            }
+            GameEventType::OvertimeNag => {
+                GameEvent::OvertimeNag(OvertimeNagEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamsChanged => {
+                GameEvent::TeamsChanged(TeamsChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenPumpkinGrab => GameEvent::HalloweenPumpkinGrab(
+                HalloweenPumpkinGrabEvent::read(stream, definition)?,
+            ),
+            GameEventType::RocketJump => {
+                GameEvent::RocketJump(RocketJumpEvent::read(stream, definition)?)
+            }
+            GameEventType::RocketJumpLanded => {
+                GameEvent::RocketJumpLanded(RocketJumpLandedEvent::read(stream, definition)?)
+            }
+            GameEventType::StickyJump => {
+                GameEvent::StickyJump(StickyJumpEvent::read(stream, definition)?)
+            }
+            GameEventType::StickyJumpLanded => {
+                GameEvent::StickyJumpLanded(StickyJumpLandedEvent::read(stream, definition)?)
+            }
+            GameEventType::RocketPackLaunch => {
+                GameEvent::RocketPackLaunch(RocketPackLaunchEvent::read(stream, definition)?)
+            }
+            GameEventType::RocketPackLanded => {
+                GameEvent::RocketPackLanded(RocketPackLandedEvent::read(stream, definition)?)
+            }
+            GameEventType::MedicDefended => {
+                GameEvent::MedicDefended(MedicDefendedEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerHealed => {
+                GameEvent::LocalPlayerHealed(LocalPlayerHealedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDestroyedPipeBomb => GameEvent::PlayerDestroyedPipeBomb(
+                PlayerDestroyedPipeBombEvent::read(stream, definition)?,
+            ),
+            GameEventType::ObjectDeflected => {
+                GameEvent::ObjectDeflected(ObjectDeflectedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerMvp => {
+                GameEvent::PlayerMvp(PlayerMvpEvent::read(stream, definition)?)
+            }
+            GameEventType::RaidSpawnMob => {
+                GameEvent::RaidSpawnMob(RaidSpawnMobEvent::read(stream, definition)?)
+            }
+            GameEventType::RaidSpawnSquad => {
+                GameEvent::RaidSpawnSquad(RaidSpawnSquadEvent::read(stream, definition)?)
+            }
+            GameEventType::NavBlocked => {
+                GameEvent::NavBlocked(NavBlockedEvent::read(stream, definition)?)
+            }
+            GameEventType::PathTrackPassed => {
+                GameEvent::PathTrackPassed(PathTrackPassedEvent::read(stream, definition)?)
+            }
+            GameEventType::NumCappersChanged => {
+                GameEvent::NumCappersChanged(NumCappersChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerRegenerate => {
+                GameEvent::PlayerRegenerate(PlayerRegenerateEvent::read(stream, definition)?)
+            }
+            GameEventType::UpdateStatusItem => {
+                GameEvent::UpdateStatusItem(UpdateStatusItemEvent::read(stream, definition)?)
+            }
+            GameEventType::StatsResetRound => {
+                GameEvent::StatsResetRound(StatsResetRoundEvent::read(stream, definition)?)
+            }
+            GameEventType::ScoreStatsAccumulatedUpdate => GameEvent::ScoreStatsAccumulatedUpdate(
+                ScoreStatsAccumulatedUpdateEvent::read(stream, definition)?,
+            ),
+            GameEventType::ScoreStatsAccumulatedReset => GameEvent::ScoreStatsAccumulatedReset(
+                ScoreStatsAccumulatedResetEvent::read(stream, definition)?,
+            ),
+            GameEventType::AchievementEarnedLocal => GameEvent::AchievementEarnedLocal(
+                AchievementEarnedLocalEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerHealed => {
+                GameEvent::PlayerHealed(PlayerHealedEvent::read(stream, definition)?)
+            }
+            GameEventType::BuildingHealed => {
+                GameEvent::BuildingHealed(BuildingHealedEvent::read(stream, definition)?)
+            }
+            GameEventType::ItemPickup => {
+                GameEvent::ItemPickup(ItemPickupEvent::read(stream, definition)?)
+            }
+            GameEventType::DuelStatus => {
+                GameEvent::DuelStatus(DuelStatusEvent::read(stream, definition)?)
+            }
+            GameEventType::FishNotice => {
+                GameEvent::FishNotice(FishNoticeEvent::read(stream, definition)?)
+            }
+            GameEventType::FishNoticeArm => {
+                GameEvent::FishNoticeArm(FishNoticeArmEvent::read(stream, definition)?)
+            }
+            GameEventType::SlapNotice => {
+                GameEvent::SlapNotice(SlapNoticeEvent::read(stream, definition)?)
+            }
+            GameEventType::ThrowableHit => {
+                GameEvent::ThrowableHit(ThrowableHitEvent::read(stream, definition)?)
+            }
+            GameEventType::PumpkinLordSummoned => {
+                GameEvent::PumpkinLordSummoned(PumpkinLordSummonedEvent::read(stream, definition)?)
+            }
+            GameEventType::PumpkinLordKilled => {
+                GameEvent::PumpkinLordKilled(PumpkinLordKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusSummoned => {
+                GameEvent::MerasmusSummoned(MerasmusSummonedEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusKilled => {
+                GameEvent::MerasmusKilled(MerasmusKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusEscapeWarning => GameEvent::MerasmusEscapeWarning(
+                MerasmusEscapeWarningEvent::read(stream, definition)?,
+            ),
+            GameEventType::MerasmusEscaped => {
+                GameEvent::MerasmusEscaped(MerasmusEscapedEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossSummoned => {
+                GameEvent::EyeballBossSummoned(EyeballBossSummonedEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossStunned => {
+                GameEvent::EyeballBossStunned(EyeballBossStunnedEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossKilled => {
+                GameEvent::EyeballBossKilled(EyeballBossKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossKiller => {
+                GameEvent::EyeballBossKiller(EyeballBossKillerEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossEscapeImminent => GameEvent::EyeballBossEscapeImminent(
+                EyeballBossEscapeImminentEvent::read(stream, definition)?,
+            ),
+            GameEventType::EyeballBossEscaped => {
+                GameEvent::EyeballBossEscaped(EyeballBossEscapedEvent::read(stream, definition)?)
+            }
+            GameEventType::NpcHurt => GameEvent::NpcHurt(NpcHurtEvent::read(stream, definition)?),
+            GameEventType::ControlPointTimerUpdated => GameEvent::ControlPointTimerUpdated(
+                ControlPointTimerUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerHighFiveStart => {
+                GameEvent::PlayerHighFiveStart(PlayerHighFiveStartEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHighFiveCancel => GameEvent::PlayerHighFiveCancel(
+                PlayerHighFiveCancelEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerHighFiveSuccess => GameEvent::PlayerHighFiveSuccess(
+                PlayerHighFiveSuccessEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerBonusPoints => {
+                GameEvent::PlayerBonusPoints(PlayerBonusPointsEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerUpgraded => {
+                GameEvent::PlayerUpgraded(PlayerUpgradedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerBuyback => {
+                GameEvent::PlayerBuyback(PlayerBuybackEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerUsedPowerUpBottle => GameEvent::PlayerUsedPowerUpBottle(
+                PlayerUsedPowerUpBottleEvent::read(stream, definition)?,
+            ),
+            GameEventType::ChristmasGiftGrab => {
+                GameEvent::ChristmasGiftGrab(ChristmasGiftGrabEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerKilledAchievementZone => GameEvent::PlayerKilledAchievementZone(
+                PlayerKilledAchievementZoneEvent::read(stream, definition)?,
+            ),
+            GameEventType::PartyUpdated => {
+                GameEvent::PartyUpdated(PartyUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyPrefChanged => {
+                GameEvent::PartyPrefChanged(PartyPrefChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyCriteriaChanged => GameEvent::PartyCriteriaChanged(
+                PartyCriteriaChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PartyInvitesChanged => {
+                GameEvent::PartyInvitesChanged(PartyInvitesChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyQueueStateChanged => GameEvent::PartyQueueStateChanged(
+                PartyQueueStateChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PartyChat => {
+                GameEvent::PartyChat(PartyChatEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyMemberJoin => {
+                GameEvent::PartyMemberJoin(PartyMemberJoinEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyMemberLeave => {
+                GameEvent::PartyMemberLeave(PartyMemberLeaveEvent::read(stream, definition)?)
+            }
+            GameEventType::MatchInvitesUpdated => {
+                GameEvent::MatchInvitesUpdated(MatchInvitesUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::LobbyUpdated => {
+                GameEvent::LobbyUpdated(LobbyUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmMissionUpdate => {
+                GameEvent::MvmMissionUpdate(MvmMissionUpdateEvent::read(stream, definition)?)
+            }
+            GameEventType::RecalculateHolidays => {
+                GameEvent::RecalculateHolidays(RecalculateHolidaysEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerCurrencyChanged => GameEvent::PlayerCurrencyChanged(
+                PlayerCurrencyChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::DoomsdayRocketOpen => {
+                GameEvent::DoomsdayRocketOpen(DoomsdayRocketOpenEvent::read(stream, definition)?)
+            }
+            GameEventType::RemoveNemesisRelationships => GameEvent::RemoveNemesisRelationships(
+                RemoveNemesisRelationshipsEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmCreditBonusWave => {
+                GameEvent::MvmCreditBonusWave(MvmCreditBonusWaveEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmCreditBonusAll => {
+                GameEvent::MvmCreditBonusAll(MvmCreditBonusAllEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmCreditBonusAllAdvanced => GameEvent::MvmCreditBonusAllAdvanced(
+                MvmCreditBonusAllAdvancedEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmQuickSentryUpgrade => GameEvent::MvmQuickSentryUpgrade(
+                MvmQuickSentryUpgradeEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmTankDestroyedByPlayers => GameEvent::MvmTankDestroyedByPlayers(
+                MvmTankDestroyedByPlayersEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmKillRobotDeliveringBomb => GameEvent::MvmKillRobotDeliveringBomb(
+                MvmKillRobotDeliveringBombEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmPickupCurrency => {
+                GameEvent::MvmPickupCurrency(MvmPickupCurrencyEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmBombCarrierKilled => GameEvent::MvmBombCarrierKilled(
+                MvmBombCarrierKilledEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmSentryBusterDetonate => GameEvent::MvmSentryBusterDetonate(
+                MvmSentryBusterDetonateEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmScoutMarkedForDeath => GameEvent::MvmScoutMarkedForDeath(
+                MvmScoutMarkedForDeathEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmMedicPowerUpShared => GameEvent::MvmMedicPowerUpShared(
+                MvmMedicPowerUpSharedEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmBeginWave => {
+                GameEvent::MvmBeginWave(MvmBeginWaveEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmWaveComplete => {
+                GameEvent::MvmWaveComplete(MvmWaveCompleteEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmMissionComplete => {
+                GameEvent::MvmMissionComplete(MvmMissionCompleteEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmBombResetByPlayer => GameEvent::MvmBombResetByPlayer(
+                MvmBombResetByPlayerEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmBombAlarmTriggered => GameEvent::MvmBombAlarmTriggered(
+                MvmBombAlarmTriggeredEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmBombDeployResetByPlayer => GameEvent::MvmBombDeployResetByPlayer(
+                MvmBombDeployResetByPlayerEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmWaveFailed => {
+                GameEvent::MvmWaveFailed(MvmWaveFailedEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmResetStats => {
+                GameEvent::MvmResetStats(MvmResetStatsEvent::read(stream, definition)?)
+            }
+            GameEventType::DamageResisted => {
+                GameEvent::DamageResisted(DamageResistedEvent::read(stream, definition)?)
+            }
+            GameEventType::RevivePlayerNotify => {
+                GameEvent::RevivePlayerNotify(RevivePlayerNotifyEvent::read(stream, definition)?)
+            }
+            GameEventType::RevivePlayerStopped => {
+                GameEvent::RevivePlayerStopped(RevivePlayerStoppedEvent::read(stream, definition)?)
+            }
+            GameEventType::RevivePlayerComplete => GameEvent::RevivePlayerComplete(
+                RevivePlayerCompleteEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerTurnedToGhost => {
+                GameEvent::PlayerTurnedToGhost(PlayerTurnedToGhostEvent::read(stream, definition)?)
+            }
+            GameEventType::MedigunShieldBlockedDamage => GameEvent::MedigunShieldBlockedDamage(
+                MedigunShieldBlockedDamageEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmAdvWaveCompleteNoGates => GameEvent::MvmAdvWaveCompleteNoGates(
+                MvmAdvWaveCompleteNoGatesEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmSniperHeadshotCurrency => GameEvent::MvmSniperHeadshotCurrency(
+                MvmSniperHeadshotCurrencyEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmMannhattanPit => {
+                GameEvent::MvmMannhattanPit(MvmMannhattanPitEvent::read(stream, definition)?)
+            }
+            GameEventType::FlagCarriedInDetectionZone => GameEvent::FlagCarriedInDetectionZone(
+                FlagCarriedInDetectionZoneEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmAdvWaveKilledStunRadio => GameEvent::MvmAdvWaveKilledStunRadio(
+                MvmAdvWaveKilledStunRadioEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerDirectHitStun => {
+                GameEvent::PlayerDirectHitStun(PlayerDirectHitStunEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmSentryBusterKilled => GameEvent::MvmSentryBusterKilled(
+                MvmSentryBusterKilledEvent::read(stream, definition)?,
+            ),
+            GameEventType::UpgradesFileChanged => {
+                GameEvent::UpgradesFileChanged(UpgradesFileChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::RdTeamPointsChanged => {
+                GameEvent::RdTeamPointsChanged(RdTeamPointsChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::RdRulesStateChanged => {
+                GameEvent::RdRulesStateChanged(RdRulesStateChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::RdRobotKilled => {
+                GameEvent::RdRobotKilled(RdRobotKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::RdRobotImpact => {
+                GameEvent::RdRobotImpact(RdRobotImpactEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayPreRoundTimeLeft => GameEvent::TeamPlayPreRoundTimeLeft(
+                TeamPlayPreRoundTimeLeftEvent::read(stream, definition)?,
+            ),
+            GameEventType::ParachuteDeploy => {
+                GameEvent::ParachuteDeploy(ParachuteDeployEvent::read(stream, definition)?)
+            }
+            GameEventType::ParachuteHolster => {
+                GameEvent::ParachuteHolster(ParachuteHolsterEvent::read(stream, definition)?)
+            }
+            GameEventType::KillRefillsMeter => {
+                GameEvent::KillRefillsMeter(KillRefillsMeterEvent::read(stream, definition)?)
+            }
+            GameEventType::RpsTauntEvent => {
+                GameEvent::RpsTauntEvent(RpsTauntEventEvent::read(stream, definition)?)
+            }
+            GameEventType::CongaKill => {
+                GameEvent::CongaKill(CongaKillEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerInitialSpawn => {
+                GameEvent::PlayerInitialSpawn(PlayerInitialSpawnEvent::read(stream, definition)?)
+            }
+            GameEventType::CompetitiveVictory => {
+                GameEvent::CompetitiveVictory(CompetitiveVictoryEvent::read(stream, definition)?)
+            }
+            GameEventType::CompetitiveStatsUpdate => GameEvent::CompetitiveStatsUpdate(
+                CompetitiveStatsUpdateEvent::read(stream, definition)?,
+            ),
+            GameEventType::MiniGameWin => {
+                GameEvent::MiniGameWin(MiniGameWinEvent::read(stream, definition)?)
+            }
+            GameEventType::SentryOnGoActive => {
+                GameEvent::SentryOnGoActive(SentryOnGoActiveEvent::read(stream, definition)?)
+            }
+            GameEventType::DuckXpLevelUp => {
+                GameEvent::DuckXpLevelUp(DuckXpLevelUpEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestLogOpened => {
+                GameEvent::QuestLogOpened(QuestLogOpenedEvent::read(stream, definition)?)
+            }
+            GameEventType::SchemaUpdated => {
+                GameEvent::SchemaUpdated(SchemaUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerPickupWeapon => GameEvent::LocalPlayerPickupWeapon(
+                LocalPlayerPickupWeaponEvent::read(stream, definition)?,
+            ),
+            GameEventType::RdPlayerScorePoints => {
+                GameEvent::RdPlayerScorePoints(RdPlayerScorePointsEvent::read(stream, definition)?)
+            }
+            GameEventType::DemomanDetStickies => {
+                GameEvent::DemomanDetStickies(DemomanDetStickiesEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestObjectiveCompleted => GameEvent::QuestObjectiveCompleted(
+                QuestObjectiveCompletedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerScoreChanged => {
+                GameEvent::PlayerScoreChanged(PlayerScoreChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::KilledCappingPlayer => {
+                GameEvent::KilledCappingPlayer(KilledCappingPlayerEvent::read(stream, definition)?)
+            }
+            GameEventType::EnvironmentalDeath => {
+                GameEvent::EnvironmentalDeath(EnvironmentalDeathEvent::read(stream, definition)?)
+            }
+            GameEventType::ProjectileDirectHit => {
+                GameEvent::ProjectileDirectHit(ProjectileDirectHitEvent::read(stream, definition)?)
+            }
+            GameEventType::PassGet => GameEvent::PassGet(PassGetEvent::read(stream, definition)?),
+            GameEventType::PassScore => {
+                GameEvent::PassScore(PassScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::PassFree => {
+                GameEvent::PassFree(PassFreeEvent::read(stream, definition)?)
+            }
+            GameEventType::PassPassCaught => {
+                GameEvent::PassPassCaught(PassPassCaughtEvent::read(stream, definition)?)
+            }
+            GameEventType::PassBallStolen => {
+                GameEvent::PassBallStolen(PassBallStolenEvent::read(stream, definition)?)
+            }
+            GameEventType::PassBallBlocked => {
+                GameEvent::PassBallBlocked(PassBallBlockedEvent::read(stream, definition)?)
+            }
+            GameEventType::DamagePrevented => {
+                GameEvent::DamagePrevented(DamagePreventedEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenBossKilled => {
+                GameEvent::HalloweenBossKilled(HalloweenBossKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::EscapedLootIsland => {
+                GameEvent::EscapedLootIsland(EscapedLootIslandEvent::read(stream, definition)?)
+            }
+            GameEventType::TaggedPlayerAsIt => {
+                GameEvent::TaggedPlayerAsIt(TaggedPlayerAsItEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusStunned => {
+                GameEvent::MerasmusStunned(MerasmusStunnedEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusPropFound => {
+                GameEvent::MerasmusPropFound(MerasmusPropFoundEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenSkeletonKilled => GameEvent::HalloweenSkeletonKilled(
+                HalloweenSkeletonKilledEvent::read(stream, definition)?,
+            ),
+            GameEventType::EscapeHell => {
+                GameEvent::EscapeHell(EscapeHellEvent::read(stream, definition)?)
+            }
+            GameEventType::CrossSpectralBridge => {
+                GameEvent::CrossSpectralBridge(CrossSpectralBridgeEvent::read(stream, definition)?)
+            }
+            GameEventType::MiniGameWon => {
+                GameEvent::MiniGameWon(MiniGameWonEvent::read(stream, definition)?)
+            }
+            GameEventType::RespawnGhost => {
+                GameEvent::RespawnGhost(RespawnGhostEvent::read(stream, definition)?)
+            }
+            GameEventType::KillInHell => {
+                GameEvent::KillInHell(KillInHellEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenDuckCollected => GameEvent::HalloweenDuckCollected(
+                HalloweenDuckCollectedEvent::read(stream, definition)?,
+            ),
+            GameEventType::SpecialScore => {
+                GameEvent::SpecialScore(SpecialScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamLeaderKilled => {
+                GameEvent::TeamLeaderKilled(TeamLeaderKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenSoulCollected => GameEvent::HalloweenSoulCollected(
+                HalloweenSoulCollectedEvent::read(stream, definition)?,
+            ),
+            GameEventType::RecalculateTruce => {
+                GameEvent::RecalculateTruce(RecalculateTruceEvent::read(stream, definition)?)
+            }
+            GameEventType::DeadRingerCheatDeath => GameEvent::DeadRingerCheatDeath(
+                DeadRingerCheatDeathEvent::read(stream, definition)?,
+            ),
+            GameEventType::CrossbowHeal => {
+                GameEvent::CrossbowHeal(CrossbowHealEvent::read(stream, definition)?)
+            }
+            GameEventType::DamageMitigated => {
+                GameEvent::DamageMitigated(DamageMitigatedEvent::read(stream, definition)?)
+            }
+            GameEventType::PayloadPushed => {
+                GameEvent::PayloadPushed(PayloadPushedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerAbandonedMatch => GameEvent::PlayerAbandonedMatch(
+                PlayerAbandonedMatchEvent::read(stream, definition)?,
+            ),
+            GameEventType::ClDrawline => {
+                GameEvent::ClDrawline(ClDrawlineEvent::read(stream, definition)?)
+            }
+            GameEventType::RestartTimerTime => {
+                GameEvent::RestartTimerTime(RestartTimerTimeEvent::read(stream, definition)?)
+            }
+            GameEventType::WinLimitChanged => {
+                GameEvent::WinLimitChanged(WinLimitChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::WinPanelShowScores => {
+                GameEvent::WinPanelShowScores(WinPanelShowScoresEvent::read(stream, definition)?)
+            }
+            GameEventType::TopStreamsRequestFinished => GameEvent::TopStreamsRequestFinished(
+                TopStreamsRequestFinishedEvent::read(stream, definition)?,
+            ),
+            GameEventType::CompetitiveStateChanged => GameEvent::CompetitiveStateChanged(
+                CompetitiveStateChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::GlobalWarDataUpdated => GameEvent::GlobalWarDataUpdated(
+                GlobalWarDataUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::StopWatchChanged => {
+                GameEvent::StopWatchChanged(StopWatchChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::DsStop => GameEvent::DsStop(DsStopEvent::read(stream, definition)?),
+            GameEventType::DsScreenshot => {
+                GameEvent::DsScreenshot(DsScreenshotEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowMatchSummary => {
+                GameEvent::ShowMatchSummary(ShowMatchSummaryEvent::read(stream, definition)?)
+            }
+            GameEventType::ExperienceChanged => {
+                GameEvent::ExperienceChanged(ExperienceChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::BeginXpLerp => {
+                GameEvent::BeginXpLerp(BeginXpLerpEvent::read(stream, definition)?)
+            }
+            GameEventType::MatchmakerStatsUpdated => GameEvent::MatchmakerStatsUpdated(
+                MatchmakerStatsUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::RematchVotePeriodOver => GameEvent::RematchVotePeriodOver(
+                RematchVotePeriodOverEvent::read(stream, definition)?,
+            ),
+            GameEventType::RematchFailedToCreate => GameEvent::RematchFailedToCreate(
+                RematchFailedToCreateEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerRematchChange => {
+                GameEvent::PlayerRematchChange(PlayerRematchChangeEvent::read(stream, definition)?)
+            }
+            GameEventType::PingUpdated => {
+                GameEvent::PingUpdated(PingUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::MMStatsUpdated => {
+                GameEvent::MMStatsUpdated(MMStatsUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerNextMapVoteChange => GameEvent::PlayerNextMapVoteChange(
+                PlayerNextMapVoteChangeEvent::read(stream, definition)?,
+            ),
+            GameEventType::VoteMapsChanged => {
+                GameEvent::VoteMapsChanged(VoteMapsChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::ProtoDefChanged => {
+                GameEvent::ProtoDefChanged(ProtoDefChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDomination => {
+                GameEvent::PlayerDomination(PlayerDominationEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerRocketPackPushed => GameEvent::PlayerRocketPackPushed(
+                PlayerRocketPackPushedEvent::read(stream, definition)?,
+            ),
+            GameEventType::QuestRequest => {
+                GameEvent::QuestRequest(QuestRequestEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestResponse => {
+                GameEvent::QuestResponse(QuestResponseEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestProgress => {
+                GameEvent::QuestProgress(QuestProgressEvent::read(stream, definition)?)
+            }
+            GameEventType::ProjectileRemoved => {
+                GameEvent::ProjectileRemoved(ProjectileRemovedEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestMapDataChanged => {
+                GameEvent::QuestMapDataChanged(QuestMapDataChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::GasDousedPlayerIgnited => GameEvent::GasDousedPlayerIgnited(
+                GasDousedPlayerIgnitedEvent::read(stream, definition)?,
+            ),
+            GameEventType::QuestTurnInState => {
+                GameEvent::QuestTurnInState(QuestTurnInStateEvent::read(stream, definition)?)
+            }
+            GameEventType::ItemsAcknowledged => {
+                GameEvent::ItemsAcknowledged(ItemsAcknowledgedEvent::read(stream, definition)?)
+            }
+            GameEventType::CapperKilled => {
+                GameEvent::CapperKilled(CapperKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::MainMenuStabilized => {
+                GameEvent::MainMenuStabilized(MainMenuStabilizedEvent::read(stream, definition)?)
+            }
+            GameEventType::WorldStatusChanged => {
+                GameEvent::WorldStatusChanged(WorldStatusChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVStatus => {
+                GameEvent::HLTVStatus(HLTVStatusEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVCameraman => {
+                GameEvent::HLTVCameraman(HLTVCameramanEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVRankCamera => {
+                GameEvent::HLTVRankCamera(HLTVRankCameraEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVRankEntity => {
+                GameEvent::HLTVRankEntity(HLTVRankEntityEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVFixed => {
+                GameEvent::HLTVFixed(HLTVFixedEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVChase => {
+                GameEvent::HLTVChase(HLTVChaseEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVMessage => {
+                GameEvent::HLTVMessage(HLTVMessageEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVTitle => {
+                GameEvent::HLTVTitle(HLTVTitleEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVChat => {
+                GameEvent::HLTVChat(HLTVChatEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplayStartRecord => {
+                GameEvent::ReplayStartRecord(ReplayStartRecordEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplaySessionInfo => {
+                GameEvent::ReplaySessionInfo(ReplaySessionInfoEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplayEndRecord => {
+                GameEvent::ReplayEndRecord(ReplayEndRecordEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplayReplaysAvailable => GameEvent::ReplayReplaysAvailable(
+                ReplayReplaysAvailableEvent::read(stream, definition)?,
+            ),
+            GameEventType::ReplayServerError => {
+                GameEvent::ReplayServerError(ReplayServerErrorEvent::read(stream, definition)?)
+            }
+            GameEventType::Unknown(_) => {
+                GameEvent::Unknown(RawGameEvent::read(stream, definition)?)
+            }
+        })
     }
-    pub fn write(
-        &self,
-        stream: &mut BitWriteStream<LittleEndian>,
-    ) -> bitbuffer::Result<()> {
+    pub fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
         match &self {
             GameEvent::ServerSpawn(event) => event.write(stream),
             GameEvent::ServerChangeLevelFailed(event) => event.write(stream),
@@ -10279,26 +9517,53 @@ impl GameEvent {
 pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
     [
         ("ServerSpawn", std::mem::size_of::<ServerSpawnEvent>()),
-        ("ServerChangeLevelFailed", std::mem::size_of::<ServerChangeLevelFailedEvent>()),
+        (
+            "ServerChangeLevelFailed",
+            std::mem::size_of::<ServerChangeLevelFailedEvent>(),
+        ),
         ("ServerShutdown", std::mem::size_of::<ServerShutdownEvent>()),
         ("ServerCvar", std::mem::size_of::<ServerCvarEvent>()),
         ("ServerMessage", std::mem::size_of::<ServerMessageEvent>()),
         ("ServerAddBan", std::mem::size_of::<ServerAddBanEvent>()),
-        ("ServerRemoveBan", std::mem::size_of::<ServerRemoveBanEvent>()),
+        (
+            "ServerRemoveBan",
+            std::mem::size_of::<ServerRemoveBanEvent>(),
+        ),
         ("PlayerConnect", std::mem::size_of::<PlayerConnectEvent>()),
-        ("PlayerConnectClient", std::mem::size_of::<PlayerConnectClientEvent>()),
+        (
+            "PlayerConnectClient",
+            std::mem::size_of::<PlayerConnectClientEvent>(),
+        ),
         ("PlayerInfo", std::mem::size_of::<PlayerInfoEvent>()),
-        ("PlayerDisconnect", std::mem::size_of::<PlayerDisconnectEvent>()),
+        (
+            "PlayerDisconnect",
+            std::mem::size_of::<PlayerDisconnectEvent>(),
+        ),
         ("PlayerActivate", std::mem::size_of::<PlayerActivateEvent>()),
         ("PlayerSay", std::mem::size_of::<PlayerSayEvent>()),
-        ("ClientDisconnect", std::mem::size_of::<ClientDisconnectEvent>()),
-        ("ClientBeginConnect", std::mem::size_of::<ClientBeginConnectEvent>()),
-        ("ClientConnected", std::mem::size_of::<ClientConnectedEvent>()),
-        ("ClientFullConnect", std::mem::size_of::<ClientFullConnectEvent>()),
+        (
+            "ClientDisconnect",
+            std::mem::size_of::<ClientDisconnectEvent>(),
+        ),
+        (
+            "ClientBeginConnect",
+            std::mem::size_of::<ClientBeginConnectEvent>(),
+        ),
+        (
+            "ClientConnected",
+            std::mem::size_of::<ClientConnectedEvent>(),
+        ),
+        (
+            "ClientFullConnect",
+            std::mem::size_of::<ClientFullConnectEvent>(),
+        ),
         ("HostQuit", std::mem::size_of::<HostQuitEvent>()),
         ("TeamInfo", std::mem::size_of::<TeamInfoEvent>()),
         ("TeamScore", std::mem::size_of::<TeamScoreEvent>()),
-        ("TeamPlayBroadcastAudio", std::mem::size_of::<TeamPlayBroadcastAudioEvent>()),
+        (
+            "TeamPlayBroadcastAudio",
+            std::mem::size_of::<TeamPlayBroadcastAudioEvent>(),
+        ),
         ("PlayerTeam", std::mem::size_of::<PlayerTeamEvent>()),
         ("PlayerClass", std::mem::size_of::<PlayerClassEvent>()),
         ("PlayerDeath", std::mem::size_of::<PlayerDeathEvent>()),
@@ -10308,9 +9573,18 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("PlayerSpawn", std::mem::size_of::<PlayerSpawnEvent>()),
         ("PlayerShoot", std::mem::size_of::<PlayerShootEvent>()),
         ("PlayerUse", std::mem::size_of::<PlayerUseEvent>()),
-        ("PlayerChangeName", std::mem::size_of::<PlayerChangeNameEvent>()),
-        ("PlayerHintMessage", std::mem::size_of::<PlayerHintMessageEvent>()),
-        ("BasePlayerTeleported", std::mem::size_of::<BasePlayerTeleportedEvent>()),
+        (
+            "PlayerChangeName",
+            std::mem::size_of::<PlayerChangeNameEvent>(),
+        ),
+        (
+            "PlayerHintMessage",
+            std::mem::size_of::<PlayerHintMessageEvent>(),
+        ),
+        (
+            "BasePlayerTeleported",
+            std::mem::size_of::<BasePlayerTeleportedEvent>(),
+        ),
         ("GameInit", std::mem::size_of::<GameInitEvent>()),
         ("GameNewMap", std::mem::size_of::<GameNewMapEvent>()),
         ("GameStart", std::mem::size_of::<GameStartEvent>()),
@@ -10322,18 +9596,36 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("BreakProp", std::mem::size_of::<BreakPropEvent>()),
         ("EntityKilled", std::mem::size_of::<EntityKilledEvent>()),
         ("BonusUpdated", std::mem::size_of::<BonusUpdatedEvent>()),
-        ("AchievementEvent", std::mem::size_of::<AchievementEventEvent>()),
-        ("AchievementIncrement", std::mem::size_of::<AchievementIncrementEvent>()),
+        (
+            "AchievementEvent",
+            std::mem::size_of::<AchievementEventEvent>(),
+        ),
+        (
+            "AchievementIncrement",
+            std::mem::size_of::<AchievementIncrementEvent>(),
+        ),
         ("PhysgunPickup", std::mem::size_of::<PhysgunPickupEvent>()),
         ("FlareIgniteNpc", std::mem::size_of::<FlareIgniteNpcEvent>()),
         (
             "HelicopterGrenadePuntMiss",
             std::mem::size_of::<HelicopterGrenadePuntMissEvent>(),
         ),
-        ("UserDataDownloaded", std::mem::size_of::<UserDataDownloadedEvent>()),
-        ("RagdollDissolved", std::mem::size_of::<RagdollDissolvedEvent>()),
-        ("HLTVChangedMode", std::mem::size_of::<HLTVChangedModeEvent>()),
-        ("HLTVChangedTarget", std::mem::size_of::<HLTVChangedTargetEvent>()),
+        (
+            "UserDataDownloaded",
+            std::mem::size_of::<UserDataDownloadedEvent>(),
+        ),
+        (
+            "RagdollDissolved",
+            std::mem::size_of::<RagdollDissolvedEvent>(),
+        ),
+        (
+            "HLTVChangedMode",
+            std::mem::size_of::<HLTVChangedModeEvent>(),
+        ),
+        (
+            "HLTVChangedTarget",
+            std::mem::size_of::<HLTVChangedTargetEvent>(),
+        ),
         ("VoteEnded", std::mem::size_of::<VoteEndedEvent>()),
         ("VoteStarted", std::mem::size_of::<VoteStartedEvent>()),
         ("VoteChanged", std::mem::size_of::<VoteChangedEvent>()),
@@ -10342,23 +9634,56 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("VoteCast", std::mem::size_of::<VoteCastEvent>()),
         ("VoteOptions", std::mem::size_of::<VoteOptionsEvent>()),
         ("ReplaySaved", std::mem::size_of::<ReplaySavedEvent>()),
-        ("EnteredPerformanceMode", std::mem::size_of::<EnteredPerformanceModeEvent>()),
+        (
+            "EnteredPerformanceMode",
+            std::mem::size_of::<EnteredPerformanceModeEvent>(),
+        ),
         ("BrowseReplays", std::mem::size_of::<BrowseReplaysEvent>()),
-        ("ReplayYoutubeStats", std::mem::size_of::<ReplayYoutubeStatsEvent>()),
-        ("InventoryUpdated", std::mem::size_of::<InventoryUpdatedEvent>()),
+        (
+            "ReplayYoutubeStats",
+            std::mem::size_of::<ReplayYoutubeStatsEvent>(),
+        ),
+        (
+            "InventoryUpdated",
+            std::mem::size_of::<InventoryUpdatedEvent>(),
+        ),
         ("CartUpdated", std::mem::size_of::<CartUpdatedEvent>()),
-        ("StorePriceSheetUpdated", std::mem::size_of::<StorePriceSheetUpdatedEvent>()),
-        ("EconInventoryConnected", std::mem::size_of::<EconInventoryConnectedEvent>()),
-        ("ItemSchemaInitialized", std::mem::size_of::<ItemSchemaInitializedEvent>()),
+        (
+            "StorePriceSheetUpdated",
+            std::mem::size_of::<StorePriceSheetUpdatedEvent>(),
+        ),
+        (
+            "EconInventoryConnected",
+            std::mem::size_of::<EconInventoryConnectedEvent>(),
+        ),
+        (
+            "ItemSchemaInitialized",
+            std::mem::size_of::<ItemSchemaInitializedEvent>(),
+        ),
         ("GcNewSession", std::mem::size_of::<GcNewSessionEvent>()),
         ("GcLostSession", std::mem::size_of::<GcLostSessionEvent>()),
         ("IntroFinish", std::mem::size_of::<IntroFinishEvent>()),
-        ("IntroNextCamera", std::mem::size_of::<IntroNextCameraEvent>()),
-        ("PlayerChangeClass", std::mem::size_of::<PlayerChangeClassEvent>()),
-        ("TfMapTimeRemaining", std::mem::size_of::<TfMapTimeRemainingEvent>()),
+        (
+            "IntroNextCamera",
+            std::mem::size_of::<IntroNextCameraEvent>(),
+        ),
+        (
+            "PlayerChangeClass",
+            std::mem::size_of::<PlayerChangeClassEvent>(),
+        ),
+        (
+            "TfMapTimeRemaining",
+            std::mem::size_of::<TfMapTimeRemainingEvent>(),
+        ),
         ("TfGameOver", std::mem::size_of::<TfGameOverEvent>()),
-        ("CtfFlagCaptured", std::mem::size_of::<CtfFlagCapturedEvent>()),
-        ("ControlPointInitialized", std::mem::size_of::<ControlPointInitializedEvent>()),
+        (
+            "CtfFlagCaptured",
+            std::mem::size_of::<CtfFlagCapturedEvent>(),
+        ),
+        (
+            "ControlPointInitialized",
+            std::mem::size_of::<ControlPointInitializedEvent>(),
+        ),
         (
             "ControlPointUpdateImages",
             std::mem::size_of::<ControlPointUpdateImagesEvent>(),
@@ -10371,144 +9696,366 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "ControlPointUpdateCapping",
             std::mem::size_of::<ControlPointUpdateCappingEvent>(),
         ),
-        ("ControlPointUpdateOwner", std::mem::size_of::<ControlPointUpdateOwnerEvent>()),
-        ("ControlPointStartTouch", std::mem::size_of::<ControlPointStartTouchEvent>()),
-        ("ControlPointEndTouch", std::mem::size_of::<ControlPointEndTouchEvent>()),
+        (
+            "ControlPointUpdateOwner",
+            std::mem::size_of::<ControlPointUpdateOwnerEvent>(),
+        ),
+        (
+            "ControlPointStartTouch",
+            std::mem::size_of::<ControlPointStartTouchEvent>(),
+        ),
+        (
+            "ControlPointEndTouch",
+            std::mem::size_of::<ControlPointEndTouchEvent>(),
+        ),
         (
             "ControlPointPulseElement",
             std::mem::size_of::<ControlPointPulseElementEvent>(),
         ),
-        ("ControlPointFakeCapture", std::mem::size_of::<ControlPointFakeCaptureEvent>()),
+        (
+            "ControlPointFakeCapture",
+            std::mem::size_of::<ControlPointFakeCaptureEvent>(),
+        ),
         (
             "ControlPointFakeCaptureMultiplier",
             std::mem::size_of::<ControlPointFakeCaptureMultiplierEvent>(),
         ),
-        ("TeamPlayRoundSelected", std::mem::size_of::<TeamPlayRoundSelectedEvent>()),
-        ("TeamPlayRoundStart", std::mem::size_of::<TeamPlayRoundStartEvent>()),
-        ("TeamPlayRoundActive", std::mem::size_of::<TeamPlayRoundActiveEvent>()),
-        ("TeamPlayWaitingBegins", std::mem::size_of::<TeamPlayWaitingBeginsEvent>()),
-        ("TeamPlayWaitingEnds", std::mem::size_of::<TeamPlayWaitingEndsEvent>()),
+        (
+            "TeamPlayRoundSelected",
+            std::mem::size_of::<TeamPlayRoundSelectedEvent>(),
+        ),
+        (
+            "TeamPlayRoundStart",
+            std::mem::size_of::<TeamPlayRoundStartEvent>(),
+        ),
+        (
+            "TeamPlayRoundActive",
+            std::mem::size_of::<TeamPlayRoundActiveEvent>(),
+        ),
+        (
+            "TeamPlayWaitingBegins",
+            std::mem::size_of::<TeamPlayWaitingBeginsEvent>(),
+        ),
+        (
+            "TeamPlayWaitingEnds",
+            std::mem::size_of::<TeamPlayWaitingEndsEvent>(),
+        ),
         (
             "TeamPlayWaitingAboutToEnd",
             std::mem::size_of::<TeamPlayWaitingAboutToEndEvent>(),
         ),
-        ("TeamPlayRestartRound", std::mem::size_of::<TeamPlayRestartRoundEvent>()),
-        ("TeamPlayReadyRestart", std::mem::size_of::<TeamPlayReadyRestartEvent>()),
+        (
+            "TeamPlayRestartRound",
+            std::mem::size_of::<TeamPlayRestartRoundEvent>(),
+        ),
+        (
+            "TeamPlayReadyRestart",
+            std::mem::size_of::<TeamPlayReadyRestartEvent>(),
+        ),
         (
             "TeamPlayRoundRestartSeconds",
             std::mem::size_of::<TeamPlayRoundRestartSecondsEvent>(),
         ),
-        ("TeamPlayTeamReady", std::mem::size_of::<TeamPlayTeamReadyEvent>()),
-        ("TeamPlayRoundWin", std::mem::size_of::<TeamPlayRoundWinEvent>()),
-        ("TeamPlayUpdateTimer", std::mem::size_of::<TeamPlayUpdateTimerEvent>()),
-        ("TeamPlayRoundStalemate", std::mem::size_of::<TeamPlayRoundStalemateEvent>()),
-        ("TeamPlayOvertimeBegin", std::mem::size_of::<TeamPlayOvertimeBeginEvent>()),
-        ("TeamPlayOvertimeEnd", std::mem::size_of::<TeamPlayOvertimeEndEvent>()),
+        (
+            "TeamPlayTeamReady",
+            std::mem::size_of::<TeamPlayTeamReadyEvent>(),
+        ),
+        (
+            "TeamPlayRoundWin",
+            std::mem::size_of::<TeamPlayRoundWinEvent>(),
+        ),
+        (
+            "TeamPlayUpdateTimer",
+            std::mem::size_of::<TeamPlayUpdateTimerEvent>(),
+        ),
+        (
+            "TeamPlayRoundStalemate",
+            std::mem::size_of::<TeamPlayRoundStalemateEvent>(),
+        ),
+        (
+            "TeamPlayOvertimeBegin",
+            std::mem::size_of::<TeamPlayOvertimeBeginEvent>(),
+        ),
+        (
+            "TeamPlayOvertimeEnd",
+            std::mem::size_of::<TeamPlayOvertimeEndEvent>(),
+        ),
         (
             "TeamPlaySuddenDeathBegin",
             std::mem::size_of::<TeamPlaySuddenDeathBeginEvent>(),
         ),
-        ("TeamPlaySuddenDeathEnd", std::mem::size_of::<TeamPlaySuddenDeathEndEvent>()),
-        ("TeamPlayGameOver", std::mem::size_of::<TeamPlayGameOverEvent>()),
+        (
+            "TeamPlaySuddenDeathEnd",
+            std::mem::size_of::<TeamPlaySuddenDeathEndEvent>(),
+        ),
+        (
+            "TeamPlayGameOver",
+            std::mem::size_of::<TeamPlayGameOverEvent>(),
+        ),
         (
             "TeamPlayMapTimeRemaining",
             std::mem::size_of::<TeamPlayMapTimeRemainingEvent>(),
         ),
-        ("TeamPlayTimerFlash", std::mem::size_of::<TeamPlayTimerFlashEvent>()),
-        ("TeamPlayTimerTimeAdded", std::mem::size_of::<TeamPlayTimerTimeAddedEvent>()),
+        (
+            "TeamPlayTimerFlash",
+            std::mem::size_of::<TeamPlayTimerFlashEvent>(),
+        ),
+        (
+            "TeamPlayTimerTimeAdded",
+            std::mem::size_of::<TeamPlayTimerTimeAddedEvent>(),
+        ),
         (
             "TeamPlayPointStartCapture",
             std::mem::size_of::<TeamPlayPointStartCaptureEvent>(),
         ),
-        ("TeamPlayPointCaptured", std::mem::size_of::<TeamPlayPointCapturedEvent>()),
-        ("TeamPlayPointLocked", std::mem::size_of::<TeamPlayPointLockedEvent>()),
-        ("TeamPlayPointUnlocked", std::mem::size_of::<TeamPlayPointUnlockedEvent>()),
-        ("TeamPlayCaptureBroken", std::mem::size_of::<TeamPlayCaptureBrokenEvent>()),
-        ("TeamPlayCaptureBlocked", std::mem::size_of::<TeamPlayCaptureBlockedEvent>()),
-        ("TeamPlayFlagEvent", std::mem::size_of::<TeamPlayFlagEventEvent>()),
-        ("TeamPlayWinPanel", std::mem::size_of::<TeamPlayWinPanelEvent>()),
+        (
+            "TeamPlayPointCaptured",
+            std::mem::size_of::<TeamPlayPointCapturedEvent>(),
+        ),
+        (
+            "TeamPlayPointLocked",
+            std::mem::size_of::<TeamPlayPointLockedEvent>(),
+        ),
+        (
+            "TeamPlayPointUnlocked",
+            std::mem::size_of::<TeamPlayPointUnlockedEvent>(),
+        ),
+        (
+            "TeamPlayCaptureBroken",
+            std::mem::size_of::<TeamPlayCaptureBrokenEvent>(),
+        ),
+        (
+            "TeamPlayCaptureBlocked",
+            std::mem::size_of::<TeamPlayCaptureBlockedEvent>(),
+        ),
+        (
+            "TeamPlayFlagEvent",
+            std::mem::size_of::<TeamPlayFlagEventEvent>(),
+        ),
+        (
+            "TeamPlayWinPanel",
+            std::mem::size_of::<TeamPlayWinPanelEvent>(),
+        ),
         (
             "TeamPlayTeamBalancedPlayer",
             std::mem::size_of::<TeamPlayTeamBalancedPlayerEvent>(),
         ),
-        ("TeamPlaySetupFinished", std::mem::size_of::<TeamPlaySetupFinishedEvent>()),
+        (
+            "TeamPlaySetupFinished",
+            std::mem::size_of::<TeamPlaySetupFinishedEvent>(),
+        ),
         ("TeamPlayAlert", std::mem::size_of::<TeamPlayAlertEvent>()),
-        ("TrainingComplete", std::mem::size_of::<TrainingCompleteEvent>()),
-        ("ShowFreezePanel", std::mem::size_of::<ShowFreezePanelEvent>()),
-        ("HideFreezePanel", std::mem::size_of::<HideFreezePanelEvent>()),
-        ("FreezeCamStarted", std::mem::size_of::<FreezeCamStartedEvent>()),
-        ("LocalPlayerChangeTeam", std::mem::size_of::<LocalPlayerChangeTeamEvent>()),
-        ("LocalPlayerScoreChanged", std::mem::size_of::<LocalPlayerScoreChangedEvent>()),
-        ("LocalPlayerChangeClass", std::mem::size_of::<LocalPlayerChangeClassEvent>()),
-        ("LocalPlayerRespawn", std::mem::size_of::<LocalPlayerRespawnEvent>()),
-        ("BuildingInfoChanged", std::mem::size_of::<BuildingInfoChangedEvent>()),
+        (
+            "TrainingComplete",
+            std::mem::size_of::<TrainingCompleteEvent>(),
+        ),
+        (
+            "ShowFreezePanel",
+            std::mem::size_of::<ShowFreezePanelEvent>(),
+        ),
+        (
+            "HideFreezePanel",
+            std::mem::size_of::<HideFreezePanelEvent>(),
+        ),
+        (
+            "FreezeCamStarted",
+            std::mem::size_of::<FreezeCamStartedEvent>(),
+        ),
+        (
+            "LocalPlayerChangeTeam",
+            std::mem::size_of::<LocalPlayerChangeTeamEvent>(),
+        ),
+        (
+            "LocalPlayerScoreChanged",
+            std::mem::size_of::<LocalPlayerScoreChangedEvent>(),
+        ),
+        (
+            "LocalPlayerChangeClass",
+            std::mem::size_of::<LocalPlayerChangeClassEvent>(),
+        ),
+        (
+            "LocalPlayerRespawn",
+            std::mem::size_of::<LocalPlayerRespawnEvent>(),
+        ),
+        (
+            "BuildingInfoChanged",
+            std::mem::size_of::<BuildingInfoChangedEvent>(),
+        ),
         (
             "LocalPlayerChangeDisguise",
             std::mem::size_of::<LocalPlayerChangeDisguiseEvent>(),
         ),
-        ("PlayerAccountChanged", std::mem::size_of::<PlayerAccountChangedEvent>()),
+        (
+            "PlayerAccountChanged",
+            std::mem::size_of::<PlayerAccountChangedEvent>(),
+        ),
         ("SpyPdaReset", std::mem::size_of::<SpyPdaResetEvent>()),
-        ("FlagStatusUpdate", std::mem::size_of::<FlagStatusUpdateEvent>()),
-        ("PlayerStatsUpdated", std::mem::size_of::<PlayerStatsUpdatedEvent>()),
-        ("PlayingCommentary", std::mem::size_of::<PlayingCommentaryEvent>()),
-        ("PlayerChargeDeployed", std::mem::size_of::<PlayerChargeDeployedEvent>()),
-        ("PlayerBuiltObject", std::mem::size_of::<PlayerBuiltObjectEvent>()),
-        ("PlayerUpgradedObject", std::mem::size_of::<PlayerUpgradedObjectEvent>()),
-        ("PlayerCarryObject", std::mem::size_of::<PlayerCarryObjectEvent>()),
-        ("PlayerDropObject", std::mem::size_of::<PlayerDropObjectEvent>()),
+        (
+            "FlagStatusUpdate",
+            std::mem::size_of::<FlagStatusUpdateEvent>(),
+        ),
+        (
+            "PlayerStatsUpdated",
+            std::mem::size_of::<PlayerStatsUpdatedEvent>(),
+        ),
+        (
+            "PlayingCommentary",
+            std::mem::size_of::<PlayingCommentaryEvent>(),
+        ),
+        (
+            "PlayerChargeDeployed",
+            std::mem::size_of::<PlayerChargeDeployedEvent>(),
+        ),
+        (
+            "PlayerBuiltObject",
+            std::mem::size_of::<PlayerBuiltObjectEvent>(),
+        ),
+        (
+            "PlayerUpgradedObject",
+            std::mem::size_of::<PlayerUpgradedObjectEvent>(),
+        ),
+        (
+            "PlayerCarryObject",
+            std::mem::size_of::<PlayerCarryObjectEvent>(),
+        ),
+        (
+            "PlayerDropObject",
+            std::mem::size_of::<PlayerDropObjectEvent>(),
+        ),
         ("ObjectRemoved", std::mem::size_of::<ObjectRemovedEvent>()),
-        ("ObjectDestroyed", std::mem::size_of::<ObjectDestroyedEvent>()),
-        ("ObjectDetonated", std::mem::size_of::<ObjectDetonatedEvent>()),
-        ("AchievementEarned", std::mem::size_of::<AchievementEarnedEvent>()),
-        ("SpecTargetUpdated", std::mem::size_of::<SpecTargetUpdatedEvent>()),
-        ("TournamentStateUpdate", std::mem::size_of::<TournamentStateUpdateEvent>()),
+        (
+            "ObjectDestroyed",
+            std::mem::size_of::<ObjectDestroyedEvent>(),
+        ),
+        (
+            "ObjectDetonated",
+            std::mem::size_of::<ObjectDetonatedEvent>(),
+        ),
+        (
+            "AchievementEarned",
+            std::mem::size_of::<AchievementEarnedEvent>(),
+        ),
+        (
+            "SpecTargetUpdated",
+            std::mem::size_of::<SpecTargetUpdatedEvent>(),
+        ),
+        (
+            "TournamentStateUpdate",
+            std::mem::size_of::<TournamentStateUpdateEvent>(),
+        ),
         (
             "TournamentEnableCountdown",
             std::mem::size_of::<TournamentEnableCountdownEvent>(),
         ),
-        ("PlayerCalledForMedic", std::mem::size_of::<PlayerCalledForMedicEvent>()),
-        ("PlayerAskedForBall", std::mem::size_of::<PlayerAskedForBallEvent>()),
+        (
+            "PlayerCalledForMedic",
+            std::mem::size_of::<PlayerCalledForMedicEvent>(),
+        ),
+        (
+            "PlayerAskedForBall",
+            std::mem::size_of::<PlayerAskedForBallEvent>(),
+        ),
         (
             "LocalPlayerBecameObserver",
             std::mem::size_of::<LocalPlayerBecameObserverEvent>(),
         ),
-        ("PlayerIgnitedInv", std::mem::size_of::<PlayerIgnitedInvEvent>()),
+        (
+            "PlayerIgnitedInv",
+            std::mem::size_of::<PlayerIgnitedInvEvent>(),
+        ),
         ("PlayerIgnited", std::mem::size_of::<PlayerIgnitedEvent>()),
-        ("PlayerExtinguished", std::mem::size_of::<PlayerExtinguishedEvent>()),
-        ("PlayerTeleported", std::mem::size_of::<PlayerTeleportedEvent>()),
-        ("PlayerHealedMedicCall", std::mem::size_of::<PlayerHealedMedicCallEvent>()),
-        ("LocalPlayerChargeReady", std::mem::size_of::<LocalPlayerChargeReadyEvent>()),
-        ("LocalPlayerWindDown", std::mem::size_of::<LocalPlayerWindDownEvent>()),
+        (
+            "PlayerExtinguished",
+            std::mem::size_of::<PlayerExtinguishedEvent>(),
+        ),
+        (
+            "PlayerTeleported",
+            std::mem::size_of::<PlayerTeleportedEvent>(),
+        ),
+        (
+            "PlayerHealedMedicCall",
+            std::mem::size_of::<PlayerHealedMedicCallEvent>(),
+        ),
+        (
+            "LocalPlayerChargeReady",
+            std::mem::size_of::<LocalPlayerChargeReadyEvent>(),
+        ),
+        (
+            "LocalPlayerWindDown",
+            std::mem::size_of::<LocalPlayerWindDownEvent>(),
+        ),
         ("PlayerInvulned", std::mem::size_of::<PlayerInvulnedEvent>()),
         ("EscortSpeed", std::mem::size_of::<EscortSpeedEvent>()),
         ("EscortProgress", std::mem::size_of::<EscortProgressEvent>()),
         ("EscortRecede", std::mem::size_of::<EscortRecedeEvent>()),
-        ("GameUIActivated", std::mem::size_of::<GameUIActivatedEvent>()),
+        (
+            "GameUIActivated",
+            std::mem::size_of::<GameUIActivatedEvent>(),
+        ),
         ("GameUIHidden", std::mem::size_of::<GameUIHiddenEvent>()),
-        ("PlayerEscortScore", std::mem::size_of::<PlayerEscortScoreEvent>()),
-        ("PlayerHealOnHit", std::mem::size_of::<PlayerHealOnHitEvent>()),
-        ("PlayerStealSandvich", std::mem::size_of::<PlayerStealSandvichEvent>()),
-        ("ShowClassLayout", std::mem::size_of::<ShowClassLayoutEvent>()),
+        (
+            "PlayerEscortScore",
+            std::mem::size_of::<PlayerEscortScoreEvent>(),
+        ),
+        (
+            "PlayerHealOnHit",
+            std::mem::size_of::<PlayerHealOnHitEvent>(),
+        ),
+        (
+            "PlayerStealSandvich",
+            std::mem::size_of::<PlayerStealSandvichEvent>(),
+        ),
+        (
+            "ShowClassLayout",
+            std::mem::size_of::<ShowClassLayoutEvent>(),
+        ),
         ("ShowVsPanel", std::mem::size_of::<ShowVsPanelEvent>()),
         ("PlayerDamaged", std::mem::size_of::<PlayerDamagedEvent>()),
-        ("ArenaPlayerNotification", std::mem::size_of::<ArenaPlayerNotificationEvent>()),
-        ("ArenaMatchMaxStreak", std::mem::size_of::<ArenaMatchMaxStreakEvent>()),
-        ("ArenaRoundStart", std::mem::size_of::<ArenaRoundStartEvent>()),
+        (
+            "ArenaPlayerNotification",
+            std::mem::size_of::<ArenaPlayerNotificationEvent>(),
+        ),
+        (
+            "ArenaMatchMaxStreak",
+            std::mem::size_of::<ArenaMatchMaxStreakEvent>(),
+        ),
+        (
+            "ArenaRoundStart",
+            std::mem::size_of::<ArenaRoundStartEvent>(),
+        ),
         ("ArenaWinPanel", std::mem::size_of::<ArenaWinPanelEvent>()),
         ("PveWinPanel", std::mem::size_of::<PveWinPanelEvent>()),
         ("AirDash", std::mem::size_of::<AirDashEvent>()),
         ("Landed", std::mem::size_of::<LandedEvent>()),
-        ("PlayerDamageDodged", std::mem::size_of::<PlayerDamageDodgedEvent>()),
+        (
+            "PlayerDamageDodged",
+            std::mem::size_of::<PlayerDamageDodgedEvent>(),
+        ),
         ("PlayerStunned", std::mem::size_of::<PlayerStunnedEvent>()),
         ("ScoutGrandSlam", std::mem::size_of::<ScoutGrandSlamEvent>()),
-        ("ScoutSlamdollLanded", std::mem::size_of::<ScoutSlamdollLandedEvent>()),
+        (
+            "ScoutSlamdollLanded",
+            std::mem::size_of::<ScoutSlamdollLandedEvent>(),
+        ),
         ("ArrowImpact", std::mem::size_of::<ArrowImpactEvent>()),
         ("PlayerJarated", std::mem::size_of::<PlayerJaratedEvent>()),
-        ("PlayerJaratedFade", std::mem::size_of::<PlayerJaratedFadeEvent>()),
-        ("PlayerShieldBlocked", std::mem::size_of::<PlayerShieldBlockedEvent>()),
+        (
+            "PlayerJaratedFade",
+            std::mem::size_of::<PlayerJaratedFadeEvent>(),
+        ),
+        (
+            "PlayerShieldBlocked",
+            std::mem::size_of::<PlayerShieldBlockedEvent>(),
+        ),
         ("PlayerPinned", std::mem::size_of::<PlayerPinnedEvent>()),
-        ("PlayerHealedByMedic", std::mem::size_of::<PlayerHealedByMedicEvent>()),
-        ("PlayerSappedObject", std::mem::size_of::<PlayerSappedObjectEvent>()),
+        (
+            "PlayerHealedByMedic",
+            std::mem::size_of::<PlayerHealedByMedicEvent>(),
+        ),
+        (
+            "PlayerSappedObject",
+            std::mem::size_of::<PlayerSappedObjectEvent>(),
+        ),
         ("ItemFound", std::mem::size_of::<ItemFoundEvent>()),
         ("ShowAnnotation", std::mem::size_of::<ShowAnnotationEvent>()),
         ("HideAnnotation", std::mem::size_of::<HideAnnotationEvent>()),
@@ -10520,31 +10067,73 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "ControlPointUnlockUpdated",
             std::mem::size_of::<ControlPointUnlockUpdatedEvent>(),
         ),
-        ("DeployBuffBanner", std::mem::size_of::<DeployBuffBannerEvent>()),
+        (
+            "DeployBuffBanner",
+            std::mem::size_of::<DeployBuffBannerEvent>(),
+        ),
         ("PlayerBuff", std::mem::size_of::<PlayerBuffEvent>()),
         ("MedicDeath", std::mem::size_of::<MedicDeathEvent>()),
         ("OvertimeNag", std::mem::size_of::<OvertimeNagEvent>()),
         ("TeamsChanged", std::mem::size_of::<TeamsChangedEvent>()),
-        ("HalloweenPumpkinGrab", std::mem::size_of::<HalloweenPumpkinGrabEvent>()),
+        (
+            "HalloweenPumpkinGrab",
+            std::mem::size_of::<HalloweenPumpkinGrabEvent>(),
+        ),
         ("RocketJump", std::mem::size_of::<RocketJumpEvent>()),
-        ("RocketJumpLanded", std::mem::size_of::<RocketJumpLandedEvent>()),
+        (
+            "RocketJumpLanded",
+            std::mem::size_of::<RocketJumpLandedEvent>(),
+        ),
         ("StickyJump", std::mem::size_of::<StickyJumpEvent>()),
-        ("StickyJumpLanded", std::mem::size_of::<StickyJumpLandedEvent>()),
-        ("RocketPackLaunch", std::mem::size_of::<RocketPackLaunchEvent>()),
-        ("RocketPackLanded", std::mem::size_of::<RocketPackLandedEvent>()),
+        (
+            "StickyJumpLanded",
+            std::mem::size_of::<StickyJumpLandedEvent>(),
+        ),
+        (
+            "RocketPackLaunch",
+            std::mem::size_of::<RocketPackLaunchEvent>(),
+        ),
+        (
+            "RocketPackLanded",
+            std::mem::size_of::<RocketPackLandedEvent>(),
+        ),
         ("MedicDefended", std::mem::size_of::<MedicDefendedEvent>()),
-        ("LocalPlayerHealed", std::mem::size_of::<LocalPlayerHealedEvent>()),
-        ("PlayerDestroyedPipeBomb", std::mem::size_of::<PlayerDestroyedPipeBombEvent>()),
-        ("ObjectDeflected", std::mem::size_of::<ObjectDeflectedEvent>()),
+        (
+            "LocalPlayerHealed",
+            std::mem::size_of::<LocalPlayerHealedEvent>(),
+        ),
+        (
+            "PlayerDestroyedPipeBomb",
+            std::mem::size_of::<PlayerDestroyedPipeBombEvent>(),
+        ),
+        (
+            "ObjectDeflected",
+            std::mem::size_of::<ObjectDeflectedEvent>(),
+        ),
         ("PlayerMvp", std::mem::size_of::<PlayerMvpEvent>()),
         ("RaidSpawnMob", std::mem::size_of::<RaidSpawnMobEvent>()),
         ("RaidSpawnSquad", std::mem::size_of::<RaidSpawnSquadEvent>()),
         ("NavBlocked", std::mem::size_of::<NavBlockedEvent>()),
-        ("PathTrackPassed", std::mem::size_of::<PathTrackPassedEvent>()),
-        ("NumCappersChanged", std::mem::size_of::<NumCappersChangedEvent>()),
-        ("PlayerRegenerate", std::mem::size_of::<PlayerRegenerateEvent>()),
-        ("UpdateStatusItem", std::mem::size_of::<UpdateStatusItemEvent>()),
-        ("StatsResetRound", std::mem::size_of::<StatsResetRoundEvent>()),
+        (
+            "PathTrackPassed",
+            std::mem::size_of::<PathTrackPassedEvent>(),
+        ),
+        (
+            "NumCappersChanged",
+            std::mem::size_of::<NumCappersChangedEvent>(),
+        ),
+        (
+            "PlayerRegenerate",
+            std::mem::size_of::<PlayerRegenerateEvent>(),
+        ),
+        (
+            "UpdateStatusItem",
+            std::mem::size_of::<UpdateStatusItemEvent>(),
+        ),
+        (
+            "StatsResetRound",
+            std::mem::size_of::<StatsResetRoundEvent>(),
+        ),
         (
             "ScoreStatsAccumulatedUpdate",
             std::mem::size_of::<ScoreStatsAccumulatedUpdateEvent>(),
@@ -10553,7 +10142,10 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "ScoreStatsAccumulatedReset",
             std::mem::size_of::<ScoreStatsAccumulatedResetEvent>(),
         ),
-        ("AchievementEarnedLocal", std::mem::size_of::<AchievementEarnedLocalEvent>()),
+        (
+            "AchievementEarnedLocal",
+            std::mem::size_of::<AchievementEarnedLocalEvent>(),
+        ),
         ("PlayerHealed", std::mem::size_of::<PlayerHealedEvent>()),
         ("BuildingHealed", std::mem::size_of::<BuildingHealedEvent>()),
         ("ItemPickup", std::mem::size_of::<ItemPickupEvent>()),
@@ -10562,63 +10154,153 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("FishNoticeArm", std::mem::size_of::<FishNoticeArmEvent>()),
         ("SlapNotice", std::mem::size_of::<SlapNoticeEvent>()),
         ("ThrowableHit", std::mem::size_of::<ThrowableHitEvent>()),
-        ("PumpkinLordSummoned", std::mem::size_of::<PumpkinLordSummonedEvent>()),
-        ("PumpkinLordKilled", std::mem::size_of::<PumpkinLordKilledEvent>()),
-        ("MerasmusSummoned", std::mem::size_of::<MerasmusSummonedEvent>()),
+        (
+            "PumpkinLordSummoned",
+            std::mem::size_of::<PumpkinLordSummonedEvent>(),
+        ),
+        (
+            "PumpkinLordKilled",
+            std::mem::size_of::<PumpkinLordKilledEvent>(),
+        ),
+        (
+            "MerasmusSummoned",
+            std::mem::size_of::<MerasmusSummonedEvent>(),
+        ),
         ("MerasmusKilled", std::mem::size_of::<MerasmusKilledEvent>()),
-        ("MerasmusEscapeWarning", std::mem::size_of::<MerasmusEscapeWarningEvent>()),
-        ("MerasmusEscaped", std::mem::size_of::<MerasmusEscapedEvent>()),
-        ("EyeballBossSummoned", std::mem::size_of::<EyeballBossSummonedEvent>()),
-        ("EyeballBossStunned", std::mem::size_of::<EyeballBossStunnedEvent>()),
-        ("EyeballBossKilled", std::mem::size_of::<EyeballBossKilledEvent>()),
-        ("EyeballBossKiller", std::mem::size_of::<EyeballBossKillerEvent>()),
+        (
+            "MerasmusEscapeWarning",
+            std::mem::size_of::<MerasmusEscapeWarningEvent>(),
+        ),
+        (
+            "MerasmusEscaped",
+            std::mem::size_of::<MerasmusEscapedEvent>(),
+        ),
+        (
+            "EyeballBossSummoned",
+            std::mem::size_of::<EyeballBossSummonedEvent>(),
+        ),
+        (
+            "EyeballBossStunned",
+            std::mem::size_of::<EyeballBossStunnedEvent>(),
+        ),
+        (
+            "EyeballBossKilled",
+            std::mem::size_of::<EyeballBossKilledEvent>(),
+        ),
+        (
+            "EyeballBossKiller",
+            std::mem::size_of::<EyeballBossKillerEvent>(),
+        ),
         (
             "EyeballBossEscapeImminent",
             std::mem::size_of::<EyeballBossEscapeImminentEvent>(),
         ),
-        ("EyeballBossEscaped", std::mem::size_of::<EyeballBossEscapedEvent>()),
+        (
+            "EyeballBossEscaped",
+            std::mem::size_of::<EyeballBossEscapedEvent>(),
+        ),
         ("NpcHurt", std::mem::size_of::<NpcHurtEvent>()),
         (
             "ControlPointTimerUpdated",
             std::mem::size_of::<ControlPointTimerUpdatedEvent>(),
         ),
-        ("PlayerHighFiveStart", std::mem::size_of::<PlayerHighFiveStartEvent>()),
-        ("PlayerHighFiveCancel", std::mem::size_of::<PlayerHighFiveCancelEvent>()),
-        ("PlayerHighFiveSuccess", std::mem::size_of::<PlayerHighFiveSuccessEvent>()),
-        ("PlayerBonusPoints", std::mem::size_of::<PlayerBonusPointsEvent>()),
+        (
+            "PlayerHighFiveStart",
+            std::mem::size_of::<PlayerHighFiveStartEvent>(),
+        ),
+        (
+            "PlayerHighFiveCancel",
+            std::mem::size_of::<PlayerHighFiveCancelEvent>(),
+        ),
+        (
+            "PlayerHighFiveSuccess",
+            std::mem::size_of::<PlayerHighFiveSuccessEvent>(),
+        ),
+        (
+            "PlayerBonusPoints",
+            std::mem::size_of::<PlayerBonusPointsEvent>(),
+        ),
         ("PlayerUpgraded", std::mem::size_of::<PlayerUpgradedEvent>()),
         ("PlayerBuyback", std::mem::size_of::<PlayerBuybackEvent>()),
-        ("PlayerUsedPowerUpBottle", std::mem::size_of::<PlayerUsedPowerUpBottleEvent>()),
-        ("ChristmasGiftGrab", std::mem::size_of::<ChristmasGiftGrabEvent>()),
+        (
+            "PlayerUsedPowerUpBottle",
+            std::mem::size_of::<PlayerUsedPowerUpBottleEvent>(),
+        ),
+        (
+            "ChristmasGiftGrab",
+            std::mem::size_of::<ChristmasGiftGrabEvent>(),
+        ),
         (
             "PlayerKilledAchievementZone",
             std::mem::size_of::<PlayerKilledAchievementZoneEvent>(),
         ),
         ("PartyUpdated", std::mem::size_of::<PartyUpdatedEvent>()),
-        ("PartyPrefChanged", std::mem::size_of::<PartyPrefChangedEvent>()),
-        ("PartyCriteriaChanged", std::mem::size_of::<PartyCriteriaChangedEvent>()),
-        ("PartyInvitesChanged", std::mem::size_of::<PartyInvitesChangedEvent>()),
-        ("PartyQueueStateChanged", std::mem::size_of::<PartyQueueStateChangedEvent>()),
+        (
+            "PartyPrefChanged",
+            std::mem::size_of::<PartyPrefChangedEvent>(),
+        ),
+        (
+            "PartyCriteriaChanged",
+            std::mem::size_of::<PartyCriteriaChangedEvent>(),
+        ),
+        (
+            "PartyInvitesChanged",
+            std::mem::size_of::<PartyInvitesChangedEvent>(),
+        ),
+        (
+            "PartyQueueStateChanged",
+            std::mem::size_of::<PartyQueueStateChangedEvent>(),
+        ),
         ("PartyChat", std::mem::size_of::<PartyChatEvent>()),
-        ("PartyMemberJoin", std::mem::size_of::<PartyMemberJoinEvent>()),
-        ("PartyMemberLeave", std::mem::size_of::<PartyMemberLeaveEvent>()),
-        ("MatchInvitesUpdated", std::mem::size_of::<MatchInvitesUpdatedEvent>()),
+        (
+            "PartyMemberJoin",
+            std::mem::size_of::<PartyMemberJoinEvent>(),
+        ),
+        (
+            "PartyMemberLeave",
+            std::mem::size_of::<PartyMemberLeaveEvent>(),
+        ),
+        (
+            "MatchInvitesUpdated",
+            std::mem::size_of::<MatchInvitesUpdatedEvent>(),
+        ),
         ("LobbyUpdated", std::mem::size_of::<LobbyUpdatedEvent>()),
-        ("MvmMissionUpdate", std::mem::size_of::<MvmMissionUpdateEvent>()),
-        ("RecalculateHolidays", std::mem::size_of::<RecalculateHolidaysEvent>()),
-        ("PlayerCurrencyChanged", std::mem::size_of::<PlayerCurrencyChangedEvent>()),
-        ("DoomsdayRocketOpen", std::mem::size_of::<DoomsdayRocketOpenEvent>()),
+        (
+            "MvmMissionUpdate",
+            std::mem::size_of::<MvmMissionUpdateEvent>(),
+        ),
+        (
+            "RecalculateHolidays",
+            std::mem::size_of::<RecalculateHolidaysEvent>(),
+        ),
+        (
+            "PlayerCurrencyChanged",
+            std::mem::size_of::<PlayerCurrencyChangedEvent>(),
+        ),
+        (
+            "DoomsdayRocketOpen",
+            std::mem::size_of::<DoomsdayRocketOpenEvent>(),
+        ),
         (
             "RemoveNemesisRelationships",
             std::mem::size_of::<RemoveNemesisRelationshipsEvent>(),
         ),
-        ("MvmCreditBonusWave", std::mem::size_of::<MvmCreditBonusWaveEvent>()),
-        ("MvmCreditBonusAll", std::mem::size_of::<MvmCreditBonusAllEvent>()),
+        (
+            "MvmCreditBonusWave",
+            std::mem::size_of::<MvmCreditBonusWaveEvent>(),
+        ),
+        (
+            "MvmCreditBonusAll",
+            std::mem::size_of::<MvmCreditBonusAllEvent>(),
+        ),
         (
             "MvmCreditBonusAllAdvanced",
             std::mem::size_of::<MvmCreditBonusAllAdvancedEvent>(),
         ),
-        ("MvmQuickSentryUpgrade", std::mem::size_of::<MvmQuickSentryUpgradeEvent>()),
+        (
+            "MvmQuickSentryUpgrade",
+            std::mem::size_of::<MvmQuickSentryUpgradeEvent>(),
+        ),
         (
             "MvmTankDestroyedByPlayers",
             std::mem::size_of::<MvmTankDestroyedByPlayersEvent>(),
@@ -10627,16 +10309,43 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "MvmKillRobotDeliveringBomb",
             std::mem::size_of::<MvmKillRobotDeliveringBombEvent>(),
         ),
-        ("MvmPickupCurrency", std::mem::size_of::<MvmPickupCurrencyEvent>()),
-        ("MvmBombCarrierKilled", std::mem::size_of::<MvmBombCarrierKilledEvent>()),
-        ("MvmSentryBusterDetonate", std::mem::size_of::<MvmSentryBusterDetonateEvent>()),
-        ("MvmScoutMarkedForDeath", std::mem::size_of::<MvmScoutMarkedForDeathEvent>()),
-        ("MvmMedicPowerUpShared", std::mem::size_of::<MvmMedicPowerUpSharedEvent>()),
+        (
+            "MvmPickupCurrency",
+            std::mem::size_of::<MvmPickupCurrencyEvent>(),
+        ),
+        (
+            "MvmBombCarrierKilled",
+            std::mem::size_of::<MvmBombCarrierKilledEvent>(),
+        ),
+        (
+            "MvmSentryBusterDetonate",
+            std::mem::size_of::<MvmSentryBusterDetonateEvent>(),
+        ),
+        (
+            "MvmScoutMarkedForDeath",
+            std::mem::size_of::<MvmScoutMarkedForDeathEvent>(),
+        ),
+        (
+            "MvmMedicPowerUpShared",
+            std::mem::size_of::<MvmMedicPowerUpSharedEvent>(),
+        ),
         ("MvmBeginWave", std::mem::size_of::<MvmBeginWaveEvent>()),
-        ("MvmWaveComplete", std::mem::size_of::<MvmWaveCompleteEvent>()),
-        ("MvmMissionComplete", std::mem::size_of::<MvmMissionCompleteEvent>()),
-        ("MvmBombResetByPlayer", std::mem::size_of::<MvmBombResetByPlayerEvent>()),
-        ("MvmBombAlarmTriggered", std::mem::size_of::<MvmBombAlarmTriggeredEvent>()),
+        (
+            "MvmWaveComplete",
+            std::mem::size_of::<MvmWaveCompleteEvent>(),
+        ),
+        (
+            "MvmMissionComplete",
+            std::mem::size_of::<MvmMissionCompleteEvent>(),
+        ),
+        (
+            "MvmBombResetByPlayer",
+            std::mem::size_of::<MvmBombResetByPlayerEvent>(),
+        ),
+        (
+            "MvmBombAlarmTriggered",
+            std::mem::size_of::<MvmBombAlarmTriggeredEvent>(),
+        ),
         (
             "MvmBombDeployResetByPlayer",
             std::mem::size_of::<MvmBombDeployResetByPlayerEvent>(),
@@ -10644,10 +10353,22 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("MvmWaveFailed", std::mem::size_of::<MvmWaveFailedEvent>()),
         ("MvmResetStats", std::mem::size_of::<MvmResetStatsEvent>()),
         ("DamageResisted", std::mem::size_of::<DamageResistedEvent>()),
-        ("RevivePlayerNotify", std::mem::size_of::<RevivePlayerNotifyEvent>()),
-        ("RevivePlayerStopped", std::mem::size_of::<RevivePlayerStoppedEvent>()),
-        ("RevivePlayerComplete", std::mem::size_of::<RevivePlayerCompleteEvent>()),
-        ("PlayerTurnedToGhost", std::mem::size_of::<PlayerTurnedToGhostEvent>()),
+        (
+            "RevivePlayerNotify",
+            std::mem::size_of::<RevivePlayerNotifyEvent>(),
+        ),
+        (
+            "RevivePlayerStopped",
+            std::mem::size_of::<RevivePlayerStoppedEvent>(),
+        ),
+        (
+            "RevivePlayerComplete",
+            std::mem::size_of::<RevivePlayerCompleteEvent>(),
+        ),
+        (
+            "PlayerTurnedToGhost",
+            std::mem::size_of::<PlayerTurnedToGhostEvent>(),
+        ),
         (
             "MedigunShieldBlockedDamage",
             std::mem::size_of::<MedigunShieldBlockedDamageEvent>(),
@@ -10660,7 +10381,10 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "MvmSniperHeadshotCurrency",
             std::mem::size_of::<MvmSniperHeadshotCurrencyEvent>(),
         ),
-        ("MvmMannhattanPit", std::mem::size_of::<MvmMannhattanPitEvent>()),
+        (
+            "MvmMannhattanPit",
+            std::mem::size_of::<MvmMannhattanPitEvent>(),
+        ),
         (
             "FlagCarriedInDetectionZone",
             std::mem::size_of::<FlagCarriedInDetectionZoneEvent>(),
@@ -10669,104 +10393,284 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "MvmAdvWaveKilledStunRadio",
             std::mem::size_of::<MvmAdvWaveKilledStunRadioEvent>(),
         ),
-        ("PlayerDirectHitStun", std::mem::size_of::<PlayerDirectHitStunEvent>()),
-        ("MvmSentryBusterKilled", std::mem::size_of::<MvmSentryBusterKilledEvent>()),
-        ("UpgradesFileChanged", std::mem::size_of::<UpgradesFileChangedEvent>()),
-        ("RdTeamPointsChanged", std::mem::size_of::<RdTeamPointsChangedEvent>()),
-        ("RdRulesStateChanged", std::mem::size_of::<RdRulesStateChangedEvent>()),
+        (
+            "PlayerDirectHitStun",
+            std::mem::size_of::<PlayerDirectHitStunEvent>(),
+        ),
+        (
+            "MvmSentryBusterKilled",
+            std::mem::size_of::<MvmSentryBusterKilledEvent>(),
+        ),
+        (
+            "UpgradesFileChanged",
+            std::mem::size_of::<UpgradesFileChangedEvent>(),
+        ),
+        (
+            "RdTeamPointsChanged",
+            std::mem::size_of::<RdTeamPointsChangedEvent>(),
+        ),
+        (
+            "RdRulesStateChanged",
+            std::mem::size_of::<RdRulesStateChangedEvent>(),
+        ),
         ("RdRobotKilled", std::mem::size_of::<RdRobotKilledEvent>()),
         ("RdRobotImpact", std::mem::size_of::<RdRobotImpactEvent>()),
         (
             "TeamPlayPreRoundTimeLeft",
             std::mem::size_of::<TeamPlayPreRoundTimeLeftEvent>(),
         ),
-        ("ParachuteDeploy", std::mem::size_of::<ParachuteDeployEvent>()),
-        ("ParachuteHolster", std::mem::size_of::<ParachuteHolsterEvent>()),
-        ("KillRefillsMeter", std::mem::size_of::<KillRefillsMeterEvent>()),
+        (
+            "ParachuteDeploy",
+            std::mem::size_of::<ParachuteDeployEvent>(),
+        ),
+        (
+            "ParachuteHolster",
+            std::mem::size_of::<ParachuteHolsterEvent>(),
+        ),
+        (
+            "KillRefillsMeter",
+            std::mem::size_of::<KillRefillsMeterEvent>(),
+        ),
         ("RpsTauntEvent", std::mem::size_of::<RpsTauntEventEvent>()),
         ("CongaKill", std::mem::size_of::<CongaKillEvent>()),
-        ("PlayerInitialSpawn", std::mem::size_of::<PlayerInitialSpawnEvent>()),
-        ("CompetitiveVictory", std::mem::size_of::<CompetitiveVictoryEvent>()),
-        ("CompetitiveStatsUpdate", std::mem::size_of::<CompetitiveStatsUpdateEvent>()),
+        (
+            "PlayerInitialSpawn",
+            std::mem::size_of::<PlayerInitialSpawnEvent>(),
+        ),
+        (
+            "CompetitiveVictory",
+            std::mem::size_of::<CompetitiveVictoryEvent>(),
+        ),
+        (
+            "CompetitiveStatsUpdate",
+            std::mem::size_of::<CompetitiveStatsUpdateEvent>(),
+        ),
         ("MiniGameWin", std::mem::size_of::<MiniGameWinEvent>()),
-        ("SentryOnGoActive", std::mem::size_of::<SentryOnGoActiveEvent>()),
+        (
+            "SentryOnGoActive",
+            std::mem::size_of::<SentryOnGoActiveEvent>(),
+        ),
         ("DuckXpLevelUp", std::mem::size_of::<DuckXpLevelUpEvent>()),
         ("QuestLogOpened", std::mem::size_of::<QuestLogOpenedEvent>()),
         ("SchemaUpdated", std::mem::size_of::<SchemaUpdatedEvent>()),
-        ("LocalPlayerPickupWeapon", std::mem::size_of::<LocalPlayerPickupWeaponEvent>()),
-        ("RdPlayerScorePoints", std::mem::size_of::<RdPlayerScorePointsEvent>()),
-        ("DemomanDetStickies", std::mem::size_of::<DemomanDetStickiesEvent>()),
-        ("QuestObjectiveCompleted", std::mem::size_of::<QuestObjectiveCompletedEvent>()),
-        ("PlayerScoreChanged", std::mem::size_of::<PlayerScoreChangedEvent>()),
-        ("KilledCappingPlayer", std::mem::size_of::<KilledCappingPlayerEvent>()),
-        ("EnvironmentalDeath", std::mem::size_of::<EnvironmentalDeathEvent>()),
-        ("ProjectileDirectHit", std::mem::size_of::<ProjectileDirectHitEvent>()),
+        (
+            "LocalPlayerPickupWeapon",
+            std::mem::size_of::<LocalPlayerPickupWeaponEvent>(),
+        ),
+        (
+            "RdPlayerScorePoints",
+            std::mem::size_of::<RdPlayerScorePointsEvent>(),
+        ),
+        (
+            "DemomanDetStickies",
+            std::mem::size_of::<DemomanDetStickiesEvent>(),
+        ),
+        (
+            "QuestObjectiveCompleted",
+            std::mem::size_of::<QuestObjectiveCompletedEvent>(),
+        ),
+        (
+            "PlayerScoreChanged",
+            std::mem::size_of::<PlayerScoreChangedEvent>(),
+        ),
+        (
+            "KilledCappingPlayer",
+            std::mem::size_of::<KilledCappingPlayerEvent>(),
+        ),
+        (
+            "EnvironmentalDeath",
+            std::mem::size_of::<EnvironmentalDeathEvent>(),
+        ),
+        (
+            "ProjectileDirectHit",
+            std::mem::size_of::<ProjectileDirectHitEvent>(),
+        ),
         ("PassGet", std::mem::size_of::<PassGetEvent>()),
         ("PassScore", std::mem::size_of::<PassScoreEvent>()),
         ("PassFree", std::mem::size_of::<PassFreeEvent>()),
         ("PassPassCaught", std::mem::size_of::<PassPassCaughtEvent>()),
         ("PassBallStolen", std::mem::size_of::<PassBallStolenEvent>()),
-        ("PassBallBlocked", std::mem::size_of::<PassBallBlockedEvent>()),
-        ("DamagePrevented", std::mem::size_of::<DamagePreventedEvent>()),
-        ("HalloweenBossKilled", std::mem::size_of::<HalloweenBossKilledEvent>()),
-        ("EscapedLootIsland", std::mem::size_of::<EscapedLootIslandEvent>()),
-        ("TaggedPlayerAsIt", std::mem::size_of::<TaggedPlayerAsItEvent>()),
-        ("MerasmusStunned", std::mem::size_of::<MerasmusStunnedEvent>()),
-        ("MerasmusPropFound", std::mem::size_of::<MerasmusPropFoundEvent>()),
-        ("HalloweenSkeletonKilled", std::mem::size_of::<HalloweenSkeletonKilledEvent>()),
+        (
+            "PassBallBlocked",
+            std::mem::size_of::<PassBallBlockedEvent>(),
+        ),
+        (
+            "DamagePrevented",
+            std::mem::size_of::<DamagePreventedEvent>(),
+        ),
+        (
+            "HalloweenBossKilled",
+            std::mem::size_of::<HalloweenBossKilledEvent>(),
+        ),
+        (
+            "EscapedLootIsland",
+            std::mem::size_of::<EscapedLootIslandEvent>(),
+        ),
+        (
+            "TaggedPlayerAsIt",
+            std::mem::size_of::<TaggedPlayerAsItEvent>(),
+        ),
+        (
+            "MerasmusStunned",
+            std::mem::size_of::<MerasmusStunnedEvent>(),
+        ),
+        (
+            "MerasmusPropFound",
+            std::mem::size_of::<MerasmusPropFoundEvent>(),
+        ),
+        (
+            "HalloweenSkeletonKilled",
+            std::mem::size_of::<HalloweenSkeletonKilledEvent>(),
+        ),
         ("EscapeHell", std::mem::size_of::<EscapeHellEvent>()),
-        ("CrossSpectralBridge", std::mem::size_of::<CrossSpectralBridgeEvent>()),
+        (
+            "CrossSpectralBridge",
+            std::mem::size_of::<CrossSpectralBridgeEvent>(),
+        ),
         ("MiniGameWon", std::mem::size_of::<MiniGameWonEvent>()),
         ("RespawnGhost", std::mem::size_of::<RespawnGhostEvent>()),
         ("KillInHell", std::mem::size_of::<KillInHellEvent>()),
-        ("HalloweenDuckCollected", std::mem::size_of::<HalloweenDuckCollectedEvent>()),
+        (
+            "HalloweenDuckCollected",
+            std::mem::size_of::<HalloweenDuckCollectedEvent>(),
+        ),
         ("SpecialScore", std::mem::size_of::<SpecialScoreEvent>()),
-        ("TeamLeaderKilled", std::mem::size_of::<TeamLeaderKilledEvent>()),
-        ("HalloweenSoulCollected", std::mem::size_of::<HalloweenSoulCollectedEvent>()),
-        ("RecalculateTruce", std::mem::size_of::<RecalculateTruceEvent>()),
-        ("DeadRingerCheatDeath", std::mem::size_of::<DeadRingerCheatDeathEvent>()),
+        (
+            "TeamLeaderKilled",
+            std::mem::size_of::<TeamLeaderKilledEvent>(),
+        ),
+        (
+            "HalloweenSoulCollected",
+            std::mem::size_of::<HalloweenSoulCollectedEvent>(),
+        ),
+        (
+            "RecalculateTruce",
+            std::mem::size_of::<RecalculateTruceEvent>(),
+        ),
+        (
+            "DeadRingerCheatDeath",
+            std::mem::size_of::<DeadRingerCheatDeathEvent>(),
+        ),
         ("CrossbowHeal", std::mem::size_of::<CrossbowHealEvent>()),
-        ("DamageMitigated", std::mem::size_of::<DamageMitigatedEvent>()),
+        (
+            "DamageMitigated",
+            std::mem::size_of::<DamageMitigatedEvent>(),
+        ),
         ("PayloadPushed", std::mem::size_of::<PayloadPushedEvent>()),
-        ("PlayerAbandonedMatch", std::mem::size_of::<PlayerAbandonedMatchEvent>()),
+        (
+            "PlayerAbandonedMatch",
+            std::mem::size_of::<PlayerAbandonedMatchEvent>(),
+        ),
         ("ClDrawline", std::mem::size_of::<ClDrawlineEvent>()),
-        ("RestartTimerTime", std::mem::size_of::<RestartTimerTimeEvent>()),
-        ("WinLimitChanged", std::mem::size_of::<WinLimitChangedEvent>()),
-        ("WinPanelShowScores", std::mem::size_of::<WinPanelShowScoresEvent>()),
+        (
+            "RestartTimerTime",
+            std::mem::size_of::<RestartTimerTimeEvent>(),
+        ),
+        (
+            "WinLimitChanged",
+            std::mem::size_of::<WinLimitChangedEvent>(),
+        ),
+        (
+            "WinPanelShowScores",
+            std::mem::size_of::<WinPanelShowScoresEvent>(),
+        ),
         (
             "TopStreamsRequestFinished",
             std::mem::size_of::<TopStreamsRequestFinishedEvent>(),
         ),
-        ("CompetitiveStateChanged", std::mem::size_of::<CompetitiveStateChangedEvent>()),
-        ("GlobalWarDataUpdated", std::mem::size_of::<GlobalWarDataUpdatedEvent>()),
-        ("StopWatchChanged", std::mem::size_of::<StopWatchChangedEvent>()),
+        (
+            "CompetitiveStateChanged",
+            std::mem::size_of::<CompetitiveStateChangedEvent>(),
+        ),
+        (
+            "GlobalWarDataUpdated",
+            std::mem::size_of::<GlobalWarDataUpdatedEvent>(),
+        ),
+        (
+            "StopWatchChanged",
+            std::mem::size_of::<StopWatchChangedEvent>(),
+        ),
         ("DsStop", std::mem::size_of::<DsStopEvent>()),
         ("DsScreenshot", std::mem::size_of::<DsScreenshotEvent>()),
-        ("ShowMatchSummary", std::mem::size_of::<ShowMatchSummaryEvent>()),
-        ("ExperienceChanged", std::mem::size_of::<ExperienceChangedEvent>()),
+        (
+            "ShowMatchSummary",
+            std::mem::size_of::<ShowMatchSummaryEvent>(),
+        ),
+        (
+            "ExperienceChanged",
+            std::mem::size_of::<ExperienceChangedEvent>(),
+        ),
         ("BeginXpLerp", std::mem::size_of::<BeginXpLerpEvent>()),
-        ("MatchmakerStatsUpdated", std::mem::size_of::<MatchmakerStatsUpdatedEvent>()),
-        ("RematchVotePeriodOver", std::mem::size_of::<RematchVotePeriodOverEvent>()),
-        ("RematchFailedToCreate", std::mem::size_of::<RematchFailedToCreateEvent>()),
-        ("PlayerRematchChange", std::mem::size_of::<PlayerRematchChangeEvent>()),
+        (
+            "MatchmakerStatsUpdated",
+            std::mem::size_of::<MatchmakerStatsUpdatedEvent>(),
+        ),
+        (
+            "RematchVotePeriodOver",
+            std::mem::size_of::<RematchVotePeriodOverEvent>(),
+        ),
+        (
+            "RematchFailedToCreate",
+            std::mem::size_of::<RematchFailedToCreateEvent>(),
+        ),
+        (
+            "PlayerRematchChange",
+            std::mem::size_of::<PlayerRematchChangeEvent>(),
+        ),
         ("PingUpdated", std::mem::size_of::<PingUpdatedEvent>()),
         ("MMStatsUpdated", std::mem::size_of::<MMStatsUpdatedEvent>()),
-        ("PlayerNextMapVoteChange", std::mem::size_of::<PlayerNextMapVoteChangeEvent>()),
-        ("VoteMapsChanged", std::mem::size_of::<VoteMapsChangedEvent>()),
-        ("ProtoDefChanged", std::mem::size_of::<ProtoDefChangedEvent>()),
-        ("PlayerDomination", std::mem::size_of::<PlayerDominationEvent>()),
-        ("PlayerRocketPackPushed", std::mem::size_of::<PlayerRocketPackPushedEvent>()),
+        (
+            "PlayerNextMapVoteChange",
+            std::mem::size_of::<PlayerNextMapVoteChangeEvent>(),
+        ),
+        (
+            "VoteMapsChanged",
+            std::mem::size_of::<VoteMapsChangedEvent>(),
+        ),
+        (
+            "ProtoDefChanged",
+            std::mem::size_of::<ProtoDefChangedEvent>(),
+        ),
+        (
+            "PlayerDomination",
+            std::mem::size_of::<PlayerDominationEvent>(),
+        ),
+        (
+            "PlayerRocketPackPushed",
+            std::mem::size_of::<PlayerRocketPackPushedEvent>(),
+        ),
         ("QuestRequest", std::mem::size_of::<QuestRequestEvent>()),
         ("QuestResponse", std::mem::size_of::<QuestResponseEvent>()),
         ("QuestProgress", std::mem::size_of::<QuestProgressEvent>()),
-        ("ProjectileRemoved", std::mem::size_of::<ProjectileRemovedEvent>()),
-        ("QuestMapDataChanged", std::mem::size_of::<QuestMapDataChangedEvent>()),
-        ("GasDousedPlayerIgnited", std::mem::size_of::<GasDousedPlayerIgnitedEvent>()),
-        ("QuestTurnInState", std::mem::size_of::<QuestTurnInStateEvent>()),
-        ("ItemsAcknowledged", std::mem::size_of::<ItemsAcknowledgedEvent>()),
+        (
+            "ProjectileRemoved",
+            std::mem::size_of::<ProjectileRemovedEvent>(),
+        ),
+        (
+            "QuestMapDataChanged",
+            std::mem::size_of::<QuestMapDataChangedEvent>(),
+        ),
+        (
+            "GasDousedPlayerIgnited",
+            std::mem::size_of::<GasDousedPlayerIgnitedEvent>(),
+        ),
+        (
+            "QuestTurnInState",
+            std::mem::size_of::<QuestTurnInStateEvent>(),
+        ),
+        (
+            "ItemsAcknowledged",
+            std::mem::size_of::<ItemsAcknowledgedEvent>(),
+        ),
         ("CapperKilled", std::mem::size_of::<CapperKilledEvent>()),
-        ("MainMenuStabilized", std::mem::size_of::<MainMenuStabilizedEvent>()),
-        ("WorldStatusChanged", std::mem::size_of::<WorldStatusChangedEvent>()),
+        (
+            "MainMenuStabilized",
+            std::mem::size_of::<MainMenuStabilizedEvent>(),
+        ),
+        (
+            "WorldStatusChanged",
+            std::mem::size_of::<WorldStatusChangedEvent>(),
+        ),
         ("HLTVStatus", std::mem::size_of::<HLTVStatusEvent>()),
         ("HLTVCameraman", std::mem::size_of::<HLTVCameramanEvent>()),
         ("HLTVRankCamera", std::mem::size_of::<HLTVRankCameraEvent>()),
@@ -10776,14 +10680,28 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("HLTVMessage", std::mem::size_of::<HLTVMessageEvent>()),
         ("HLTVTitle", std::mem::size_of::<HLTVTitleEvent>()),
         ("HLTVChat", std::mem::size_of::<HLTVChatEvent>()),
-        ("ReplayStartRecord", std::mem::size_of::<ReplayStartRecordEvent>()),
-        ("ReplaySessionInfo", std::mem::size_of::<ReplaySessionInfoEvent>()),
-        ("ReplayEndRecord", std::mem::size_of::<ReplayEndRecordEvent>()),
-        ("ReplayReplaysAvailable", std::mem::size_of::<ReplayReplaysAvailableEvent>()),
-        ("ReplayServerError", std::mem::size_of::<ReplayServerErrorEvent>()),
+        (
+            "ReplayStartRecord",
+            std::mem::size_of::<ReplayStartRecordEvent>(),
+        ),
+        (
+            "ReplaySessionInfo",
+            std::mem::size_of::<ReplaySessionInfoEvent>(),
+        ),
+        (
+            "ReplayEndRecord",
+            std::mem::size_of::<ReplayEndRecordEvent>(),
+        ),
+        (
+            "ReplayReplaysAvailable",
+            std::mem::size_of::<ReplayReplaysAvailableEvent>(),
+        ),
+        (
+            "ReplayServerError",
+            std::mem::size_of::<ReplayServerErrorEvent>(),
+        ),
     ]
-        .iter()
-        .copied()
-        .collect()
+    .iter()
+    .copied()
+    .collect()
 }
-

@@ -264,7 +264,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         };
 
         quote!(
-            #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+            #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
             #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
             pub struct #name {
                 #(#fields)*
@@ -381,7 +381,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         #(#event_definitions)*
 
 
-        #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+        #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
         #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
         #[serde(tag = "type")]
         pub enum GameEvent {
@@ -389,7 +389,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
             Unknown(RawGameEvent),
         }
 
-        #[cfg_attr(feature = "wasm", derive(schemars::JsonSchema))]
+        #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
         #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
         pub enum GameEventType {
             #(#event_types)*

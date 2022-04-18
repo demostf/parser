@@ -162,6 +162,13 @@ impl<'a> ExtraData<'a> {
         let byte_len = (data.bit_len() / 8) as u16;
         ExtraData { byte_len, data }
     }
+
+    pub fn to_owned(&self) -> ExtraData<'static> {
+        ExtraData {
+            byte_len: self.byte_len,
+            data: self.data.to_owned(),
+        }
+    }
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -178,6 +185,13 @@ impl StringTableEntry<'_> {
             .as_ref()
             .map(|text| text.borrow())
             .unwrap_or_default()
+    }
+
+    pub fn to_owned(&self) -> StringTableEntry<'static> {
+        StringTableEntry {
+            text: self.text.as_deref().map(|text| Cow::Owned(text.into())),
+            extra_data: self.extra_data.as_ref().map(|data| data.to_owned()),
+        }
     }
 }
 
