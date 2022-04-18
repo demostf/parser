@@ -135,26 +135,21 @@ impl<'a> ParserState {
         server_classes: Vec<ServerClass>,
     ) -> Result<()> {
         if self.handle_entities {
-            let flat_props: Vec<_> = parse_tables
-                .iter()
-                .map(|table| table.flatten_props(&parse_tables))
-                .collect::<Result<Vec<_>>>()?;
-
             let mut send_tables: FnvHashMap<SendTableName, SendTable> = parse_tables
-                .into_iter()
-                .zip(flat_props.into_iter())
-                .map(|(parse_table, flat)| {
-                    (
+                .iter()
+                .map(|parse_table| {
+                    let flat = parse_table.flatten_props(&parse_tables);
+                    Ok((
                         parse_table.name.clone(),
                         SendTable {
-                            name: parse_table.name,
+                            name: parse_table.name.clone(),
                             needs_decoder: parse_table.needs_decoder,
-                            raw_props: parse_table.props,
-                            flattened_props: flat,
+                            raw_props: parse_table.props.clone(),
+                            flattened_props: flat?,
                         },
-                    )
+                    ))
                 })
-                .collect();
+                .collect::<Result<_>>()?;
 
             self.server_classes = server_classes;
 
