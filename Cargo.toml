@@ -45,6 +45,7 @@ steamid-ng = "1"
 schemars = { version = "0.8", optional = true }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+criterion = "0.3.5"
 
 [features]
 schema = ["schemars", "bitbuffer/schemars"]
@@ -63,4 +64,16 @@ opt-level = 2
 
 [[bench]]
 name = "iai"
+harness = false
+
+[[bench]]
+name = "allmessages"
+harness = false
+
+[[bench]]
+name = "bench"
+harness = false
+
+[[bench]]
+name = "sendprop"
 harness = false
