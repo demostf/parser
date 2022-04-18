@@ -158,6 +158,8 @@ impl<'a> ParserState {
             for class in self.server_classes.iter() {
                 if let Some(table) = send_tables.remove(&class.data_table) {
                     self.send_tables.push(table);
+                } else {
+                    eprintln!("class without table? {} {}", class.name, class.data_table);
                 }
             }
         }
