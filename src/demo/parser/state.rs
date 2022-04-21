@@ -235,7 +235,7 @@ impl<'a> ParserState {
 
                     for entity in ent_message.entities {
                         if entity.update_type == UpdateType::Enter {
-                            let updated_baseline = match self.instance_baselines[old_index]
+                            let mut updated_baseline = match self.instance_baselines[old_index]
                                 .get(&entity.entity_index)
                             {
                                 Some(baseline_entity)
@@ -248,6 +248,7 @@ impl<'a> ParserState {
                                 }
                                 _ => entity,
                             };
+                            updated_baseline.baseline_props = Vec::new();
                             self.instance_baselines[new_index]
                                 .insert(updated_baseline.entity_index, updated_baseline);
                         }

@@ -8,7 +8,7 @@ use crate::{Parse, ParserState, ReadResult, Result, Stream};
 use tracing::{event, span, Level};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, BitRead, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
+#[derive(Debug, BitRead, BitWrite, PartialEq, Serialize, Deserialize, Clone, Default)]
 pub struct MessagePacketMeta {
     pub flags: u32, // TODO
     pub view_angles: ViewAngles,
@@ -17,7 +17,7 @@ pub struct MessagePacketMeta {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Default)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct MessagePacket<'a> {
     pub tick: u32,
