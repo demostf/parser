@@ -36,7 +36,7 @@ pub struct ParserState {
     pub entity_classes: HashMap<EntityId, ClassId, NullHasherBuilder>,
     pub send_tables: Vec<SendTable>, // indexed by ClassId
     pub server_classes: Vec<ServerClass>,
-    pub instance_baselines: [HashMap<EntityId, PacketEntity, NullHasherBuilder>; 2],
+    pub instance_baselines: [Baseline; 2],
     pub demo_meta: DemoMeta,
     analyser_handles: fn(message_type: MessageType) -> bool,
     handle_entities: bool,
@@ -81,10 +81,7 @@ impl<'a> ParserState {
             entity_classes: HashMap::with_hasher(NullHasherBuilder),
             send_tables: Vec::new(),
             server_classes: Vec::new(),
-            instance_baselines: [
-                HashMap::with_hasher(NullHasherBuilder),
-                HashMap::with_hasher(NullHasherBuilder),
-            ],
+            instance_baselines: [Baseline::default(), Baseline::default()],
             demo_meta: DemoMeta::default(),
             analyser_handles,
             handle_entities: analyser_handles(MessageType::PacketEntities) || parse_all,
@@ -125,7 +122,7 @@ impl<'a> ParserState {
         send_table: &SendTable,
         is_delta: bool,
     ) -> Result<Vec<SendProp>> {
-        match self.instance_baselines[baseline_index].get(&entity_index) {
+        match self.instance_baselines[baseline_index].get(entity_index) {
             Some(baseline) if baseline.server_class == class_id && is_delta => {
                 Ok(baseline.props.clone())
             }
@@ -231,26 +228,29 @@ impl<'a> ParserState {
                 if ent_message.updated_base_line {
                     let old_index = ent_message.base_line as usize;
                     let new_index = 1 - old_index;
-                    self.instance_baselines[new_index] = self.instance_baselines[old_index].clone();
+                    let [baseline1, baseline2] = &mut self.instance_baselines;
+                    if old_index == 0 {
+                        baseline2.copy_from(baseline1);
+                    } else {
+                        baseline1.copy_from(baseline2);
+                    }
 
                     for entity in ent_message.entities {
                         if entity.update_type == UpdateType::Enter {
-                            let mut updated_baseline = match self.instance_baselines[old_index]
-                                .get(&entity.entity_index)
-                            {
-                                Some(baseline_entity)
-                                    if baseline_entity.server_class == entity.server_class
-                                        && ent_message.delta.is_some() =>
-                                {
-                                    let mut updated_baseline = baseline_entity.clone();
-                                    updated_baseline.apply_update(&entity.props);
-                                    updated_baseline
-                                }
-                                _ => entity,
-                            };
+                            let mut updated_baseline =
+                                match self.instance_baselines[old_index].get(entity.entity_index) {
+                                    Some(baseline_entity)
+                                        if baseline_entity.server_class == entity.server_class
+                                            && ent_message.delta.is_some() =>
+                                    {
+                                        let mut updated_baseline = baseline_entity.clone();
+                                        updated_baseline.apply_update(&entity.props);
+                                        updated_baseline
+                                    }
+                                    _ => entity,
+                                };
                             updated_baseline.baseline_props = Vec::new();
-                            self.instance_baselines[new_index]
-                                .insert(updated_baseline.entity_index, updated_baseline);
+                            self.instance_baselines[new_index].set(updated_baseline);
                         }
                     }
                 }
@@ -270,6 +270,58 @@ impl<'a> ParserState {
                 let baseline = StaticBaseline::new(class_id, extra.data.to_owned());
                 self.static_baselines.insert(class_id, baseline);
                 self.parsed_static_baselines.borrow_mut().remove(&class_id);
+            }
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct Baseline {
+    instances: Vec<Option<PacketEntity>>,
+}
+
+impl Default for Baseline {
+    fn default() -> Self {
+        Baseline {
+            instances: vec![None; 2048],
+        }
+    }
+}
+
+impl Baseline {
+    pub fn get(&self, index: EntityId) -> Option<&PacketEntity> {
+        self.instances
+            .get(u32::from(index) as usize)
+            .and_then(|opt| opt.as_ref())
+    }
+
+    fn set(&mut self, entity: PacketEntity) {
+        let index = entity.entity_index;
+        self.instances[u32::from(index) as usize] = Some(entity);
+    }
+
+    pub fn keys<'a>(&'a self) -> impl Iterator<Item = EntityId> + 'a {
+        self.instances
+            .iter()
+            .filter_map(|entity| entity.as_ref())
+            .map(|entity| entity.entity_index)
+    }
+
+    pub fn into_values(self) -> impl Iterator<Item = PacketEntity> {
+        self.instances.into_iter().filter_map(|entity| entity)
+    }
+
+    pub fn contains(&self, index: EntityId) -> bool {
+        self.get(index).is_some()
+    }
+
+    fn copy_from(&mut self, other: &Baseline) {
+        for (ent, other_ent) in self.instances.iter_mut().zip(other.instances.iter()) {
+            match (ent, other_ent) {
+                (ent, Some(other_ent)) => *ent = Some(other_ent.clone()),
+                (ent, None) => {
+                    *ent = None;
+                }
             }
         }
     }
