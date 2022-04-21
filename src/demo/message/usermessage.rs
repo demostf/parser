@@ -71,6 +71,12 @@ pub enum UserMessageType {
     Unknown = 255,
 }
 
+impl PartialEq<u8> for UserMessageType {
+    fn eq(&self, other: &u8) -> bool {
+        *self as u8 == *other
+    }
+}
+
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(bound(deserialize = "'a: 'static"))]
