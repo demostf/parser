@@ -203,7 +203,7 @@ fn get_send_table(state: &ParserState, class: ClassId) -> Result<&SendTable> {
 fn get_entity_for_update(
     state: &ParserState,
     entity_index: EntityId,
-    pvs: UpdateType,
+    update_type: UpdateType,
 ) -> Result<PacketEntity> {
     let class_id = *state
         .entity_classes
@@ -216,7 +216,7 @@ fn get_entity_for_update(
         baseline_props: vec![],
         props: Vec::with_capacity(8),
         in_pvs: false,
-        update_type: pvs,
+        update_type,
         serial_number: 0,
         delay: None,
     })
