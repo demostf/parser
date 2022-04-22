@@ -68,7 +68,7 @@ impl Parse<'_> for TempEntitiesMessage {
                 .ok_or(ParseError::UnknownServerClass(class_id))?;
 
             let mut props = Vec::new();
-            PacketEntitiesMessage::read_update(stream, send_table, &mut props, 0.into())?;
+            PacketEntitiesMessage::read_update(stream, send_table, &mut props, 0u32.into())?;
 
             events.push(EventInfo {
                 class_id,

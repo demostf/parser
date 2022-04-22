@@ -13,7 +13,7 @@ use crate::demo::packet::datatable::{
 };
 use crate::demo::packet::stringtable::StringTableEntry;
 
-use crate::demo::sendprop::SendProp;
+use crate::demo::sendprop::{SendProp, SendPropIdentifier};
 use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
 use serde::{Deserialize, Serialize};
@@ -61,7 +61,7 @@ impl StaticBaseline {
             &mut self.raw.clone(),
             send_table,
             &mut props,
-            0.into(),
+            0u32.into(),
         )?;
         Ok(props)
     }
@@ -237,7 +237,7 @@ impl<'a> ParserState {
 
                     for entity in ent_message.entities {
                         if entity.update_type == UpdateType::Enter {
-                            let mut updated_baseline =
+                            let updated_baseline =
                                 match self.instance_baselines[old_index].get(entity.entity_index) {
                                     Some(baseline_entity)
                                         if baseline_entity.server_class == entity.server_class
@@ -247,9 +247,8 @@ impl<'a> ParserState {
                                         updated_baseline.apply_update(&entity.props);
                                         updated_baseline
                                     }
-                                    _ => entity,
+                                    _ => entity.into(),
                                 };
-                            updated_baseline.baseline_props = Vec::new();
                             self.instance_baselines[new_index].set(updated_baseline);
                         }
                     }
@@ -277,7 +276,7 @@ impl<'a> ParserState {
 
 #[derive(Clone)]
 pub struct Baseline {
-    instances: Vec<Option<PacketEntity>>,
+    instances: Vec<Option<BaselineEntity>>,
 }
 
 impl Default for Baseline {
@@ -289,26 +288,27 @@ impl Default for Baseline {
 }
 
 impl Baseline {
-    pub fn get(&self, index: EntityId) -> Option<&PacketEntity> {
+    pub fn get(&self, index: EntityId) -> Option<&BaselineEntity> {
         self.instances
-            .get(u32::from(index) as usize)
+            .get(usize::from(index))
             .and_then(|opt| opt.as_ref())
     }
 
-    fn set(&mut self, entity: PacketEntity) {
-        let index = entity.entity_index;
-        self.instances[u32::from(index) as usize] = Some(entity);
+    fn set(&mut self, entity: BaselineEntity) {
+        let index = entity.entity_id;
+        self.instances[usize::from(index)] = Some(entity);
     }
 
     pub fn keys<'a>(&'a self) -> impl Iterator<Item = EntityId> + 'a {
         self.instances
             .iter()
-            .filter_map(|entity| entity.as_ref())
-            .map(|entity| entity.entity_index)
+            .filter_map(|entity| entity.as_ref().map(|entity| entity.entity_id))
     }
 
     pub fn into_values(self) -> impl Iterator<Item = PacketEntity> {
-        self.instances.into_iter().filter_map(|entity| entity)
+        self.instances
+            .into_iter()
+            .filter_map(|entity| entity.map(|entity| entity.into()))
     }
 
     pub fn contains(&self, index: EntityId) -> bool {
@@ -323,6 +323,55 @@ impl Baseline {
                     *ent = None;
                 }
             }
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct BaselineEntity {
+    pub entity_id: EntityId,
+    pub server_class: ClassId,
+    pub props: Vec<SendProp>,
+    pub serial: u32,
+}
+
+impl BaselineEntity {
+    fn mut_prop_by_identifier(&mut self, index: &SendPropIdentifier) -> Option<&mut SendProp> {
+        self.props.iter_mut().find(|prop| prop.identifier == *index)
+    }
+
+    pub fn apply_update(&mut self, props: &[SendProp]) {
+        for prop in props {
+            match self.mut_prop_by_identifier(&prop.identifier) {
+                Some(existing_prop) => existing_prop.value = prop.value.clone(),
+                None => self.props.push(prop.clone()),
+            }
+        }
+    }
+}
+
+impl From<PacketEntity> for BaselineEntity {
+    fn from(entity: PacketEntity) -> Self {
+        BaselineEntity {
+            entity_id: entity.entity_index,
+            server_class: entity.server_class,
+            props: entity.props,
+            serial: entity.serial_number,
+        }
+    }
+}
+
+impl From<BaselineEntity> for PacketEntity {
+    fn from(baseline: BaselineEntity) -> Self {
+        PacketEntity {
+            server_class: baseline.server_class,
+            entity_index: baseline.entity_id,
+            baseline_props: vec![],
+            props: baseline.props,
+            in_pvs: false,
+            update_type: UpdateType::Enter,
+            serial_number: baseline.serial,
+            delay: None,
         }
     }
 }

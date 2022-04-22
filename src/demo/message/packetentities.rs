@@ -44,6 +44,18 @@ impl From<EntityId> for u32 {
     }
 }
 
+impl From<usize> for EntityId {
+    fn from(num: usize) -> Self {
+        EntityId(num as u32)
+    }
+}
+
+impl From<EntityId> for usize {
+    fn from(id: EntityId) -> Self {
+        id.0 as usize
+    }
+}
+
 impl PartialEq<u32> for EntityId {
     fn eq(&self, other: &u32) -> bool {
         self.0 == *other
