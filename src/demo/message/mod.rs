@@ -158,7 +158,9 @@ impl<'a> Message<'a> {
                 Message::ServerInfo(Box::new(ServerInfoMessage::parse(stream, state)?))
             }
             MessageType::ClassInfo => Message::ClassInfo(ClassInfoMessage::parse(stream, state)?),
-            MessageType::SetPause => Message::SetPause(SetPauseMessage::parse(stream, state)?),
+            MessageType::SetPause => {
+                Message::SetPause(dbg!(SetPauseMessage::parse(stream, state)?))
+            }
             MessageType::CreateStringTable => {
                 Message::CreateStringTable(CreateStringTableMessage::parse(stream, state)?)
             }

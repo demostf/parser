@@ -8,7 +8,7 @@ use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropValue};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
-use std::cmp::min;
+use std::cmp::{min, Ordering};
 
 use std::fmt;
 use std::hint::unreachable_unchecked;
@@ -59,6 +59,12 @@ impl From<EntityId> for usize {
 impl PartialEq<u32> for EntityId {
     fn eq(&self, other: &u32) -> bool {
         self.0 == *other
+    }
+}
+
+impl PartialOrd<u32> for EntityId {
+    fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
+        self.0.partial_cmp(other)
     }
 }
 
@@ -546,7 +552,7 @@ fn test_packet_entitier_message_roundtrip() {
     ];
     state
         .entity_classes
-        .insert(EntityId::from(4), ClassId::from(1));
+        .insert(EntityId::from(4u32), ClassId::from(1));
     crate::test_roundtrip_encode(
         PacketEntitiesMessage {
             entities: vec![],
@@ -583,7 +589,7 @@ fn test_packet_entitier_message_roundtrip() {
             entities: vec![
                 PacketEntity {
                     server_class: ClassId::from(0),
-                    entity_index: EntityId::from(0),
+                    entity_index: EntityId::from(0u32),
                     baseline_props: vec![],
                     props: vec![],
                     in_pvs: true,
@@ -593,7 +599,7 @@ fn test_packet_entitier_message_roundtrip() {
                 },
                 PacketEntity {
                     server_class: ClassId::from(1),
-                    entity_index: EntityId::from(4),
+                    entity_index: EntityId::from(4u32),
                     baseline_props: vec![],
                     props: vec![
                         SendProp {
@@ -614,7 +620,7 @@ fn test_packet_entitier_message_roundtrip() {
                 },
                 PacketEntity {
                     server_class: ClassId::from(1),
-                    entity_index: EntityId::from(5),
+                    entity_index: EntityId::from(5u32),
                     baseline_props: vec![],
                     props: vec![
                         SendProp {

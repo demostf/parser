@@ -230,6 +230,12 @@ impl From<u16> for UserId {
     }
 }
 
+impl From<u8> for UserId {
+    fn from(int: u8) -> Self {
+        UserId(int)
+    }
+}
+
 impl From<UserId> for u8 {
     fn from(id: UserId) -> Self {
         id.0

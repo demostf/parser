@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::demo::handle_utf8_error;
 
+use crate::demo::parser::analyser::UserId;
 use crate::{ReadResult, Stream};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -166,7 +167,7 @@ impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
 fn test_user_message_roundtrip() {
     crate::test_roundtrip_write(UserMessage::Train(TrainMessage { data: 12 }));
     crate::test_roundtrip_write(UserMessage::SayText2(Box::new(SayText2Message {
-        client: 3,
+        client: 3u8.into(),
         raw: 1,
         kind: ChatMessageKind::ChatTeamDead,
         from: Some("Old Billy Riley".into()),
@@ -224,7 +225,7 @@ impl BitWrite<LittleEndian> for ChatMessageKind {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SayText2Message {
-    pub client: u8,
+    pub client: UserId,
     pub raw: u8,
     pub kind: ChatMessageKind,
     pub from: Option<String>,
@@ -269,7 +270,7 @@ impl SayText2Message {
 
 impl BitRead<'_, LittleEndian> for SayText2Message {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let client = stream.read()?;
+        let client = UserId(stream.read()?);
         let raw = stream.read()?;
         let (kind, from, text): (ChatMessageKind, Option<String>, String) =
             if stream.read::<u8>()? == 1 {
@@ -303,7 +304,7 @@ impl BitRead<'_, LittleEndian> for SayText2Message {
 
 impl BitWrite<LittleEndian> for SayText2Message {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
-        self.client.write(stream)?;
+        u8::from(self.client).write(stream)?;
         self.raw.write(stream)?;
 
         if let Some(from) = self.from.as_deref() {
@@ -322,7 +323,7 @@ impl BitWrite<LittleEndian> for SayText2Message {
 #[test]
 fn test_say_text2_roundtrip() {
     crate::test_roundtrip_write(SayText2Message {
-        client: 3,
+        client: 3u8.into(),
         raw: 1,
         kind: ChatMessageKind::ChatTeamDead,
         from: Some("Old Billy Riley".into()),
