@@ -23,6 +23,7 @@ const COPY_TYPES: &[PacketType] = &[
 ];
 
 fn main() -> Result<(), MainError> {
+    #[cfg(feature = "trace")]
     tracing_subscriber::fmt::init();
 
     #[cfg(feature = "better_panic")]

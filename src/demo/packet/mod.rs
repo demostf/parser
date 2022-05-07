@@ -11,6 +11,7 @@ use self::synctick::SyncTickPacket;
 use self::usercmd::UserCmdPacket;
 use crate::demo::parser::Encode;
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "trace")]
 use tracing::{event, span, Level};
 
 pub mod consolecmd;
@@ -97,8 +98,15 @@ impl Packet<'_> {
 impl<'a> Parse<'a> for Packet<'a> {
     fn parse(stream: &mut Stream<'a>, state: &ParserState) -> Result<Self> {
         let packet_type = PacketType::read(stream)?;
-        let _span = span!(Level::INFO, "reading packet", packet_type = ?packet_type).entered();
-        event!(Level::INFO, "parsing packet");
+        #[cfg(feature = "trace")]
+        {
+            let tick: u32 = stream.read()?;
+            stream.set_pos(stream.pos() - 32)?;
+            let _span =
+                span!(Level::INFO, "reading packet", packet_type = ?packet_type, tick = tick)
+                    .entered();
+            event!(Level::DEBUG, "parsing packet");
+        }
         Ok(match packet_type {
             PacketType::Signon => Packet::Signon(MessagePacket::parse(stream, state)?),
             PacketType::Message => Packet::Message(MessagePacket::parse(stream, state)?),
@@ -116,6 +124,8 @@ impl<'a> Parse<'a> for Packet<'a> {
 
 impl Encode for Packet<'_> {
     fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
+        #[cfg(feature = "trace")]
+        let _span = span!(Level::INFO, "encoding packet", packet_type = ?self.packet_type(), tick = self.tick()).entered();
         self.packet_type().write(stream)?;
         match self {
             Packet::Signon(inner) => inner.encode(stream, state),

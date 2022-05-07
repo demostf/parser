@@ -18,6 +18,7 @@ use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
+#[cfg(feature = "trace")]
 use tracing::warn;
 
 #[derive(Default, Clone, Serialize, Deserialize)]
@@ -104,6 +105,7 @@ impl<'a> ParserState {
                     cached.entry(class_id).or_insert(props).clone()
                 }
                 None => {
+                    #[cfg(feature = "trace")]
                     warn!(
                         class_id = display(class_id),
                         "class without static baseline"
@@ -129,6 +131,7 @@ impl<'a> ParserState {
             _ => match self.static_baselines.get(&class_id) {
                 Some(_static_baseline) => self.get_static_baseline(class_id, send_table),
                 None => {
+                    #[cfg(feature = "trace")]
                     warn!(
                         class_id = display(class_id),
                         "class without static baseline"
@@ -169,6 +172,7 @@ impl<'a> ParserState {
                 if let Some(table) = send_tables.remove(&class.data_table) {
                     self.send_tables.push(table);
                 } else {
+                    #[cfg(feature = "trace")]
                     warn!(class = debug(class), "class without table");
                 }
             }

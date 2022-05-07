@@ -1,17 +1,18 @@
-use bitbuffer::{bit_size_of, BitRead, BitWrite, BitWriteStream, Endianness, LittleEndian};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 
 use crate::demo::message::{Message, MessageType};
 use crate::demo::parser::Encode;
 use crate::demo::vector::Vector;
-use crate::{Parse, ParserState, ReadResult, Result, Stream};
+use crate::{Parse, ParserState, Result, Stream};
+#[cfg(feature = "trace")]
 use tracing::{event, span, Level};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitRead, BitWrite, PartialEq, Serialize, Deserialize, Clone, Default)]
 pub struct MessagePacketMeta {
     pub flags: u32, // TODO
-    pub view_angles: ViewAngles,
+    pub view_angles: [ViewAngles; 2],
     pub sequence_in: u32,
     pub sequence_out: u32,
 }
@@ -26,89 +27,32 @@ pub struct MessagePacket<'a> {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize, BitRead, BitWrite)]
 pub struct ViewAngles {
-    pub origin: (Vector, Vector),
-    pub angles: (Vector, Vector),
-    pub local_angles: (Vector, Vector),
-}
-
-impl<E: Endianness> BitRead<'_, E> for ViewAngles {
-    fn read(stream: &mut bitbuffer::BitReadStream<E>) -> ReadResult<Self> {
-        let vectors = <[Vector; 6]>::read(stream)?;
-        let origin = (vectors[3], vectors[0]);
-        let angles = (vectors[4], vectors[1]);
-        let local_angles = (vectors[5], vectors[2]);
-        Ok(ViewAngles {
-            origin,
-            angles,
-            local_angles,
-        })
-    }
-
-    fn bit_size() -> Option<usize> {
-        Some(bit_size_of::<Vector>().unwrap() * 6)
-    }
-}
-
-impl<E: Endianness> BitWrite<E> for ViewAngles {
-    fn write(&self, stream: &mut bitbuffer::BitWriteStream<E>) -> ReadResult<()> {
-        [
-            self.origin.1,
-            self.angles.1,
-            self.local_angles.1,
-            self.origin.0,
-            self.angles.0,
-            self.local_angles.0,
-        ]
-        .write(stream)
-    }
+    pub origin: Vector,
+    pub angles: Vector,
+    pub local_angles: Vector,
 }
 
 #[test]
 fn test_view_angles_roundtrip() {
+    crate::test_roundtrip_write(ViewAngles::default());
     crate::test_roundtrip_write(ViewAngles {
-        origin: (Vector::default(), Vector::default()),
-        angles: (Vector::default(), Vector::default()),
-        local_angles: (Vector::default(), Vector::default()),
-    });
-    crate::test_roundtrip_write(ViewAngles {
-        origin: (
-            Vector {
-                x: 1.0,
-                y: 1.0,
-                z: 1.0,
-            },
-            Vector {
-                x: 2.0,
-                y: 2.0,
-                z: 2.0,
-            },
-        ),
-        angles: (
-            Vector {
-                x: 3.0,
-                y: 3.0,
-                z: 3.0,
-            },
-            Vector {
-                x: 4.0,
-                y: 4.0,
-                z: 4.0,
-            },
-        ),
-        local_angles: (
-            Vector {
-                x: 5.0,
-                y: 5.0,
-                z: 5.0,
-            },
-            Vector {
-                x: 6.0,
-                y: 6.0,
-                z: 6.0,
-            },
-        ),
+        origin: Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        },
+        angles: Vector {
+            x: 4.0,
+            y: 5.0,
+            z: 6.0,
+        },
+        local_angles: Vector {
+            x: 7.0,
+            y: 8.0,
+            z: 9.0,
+        },
     });
 }
 
@@ -119,20 +63,23 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
         let meta = stream.read()?;
 
         let length: u32 = stream.read()?;
-        event!(Level::DEBUG, length, "reading packet data");
         let mut packet_data = stream.read_bits(length as usize * 8)?;
 
         let mut messages = Vec::with_capacity(8);
         while packet_data.bits_left() > 6 {
             let message_type = MessageType::read(&mut packet_data)?;
+            #[cfg(feature = "trace")]
             let _span =
-                span!(Level::INFO, "reading packet", message_type = ?message_type).entered();
+                span!(Level::DEBUG, "reading message", message_type = ?message_type, tick = tick)
+                    .entered();
 
             if state.should_parse_message(message_type) && message_type != MessageType::Empty {
-                event!(Level::INFO, "parsing message");
+                #[cfg(feature = "trace")]
+                event!(Level::TRACE, "parsing message");
                 messages.push(Message::from_type(message_type, &mut packet_data, state)?);
             } else {
-                event!(Level::INFO, "skipping message");
+                #[cfg(feature = "trace")]
+                event!(Level::TRACE, "skipping message");
                 Message::skip_type(message_type, &mut packet_data, state)?;
             }
         }
