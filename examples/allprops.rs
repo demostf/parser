@@ -10,6 +10,7 @@ use tf_demo_parser::MessageType;
 pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Stream};
 
 fn main() -> Result<(), MainError> {
+    #[cfg(feature = "trace")]
     tracing_subscriber::fmt::init();
 
     let args: Vec<_> = env::args().collect();

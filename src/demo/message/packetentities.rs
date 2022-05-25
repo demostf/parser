@@ -11,7 +11,6 @@ use parse_display::{Display, FromStr};
 use std::cmp::{min, Ordering};
 
 use std::fmt;
-use std::hint::unreachable_unchecked;
 use std::num::NonZeroU32;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -145,32 +144,23 @@ fn read_bit_var<'a, T: BitReadSized<'a, LittleEndian>>(stream: &mut Stream<'a>) 
         0 => 4,
         1 => 8,
         2 => 12,
-        3 => 32,
-        _ => unsafe { unreachable_unchecked() },
+        _ => 32,
     };
     stream.read_sized(bits)
 }
 
 fn write_bit_var(var: u32, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
-    let ty: u8 = if var >= 2u32.pow(12) {
-        3
+    let (ty, bits): (u8, usize) = if var >= 2u32.pow(12) {
+        (3, 32)
     } else if var >= 2u32.pow(8) {
-        2
+        (2, 12)
     } else if var >= 2u32.pow(4) {
-        1
+        (1, 8)
     } else {
-        0
+        (0, 4)
     };
+
     ty.write_sized(stream, 2)?;
-
-    let bits = match ty {
-        0 => 4,
-        1 => 8,
-        2 => 12,
-        3 => 32,
-        _ => unsafe { unreachable_unchecked() },
-    };
-
     var.write_sized(stream, bits)
 }
 
@@ -198,6 +188,13 @@ fn test_bit_var_roundtrip() {
     bit_var_normal(1234567);
     bit_var_normal(12345678);
     bit_var_normal(123456789);
+    bit_var_normal(u32::MAX);
+
+    for i in 0..31 {
+        bit_var_normal(2u32.pow(i) as u32);
+        bit_var_normal(2u32.pow(i) as u32 - 1);
+        bit_var_normal(2u32.pow(i) as u32 + 1);
+    }
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
