@@ -134,7 +134,7 @@ impl Encode for TempEntitiesMessage {
                     .send_tables
                     .get(usize::from(event.class_id))
                     .ok_or(ParseError::UnknownServerClass(event.class_id))?;
-                PacketEntitiesMessage::write_update(&event.props, stream, send_table)?;
+                PacketEntitiesMessage::write_update(&event.props, stream, send_table, 0u32.into())?;
             }
             let end = stream.bit_len();
             Ok(encode_var_int_fixed((end - start) as u32))

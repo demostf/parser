@@ -12,6 +12,8 @@ use std::cmp::{min, Ordering};
 
 use std::fmt;
 use std::num::NonZeroU32;
+#[cfg(feature = "trace")]
+use tracing::trace;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
@@ -340,10 +342,10 @@ impl Encode for PacketEntitiesMessage {
                 match entity.update_type {
                     UpdateType::Enter => {
                         Self::write_enter(entity, stream, state)?;
-                        Self::write_update(&entity.props, stream, send_table)?;
+                        Self::write_update(&entity.props, stream, send_table, entity.entity_index)?;
                     }
                     UpdateType::Preserve => {
-                        Self::write_update(&entity.props, stream, send_table)?;
+                        Self::write_update(&entity.props, stream, send_table, entity.entity_index)?;
                     }
                     _ => {}
                 }
@@ -417,9 +419,14 @@ impl PacketEntitiesMessage {
         stream: &mut Stream,
         send_table: &SendTable,
         props: &mut Vec<SendProp>,
-        _entity_index: EntityId,
+        entity_index: EntityId,
     ) -> Result<()> {
         let mut index: i32 = -1;
+
+        #[cfg(feature = "trace")]
+        trace!(entity_index = display(entity_index), "reading update");
+        #[cfg(not(feature = "trace"))]
+        let _ = entity_index;
 
         while stream.read()? {
             let diff: u32 = read_bit_var(stream)?;
@@ -428,6 +435,15 @@ impl PacketEntitiesMessage {
             match send_table.flattened_props.get(index as usize) {
                 Some(definition) => {
                     let value = SendPropValue::parse(stream, &definition.parse_definition)?;
+
+                    #[cfg(feature = "trace")]
+                    trace!(
+                        entity_index = display(entity_index),
+                        index = display(index),
+                        value = debug(&value),
+                        definition = display(definition.identifier),
+                        "reading prop"
+                    );
                     props.push(SendProp {
                         index: index as u32,
                         identifier: definition.identifier,
@@ -451,6 +467,7 @@ impl PacketEntitiesMessage {
         props: Props,
         stream: &mut BitWriteStream<LittleEndian>,
         send_table: &SendTable,
+        _entity_index: EntityId,
     ) -> Result<()> {
         let mut last_index: i32 = -1;
 
