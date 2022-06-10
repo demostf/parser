@@ -62,7 +62,7 @@ pub struct ServerInfoMessage {
     pub max_crc: u32,
     pub max_classes: u16,
     pub map_hash: [u8; 16],
-    pub player_count: u8,
+    pub player_slot: u8,
     pub max_player_count: u8,
     pub interval_per_tick: f32,
     #[size = 1]
