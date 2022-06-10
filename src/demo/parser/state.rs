@@ -35,7 +35,8 @@ pub struct ParserState {
     pub event_definitions: Vec<GameEventDefinition>,
     pub string_tables: Vec<StringTableMeta>,
     pub entity_classes: HashMap<EntityId, ClassId, NullHasherBuilder>,
-    pub send_tables: Vec<SendTable>, // indexed by ClassId
+    // indexed by ClassId
+    pub send_tables: Vec<SendTable>,
     pub server_classes: Vec<ServerClass>,
     pub instance_baselines: [Baseline; 2],
     pub demo_meta: DemoMeta,
@@ -275,6 +276,16 @@ impl<'a> ParserState {
                 self.parsed_static_baselines.borrow_mut().remove(&class_id);
             }
         }
+    }
+
+    pub fn index_for_prop(&self, class: ClassId, prop: SendPropIdentifier) -> Option<u32> {
+        let send_table = self.send_tables.get(usize::from(class))?;
+        send_table
+            .flattened_props
+            .iter()
+            .enumerate()
+            .find(|(_i, def)| def.identifier == prop)
+            .map(|(index, _)| index as u32)
     }
 }
 
