@@ -1,5 +1,6 @@
-use crate::Stream;
 /// Messages that consists only of primitives and string and can be derived
+use crate::demo::data::MaybeUtf8String;
+use crate::Stream;
 use bitbuffer::{BitRead, BitWrite, LittleEndian};
 use serde::{Deserialize, Serialize};
 
@@ -49,7 +50,7 @@ pub struct SignOnStateMessage {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct PrintMessage {
-    pub value: String,
+    pub value: MaybeUtf8String,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]

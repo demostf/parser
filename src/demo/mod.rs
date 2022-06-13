@@ -1,5 +1,4 @@
-use crate::ReadResult;
-use bitbuffer::{BitError, BitReadBuffer, BitReadStream, LittleEndian};
+use bitbuffer::{BitReadBuffer, BitReadStream, LittleEndian};
 
 pub mod data;
 pub mod gameevent_gen;
@@ -38,12 +37,5 @@ impl Demo<'static> {
         let data = Buffer::new_owned(bytes, LittleEndian);
         let stream = Stream::new(data);
         Demo { stream }
-    }
-}
-
-pub(crate) fn handle_utf8_error(error: BitError) -> ReadResult<String> {
-    match error {
-        BitError::Utf8Error(_, _) => Ok("-- Malformed utf8 --".into()),
-        _ => Err(error),
     }
 }

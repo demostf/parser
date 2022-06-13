@@ -35,7 +35,7 @@ fn should_box_event(name: &str) -> bool {
 
 fn get_type_name(ty: GameEventValueType) -> &'static str {
     match ty {
-        GameEventValueType::String => "String",
+        GameEventValueType::String => "MaybeUtf8String",
         GameEventValueType::Float => "f32",
         GameEventValueType::Boolean => "bool",
         GameEventValueType::Byte => "u8",
@@ -230,6 +230,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         use crate::{ParseError, Result};
         use bitbuffer::{BitRead, LittleEndian, BitWrite, BitWriteStream};
         use serde::{Deserialize, Serialize};
+        use crate::demo::data::MaybeUtf8String;
     );
 
     let event_definitions = events.iter().map(|event| {

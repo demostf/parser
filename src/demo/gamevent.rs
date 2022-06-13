@@ -1,5 +1,5 @@
 pub use super::gameevent_gen::{GameEvent, GameEventType};
-use crate::demo::handle_utf8_error;
+use crate::demo::data::MaybeUtf8String;
 use crate::demo::message::gameevent::GameEventTypeId;
 use crate::{GameEventError, Result, Stream};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
@@ -59,7 +59,7 @@ pub enum GameEventValueType {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GameEventValue {
-    String(String),
+    String(MaybeUtf8String),
     Float(f32),
     Long(u32),
     Short(u16),
@@ -70,9 +70,7 @@ pub enum GameEventValue {
 
 fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {
     Ok(match definition.kind {
-        GameEventValueType::String => {
-            GameEventValue::String(stream.read().or_else(handle_utf8_error)?)
-        }
+        GameEventValueType::String => GameEventValue::String(stream.read()?),
         GameEventValueType::Float => GameEventValue::Float(stream.read()?),
         GameEventValueType::Long => GameEventValue::Long(stream.read()?),
         GameEventValueType::Short => GameEventValue::Short(stream.read()?),
@@ -116,6 +114,12 @@ pub trait EventValue: Sized {
 }
 
 impl EventValue for String {
+    fn value_type() -> GameEventValueType {
+        GameEventValueType::String
+    }
+}
+
+impl EventValue for MaybeUtf8String {
     fn value_type() -> GameEventValueType {
         GameEventValueType::String
     }

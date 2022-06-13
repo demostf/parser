@@ -1,8 +1,7 @@
 use bitbuffer::{BitError, BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 
-use crate::demo::handle_utf8_error;
-
+use crate::demo::data::MaybeUtf8String;
 use crate::demo::parser::analyser::UserId;
 use crate::{ReadResult, Stream};
 
@@ -228,14 +227,14 @@ pub struct SayText2Message {
     pub client: UserId,
     pub raw: u8,
     pub kind: ChatMessageKind,
-    pub from: Option<String>,
-    pub text: String,
+    pub from: Option<MaybeUtf8String>,
+    pub text: MaybeUtf8String,
 }
 
 impl SayText2Message {
     pub fn plain_text(&self) -> String {
         // 1: normal, 2: old colors, 3: team, 4: location, 5 achievement, 6 custom
-        let mut text = self.text.replace(|c| c <= char::from(6), "");
+        let mut text = self.text.to_string().replace(|c| c <= char::from(6), "");
         // 7: 6-char hex
         while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
             if c == char::from(7) {
@@ -272,18 +271,18 @@ impl BitRead<'_, LittleEndian> for SayText2Message {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
         let client = UserId(stream.read()?);
         let raw = stream.read()?;
-        let (kind, from, text): (ChatMessageKind, Option<String>, String) =
+        let (kind, from, text): (ChatMessageKind, Option<MaybeUtf8String>, MaybeUtf8String) =
             if stream.read::<u8>()? == 1 {
                 stream.set_pos(stream.pos() - 8)?;
 
-                let text: String = stream.read().or_else(handle_utf8_error)?;
+                let text: MaybeUtf8String = stream.read()?;
                 (ChatMessageKind::ChatAll, None, text)
             } else {
                 stream.set_pos(stream.pos() - 8)?;
 
                 let kind = stream.read()?;
-                let from = stream.read().or_else(handle_utf8_error)?;
-                let text = stream.read().or_else(handle_utf8_error)?;
+                let from = stream.read()?;
+                let text = stream.read()?;
 
                 // ends with 2 0 bytes?
                 if stream.bits_left() >= 16 {
@@ -307,7 +306,7 @@ impl BitWrite<LittleEndian> for SayText2Message {
         u8::from(self.client).write(stream)?;
         self.raw.write(stream)?;
 
-        if let Some(from) = self.from.as_deref() {
+        if let Some(from) = self.from.as_ref().map(|s| s.as_ref()) {
             self.kind.write(stream)?;
             from.write(stream)?;
             self.text.write(stream)?;

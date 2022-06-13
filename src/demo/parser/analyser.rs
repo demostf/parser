@@ -29,7 +29,11 @@ impl ChatMessage {
     pub fn from_message(message: &SayText2Message, tick: u32) -> Self {
         ChatMessage {
             kind: message.kind,
-            from: message.from.clone().unwrap_or_default(),
+            from: message
+                .from
+                .as_ref()
+                .map(|s| s.to_string())
+                .unwrap_or_default(),
             text: message.plain_text(),
             tick,
         }
@@ -328,7 +332,7 @@ impl Death {
             assister,
             tick,
             killer: UserId::from(event.attacker),
-            weapon: event.weapon.clone(),
+            weapon: event.weapon.to_string(),
             victim: UserId::from(event.user_id),
         }
     }
@@ -416,7 +420,7 @@ impl Analyser {
         if let UserMessage::SayText2(text_message) = message {
             if text_message.kind == ChatMessageKind::NameChange {
                 if let Some(from) = text_message.from.clone() {
-                    self.change_name(from, text_message.text.clone());
+                    self.change_name(from.into(), text_message.plain_text());
                 }
             } else {
                 self.state
