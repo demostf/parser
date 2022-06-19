@@ -211,6 +211,7 @@ impl From<HashMap<Class, u8>> for ClassList {
     }
 }
 
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
     Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Default,
 )]

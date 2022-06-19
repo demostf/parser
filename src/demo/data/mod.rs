@@ -1,13 +1,12 @@
 pub mod userinfo;
 
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, Endianness};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Debug, Display, Formatter};
 
 pub use userinfo::UserInfo;
 
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Eq, PartialEq, Serialize, Deserialize, Clone)]
+#[derive(Eq, PartialEq, Clone)]
 pub enum MaybeUtf8String {
     Valid(String),
     Invalid(Vec<u8>),
@@ -85,5 +84,34 @@ impl Into<String> for MaybeUtf8String {
             MaybeUtf8String::Valid(s) => s,
             MaybeUtf8String::Invalid(_) => "-- Malformed utf8 --".into(),
         }
+    }
+}
+
+impl Serialize for MaybeUtf8String {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for MaybeUtf8String {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        String::deserialize(deserializer).map(MaybeUtf8String::Valid)
+    }
+}
+
+#[cfg(feature = "schema")]
+impl schemars::JsonSchema for MaybeUtf8String {
+    fn schema_name() -> String {
+        String::schema_name()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        String::json_schema(gen)
     }
 }

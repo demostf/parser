@@ -1,4 +1,4 @@
-use bitbuffer::{BitError, BitRead, BitWrite, BitWriteStream, LittleEndian};
+use bitbuffer::{BitError, BitRead, BitWrite, BitWriteStream, Endianness, LittleEndian};
 use serde::{Deserialize, Serialize};
 
 use crate::demo::data::MaybeUtf8String;
@@ -22,7 +22,7 @@ pub enum UserMessageType {
     ShowMenu = 9,
     Shake = 10,
     Fade = 11,
-    VGUIMenu = 12,
+    VGuiMenu = 12,
     Rumble = 13,
     CloseCaption = 14,
     SendAudio = 15,
@@ -88,6 +88,10 @@ pub enum UserMessage<'a> {
     Train(TrainMessage),
     VoiceSubtitle(VoiceSubtitleMessage),
     Shake(ShakeMessage),
+    VGuiMenu(VGuiMenuMessage),
+    Rumble(RumbleMessage),
+    Fade(FadeMessage),
+    HapMeleeContact(HapMeleeContactMessage),
     Unknown(UnknownUserMessage<'a>),
 }
 
@@ -100,6 +104,10 @@ impl UserMessage<'_> {
             UserMessage::Train(_) => UserMessageType::Train as u8,
             UserMessage::VoiceSubtitle(_) => UserMessageType::VoiceSubtitle as u8,
             UserMessage::Shake(_) => UserMessageType::Shake as u8,
+            UserMessage::VGuiMenu(_) => UserMessageType::VGuiMenu as u8,
+            UserMessage::Rumble(_) => UserMessageType::Rumble as u8,
+            UserMessage::Fade(_) => UserMessageType::Fade as u8,
+            UserMessage::HapMeleeContact(_) => UserMessageType::HapMeleeContact as u8,
             UserMessage::Unknown(msg) => msg.raw_type,
         }
     }
@@ -113,11 +121,15 @@ impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
                 let mut data = stream.read_bits(length)?;
                 match message_type {
                     UserMessageType::SayText2 => UserMessage::SayText2(data.read()?),
-                    //UserMessageType::TextMsg => UserMessage::Text(data.read()?),
+                    UserMessageType::TextMsg => UserMessage::Text(data.read()?),
                     UserMessageType::ResetHUD => UserMessage::ResetHUD(data.read()?),
                     UserMessageType::Train => UserMessage::Train(data.read()?),
                     UserMessageType::VoiceSubtitle => UserMessage::VoiceSubtitle(data.read()?),
                     UserMessageType::Shake => UserMessage::Shake(data.read()?),
+                    UserMessageType::VGuiMenu => UserMessage::VGuiMenu(data.read()?),
+                    UserMessageType::Rumble => UserMessage::Rumble(data.read()?),
+                    UserMessageType::Fade => UserMessage::Fade(data.read()?),
+                    UserMessageType::HapMeleeContact => UserMessage::HapMeleeContact(data.read()?),
                     _ => UserMessage::Unknown(UnknownUserMessage {
                         raw_type: message_type as u8,
                         data,
@@ -155,6 +167,10 @@ impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
             UserMessage::Train(body) => stream.write(body),
             UserMessage::VoiceSubtitle(body) => stream.write(body),
             UserMessage::Shake(body) => stream.write(body),
+            UserMessage::VGuiMenu(body) => stream.write(body),
+            UserMessage::Rumble(body) => stream.write(body),
+            UserMessage::Fade(body) => stream.write(body),
+            UserMessage::HapMeleeContact(body) => stream.write(body),
             UserMessage::Unknown(body) => stream.write(&body.data),
         })?;
 
@@ -344,8 +360,8 @@ pub enum HudTextLocation {
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TextMessage {
     pub location: HudTextLocation,
-    pub text: String,
-    pub substitute: [String; 4],
+    pub text: MaybeUtf8String,
+    pub substitute: [MaybeUtf8String; 4],
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -375,6 +391,57 @@ pub struct ShakeMessage {
     amplitude: f32,
     frequency: f32,
     duration: f32,
+}
+
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(BitRead, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct VGuiMenuMessage {
+    name: MaybeUtf8String,
+    show: u8,
+    #[size_bits = 8]
+    data: Vec<VGuiMenuMessageData>,
+}
+
+impl<E: Endianness> BitWrite<E> for VGuiMenuMessage {
+    fn write(&self, stream: &mut BitWriteStream<E>) -> ReadResult<()> {
+        self.name.write(stream)?;
+        self.show.write(stream)?;
+        (self.data.len() as u8).write(stream)?;
+        for item in &self.data {
+            item.write(stream)?;
+        }
+        Ok(())
+    }
+}
+
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct VGuiMenuMessageData {
+    key: MaybeUtf8String,
+    data: MaybeUtf8String,
+}
+
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct RumbleMessage {
+    waveform_index: u8,
+    rumble_data: u8,
+    rumble_flags: u8,
+}
+
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FadeMessage {
+    duration: u16,
+    hold: u16,
+    flags: u16,
+    color: [u8; 4],
+}
+
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct HapMeleeContactMessage {
+    data: u8,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
