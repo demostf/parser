@@ -383,16 +383,16 @@
           ],
           "properties": {
             "address": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "dedicated": {
               "type": "boolean"
             },
             "game": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "hostname": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "ip": {
               "type": "integer",
@@ -400,7 +400,7 @@
               "minimum": 0.0
             },
             "map_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "max_players": {
               "type": "integer",
@@ -408,7 +408,7 @@
               "minimum": 0.0
             },
             "os": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "password": {
               "type": "boolean"
@@ -434,7 +434,7 @@
           ],
           "properties": {
             "level_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -452,7 +452,7 @@
           ],
           "properties": {
             "reason": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -471,10 +471,10 @@
           ],
           "properties": {
             "cvar_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "cvar_value": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -492,7 +492,7 @@
           ],
           "properties": {
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -516,22 +516,22 @@
           ],
           "properties": {
             "by": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "duration": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "ip": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "kicked": {
               "type": "boolean"
             },
             "name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "network_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -556,13 +556,13 @@
           ],
           "properties": {
             "by": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "ip": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "network_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -585,7 +585,7 @@
           ],
           "properties": {
             "address": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "bot": {
               "type": "integer",
@@ -598,10 +598,10 @@
               "minimum": 0.0
             },
             "name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "network_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -638,10 +638,10 @@
               "minimum": 0.0
             },
             "name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "network_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -676,10 +676,10 @@
               "minimum": 0.0
             },
             "name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "network_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -711,13 +711,13 @@
               "minimum": 0.0
             },
             "name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "network_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "reason": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -761,7 +761,7 @@
           ],
           "properties": {
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -784,7 +784,7 @@
           ],
           "properties": {
             "message": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -805,7 +805,7 @@
           ],
           "properties": {
             "address": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "ip": {
               "type": "integer",
@@ -818,7 +818,7 @@
               "minimum": 0.0
             },
             "source": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -838,7 +838,7 @@
           ],
           "properties": {
             "address": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "ip": {
               "type": "integer",
@@ -868,7 +868,7 @@
           ],
           "properties": {
             "address": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "ip": {
               "type": "integer",
@@ -916,7 +916,7 @@
               "minimum": 0.0
             },
             "team_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -967,7 +967,7 @@
               "minimum": 0.0
             },
             "sound": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "team": {
               "type": "integer",
@@ -1002,7 +1002,7 @@
               "type": "boolean"
             },
             "name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "old_team": {
               "type": "integer",
@@ -1039,7 +1039,7 @@
           ],
           "properties": {
             "class": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -1092,7 +1092,7 @@
               "minimum": 0.0
             },
             "assister_fallback": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "attacker": {
               "type": "integer",
@@ -1197,7 +1197,7 @@
               "minimum": 0.0
             },
             "weapon": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "weapon_def_index": {
               "type": "integer",
@@ -1210,7 +1210,7 @@
               "minimum": 0.0
             },
             "weapon_log_class_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             }
           }
         },
@@ -1299,7 +1299,7 @@
               "type": "boolean"
             },
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -1452,10 +1452,10 @@
           ],
           "properties": {
             "new_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "old_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -1478,7 +1478,7 @@
           ],
           "properties": {
             "hint_message": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -1530,7 +1530,7 @@
           ],
           "properties": {
             "map_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -1556,7 +1556,7 @@
               "minimum": 0.0
             },
             "objective": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "rounds_limit": {
               "type": "integer",
@@ -1611,7 +1611,7 @@
               "minimum": 0.0
             },
             "objective": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "time_limit": {
               "type": "integer",
@@ -1636,7 +1636,7 @@
           ],
           "properties": {
             "message": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "reason": {
               "type": "integer",
@@ -1670,7 +1670,7 @@
               "minimum": 0.0
             },
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -1824,7 +1824,7 @@
           ],
           "properties": {
             "achievement_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "cur_val": {
               "type": "integer",
@@ -2058,10 +2058,10 @@
               "minimum": 0.0
             },
             "issue": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "param_1": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "team": {
               "type": "integer",
@@ -2136,10 +2136,10 @@
           ],
           "properties": {
             "details": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "param_1": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "team": {
               "type": "integer",
@@ -2224,19 +2224,19 @@
               "minimum": 0.0
             },
             "option_1": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "option_2": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "option_3": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "option_4": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "option_5": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -2512,7 +2512,7 @@
           ],
           "properties": {
             "reason": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -2774,7 +2774,7 @@
           ],
           "properties": {
             "round": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -3079,7 +3079,7 @@
           ],
           "properties": {
             "reason": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -3177,7 +3177,7 @@
               "format": "float"
             },
             "cappers": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "cp": {
               "type": "integer",
@@ -3185,7 +3185,7 @@
               "minimum": 0.0
             },
             "cp_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "team": {
               "type": "integer",
@@ -3211,7 +3211,7 @@
           ],
           "properties": {
             "cappers": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "cp": {
               "type": "integer",
@@ -3219,7 +3219,7 @@
               "minimum": 0.0
             },
             "cp_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "team": {
               "type": "integer",
@@ -3249,7 +3249,7 @@
               "minimum": 0.0
             },
             "cp_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "team": {
               "type": "integer",
@@ -3279,7 +3279,7 @@
               "minimum": 0.0
             },
             "cp_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "team": {
               "type": "integer",
@@ -3309,7 +3309,7 @@
               "minimum": 0.0
             },
             "cp_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "time_remaining": {
               "type": "number",
@@ -3344,7 +3344,7 @@
               "minimum": 0.0
             },
             "cp_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -3440,7 +3440,7 @@
               "minimum": 0.0
             },
             "cappers": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "flag_cap_limit": {
               "type": "integer",
@@ -3605,13 +3605,13 @@
           ],
           "properties": {
             "map": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "next_map": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -4118,7 +4118,7 @@
               "type": "boolean"
             },
             "weapon": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "weapon_id": {
               "type": "integer",
@@ -4213,7 +4213,7 @@
               "type": "boolean"
             },
             "new_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "ready_state": {
               "type": "integer",
@@ -4885,7 +4885,7 @@
               "minimum": 0.0
             },
             "cappers": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "flag_cap_limit": {
               "type": "integer",
@@ -5585,7 +5585,7 @@
               "format": "float"
             },
             "play_sound": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "show_distance": {
               "type": "boolean"
@@ -5594,7 +5594,7 @@
               "type": "boolean"
             },
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -6369,7 +6369,7 @@
           ],
           "properties": {
             "item": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -6460,7 +6460,7 @@
               "minimum": 0.0
             },
             "assister_fallback": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "attacker": {
               "type": "integer",
@@ -6512,7 +6512,7 @@
               "minimum": 0.0
             },
             "weapon": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "weapon_id": {
               "type": "integer",
@@ -6520,7 +6520,7 @@
               "minimum": 0.0
             },
             "weapon_log_class_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             }
           }
         },
@@ -6550,7 +6550,7 @@
               "minimum": 0.0
             },
             "assister_fallback": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "attacker": {
               "type": "integer",
@@ -6602,7 +6602,7 @@
               "minimum": 0.0
             },
             "weapon": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "weapon_id": {
               "type": "integer",
@@ -6610,7 +6610,7 @@
               "minimum": 0.0
             },
             "weapon_log_class_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             }
           }
         },
@@ -6640,7 +6640,7 @@
               "minimum": 0.0
             },
             "assister_fallback": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "attacker": {
               "type": "integer",
@@ -6692,7 +6692,7 @@
               "minimum": 0.0
             },
             "weapon": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "weapon_id": {
               "type": "integer",
@@ -6700,7 +6700,7 @@
               "minimum": 0.0
             },
             "weapon_log_class_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             }
           }
         },
@@ -6731,7 +6731,7 @@
               "minimum": 0.0
             },
             "assister_fallback": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "attacker": {
               "type": "integer",
@@ -6788,7 +6788,7 @@
               "minimum": 0.0
             },
             "weapon": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "weapon_id": {
               "type": "integer",
@@ -6796,7 +6796,7 @@
               "minimum": 0.0
             },
             "weapon_log_class_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             }
           }
         },
@@ -7443,10 +7443,10 @@
               "minimum": 0.0
             },
             "steam_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -7464,7 +7464,7 @@
           ],
           "properties": {
             "steam_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -7482,7 +7482,7 @@
           ],
           "properties": {
             "steam_id": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -7895,7 +7895,7 @@
           ],
           "properties": {
             "mission": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -8260,7 +8260,7 @@
           ],
           "properties": {
             "path": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -8368,7 +8368,7 @@
               "minimum": 0.0
             },
             "weapon": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "weapon_id": {
               "type": "integer",
@@ -8376,7 +8376,7 @@
               "minimum": 0.0
             },
             "weapon_log_class_name": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             }
           }
         },
@@ -10111,7 +10111,7 @@
           ],
           "properties": {
             "msg": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "request": {
               "type": "integer",
@@ -10136,7 +10136,7 @@
           ],
           "properties": {
             "msg": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "request": {
               "type": "integer",
@@ -10384,7 +10384,7 @@
               "minimum": 0.0
             },
             "master": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "proxies": {
               "type": "integer",
@@ -10611,7 +10611,7 @@
           ],
           "properties": {
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -10629,7 +10629,7 @@
           ],
           "properties": {
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -10647,7 +10647,7 @@
           ],
           "properties": {
             "text": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -10692,7 +10692,7 @@
               "minimum": 0.0
             },
             "sn": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "st": {
               "type": "integer",
@@ -10743,7 +10743,7 @@
           ],
           "properties": {
             "error": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             },
             "type": {
               "type": "string",
@@ -11259,7 +11259,7 @@
           ],
           "properties": {
             "String": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             }
           },
           "additionalProperties": false
@@ -11514,7 +11514,7 @@
               ]
             },
             "value": {
-              "type": "string"
+              "$ref": "#/definitions/String"
             }
           }
         },
@@ -11530,7 +11530,7 @@
             "max_crc",
             "max_player_count",
             "platform",
-            "player_count",
+            "player_slot",
             "replay",
             "server_count",
             "server_name",
@@ -11581,7 +11581,7 @@
             "platform": {
               "type": "string"
             },
-            "player_count": {
+            "player_slot": {
               "type": "integer",
               "format": "uint8",
               "minimum": 0.0
@@ -11932,14 +11932,16 @@
               ],
               "properties": {
                 "client": {
-                  "type": "integer",
-                  "format": "uint8",
-                  "minimum": 0.0
+                  "$ref": "#/definitions/UserId"
                 },
                 "from": {
-                  "type": [
-                    "string",
-                    "null"
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/String"
+                    },
+                    {
+                      "type": "null"
+                    }
                   ]
                 },
                 "kind": {
@@ -11951,7 +11953,7 @@
                   "minimum": 0.0
                 },
                 "text": {
-                  "type": "string"
+                  "$ref": "#/definitions/String"
                 },
                 "type": {
                   "type": "string",
@@ -11976,13 +11978,13 @@
                 "substitute": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/definitions/String"
                   },
                   "maxItems": 4,
                   "minItems": 4
                 },
                 "text": {
-                  "type": "string"
+                  "$ref": "#/definitions/String"
                 },
                 "type": {
                   "type": "string",
@@ -12095,6 +12097,112 @@
                   "type": "string",
                   "enum": [
                     "Shake"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "data",
+                "name",
+                "show",
+                "type"
+              ],
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/VGuiMenuMessageData"
+                  }
+                },
+                "name": {
+                  "$ref": "#/definitions/String"
+                },
+                "show": {
+                  "type": "integer",
+                  "format": "uint8",
+                  "minimum": 0.0
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "VGuiMenu"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "rumble_data",
+                "rumble_flags",
+                "type",
+                "waveform_index"
+              ],
+              "properties": {
+                "rumble_data": {
+                  "type": "integer",
+                  "format": "uint8",
+                  "minimum": 0.0
+                },
+                "rumble_flags": {
+                  "type": "integer",
+                  "format": "uint8",
+                  "minimum": 0.0
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "Rumble"
+                  ]
+                },
+                "waveform_index": {
+                  "type": "integer",
+                  "format": "uint8",
+                  "minimum": 0.0
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "color",
+                "duration",
+                "flags",
+                "hold",
+                "type"
+              ],
+              "properties": {
+                "color": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "uint8",
+                    "minimum": 0.0
+                  },
+                  "maxItems": 4,
+                  "minItems": 4
+                },
+                "duration": {
+                  "type": "integer",
+                  "format": "uint16",
+                  "minimum": 0.0
+                },
+                "flags": {
+                  "type": "integer",
+                  "format": "uint16",
+                  "minimum": 0.0
+                },
+                "hold": {
+                  "type": "integer",
+                  "format": "uint16",
+                  "minimum": 0.0
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "Fade"
                   ]
                 }
               }
@@ -12413,7 +12521,12 @@
           "minimum": 0.0
         },
         "view_angles": {
-          "$ref": "#/definitions/ViewAngles"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ViewAngles"
+          },
+          "maxItems": 2,
+          "minItems": 2
         }
       }
     },
@@ -12682,6 +12795,9 @@
         "ChangeLevel"
       ]
     },
+    "String": {
+      "type": "string"
+    },
     "StringTable": {
       "type": "object",
       "required": [
@@ -12862,6 +12978,26 @@
         }
       }
     },
+    "UserId": {
+      "type": "integer",
+      "format": "uint8",
+      "minimum": 0.0
+    },
+    "VGuiMenuMessageData": {
+      "type": "object",
+      "required": [
+        "data",
+        "key"
+      ],
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/String"
+        },
+        "key": {
+          "$ref": "#/definitions/String"
+        }
+      }
+    },
     "Vector": {
       "type": "object",
       "required": [
@@ -12910,43 +13046,13 @@
       ],
       "properties": {
         "angles": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/Vector"
-            },
-            {
-              "$ref": "#/definitions/Vector"
-            }
-          ],
-          "maxItems": 2,
-          "minItems": 2
+          "$ref": "#/definitions/Vector"
         },
         "local_angles": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/Vector"
-            },
-            {
-              "$ref": "#/definitions/Vector"
-            }
-          ],
-          "maxItems": 2,
-          "minItems": 2
+          "$ref": "#/definitions/Vector"
         },
         "origin": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/Vector"
-            },
-            {
-              "$ref": "#/definitions/Vector"
-            }
-          ],
-          "maxItems": 2,
-          "minItems": 2
+          "$ref": "#/definitions/Vector"
         }
       }
     },
