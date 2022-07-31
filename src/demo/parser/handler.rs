@@ -2,7 +2,7 @@ use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::datatable::{ParseSendTable, ServerClass};
 use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
-use crate::Result;
+use crate::{ParseError, Result};
 
 use crate::demo::header::Header;
 use crate::demo::packet::message::MessagePacketMeta;
@@ -91,6 +91,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
     }
 
     pub fn handle_packet(&mut self, packet: Packet<'a>) -> Result<()> {
+        let mut baselines_updated = false;
         match packet {
             Packet::DataTables(packet) => {
                 self.handle_data_table(packet.tables, packet.server_classes)?;
@@ -110,7 +111,29 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                             self.handle_string_table(message.table)
                         }
                         Message::UpdateStringTable(message) => {
+                            baselines_updated = true;
                             self.handle_table_update(message.table_id, message.entries)
+                        }
+                        Message::PacketEntities(mut msg) => {
+                            if baselines_updated {
+                                // if baselines were updated in the same packet, the newly added
+                                // static baselines wont be used yet, patch it up afterward
+                                for ent in msg.entities.iter_mut() {
+                                    if ent.baseline_props.is_empty() {
+                                        let send_table = self
+                                            .state_handler
+                                            .send_tables
+                                            .get(usize::from(ent.server_class))
+                                            .ok_or(ParseError::UnknownServerClass(
+                                                ent.server_class,
+                                            ))?;
+                                        ent.baseline_props = self
+                                            .state_handler
+                                            .get_static_baseline(ent.server_class, send_table)?;
+                                    }
+                                }
+                            }
+                            self.handle_message(Message::PacketEntities(msg))
                         }
                         message => self.handle_message(message),
                     }
