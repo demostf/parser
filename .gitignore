@@ -8,3 +8,5 @@
 *.out
 heaptrack.*
 dhat.out.*
+result
+.direnv
