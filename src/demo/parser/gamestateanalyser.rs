@@ -160,7 +160,7 @@ impl MessageHandler for GameStateAnalyser {
         matches!(message_type, MessageType::PacketEntities)
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32) {
+    fn handle_message(&mut self, message: &Message, _tick: u32, _parser_state: &ParserState) {
         if let Message::PacketEntities(message) = message {
             for entity in &message.entities {
                 self.handle_entity(entity);
@@ -172,6 +172,7 @@ impl MessageHandler for GameStateAnalyser {
         &mut self,
         parse_tables: &[ParseSendTable],
         server_classes: &[ServerClass],
+        _parser_state: &ParserState,
     ) {
         for table in parse_tables {
             for prop_def in &table.props {
@@ -189,7 +190,13 @@ impl MessageHandler for GameStateAnalyser {
             .collect();
     }
 
-    fn handle_string_entry(&mut self, table: &str, _index: usize, entry: &StringTableEntry) {
+    fn handle_string_entry(
+        &mut self,
+        table: &str,
+        _index: usize,
+        entry: &StringTableEntry,
+        _parser_state: &ParserState,
+    ) {
         if table == "userinfo" {
             let _ = self.parse_user_info(
                 entry.text.as_ref().map(|s| s.as_ref()),

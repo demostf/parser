@@ -93,7 +93,7 @@ impl MessageHandler for EntityDumper {
         }
     }
 
-    fn handle_message(&mut self, message: &Message, tick: u32) {
+    fn handle_message(&mut self, message: &Message, tick: u32, _parser_state: &ParserState) {
         match message {
             Message::PacketEntities(entity_message) => self.entities.extend(
                 entity_message
@@ -105,7 +105,12 @@ impl MessageHandler for EntityDumper {
         }
     }
 
-    fn handle_data_tables(&mut self, tables: &[ParseSendTable], _server_classes: &[ServerClass]) {
+    fn handle_data_tables(
+        &mut self,
+        tables: &[ParseSendTable],
+        _server_classes: &[ServerClass],
+        _parser_state: &ParserState,
+    ) {
         for table in tables {
             for prop_def in &table.props {
                 self.prop_names.insert(

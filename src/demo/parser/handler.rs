@@ -16,13 +16,32 @@ pub trait MessageHandler {
 
     fn handle_header(&mut self, _header: &Header) {}
 
-    fn handle_message(&mut self, _message: &Message, _tick: u32) {}
+    fn handle_message(&mut self, _message: &Message, _tick: u32, _parser_state: &ParserState) {}
 
-    fn handle_string_entry(&mut self, _table: &str, _index: usize, _entries: &StringTableEntry) {}
+    fn handle_string_entry(
+        &mut self,
+        _table: &str,
+        _index: usize,
+        _entries: &StringTableEntry,
+        _parser_state: &ParserState,
+    ) {
+    }
 
-    fn handle_data_tables(&mut self, _tables: &[ParseSendTable], _server_classes: &[ServerClass]) {}
+    fn handle_data_tables(
+        &mut self,
+        _tables: &[ParseSendTable],
+        _server_classes: &[ServerClass],
+        _parser_state: &ParserState,
+    ) {
+    }
 
-    fn handle_packet_meta(&mut self, _tick: u32, _meta: &MessagePacketMeta) {}
+    fn handle_packet_meta(
+        &mut self,
+        _tick: u32,
+        _meta: &MessagePacketMeta,
+        _parser_state: &ParserState,
+    ) {
+    }
 
     fn into_output(self, state: &ParserState) -> Self::Output;
 }
@@ -102,7 +121,8 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                 }
             }
             Packet::Message(packet) | Packet::Signon(packet) => {
-                self.analyser.handle_packet_meta(packet.tick, &packet.meta);
+                self.analyser
+                    .handle_packet_meta(packet.tick, &packet.meta, &self.state_handler);
                 //self.tick = packet.tick;
                 for message in packet.messages {
                     match message {
@@ -151,8 +171,12 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
             let entry_index = entry_index as usize;
             self.state_handler
                 .handle_string_entry(&table.name, entry_index, &entry);
-            self.analyser
-                .handle_string_entry(&table.name, entry_index, &entry);
+            self.analyser.handle_string_entry(
+                &table.name,
+                entry_index,
+                &entry,
+                &self.state_handler,
+            );
         }
 
         self.string_table_names.push(table.name);
@@ -164,7 +188,8 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                 let index = index as usize;
                 self.state_handler
                     .handle_string_entry(table_name, index, &entry);
-                self.analyser.handle_string_entry(table_name, index, &entry);
+                self.analyser
+                    .handle_string_entry(table_name, index, &entry, &self.state_handler);
             }
         }
     }
@@ -175,7 +200,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         server_classes: Vec<ServerClass>,
     ) -> Result<()> {
         self.analyser
-            .handle_data_tables(&send_tables, &server_classes);
+            .handle_data_tables(&send_tables, &server_classes, &self.state_handler);
         self.state_handler
             .handle_data_table(send_tables, server_classes)
     }
@@ -183,7 +208,8 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
     pub fn handle_message(&mut self, message: Message<'a>) {
         let message_type = message.get_message_type();
         if T::does_handle(message_type) {
-            self.analyser.handle_message(&message, self.tick);
+            self.analyser
+                .handle_message(&message, self.tick, &self.state_handler);
         }
         self.state_handler.handle_message(message, self.tick);
     }

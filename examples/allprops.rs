@@ -56,6 +56,7 @@ impl MessageHandler for PropAnalyzer {
         &mut self,
         parse_tables: &[ParseSendTable],
         _server_classes: &[ServerClass],
+        _parser_state: &ParserState,
     ) {
         for table in parse_tables {
             for prop_def in &table.props {

@@ -378,7 +378,7 @@ impl MessageHandler for Analyser {
         )
     }
 
-    fn handle_message(&mut self, message: &Message, tick: u32) {
+    fn handle_message(&mut self, message: &Message, tick: u32, _parser_state: &ParserState) {
         if self.state.start_tick == 0 {
             self.state.start_tick = tick;
         }
@@ -392,7 +392,13 @@ impl MessageHandler for Analyser {
         }
     }
 
-    fn handle_string_entry(&mut self, table: &str, _index: usize, entry: &StringTableEntry) {
+    fn handle_string_entry(
+        &mut self,
+        table: &str,
+        _index: usize,
+        entry: &StringTableEntry,
+        _parser_state: &ParserState,
+    ) {
         if table == "userinfo" {
             let _ = self.parse_user_info(
                 entry.text.as_ref().map(|s| s.as_ref()),

@@ -23,7 +23,7 @@ impl MessageHandler for AllMessages {
         true
     }
 
-    fn handle_message(&mut self, message: &Message, tick: u32) {
+    fn handle_message(&mut self, message: &Message, tick: u32, _parser_state: &ParserState) {
         black_box(message);
     }
 

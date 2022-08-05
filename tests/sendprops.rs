@@ -30,7 +30,12 @@ impl MessageHandler for SendPropAnalyser {
         false
     }
 
-    fn handle_data_tables(&mut self, tables: &[ParseSendTable], _server_classes: &[ServerClass]) {
+    fn handle_data_tables(
+        &mut self,
+        tables: &[ParseSendTable],
+        _server_classes: &[ServerClass],
+        _parser_state: &ParserState,
+    ) {
         for table in tables {
             for prop_def in &table.props {
                 self.prop_names.insert(
