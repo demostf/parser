@@ -1,6 +1,7 @@
 use bitbuffer::{BitRead, BitReadSized, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
+use std::borrow::Cow;
 
 use crate::demo::message::stringtable::log_base2;
 use crate::demo::packet::datatable::{ClassId, SendTable};
@@ -10,6 +11,7 @@ use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
 use std::cmp::{min, Ordering};
 
+use itertools::Either;
 use std::fmt;
 use std::num::NonZeroU32;
 #[cfg(feature = "trace")]
@@ -87,12 +89,13 @@ pub enum UpdateType {
 pub struct PacketEntity {
     pub server_class: ClassId,
     pub entity_index: EntityId,
-    pub baseline_props: Vec<SendProp>,
     pub props: Vec<SendProp>,
     pub in_pvs: bool,
     pub update_type: UpdateType,
     pub serial_number: u32,
     pub delay: Option<f32>,
+    pub delta: Option<u32>,
+    pub baseline_index: usize,
 }
 
 impl fmt::Display for PacketEntity {
@@ -110,8 +113,13 @@ impl PacketEntity {
         self.props.iter_mut().find(|prop| prop.identifier == *index)
     }
 
-    pub fn get_prop_by_identifier(&self, index: &SendPropIdentifier) -> Option<&SendProp> {
-        self.props().find(|prop| prop.identifier == *index)
+    pub fn get_prop_by_identifier(
+        &self,
+        index: &SendPropIdentifier,
+        parser_state: &ParserState,
+    ) -> Option<SendProp> {
+        self.props(parser_state)
+            .find(|prop| prop.identifier == *index)
     }
 
     pub fn apply_update(&mut self, props: &[SendProp]) {
@@ -123,19 +131,42 @@ impl PacketEntity {
         }
     }
 
-    pub fn get_prop_by_name(&self, table_name: &str, name: &str) -> Option<&SendProp> {
+    pub fn get_prop_by_name(
+        &self,
+        table_name: &str,
+        name: &str,
+        parser_state: &ParserState,
+    ) -> Option<SendProp> {
         let identifier = SendPropIdentifier::new(table_name, name);
-        self.get_prop_by_identifier(&identifier)
+        self.get_prop_by_identifier(&identifier, parser_state)
     }
 
-    pub fn props(&self) -> impl Iterator<Item = &SendProp> {
-        self.baseline_props.iter().chain(self.props.iter())
+    fn get_baseline_props<'a>(&self, parser_state: &'a ParserState) -> Cow<'a, [SendProp]> {
+        parser_state
+            .get_baseline(
+                self.baseline_index,
+                self.entity_index,
+                self.server_class,
+                &parser_state.send_tables[usize::from(self.server_class)],
+                self.delta.is_some(),
+            )
+            .unwrap_or_default()
     }
 
-    pub fn into_props(self) -> impl Iterator<Item = SendProp> {
-        self.baseline_props
-            .into_iter()
-            .chain(self.props.into_iter())
+    pub fn props<'a>(
+        &'a self,
+        parser_state: &'a ParserState,
+    ) -> impl Iterator<Item = SendProp> + 'a {
+        if self.update_type == UpdateType::Enter {
+            Either::Left(
+                self.get_baseline_props(parser_state)
+                    .into_owned()
+                    .into_iter()
+                    .chain(self.props.iter().cloned()),
+            )
+        } else {
+            Either::Right(self.props.iter().cloned())
+        }
     }
 }
 
@@ -230,12 +261,13 @@ fn get_entity_for_update(
     Ok(PacketEntity {
         server_class: class_id,
         entity_index,
-        baseline_props: vec![],
         props: Vec::with_capacity(8),
         in_pvs: false,
         update_type,
         serial_number: 0,
         delay: None,
+        delta: None,
+        baseline_index: 0,
     })
 }
 
@@ -262,13 +294,8 @@ impl Parse<'_> for PacketEntitiesMessage {
 
             let update_type = data.read()?;
             if update_type == UpdateType::Enter {
-                let mut entity = Self::read_enter(
-                    &mut data,
-                    entity_index,
-                    state,
-                    base_line as usize,
-                    delta.is_some(),
-                )?;
+                let mut entity =
+                    Self::read_enter(&mut data, entity_index, state, base_line as usize, delta)?;
                 let send_table = get_send_table(state, entity.server_class)?;
                 Self::read_update(&mut data, send_table, &mut entity.props, entity_index)?;
 
@@ -287,12 +314,13 @@ impl Parse<'_> for PacketEntitiesMessage {
                 entities.push(PacketEntity {
                     server_class: 0.into(),
                     entity_index,
-                    baseline_props: vec![],
                     props: vec![],
                     in_pvs: false,
                     update_type,
                     serial_number: 0,
                     delay: None,
+                    delta,
+                    baseline_index: 0,
                 });
             }
         }
@@ -372,34 +400,23 @@ impl PacketEntitiesMessage {
         entity_index: EntityId,
         state: &ParserState,
         baseline_index: usize,
-        is_delta: bool,
+        delta: Option<u32>,
     ) -> Result<PacketEntity> {
         let bits = log_base2(state.server_classes.len()) + 1;
         let class_index: ClassId = stream.read_sized::<u16>(bits as usize)?.into();
 
         let serial = stream.read_sized(10)?;
-        let send_table = state
-            .send_tables
-            .get(usize::from(class_index))
-            .ok_or(ParseError::UnknownServerClass(class_index))?;
-
-        let baseline_props = state.get_baseline(
-            baseline_index,
-            entity_index,
-            class_index,
-            send_table,
-            is_delta,
-        )?;
 
         Ok(PacketEntity {
             server_class: class_index,
             entity_index,
-            baseline_props,
             props: vec![],
             in_pvs: true,
             update_type: UpdateType::Enter,
             serial_number: serial,
             delay: None,
+            delta,
+            baseline_index,
         })
     }
 
@@ -583,12 +600,13 @@ fn test_packet_entitier_message_roundtrip() {
             entities: vec![PacketEntity {
                 server_class: ClassId::from(0),
                 entity_index: Default::default(),
-                baseline_props: vec![],
                 props: vec![],
                 in_pvs: true,
                 update_type: UpdateType::Enter,
                 serial_number: 0,
                 delay: None,
+                delta: None,
+                baseline_index: 0,
             }],
             removed_entities: vec![],
             max_entries: 4,
@@ -604,17 +622,17 @@ fn test_packet_entitier_message_roundtrip() {
                 PacketEntity {
                     server_class: ClassId::from(0),
                     entity_index: EntityId::from(0u32),
-                    baseline_props: vec![],
                     props: vec![],
                     in_pvs: true,
                     update_type: UpdateType::Enter,
                     serial_number: 0,
                     delay: None,
+                    delta: None,
+                    baseline_index: 0,
                 },
                 PacketEntity {
                     server_class: ClassId::from(1),
                     entity_index: EntityId::from(4u32),
-                    baseline_props: vec![],
                     props: vec![
                         SendProp {
                             index: 0,
@@ -631,11 +649,14 @@ fn test_packet_entitier_message_roundtrip() {
                     update_type: UpdateType::Preserve,
                     serial_number: 0,
                     delay: None,
+                    delta: None,
+                    baseline_index: 0,
                 },
                 PacketEntity {
                     server_class: ClassId::from(1),
                     entity_index: EntityId::from(5u32),
-                    baseline_props: vec![],
+                    delta: None,
+                    baseline_index: 0,
                     props: vec![
                         SendProp {
                             index: 0,

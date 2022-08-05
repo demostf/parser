@@ -12,6 +12,12 @@ pub enum MaybeUtf8String {
     Invalid(Vec<u8>),
 }
 
+impl From<&'_ str> for MaybeUtf8String {
+    fn from(str: &'_ str) -> Self {
+        MaybeUtf8String::Valid(str.into())
+    }
+}
+
 impl Default for MaybeUtf8String {
     fn default() -> Self {
         MaybeUtf8String::Valid(String::new())
@@ -62,9 +68,15 @@ impl<'a, E: Endianness> BitRead<'a, E> for MaybeUtf8String {
         match String::read(stream) {
             Ok(str) => Ok(MaybeUtf8String::Valid(str)),
             Err(bitbuffer::BitError::Utf8Error(_, size)) => {
-                stream.set_pos(stream.pos() - size * 8)?;
-                let data = stream.read_sized(size)?;
-                Ok(MaybeUtf8String::Invalid(data))
+                stream.set_pos(stream.pos().saturating_sub(size * 8))?;
+                let mut data: Vec<u8> = stream.read_sized(size)?;
+                while data.last() == Some(&0) {
+                    data.pop();
+                }
+                match String::from_utf8(data) {
+                    Ok(str) => Ok(MaybeUtf8String::Valid(str)),
+                    Err(e) => Ok(MaybeUtf8String::Invalid(e.into_bytes())),
+                }
             }
             Err(e) => Err(e),
         }

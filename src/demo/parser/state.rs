@@ -1,4 +1,5 @@
 use fnv::FnvHashMap;
+use std::borrow::Cow;
 use std::collections::HashMap;
 
 use crate::demo::gamevent::GameEventDefinition;
@@ -97,24 +98,35 @@ impl<'a> ParserState {
         class_id: ClassId,
         send_table: &SendTable,
     ) -> Result<Vec<SendProp>> {
-        let mut cached = self.parsed_static_baselines.borrow_mut();
-        Ok(match cached.get(&class_id) {
-            Some(props) => props.clone(),
-            None => match self.static_baselines.get(&class_id) {
-                Some(static_baseline) => {
-                    let props = static_baseline.parse(send_table)?;
-                    cached.entry(class_id).or_insert(props).clone()
-                }
-                None => {
-                    #[cfg(feature = "trace")]
-                    warn!(
-                        class_id = display(class_id),
-                        "class without static baseline"
-                    );
-                    Vec::with_capacity(8)
-                }
-            },
-        })
+        match self.static_baselines.get(&class_id) {
+            Some(static_baseline) => static_baseline.parse(send_table),
+            None => {
+                #[cfg(feature = "trace")]
+                warn!(
+                    class_id = display(class_id),
+                    "class without static baseline"
+                );
+                Ok(Vec::new())
+            }
+        }
+        // let mut cached = self.parsed_static_baselines.borrow_mut();
+        // Ok(match cached.entry(class_id) {
+        //     Entry::Occupied(entry) => entry.get().as_slice(),
+        //     Entry::Vacant(entry) => match self.static_baselines.get(&class_id) {
+        //         Some(static_baseline) => {
+        //             let props = static_baseline.parse(send_table)?;
+        //             entry.insert(props).as_slice()
+        //         }
+        //         None => {
+        //             #[cfg(feature = "trace")]
+        //             warn!(
+        //                 class_id = display(class_id),
+        //                 "class without static baseline"
+        //             );
+        //             &[]
+        //         }
+        //     },
+        // })
     }
 
     pub fn get_baseline(
@@ -124,20 +136,22 @@ impl<'a> ParserState {
         class_id: ClassId,
         send_table: &SendTable,
         is_delta: bool,
-    ) -> Result<Vec<SendProp>> {
+    ) -> Result<Cow<[SendProp]>> {
         match self.instance_baselines[baseline_index].get(entity_index) {
             Some(baseline) if baseline.server_class == class_id && is_delta => {
-                Ok(baseline.props.clone())
+                Ok(Cow::Borrowed(&baseline.props))
             }
             _ => match self.static_baselines.get(&class_id) {
-                Some(_static_baseline) => self.get_static_baseline(class_id, send_table),
+                Some(_static_baseline) => {
+                    Ok(Cow::Owned(self.get_static_baseline(class_id, send_table)?))
+                }
                 None => {
                     #[cfg(feature = "trace")]
                     warn!(
                         class_id = display(class_id),
                         "class without static baseline"
                     );
-                    Ok(Vec::with_capacity(8))
+                    Ok(Cow::Owned(Vec::new()))
                 }
             },
         }
@@ -381,12 +395,13 @@ impl From<BaselineEntity> for PacketEntity {
         PacketEntity {
             server_class: baseline.server_class,
             entity_index: baseline.entity_id,
-            baseline_props: vec![],
             props: baseline.props,
             in_pvs: false,
             update_type: UpdateType::Enter,
             serial_number: baseline.serial,
             delay: None,
+            delta: None,
+            baseline_index: 0,
         }
     }
 }

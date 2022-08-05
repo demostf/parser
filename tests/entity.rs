@@ -52,6 +52,7 @@ impl EntityDump {
         tick: u32,
         classes: &[ServerClass],
         prop_names: &FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
+        state: &ParserState,
     ) -> Self {
         EntityDump {
             tick,
@@ -59,7 +60,7 @@ impl EntityDump {
             id: entity.entity_index,
             pvs: entity.update_type.into(),
             props: entity
-                .into_props()
+                .props(state)
                 .map(|prop| {
                     let (table_name, prop_name) = &prop_names[&prop.identifier];
                     (format!("{}.{}", table_name, prop_name), prop.value)
@@ -126,7 +127,7 @@ impl MessageHandler for EntityDumper {
         self.entities
             .into_iter()
             .map(|(tick, entity)| {
-                EntityDump::from_entity(entity, tick, &state.server_classes, &prop_names)
+                EntityDump::from_entity(entity, tick, &state.server_classes, &prop_names, state)
             })
             .collect()
     }

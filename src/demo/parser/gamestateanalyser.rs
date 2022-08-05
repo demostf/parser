@@ -160,10 +160,10 @@ impl MessageHandler for GameStateAnalyser {
         matches!(message_type, MessageType::PacketEntities)
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32, _parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, _tick: u32, parser_state: &ParserState) {
         if let Message::PacketEntities(message) = message {
             for entity in &message.entities {
-                self.handle_entity(entity);
+                self.handle_entity(entity, parser_state);
             }
         }
     }
@@ -221,22 +221,22 @@ impl GameStateAnalyser {
         Self::default()
     }
 
-    pub fn handle_entity(&mut self, entity: &PacketEntity) {
+    pub fn handle_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
         let class_name: &str = self
             .class_names
             .get(usize::from(entity.server_class))
             .map(|class_name| class_name.as_str())
             .unwrap_or("");
         match class_name {
-            "CTFPlayer" => self.handle_player_entity(entity),
-            "CTFPlayerResource" => self.handle_player_resource(entity),
-            "CWorld" => self.handle_world_entity(entity),
+            "CTFPlayer" => self.handle_player_entity(entity, parser_state),
+            "CTFPlayerResource" => self.handle_player_resource(entity, parser_state),
+            "CWorld" => self.handle_world_entity(entity, parser_state),
             _ => {}
         }
     }
 
-    pub fn handle_player_resource(&mut self, entity: &PacketEntity) {
-        for prop in entity.props() {
+    pub fn handle_player_resource(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
+        for prop in entity.props(parser_state) {
             if let Some((table_name, prop_name)) = self.prop_names.get(&prop.identifier) {
                 if let Ok(player_id) = u32::from_str(prop_name.as_str()) {
                     let entity_id = EntityId::from(player_id);
@@ -267,7 +267,7 @@ impl GameStateAnalyser {
         }
     }
 
-    pub fn handle_player_entity(&mut self, entity: &PacketEntity) {
+    pub fn handle_player_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
         let player = self.state.get_or_create_player(entity.entity_index);
 
         const HEALTH_PROP: SendPropIdentifier =
@@ -294,7 +294,7 @@ impl GameStateAnalyser {
         const NON_LOCAL_PITCH_ANGLES: SendPropIdentifier =
             SendPropIdentifier::new("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[0]");
 
-        for prop in entity.props() {
+        for prop in entity.props(parser_state) {
             match prop.identifier {
                 HEALTH_PROP => {
                     player.health = i64::try_from(&prop.value).unwrap_or_default() as u16
@@ -324,7 +324,7 @@ impl GameStateAnalyser {
         }
     }
 
-    pub fn handle_world_entity(&mut self, entity: &PacketEntity) {
+    pub fn handle_world_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
         if let (
             Some(SendProp {
                 value: SendPropValue::Vector(boundary_min),
@@ -335,12 +335,12 @@ impl GameStateAnalyser {
                 ..
             }),
         ) = (
-            entity.get_prop_by_name("DT_WORLD", "m_WorldMins"),
-            entity.get_prop_by_name("DT_WORLD", "m_WorldMaxs"),
+            entity.get_prop_by_name("DT_WORLD", "m_WorldMins", parser_state),
+            entity.get_prop_by_name("DT_WORLD", "m_WorldMaxs", parser_state),
         ) {
             self.state.world = Some(World {
-                boundary_min: *boundary_min,
-                boundary_max: *boundary_max,
+                boundary_min,
+                boundary_max,
             })
         }
     }

@@ -1120,6 +1120,7 @@ dependencies = [
  "err-derive",
  "fnv",
  "iai",
+ "itertools",
  "jemallocator",
  "main_error",
  "no-panic",
