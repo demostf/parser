@@ -10,6 +10,7 @@ use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropValue};
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
 use parse_display::{Display, FromStr};
 use std::cmp::{min, Ordering};
+use std::collections::HashSet;
 
 use itertools::Either;
 use std::fmt;
@@ -158,12 +159,17 @@ impl PacketEntity {
         parser_state: &'a ParserState,
     ) -> impl Iterator<Item = SendProp> + 'a {
         if self.update_type == UpdateType::Enter {
-            Either::Left(
-                self.get_baseline_props(parser_state)
-                    .into_owned()
-                    .into_iter()
-                    .chain(self.props.iter().cloned()),
-            )
+            let mut found_props = HashSet::<SendPropIdentifier>::new();
+            let props = self.props.iter().cloned();
+            let baseline_props = self
+                .get_baseline_props(parser_state)
+                .into_owned()
+                .into_iter();
+            Either::Left(props.chain(baseline_props).filter(move |prop| {
+                let found = found_props.contains(&prop.identifier);
+                found_props.insert(prop.identifier);
+                !found
+            }))
         } else {
             Either::Right(self.props.iter().cloned())
         }
