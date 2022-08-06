@@ -27,7 +27,7 @@ path = "src/bin/schema.rs"
 required-features = ["schema"]
 
 [dependencies]
-bitbuffer = { version = "0.10.7", features = ["serde"] }
+bitbuffer = { version = "0.10.8", features = ["serde"] }
 num_enum = "0.5.7"
 num-traits = "0.2.15"
 enumflags2 = { version = "0.7.5", features = ["serde"] }
