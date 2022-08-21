@@ -2,6 +2,7 @@
   inputs = {
     utils.url = "github:numtide/flake-utils";
     naersk.url = "github:nix-community/naersk";
+    nixpkgs.url = "nixpkgs/release-22.05";
   };
 
   outputs = {
@@ -11,11 +12,13 @@
     naersk,
   }:
     utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages."${system}";
-      naersk-lib = naersk.lib."${system}";
+      pkgs = (import nixpkgs) {
+        inherit system;
+      };
+      naersk = naersk.lib."${system}";
     in rec {
       # `nix build`
-      packages.tf-demo-parser = naersk-lib.buildPackage {
+      packages.tf-demo-parser = naersk.buildPackage {
         pname = "tf-demo-parser";
         root = ./.;
       };

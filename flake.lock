@@ -21,8 +21,8 @@
     "nixpkgs": {
       "locked": {
         "lastModified": 0,
-        "narHash": "sha256-NMeMJ/QE+t9/OMMh/ziv0QcR5dbpwkuG7NNpnJj9YK0=",
-        "path": "/nix/store/q49vmrwr974gjayxqays8ylv3bl15p5v-source",
+        "narHash": "sha256-+Qmz6wx9qVGpbodRUOFs+ROTXlG/LbasiH+IikF1OQ8=",
+        "path": "/nix/store/7qwl8qpdxbdfw0n8dxbsza2xw54fcxsr-source",
         "type": "path"
       },
       "original": {
@@ -32,13 +32,16 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 0,
-        "narHash": "sha256-NMeMJ/QE+t9/OMMh/ziv0QcR5dbpwkuG7NNpnJj9YK0=",
-        "path": "/nix/store/q49vmrwr974gjayxqays8ylv3bl15p5v-source",
-        "type": "path"
+        "lastModified": 1660215038,
+        "narHash": "sha256-tqMyd5QB4MZh59wMHXqpro4hkKjz9ubQxkxFSuCuBGE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "45c9736ed69800a6ff2164fb4538c9e40dad25d6",
+        "type": "github"
       },
       "original": {
         "id": "nixpkgs",
+        "ref": "release-22.05",
         "type": "indirect"
       }
     },
@@ -51,11 +54,11 @@
     },
     "utils": {
       "locked": {
-        "lastModified": 1656928814,
-        "narHash": "sha256-RIFfgBuKz6Hp89yRr7+NR5tzIAbn52h8vT6vXkYjZoM=",
+        "lastModified": 1659877975,
+        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "7e2a3b3dfd9af950a856d66b0a7d01e3c18aa249",
+        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
         "type": "github"
       },
       "original": {
