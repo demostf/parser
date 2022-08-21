@@ -258,6 +258,7 @@ fn get_entity_for_update(
     state: &ParserState,
     entity_index: EntityId,
     update_type: UpdateType,
+    delta: Option<u32>,
 ) -> Result<PacketEntity> {
     let class_id = *state
         .entity_classes
@@ -272,7 +273,7 @@ fn get_entity_for_update(
         update_type,
         serial_number: 0,
         delay: None,
-        delta: None,
+        delta,
         baseline_index: 0,
     })
 }
@@ -307,14 +308,14 @@ impl Parse<'_> for PacketEntitiesMessage {
 
                 entities.push(entity);
             } else if update_type == UpdateType::Preserve {
-                let mut entity = get_entity_for_update(state, entity_index, update_type)?;
+                let mut entity = get_entity_for_update(state, entity_index, update_type, delta)?;
                 let send_table = get_send_table(state, entity.server_class)?;
 
                 Self::read_update(&mut data, send_table, &mut entity.props, entity_index)?;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {
-                let entity = get_entity_for_update(state, entity_index, update_type)?;
+                let entity = get_entity_for_update(state, entity_index, update_type, delta)?;
                 entities.push(entity);
             } else {
                 entities.push(PacketEntity {
