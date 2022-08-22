@@ -52,8 +52,8 @@ pub enum Team {
 
 impl Team {
     pub fn new<U>(number: U) -> Self
-    where
-        u8: TryFrom<U>,
+        where
+            u8: TryFrom<U>,
     {
         Team::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or_default()
     }
@@ -70,7 +70,7 @@ impl Default for Team {
 }
 
 #[derive(
-    Debug, Clone, Serialize, Copy, PartialEq, Eq, Hash, TryFromPrimitive, Display, FromStr,
+Debug, Clone, Serialize, Copy, PartialEq, Eq, Hash, TryFromPrimitive, Display, FromStr,
 )]
 #[display(style = "lowercase")]
 #[serde(rename_all = "lowercase")]
@@ -90,8 +90,8 @@ pub enum Class {
 
 impl<'de> Deserialize<'de> for Class {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
+        where
+            D: Deserializer<'de>,
     {
         #[derive(Deserialize, Debug)]
         #[serde(untagged)]
@@ -121,8 +121,8 @@ fn test_class_deserialize() {
 
 impl Class {
     pub fn new<U>(number: U) -> Self
-    where
-        u8: TryFrom<U>,
+        where
+            u8: TryFrom<U>,
     {
         Class::try_from(u8::try_from(number).unwrap_or_default()).unwrap_or_default()
     }
@@ -140,7 +140,7 @@ pub struct ClassList([u8; 10]);
 
 impl ClassList {
     /// Get an iterator for all classes played and the number of spawn on the class
-    pub fn iter(&self) -> impl Iterator<Item = (Class, u8)> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item=(Class, u8)> + '_ {
         self.0
             .iter()
             .copied()
@@ -150,7 +150,7 @@ impl ClassList {
     }
 
     /// Get an iterator for all classes played and the number of spawn on the class, sorted by the number of spawns
-    pub fn sorted(&self) -> impl Iterator<Item = (Class, u8)> {
+    pub fn sorted(&self) -> impl Iterator<Item=(Class, u8)> {
         let mut classes = self.iter().collect::<Vec<(Class, u8)>>();
         classes.sort_by(|a, b| a.1.cmp(&b.1).reverse());
         classes.into_iter()
@@ -184,8 +184,8 @@ impl IndexMut<Class> for ClassList {
 
 impl Serialize for ClassList {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
+        where
+            S: Serializer,
     {
         let count = self.0.iter().filter(|c| **c > 0).count();
         let mut classes = serializer.serialize_map(Some(count))?;
@@ -213,7 +213,7 @@ impl From<HashMap<Class, u8>> for ClassList {
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
-    Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Default,
+Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Default,
 )]
 pub struct UserId(pub u8);
 
@@ -395,12 +395,13 @@ impl MessageHandler for Analyser {
     fn handle_string_entry(
         &mut self,
         table: &str,
-        _index: usize,
+        index: usize,
         entry: &StringTableEntry,
         _parser_state: &ParserState,
     ) {
         if table == "userinfo" {
             let _ = self.parse_user_info(
+                index,
                 entry.text.as_ref().map(|s| s.as_ref()),
                 entry.extra_data.as_ref().map(|data| data.data.clone()),
             );
@@ -464,8 +465,8 @@ impl Analyser {
         }
     }
 
-    fn parse_user_info(&mut self, text: Option<&str>, data: Option<Stream>) -> ReadResult<()> {
-        if let Some(user_info) = crate::demo::data::UserInfo::parse_from_string_table(text, data)? {
+    fn parse_user_info(&mut self, index: usize, text: Option<&str>, data: Option<Stream>) -> ReadResult<()> {
+        if let Some(user_info) = crate::demo::data::UserInfo::parse_from_string_table(index as u16, text, data)? {
             self.state
                 .users
                 .entry(user_info.player_info.user_id.into())

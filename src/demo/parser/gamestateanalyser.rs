@@ -193,12 +193,13 @@ impl MessageHandler for GameStateAnalyser {
     fn handle_string_entry(
         &mut self,
         table: &str,
-        _index: usize,
+        index: usize,
         entry: &StringTableEntry,
         _parser_state: &ParserState,
     ) {
         if table == "userinfo" {
             let _ = self.parse_user_info(
+                index,
                 entry.text.as_ref().map(|s| s.as_ref()),
                 entry.extra_data.as_ref().map(|data| data.data.clone()),
             );
@@ -345,8 +346,8 @@ impl GameStateAnalyser {
         }
     }
 
-    fn parse_user_info(&mut self, text: Option<&str>, data: Option<Stream>) -> ReadResult<()> {
-        if let Some(user_info) = crate::demo::data::UserInfo::parse_from_string_table(text, data)? {
+    fn parse_user_info(&mut self, index: usize, text: Option<&str>, data: Option<Stream>) -> ReadResult<()> {
+        if let Some(user_info) = crate::demo::data::UserInfo::parse_from_string_table(index as u16, text, data)? {
             let id = user_info.entity_id;
             self.state.get_or_create_player(id).info = Some(user_info.into());
         }

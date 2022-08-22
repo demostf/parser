@@ -68,6 +68,7 @@ pub struct UserInfo {
 
 impl UserInfo {
     pub fn parse_from_string_table(
+        index: u16,
         text: Option<&str>,
         data: Option<Stream>,
     ) -> ReadResult<Option<Self>> {
@@ -77,7 +78,7 @@ impl UserInfo {
 
             match text
                 .map(|text| text.parse::<u32>().map(|id| (id + 1).into()))
-                .unwrap_or_else(|| Ok((raw_info.user_id).into()))
+                .unwrap_or_else(|| Ok((index as u32 + 1).into()))
             {
                 Ok(entity_id) if !raw_info.steam_id.is_empty() => Ok(Some(UserInfo {
                     player_info: raw_info.into(),
