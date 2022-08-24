@@ -1,3 +1,4 @@
+use std::ops::{Add, Sub};
 use bitbuffer::{BitRead, BitWrite};
 use parse_display::Display;
 use serde::{Deserialize, Serialize};
@@ -23,6 +24,30 @@ impl PartialEq for Vector {
     }
 }
 
+impl Add for Vector {
+    type Output = Vector;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Vector {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+        }
+    }
+}
+
+impl Sub for Vector {
+    type Output = Vector;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        Vector {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+            z: self.z - rhs.z,
+        }
+    }
+}
+
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]
 #[display("({x}, {y})")]
@@ -40,5 +65,27 @@ impl PartialEq for VectorXY {
 impl From<Vector> for VectorXY {
     fn from(vec: Vector) -> Self {
         VectorXY { x: vec.x, y: vec.y }
+    }
+}
+
+impl Add for VectorXY {
+    type Output = VectorXY;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        VectorXY {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
+    }
+}
+
+impl Sub for VectorXY {
+    type Output = VectorXY;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        VectorXY {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y,
+        }
     }
 }
