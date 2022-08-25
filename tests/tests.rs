@@ -40,11 +40,18 @@ fn game_state_test(input_file: &str, snapshot_file: &str) {
         .parse()
         .unwrap();
 
+    // fs::write(
+    //     format!("test_data/{}", snapshot_file),
+    //     serde_json::to_string_pretty(&state).unwrap(),
+    // )
+    // .unwrap();
+
     let expected: GameState = serde_json::from_slice(
         fs::read(format!("test_data/{}", snapshot_file))
             .expect("Unable to read file")
             .as_slice(),
     )
     .unwrap();
+    pretty_assertions::assert_eq!(expected.players, state.players);
     pretty_assertions::assert_eq!(expected, state);
 }

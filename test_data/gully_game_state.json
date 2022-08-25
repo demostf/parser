@@ -20,7 +20,8 @@
         "userId": 3,
         "steamId": "[U:1:78023051]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 3,
@@ -42,7 +43,8 @@
         "userId": 4,
         "steamId": "[U:1:151261665]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 4,
@@ -64,7 +66,8 @@
         "userId": 5,
         "steamId": "[U:1:105458702]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 5,
@@ -86,7 +89,8 @@
         "userId": 6,
         "steamId": "[U:1:81747492]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 6,
@@ -104,11 +108,12 @@
       "state": "Alive",
       "info": {
         "classes": {},
-        "name": "geo_",
+        "name": "freak u ___",
         "userId": 7,
         "steamId": "[U:1:50363269]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 7,
@@ -126,11 +131,12 @@
       "state": "Alive",
       "info": {
         "classes": {},
-        "name": "freak u ___",
-        "userId": 7,
-        "steamId": "[U:1:50363269]",
+        "name": "Trademark",
+        "userId": 8,
+        "steamId": "[U:1:192228451]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 8,
@@ -152,7 +158,8 @@
         "userId": 9,
         "steamId": "[U:1:103356736]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 9,
@@ -174,7 +181,8 @@
         "userId": 10,
         "steamId": "[U:1:85558037]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 10,
@@ -196,7 +204,8 @@
         "userId": 11,
         "steamId": "[U:1:101328438]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 11,
@@ -218,7 +227,8 @@
         "userId": 12,
         "steamId": "[U:1:63292929]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 12,
@@ -240,7 +250,8 @@
         "userId": 13,
         "steamId": "[U:1:91304212]",
         "team": "other"
-      }
+      },
+      "charge": 0
     },
     {
       "entity": 13,
@@ -262,7 +273,8 @@
         "userId": 14,
         "steamId": "[U:1:82128674]",
         "team": "other"
-      }
+      },
+      "charge": 0
     }
   ],
   "buildings": [],
@@ -277,5 +289,1540 @@
       "y": 3691.0,
       "z": 1312.0
     }
-  }
+  },
+  "kills": [
+    {
+      "attacker_id": 14,
+      "assister_id": 13,
+      "victim_id": 8,
+      "weapon": "tf_projectile_rocket",
+      "tick": 8
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 3,
+      "victim_id": 13,
+      "weapon": "tf_projectile_rocket",
+      "tick": 1526
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "scattergun",
+      "tick": 1531
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 8,
+      "victim_id": 10,
+      "weapon": "tf_projectile_pipe",
+      "tick": 1597
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 7,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 1788
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 6,
+      "victim_id": 14,
+      "weapon": "scattergun",
+      "tick": 1924
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 5,
+      "weapon": "scattergun",
+      "tick": 2681
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "tf_projectile_rocket",
+      "tick": 4187
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 11,
+      "victim_id": 5,
+      "weapon": "tf_projectile_rocket",
+      "tick": 4615
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 12,
+      "victim_id": 9,
+      "weapon": "tf_projectile_rocket",
+      "tick": 4755
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 14,
+      "victim_id": 7,
+      "weapon": "scattergun",
+      "tick": 4821
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 7,
+      "victim_id": 4,
+      "weapon": "scattergun",
+      "tick": 4855
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 8,
+      "victim_id": 14,
+      "weapon": "tf_projectile_rocket",
+      "tick": 4965
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 5174
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 9,
+      "victim_id": 6,
+      "weapon": "scattergun",
+      "tick": 6733
+    },
+    {
+      "attacker_id": 8,
+      "assister_id": 3,
+      "victim_id": 10,
+      "weapon": "crusaders_crossbow",
+      "tick": 7103
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 4,
+      "victim_id": 12,
+      "weapon": "shotgun_soldier",
+      "tick": 7138
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 9,
+      "victim_id": 3,
+      "weapon": "shotgun_soldier",
+      "tick": 7479
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 4,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe",
+      "tick": 7816
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "sniperrifle",
+      "tick": 9475
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 10,
+      "victim_id": 12,
+      "weapon": "tf_projectile_rocket",
+      "tick": 10040
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "sniperrifle",
+      "tick": 11565
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 14,
+      "victim_id": 6,
+      "weapon": "sniperrifle",
+      "tick": 12784
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 12799
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "scattergun",
+      "tick": 12915
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 12,
+      "weapon": "tf_projectile_rocket",
+      "tick": 12960
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 8,
+      "victim_id": 5,
+      "weapon": "tf_projectile_rocket",
+      "tick": 13114
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 7,
+      "victim_id": 14,
+      "weapon": "tf_projectile_rocket",
+      "tick": 13328
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 14,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 13355
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 65535,
+      "victim_id": 8,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 13553
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 13669
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 8,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 15494
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 11,
+      "victim_id": 9,
+      "weapon": "scattergun",
+      "tick": 16324
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 16880
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 5,
+      "weapon": "tf_projectile_rocket",
+      "tick": 17352
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "pistol_scout",
+      "tick": 17717
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 8,
+      "victim_id": 9,
+      "weapon": "tf_projectile_rocket",
+      "tick": 18299
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "scattergun",
+      "tick": 18607
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 4,
+      "victim_id": 8,
+      "weapon": "tf_projectile_rocket",
+      "tick": 21580
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 5,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 21589
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 7,
+      "victim_id": 5,
+      "weapon": "scattergun",
+      "tick": 21610
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 4,
+      "victim_id": 6,
+      "weapon": "scattergun",
+      "tick": 21620
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 14,
+      "weapon": "tf_projectile_rocket",
+      "tick": 21631
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 21753
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "tf_projectile_rocket",
+      "tick": 21759
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 3,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 21836
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "tf_projectile_rocket",
+      "tick": 22023
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe",
+      "tick": 22079
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 9,
+      "victim_id": 11,
+      "weapon": "scattergun",
+      "tick": 24130
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 9,
+      "victim_id": 7,
+      "weapon": "tf_projectile_rocket",
+      "tick": 24202
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "scattergun",
+      "tick": 24501
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "scattergun",
+      "tick": 25131
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 26274
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 13,
+      "victim_id": 3,
+      "weapon": "tf_projectile_rocket",
+      "tick": 27116
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "scattergun",
+      "tick": 27311
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 8,
+      "victim_id": 14,
+      "weapon": "tf_projectile_rocket",
+      "tick": 27382
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 4,
+      "victim_id": 6,
+      "weapon": "scattergun",
+      "tick": 27622
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 8,
+      "weapon": "tf_projectile_rocket",
+      "tick": 27754
+    },
+    {
+      "attacker_id": 5,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "ubersaw",
+      "tick": 27987
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 3,
+      "victim_id": 13,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 29385
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "scattergun",
+      "tick": 29449
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "scattergun",
+      "tick": 29757
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 14,
+      "weapon": "pistol_scout",
+      "tick": 30012
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 6,
+      "weapon": "scout_sword",
+      "tick": 30056
+    },
+    {
+      "attacker_id": 8,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "crusaders_crossbow",
+      "tick": 30380
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "pistol_scout",
+      "tick": 31912
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 8,
+      "weapon": "tf_projectile_rocket",
+      "tick": 32281
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 7,
+      "weapon": "tf_projectile_rocket",
+      "tick": 32341
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 32453
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 3,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 32457
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 11,
+      "weapon": "tf_projectile_rocket",
+      "tick": 32717
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 5,
+      "weapon": "scattergun",
+      "tick": 32740
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 33042
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 13,
+      "victim_id": 6,
+      "weapon": "tf_projectile_rocket",
+      "tick": 33459
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "scattergun",
+      "tick": 34230
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 5,
+      "victim_id": 3,
+      "weapon": "scattergun",
+      "tick": 34431
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "tf_projectile_rocket",
+      "tick": 37177
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 37355
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 3,
+      "victim_id": 10,
+      "weapon": "tf_projectile_rocket",
+      "tick": 37364
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 44143
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 7,
+      "victim_id": 13,
+      "weapon": "tf_projectile_rocket",
+      "tick": 46918
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "scattergun",
+      "tick": 47377
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "scattergun",
+      "tick": 47585
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 5,
+      "weapon": "scattergun",
+      "tick": 47724
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 11,
+      "weapon": "shotgun_soldier",
+      "tick": 47891
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "shotgun_soldier",
+      "tick": 48123
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 14,
+      "weapon": "scattergun",
+      "tick": 48192
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "the_winger",
+      "tick": 48240
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 7,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 48351
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 8,
+      "victim_id": 13,
+      "weapon": "scattergun",
+      "tick": 48824
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "tf_projectile_rocket",
+      "tick": 50622
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "tf_projectile_rocket",
+      "tick": 50874
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 10,
+      "victim_id": 11,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 51110
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "scattergun",
+      "tick": 51134
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "scattergun",
+      "tick": 51938
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "tf_projectile_pipe",
+      "tick": 52014
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 6,
+      "weapon": "tf_projectile_rocket",
+      "tick": 52217
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 3,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 54093
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 11,
+      "victim_id": 14,
+      "weapon": "pistol_scout",
+      "tick": 54491
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "sniperrifle",
+      "tick": 54601
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "sniperrifle",
+      "tick": 54916
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 8,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 55213
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 13,
+      "victim_id": 8,
+      "weapon": "tf_projectile_rocket",
+      "tick": 55218
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "tf_projectile_pipe",
+      "tick": 55752
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 65535,
+      "victim_id": 11,
+      "weapon": "tf_projectile_pipe",
+      "tick": 56453
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 12,
+      "victim_id": 10,
+      "weapon": "sniperrifle",
+      "tick": 58113
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 8,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 58148
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 6,
+      "weapon": "shotgun_soldier",
+      "tick": 58567
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 7,
+      "weapon": "shotgun_soldier",
+      "tick": 58723
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 65535,
+      "victim_id": 8,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 59399
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 59459
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 11,
+      "weapon": "scattergun",
+      "tick": 59633
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 59853
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "tf_projectile_rocket",
+      "tick": 60006
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 10,
+      "victim_id": 12,
+      "weapon": "tf_projectile_rocket",
+      "tick": 60392
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 11,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 60783
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "tf_projectile_rocket",
+      "tick": 60910
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe",
+      "tick": 62353
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "tf_projectile_rocket",
+      "tick": 62580
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 6,
+      "weapon": "scattergun",
+      "tick": 62648
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 10,
+      "victim_id": 12,
+      "weapon": "tf_projectile_rocket",
+      "tick": 62648
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 8,
+      "weapon": "tf_projectile_rocket",
+      "tick": 63332
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 11,
+      "weapon": "scattergun",
+      "tick": 63353
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 4,
+      "victim_id": 3,
+      "weapon": "scattergun",
+      "tick": 63601
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 7,
+      "victim_id": 14,
+      "weapon": "scattergun",
+      "tick": 65572
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 65763
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe",
+      "tick": 67188
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 6,
+      "victim_id": 13,
+      "weapon": "tf_projectile_rocket",
+      "tick": 67582
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 11,
+      "weapon": "tf_projectile_rocket",
+      "tick": 67780
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 67784
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 6,
+      "victim_id": 9,
+      "weapon": "scattergun",
+      "tick": 68045
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 3,
+      "weapon": "tf_projectile_rocket",
+      "tick": 68482
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 3,
+      "victim_id": 5,
+      "weapon": "tf_projectile_rocket",
+      "tick": 68545
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 8,
+      "weapon": "sniperrifle",
+      "tick": 70610
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 4,
+      "victim_id": 7,
+      "weapon": "tf_projectile_rocket",
+      "tick": 71260
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 12,
+      "victim_id": 9,
+      "weapon": "scattergun",
+      "tick": 71555
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 12,
+      "victim_id": 14,
+      "weapon": "scattergun",
+      "tick": 71664
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 14,
+      "victim_id": 3,
+      "weapon": "scattergun",
+      "tick": 71829
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "tf_projectile_rocket",
+      "tick": 72194
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 72352
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 5,
+      "weapon": "tf_projectile_rocket",
+      "tick": 72374
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 72603
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "shotgun_soldier",
+      "tick": 72763
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "pickaxe",
+      "tick": 73340
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 10,
+      "victim_id": 12,
+      "weapon": "tf_projectile_rocket",
+      "tick": 74940
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "scattergun",
+      "tick": 75088
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 6,
+      "victim_id": 5,
+      "weapon": "scattergun",
+      "tick": 75399
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "tf_projectile_rocket",
+      "tick": 75439
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "scattergun",
+      "tick": 75623
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 6,
+      "victim_id": 14,
+      "weapon": "tf_projectile_rocket",
+      "tick": 75628
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 8,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 75798
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 4,
+      "victim_id": 8,
+      "weapon": "scattergun",
+      "tick": 75942
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 13,
+      "victim_id": 11,
+      "weapon": "the_winger",
+      "tick": 76213
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "tf_projectile_pipe",
+      "tick": 76503
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 6,
+      "weapon": "scattergun",
+      "tick": 76678
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 10,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe",
+      "tick": 77727
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 3,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 78761
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 14,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 79247
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "world",
+      "tick": 79921
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 11,
+      "victim_id": 13,
+      "weapon": "scattergun",
+      "tick": 80460
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 7,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 81478
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 5,
+      "victim_id": 7,
+      "weapon": "tf_projectile_rocket",
+      "tick": 81948
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "tf_projectile_rocket",
+      "tick": 82041
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "scattergun",
+      "tick": 82744
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 11,
+      "victim_id": 14,
+      "weapon": "tf_projectile_pipe",
+      "tick": 82803
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "scattergun",
+      "tick": 83082
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 6,
+      "weapon": "sniperrifle",
+      "tick": 83164
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 8,
+      "victim_id": 5,
+      "weapon": "tf_projectile_rocket",
+      "tick": 83174
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 8,
+      "victim_id": 13,
+      "weapon": "scattergun",
+      "tick": 83629
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 84206
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 11,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 86077
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "pickaxe",
+      "tick": 86373
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 65535,
+      "victim_id": 5,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 86565
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 8,
+      "victim_id": 14,
+      "weapon": "scattergun",
+      "tick": 87060
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 8,
+      "weapon": "tf_projectile_rocket",
+      "tick": 87076
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 9,
+      "weapon": "scattergun",
+      "tick": 87233
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 6,
+      "weapon": "scattergun",
+      "tick": 87334
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 87444
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 4,
+      "victim_id": 11,
+      "weapon": "scattergun",
+      "tick": 87516
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "scattergun",
+      "tick": 87744
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 12,
+      "victim_id": 10,
+      "weapon": "scattergun",
+      "tick": 88191
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 5,
+      "victim_id": 7,
+      "weapon": "scattergun",
+      "tick": 89951
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 13,
+      "victim_id": 7,
+      "weapon": "tf_projectile_rocket",
+      "tick": 92306
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 14,
+      "victim_id": 11,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 92893
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "tf_projectile_rocket",
+      "tick": 93082
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 10,
+      "victim_id": 6,
+      "weapon": "tf_projectile_rocket",
+      "tick": 93267
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 4,
+      "victim_id": 8,
+      "weapon": "shotgun_soldier",
+      "tick": 93582
+    },
+    {
+      "attacker_id": 3,
+      "assister_id": 65535,
+      "victim_id": 14,
+      "weapon": "scattergun",
+      "tick": 93636
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "sniperrifle",
+      "tick": 94768
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 3,
+      "victim_id": 13,
+      "weapon": "tf_projectile_rocket",
+      "tick": 94797
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 95094
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 95162
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 12,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 95360
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 8,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 96072
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "tf_projectile_rocket",
+      "tick": 96618
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 11,
+      "weapon": "tf_projectile_rocket",
+      "tick": 96618
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 6,
+      "weapon": "tf_projectile_pipe",
+      "tick": 96860
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 7,
+      "victim_id": 5,
+      "weapon": "tf_projectile_rocket",
+      "tick": 97047
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 10,
+      "victim_id": 7,
+      "weapon": "tf_projectile_rocket",
+      "tick": 97166
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 10,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 97194
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 8,
+      "weapon": "scattergun",
+      "tick": 97522
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 7,
+      "weapon": "scattergun",
+      "tick": 98849
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "scattergun",
+      "tick": 99372
+    },
+    {
+      "attacker_id": 4,
+      "assister_id": 65535,
+      "victim_id": 6,
+      "weapon": "tf_projectile_rocket",
+      "tick": 99415
+    },
+    {
+      "attacker_id": 6,
+      "assister_id": 65535,
+      "victim_id": 4,
+      "weapon": "tf_projectile_pipe",
+      "tick": 99420
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 65535,
+      "victim_id": 14,
+      "weapon": "tf_projectile_rocket",
+      "tick": 99903
+    },
+    {
+      "attacker_id": 10,
+      "assister_id": 65535,
+      "victim_id": 12,
+      "weapon": "scattergun",
+      "tick": 99945
+    },
+    {
+      "attacker_id": 7,
+      "assister_id": 65535,
+      "victim_id": 13,
+      "weapon": "scattergun",
+      "tick": 101031
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 8,
+      "victim_id": 4,
+      "weapon": "tf_projectile_rocket",
+      "tick": 102074
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 8,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 102630
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 6,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 102963
+    },
+    {
+      "attacker_id": 11,
+      "assister_id": 65535,
+      "victim_id": 10,
+      "weapon": "shotgun_soldier",
+      "tick": 103196
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 65535,
+      "victim_id": 11,
+      "weapon": "smg",
+      "tick": 103448
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 5,
+      "victim_id": 7,
+      "weapon": "tf_projectile_pipe",
+      "tick": 103660
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 3,
+      "weapon": "shotgun_soldier",
+      "tick": 103785
+    },
+    {
+      "attacker_id": 14,
+      "assister_id": 65535,
+      "victim_id": 8,
+      "weapon": "shotgun_soldier",
+      "tick": 104722
+    },
+    {
+      "attacker_id": 12,
+      "assister_id": 6,
+      "victim_id": 14,
+      "weapon": "degreaser",
+      "tick": 104831
+    },
+    {
+      "attacker_id": 9,
+      "assister_id": 13,
+      "victim_id": 6,
+      "weapon": "tf_projectile_pipe_remote",
+      "tick": 104964
+    },
+    {
+      "attacker_id": 13,
+      "assister_id": 10,
+      "victim_id": 12,
+      "weapon": "sniperrifle",
+      "tick": 105298
+    }
+  ]
 }

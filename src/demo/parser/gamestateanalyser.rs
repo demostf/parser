@@ -1,15 +1,18 @@
+use crate::demo::gameevent_gen::PlayerDeathEvent;
+use crate::demo::gamevent::GameEvent;
+use crate::demo::message::gameevent::GameEventMessage;
 use crate::demo::message::packetentities::{EntityId, PacketEntity};
 use crate::demo::message::Message;
-use crate::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass, ServerClassName};
+use crate::demo::packet::datatable::{ParseSendTable, ServerClass, ServerClassName};
+use crate::demo::packet::message::MessagePacketMeta;
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::analyser::UserInfo;
 pub use crate::demo::parser::analyser::{Class, Team, UserId};
 use crate::demo::parser::handler::BorrowMessageHandler;
 use crate::demo::parser::MessageHandler;
-use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropName, SendPropValue};
+use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropValue};
 use crate::demo::vector::{Vector, VectorXY};
 use crate::{MessageType, ParserState, ReadResult, Stream};
-use fnv::FnvHashMap;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::str::FromStr;
@@ -47,6 +50,7 @@ pub struct Player {
     pub pitch_angle: f32,
     pub state: PlayerState,
     pub info: Option<UserInfo>,
+    pub charge: u8,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -105,11 +109,33 @@ pub struct World {
     pub boundary_max: Vector,
 }
 
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct Kill {
+    pub attacker_id: u16,
+    pub assister_id: u16,
+    pub victim_id: u16,
+    pub weapon: String,
+    pub tick: u32,
+}
+
+impl Kill {
+    fn new(tick: u32, death: &PlayerDeathEvent) -> Self {
+        Kill {
+            attacker_id: death.attacker,
+            assister_id: death.assister,
+            victim_id: death.user_id,
+            weapon: death.weapon.to_string(),
+            tick,
+        }
+    }
+}
+
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct GameState {
     pub players: Vec<Player>,
     pub buildings: Vec<Building>,
     pub world: Option<World>,
+    pub kills: Vec<Kill>,
 }
 
 impl GameState {
@@ -134,6 +160,7 @@ impl GameState {
                     pitch_angle: 0.0,
                     state: PlayerState::Alive,
                     info: None,
+                    charge: 0,
                 };
 
                 let index = self.players.len();
@@ -149,7 +176,7 @@ impl GameState {
 #[derive(Default, Debug)]
 pub struct GameStateAnalyser {
     pub state: GameState,
-    prop_names: FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
+    tick: u32,
     class_names: Vec<ServerClassName>, // indexed by ClassId
 }
 
@@ -157,37 +184,25 @@ impl MessageHandler for GameStateAnalyser {
     type Output = GameState;
 
     fn does_handle(message_type: MessageType) -> bool {
-        matches!(message_type, MessageType::PacketEntities)
+        matches!(
+            message_type,
+            MessageType::PacketEntities | MessageType::GameEvent
+        )
     }
 
     fn handle_message(&mut self, message: &Message, _tick: u32, parser_state: &ParserState) {
-        if let Message::PacketEntities(message) = message {
-            for entity in &message.entities {
-                self.handle_entity(entity, parser_state);
+        match message {
+            Message::PacketEntities(message) => {
+                for entity in &message.entities {
+                    self.handle_entity(entity, parser_state);
+                }
             }
+            Message::GameEvent(GameEventMessage {
+                event: GameEvent::PlayerDeath(death),
+                ..
+            }) => self.state.kills.push(Kill::new(self.tick, death.as_ref())),
+            _ => {}
         }
-    }
-
-    fn handle_data_tables(
-        &mut self,
-        parse_tables: &[ParseSendTable],
-        server_classes: &[ServerClass],
-        _parser_state: &ParserState,
-    ) {
-        for table in parse_tables {
-            for prop_def in &table.props {
-                self.prop_names.insert(
-                    prop_def.identifier(),
-                    (table.name.clone(), prop_def.name.clone()),
-                );
-            }
-        }
-
-        self.class_names = server_classes
-            .iter()
-            .map(|class| &class.name)
-            .cloned()
-            .collect();
     }
 
     fn handle_string_entry(
@@ -204,6 +219,28 @@ impl MessageHandler for GameStateAnalyser {
                 entry.extra_data.as_ref().map(|data| data.data.clone()),
             );
         }
+    }
+
+    fn handle_data_tables(
+        &mut self,
+        _parse_tables: &[ParseSendTable],
+        server_classes: &[ServerClass],
+        _parser_state: &ParserState,
+    ) {
+        self.class_names = server_classes
+            .iter()
+            .map(|class| &class.name)
+            .cloned()
+            .collect();
+    }
+
+    fn handle_packet_meta(
+        &mut self,
+        tick: u32,
+        _meta: &MessagePacketMeta,
+        _parser_state: &ParserState,
+    ) {
+        self.tick = tick;
     }
 
     fn into_output(self, _state: &ParserState) -> Self::Output {
@@ -238,7 +275,7 @@ impl GameStateAnalyser {
 
     pub fn handle_player_resource(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
         for prop in entity.props(parser_state) {
-            if let Some((table_name, prop_name)) = self.prop_names.get(&prop.identifier) {
+            if let Some((table_name, prop_name)) = prop.identifier.names() {
                 if let Ok(player_id) = u32::from_str(prop_name.as_str()) {
                     let entity_id = EntityId::from(player_id);
                     if let Some(player) = self
@@ -259,6 +296,9 @@ impl GameStateAnalyser {
                             "m_iPlayerClass" => {
                                 player.class =
                                     Class::new(i64::try_from(&prop.value).unwrap_or_default())
+                            }
+                            "m_iChargeLevel" => {
+                                player.charge = i64::try_from(&prop.value).unwrap_or_default() as u8
                             }
                             _ => {}
                         }
@@ -346,8 +386,15 @@ impl GameStateAnalyser {
         }
     }
 
-    fn parse_user_info(&mut self, index: usize, text: Option<&str>, data: Option<Stream>) -> ReadResult<()> {
-        if let Some(user_info) = crate::demo::data::UserInfo::parse_from_string_table(index as u16, text, data)? {
+    fn parse_user_info(
+        &mut self,
+        index: usize,
+        text: Option<&str>,
+        data: Option<Stream>,
+    ) -> ReadResult<()> {
+        if let Some(user_info) =
+            crate::demo::data::UserInfo::parse_from_string_table(index as u16, text, data)?
+        {
             let id = user_info.entity_id;
             self.state.get_or_create_player(id).info = Some(user_info.into());
         }

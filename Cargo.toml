@@ -22,6 +22,10 @@ name = "reencode_demo"
 path = "src/bin/reencode.rs"
 
 [[bin]]
+name = "gamestate"
+path = "src/bin/gamestate.rs"
+
+[[bin]]
 name = "schema"
 path = "src/bin/schema.rs"
 required-features = ["schema"]
