@@ -136,6 +136,7 @@ pub struct GameState {
     pub buildings: Vec<Building>,
     pub world: Option<World>,
     pub kills: Vec<Kill>,
+    pub tick: u32,
 }
 
 impl GameState {
@@ -240,6 +241,7 @@ impl MessageHandler for GameStateAnalyser {
         _meta: &MessagePacketMeta,
         _parser_state: &ParserState,
     ) {
+        self.state.tick = tick;
         self.tick = tick;
     }
 
