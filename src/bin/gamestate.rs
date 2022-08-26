@@ -26,6 +26,6 @@ fn main() -> Result<(), MainError> {
     let demo = Demo::new(&file);
     let parser = DemoParser::new_with_analyser(demo.get_stream(), GameStateAnalyser::new());
     let (_, state) = parser.parse()?;
-    println!("{}", serde_json::to_string_pretty(&state.players)?);
+    println!("{}", serde_json::to_string_pretty(&state.buildings)?);
     Ok(())
 }

@@ -1,7 +1,7 @@
-use crate::demo::gameevent_gen::PlayerDeathEvent;
+use crate::demo::gameevent_gen::{ObjectDestroyedEvent, PlayerDeathEvent};
 use crate::demo::gamevent::GameEvent;
 use crate::demo::message::gameevent::GameEventMessage;
-use crate::demo::message::packetentities::{EntityId, PacketEntity};
+use crate::demo::message::packetentities::{EntityId, PacketEntity, UpdateType};
 use crate::demo::message::Message;
 use crate::demo::packet::datatable::{ParseSendTable, ServerClass, ServerClassName};
 use crate::demo::packet::message::MessagePacketMeta;
@@ -59,54 +59,171 @@ pub struct Player {
     pub charge: u8,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+pub struct Sentry {
+    pub entity: EntityId,
+    pub builder: UserId,
+    pub position: Vector,
+    pub level: u8,
+    pub max_health: u16,
+    pub health: u16,
+    pub building: bool,
+    pub sapped: bool,
+    pub team: Team,
+    pub angle: f32,
+    pub player_controlled: bool,
+    pub auto_aim_target: UserId,
+    pub shells: u16,
+    pub rockets: u16,
+    pub is_mini: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+pub struct Dispenser {
+    pub entity: EntityId,
+    pub builder: UserId,
+    pub position: Vector,
+    pub level: u8,
+    pub max_health: u16,
+    pub health: u16,
+    pub building: bool,
+    pub sapped: bool,
+    pub team: Team,
+    pub angle: f32,
+    pub healing: Vec<UserId>,
+    pub metal: u16,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+pub struct Teleporter {
+    pub entity: EntityId,
+    pub builder: UserId,
+    pub position: Vector,
+    pub level: u8,
+    pub max_health: u16,
+    pub health: u16,
+    pub building: bool,
+    pub sapped: bool,
+    pub team: Team,
+    pub angle: f32,
+    pub is_entrance: bool,
+    pub other_end: EntityId,
+    pub recharge_time: f32,
+    pub recharge_duration: f32,
+    pub times_used: u16,
+    pub yaw_to_exit: f32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum Building {
-    Sentry {
-        builder: UserId,
-        position: Vector,
-        level: u8,
-        max_health: u16,
-        health: u16,
-        building: bool,
-        sapped: bool,
-        team: Team,
-        angle: f32,
-        player_controller: bool,
-        auto_aim_target: UserId,
-        shells: u16,
-        rockets: u16,
-        is_mini: bool,
-    },
-    Dispenser {
-        builder: UserId,
-        position: Vector,
-        level: u8,
-        max_health: u16,
-        health: u16,
-        building: bool,
-        sapped: bool,
-        team: Team,
-        angle: f32,
-        healing: Vec<UserId>,
-        metal: u16,
-    },
-    Teleporter {
-        builder: UserId,
-        position: Vector,
-        level: u8,
-        max_health: u16,
-        health: u16,
-        building: bool,
-        sapped: bool,
-        team: Team,
-        angle: f32,
-        is_entrance: bool,
-        other_end: EntityId,
-        recharge_time: f32,
-        recharge_duration: f32,
-        times_used: u16,
-        yaw_to_exit: f32,
-    },
+    Sentry(Sentry),
+    Dispenser(Dispenser),
+    Teleporter(Teleporter),
+}
+
+impl Building {
+    pub fn new(entity_id: EntityId, class: BuildingClass) -> Building {
+        match class {
+            BuildingClass::Sentry => Building::Sentry(Sentry {
+                entity: entity_id,
+                ..Sentry::default()
+            }),
+            BuildingClass::Dispenser => Building::Dispenser(Dispenser {
+                entity: entity_id,
+                ..Dispenser::default()
+            }),
+            BuildingClass::Teleporter => Building::Teleporter(Teleporter {
+                entity: entity_id,
+                ..Teleporter::default()
+            }),
+        }
+    }
+
+    pub fn entity_id(&self) -> EntityId {
+        match self {
+            Building::Sentry(Sentry { entity, .. })
+            | Building::Dispenser(Dispenser { entity, .. })
+            | Building::Teleporter(Teleporter { entity, .. }) => *entity,
+        }
+    }
+
+    pub fn level(&self) -> u8 {
+        match self {
+            Building::Sentry(Sentry { level, .. })
+            | Building::Dispenser(Dispenser { level, .. })
+            | Building::Teleporter(Teleporter { level, .. }) => *level,
+        }
+    }
+
+    pub fn position(&self) -> Vector {
+        match self {
+            Building::Sentry(Sentry { position, .. })
+            | Building::Dispenser(Dispenser { position, .. })
+            | Building::Teleporter(Teleporter { position, .. }) => *position,
+        }
+    }
+
+    pub fn builder(&self) -> UserId {
+        match self {
+            Building::Sentry(Sentry { builder, .. })
+            | Building::Dispenser(Dispenser { builder, .. })
+            | Building::Teleporter(Teleporter { builder, .. }) => *builder,
+        }
+    }
+
+    pub fn angle(&self) -> f32 {
+        match self {
+            Building::Sentry(Sentry { angle, .. })
+            | Building::Dispenser(Dispenser { angle, .. })
+            | Building::Teleporter(Teleporter { angle, .. }) => *angle,
+        }
+    }
+
+    pub fn max_health(&self) -> u16 {
+        match self {
+            Building::Sentry(Sentry { max_health, .. })
+            | Building::Dispenser(Dispenser { max_health, .. })
+            | Building::Teleporter(Teleporter { max_health, .. }) => *max_health,
+        }
+    }
+
+    pub fn health(&self) -> u16 {
+        match self {
+            Building::Sentry(Sentry { health, .. })
+            | Building::Dispenser(Dispenser { health, .. })
+            | Building::Teleporter(Teleporter { health, .. }) => *health,
+        }
+    }
+
+    pub fn sapped(&self) -> bool {
+        match self {
+            Building::Sentry(Sentry { sapped, .. })
+            | Building::Dispenser(Dispenser { sapped, .. })
+            | Building::Teleporter(Teleporter { sapped, .. }) => *sapped,
+        }
+    }
+
+    pub fn team(&self) -> Team {
+        match self {
+            Building::Sentry(Sentry { team, .. })
+            | Building::Dispenser(Dispenser { team, .. })
+            | Building::Teleporter(Teleporter { team, .. }) => *team,
+        }
+    }
+
+    pub fn class(&self) -> BuildingClass {
+        match self {
+            Building::Sentry(_) => BuildingClass::Sentry,
+            Building::Dispenser(_) => BuildingClass::Sentry,
+            Building::Teleporter(_) => BuildingClass::Teleporter,
+        }
+    }
+}
+
+pub enum BuildingClass {
+    Sentry,
+    Dispenser,
+    Teleporter,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -149,25 +266,60 @@ impl GameState {
     pub fn get_or_create_player(&mut self, entity_id: EntityId) -> &mut Player {
         let index = match self
             .players
-            .iter_mut()
+            .iter()
             .enumerate()
             .find(|(_index, player)| player.entity == entity_id)
             .map(|(index, _)| index)
         {
             Some(index) => index,
             None => {
-                let player = Player {
+                let index = self.players.len();
+                self.players.push(Player {
                     entity: entity_id,
                     ..Player::default()
-                };
-
-                let index = self.players.len();
-                self.players.push(player);
+                });
                 index
             }
         };
 
         &mut self.players[index]
+    }
+    pub fn get_or_create_building(
+        &mut self,
+        entity_id: EntityId,
+        class: BuildingClass,
+    ) -> &mut Building {
+        let index = match self
+            .buildings
+            .iter()
+            .enumerate()
+            .find(|(_index, building)| building.entity_id() == entity_id)
+            .map(|(index, _)| index)
+        {
+            Some(index) => index,
+            None => {
+                let index = self.buildings.len();
+                self.buildings.push(Building::new(entity_id, class));
+                index
+            }
+        };
+
+        &mut self.buildings[index]
+    }
+
+    pub fn remove_building(&mut self, entity_id: EntityId) {
+        match self
+            .buildings
+            .iter()
+            .enumerate()
+            .find(|(_index, building)| building.entity_id() == entity_id)
+            .map(|(index, _)| index)
+        {
+            Some(index) => {
+                self.buildings.remove(index);
+            }
+            _ => {}
+        };
     }
 }
 
@@ -195,10 +347,18 @@ impl MessageHandler for GameStateAnalyser {
                     self.handle_entity(entity, parser_state);
                 }
             }
-            Message::GameEvent(GameEventMessage {
-                event: GameEvent::PlayerDeath(death),
-                ..
-            }) => self.state.kills.push(Kill::new(self.tick, death.as_ref())),
+            Message::GameEvent(GameEventMessage { event, .. }) => match event {
+                GameEvent::PlayerDeath(death) => {
+                    self.state.kills.push(Kill::new(self.tick, death.as_ref()))
+                }
+                GameEvent::RoundStart(_) => {
+                    self.state.buildings.clear();
+                }
+                GameEvent::ObjectDestroyed(ObjectDestroyedEvent { index, .. }) => {
+                    self.state.remove_building((*index as u32).into());
+                }
+                _ => {}
+            },
             _ => {}
         }
     }
@@ -268,6 +428,9 @@ impl GameStateAnalyser {
             "CTFPlayer" => self.handle_player_entity(entity, parser_state),
             "CTFPlayerResource" => self.handle_player_resource(entity, parser_state),
             "CWorld" => self.handle_world_entity(entity, parser_state),
+            "CObjectSentrygun" => self.handle_sentry_entity(entity, parser_state),
+            "CObjectDispenser" => self.handle_dispenser_entity(entity, parser_state),
+            "CObjectTeleporter" => self.handle_teleporter_entity(entity, parser_state),
             _ => {}
         }
     }
@@ -382,6 +545,251 @@ impl GameStateAnalyser {
                 boundary_min,
                 boundary_max,
             })
+        }
+    }
+
+    pub fn handle_sentry_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
+        const ANGLE: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[1]");
+        const MINI: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BaseObject", "m_bMiniBuilding");
+        const CONTROLLED: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectSentrygun", "m_bPlayerControlled");
+        const TARGET: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectSentrygun", "m_hAutoAimTarget");
+        const SHELLS: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectSentrygun", "m_iAmmoShells");
+        const ROCKETS: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectSentrygun", "m_iAmmoRockets");
+
+        if entity.update_type == UpdateType::Delete {
+            self.state.remove_building(entity.entity_index);
+            return;
+        }
+
+        self.handle_building(entity, parser_state, BuildingClass::Sentry);
+
+        let building = self
+            .state
+            .get_or_create_building(entity.entity_index, BuildingClass::Sentry);
+
+        match building {
+            Building::Sentry(sentry) => {
+                for prop in entity.props(parser_state) {
+                    match prop.identifier {
+                        ANGLE => sentry.angle = f32::try_from(&prop.value).unwrap_or_default(),
+                        MINI => sentry.is_mini = i64::try_from(&prop.value).unwrap_or_default() > 0,
+                        CONTROLLED => {
+                            sentry.player_controlled =
+                                i64::try_from(&prop.value).unwrap_or_default() > 0
+                        }
+                        TARGET => {
+                            sentry.auto_aim_target =
+                                UserId::from(i64::try_from(&prop.value).unwrap_or_default() as u8)
+                        }
+                        SHELLS => {
+                            sentry.shells = i64::try_from(&prop.value).unwrap_or_default() as u16
+                        }
+                        ROCKETS => {
+                            sentry.rockets = i64::try_from(&prop.value).unwrap_or_default() as u16
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn handle_teleporter_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
+        const RECHARGE_TIME: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectTeleporter", "m_flRechargeTime");
+        const RECHARGE_DURATION: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectTeleporter", "m_flCurrentRechargeDuration");
+        const TIMES_USED: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectTeleporter", "m_iTimesUsed");
+        const OTHER_END: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectTeleporter", "m_bMatchBuilding");
+        const YAW_TO_EXIT: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectTeleporter", "m_flYawToExit");
+        const IS_ENTRANCE: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BaseObject", "m_iObjectMode");
+
+        if entity.update_type == UpdateType::Delete {
+            self.state.remove_building(entity.entity_index);
+            return;
+        }
+
+        self.handle_building(entity, parser_state, BuildingClass::Teleporter);
+
+        let building = self
+            .state
+            .get_or_create_building(entity.entity_index, BuildingClass::Teleporter);
+
+        match building {
+            Building::Teleporter(teleporter) => {
+                for prop in entity.props(parser_state) {
+                    match prop.identifier {
+                        RECHARGE_TIME => {
+                            teleporter.recharge_time =
+                                f32::try_from(&prop.value).unwrap_or_default()
+                        }
+                        RECHARGE_DURATION => {
+                            teleporter.recharge_duration =
+                                f32::try_from(&prop.value).unwrap_or_default()
+                        }
+                        TIMES_USED => {
+                            teleporter.times_used =
+                                i64::try_from(&prop.value).unwrap_or_default() as u16
+                        }
+                        OTHER_END => {
+                            teleporter.other_end = EntityId::from(
+                                i64::try_from(&prop.value).unwrap_or_default() as u32,
+                            )
+                        }
+                        YAW_TO_EXIT => {
+                            teleporter.yaw_to_exit = f32::try_from(&prop.value).unwrap_or_default()
+                        }
+                        IS_ENTRANCE => {
+                            teleporter.is_entrance =
+                                i64::try_from(&prop.value).unwrap_or_default() == 0
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn handle_dispenser_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
+        const AMMO: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectDispenser", "m_iAmmoMetal");
+        const HEALING: SendPropIdentifier =
+            SendPropIdentifier::new("DT_ObjectDispenser", "healing_array");
+
+        if entity.update_type == UpdateType::Delete {
+            self.state.remove_building(entity.entity_index);
+            return;
+        }
+
+        self.handle_building(entity, parser_state, BuildingClass::Dispenser);
+
+        let building = self
+            .state
+            .get_or_create_building(entity.entity_index, BuildingClass::Dispenser);
+
+        match building {
+            Building::Dispenser(dispenser) => {
+                for prop in entity.props(parser_state) {
+                    match prop.identifier {
+                        AMMO => {
+                            dispenser.metal = i64::try_from(&prop.value).unwrap_or_default() as u16
+                        }
+                        HEALING => {
+                            let values = match &prop.value {
+                                SendPropValue::Array(vec) => vec.as_slice(),
+                                _ => Default::default(),
+                            };
+
+                            dispenser.healing = values
+                                .iter()
+                                .map(|val| {
+                                    UserId::from(i64::try_from(val).unwrap_or_default() as u8)
+                                })
+                                .collect()
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn handle_building(
+        &mut self,
+        entity: &PacketEntity,
+        parser_state: &ParserState,
+        class: BuildingClass,
+    ) {
+        let building = self
+            .state
+            .get_or_create_building(entity.entity_index, class);
+
+        const LOCAL_ORIGIN: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BaseEntity", "m_vecOrigin");
+        const TEAM: SendPropIdentifier = SendPropIdentifier::new("DT_BaseEntity", "m_iTeamNum");
+        const ANGLE: SendPropIdentifier = SendPropIdentifier::new("DT_BaseEntity", "m_angRotation");
+        const SAPPED: SendPropIdentifier = SendPropIdentifier::new("DT_BaseObject", "m_bHasSapper");
+        const BUILDING: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BaseObject", "m_bBuilding");
+        const LEVEL: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BaseObject", "m_iUpgradeLevel");
+        const BUILDER: SendPropIdentifier = SendPropIdentifier::new("DT_BaseObject", "m_hBuilder");
+        const MAX_HEALTH: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BaseObject", "m_iMaxHealth");
+        const HEALTH: SendPropIdentifier = SendPropIdentifier::new("DT_BaseObject", "m_iHealth");
+
+        match building {
+            Building::Sentry(Sentry {
+                position,
+                team,
+                angle,
+                sapped,
+                builder,
+                level,
+                building,
+                max_health,
+                health,
+                ..
+            })
+            | Building::Dispenser(Dispenser {
+                position,
+                team,
+                angle,
+                sapped,
+                builder,
+                level,
+                building,
+                max_health,
+                health,
+                ..
+            })
+            | Building::Teleporter(Teleporter {
+                position,
+                team,
+                angle,
+                sapped,
+                builder,
+                level,
+                building,
+                max_health,
+                health,
+                ..
+            }) => {
+                for prop in entity.props(parser_state) {
+                    match prop.identifier {
+                        LOCAL_ORIGIN => {
+                            *position = Vector::try_from(&prop.value).unwrap_or_default()
+                        }
+                        TEAM => *team = Team::new(i64::try_from(&prop.value).unwrap_or_default()),
+                        ANGLE => *angle = f32::try_from(&prop.value).unwrap_or_default(),
+                        SAPPED => *sapped = i64::try_from(&prop.value).unwrap_or_default() > 0,
+                        BUILDING => *building = i64::try_from(&prop.value).unwrap_or_default() > 0,
+                        LEVEL => *level = i64::try_from(&prop.value).unwrap_or_default() as u8,
+                        BUILDER => {
+                            *builder =
+                                UserId::from(i64::try_from(&prop.value).unwrap_or_default() as u8)
+                        }
+                        MAX_HEALTH => {
+                            *max_health = i64::try_from(&prop.value).unwrap_or_default() as u16
+                        }
+                        HEALTH => *health = i64::try_from(&prop.value).unwrap_or_default() as u16,
+                        _ => {}
+                    }
+                }
+            }
         }
     }
 
