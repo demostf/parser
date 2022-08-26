@@ -38,7 +38,13 @@ impl PlayerState {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+impl Default for PlayerState {
+    fn default() -> Self {
+        PlayerState::Alive
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub struct Player {
     entity: EntityId,
     pub position: Vector,
@@ -152,16 +158,7 @@ impl GameState {
             None => {
                 let player = Player {
                     entity: entity_id,
-                    position: Vector::default(),
-                    health: 0,
-                    max_health: 0,
-                    class: Class::Other,
-                    team: Team::Other,
-                    view_angle: 0.0,
-                    pitch_angle: 0.0,
-                    state: PlayerState::Alive,
-                    info: None,
-                    charge: 0,
+                    ..Player::default()
                 };
 
                 let index = self.players.len();
