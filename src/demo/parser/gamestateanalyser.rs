@@ -14,6 +14,7 @@ use crate::demo::sendprop::{SendProp, SendPropIdentifier, SendPropValue};
 use crate::demo::vector::{Vector, VectorXY};
 use crate::{MessageType, ParserState, ReadResult, Stream};
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use std::convert::TryFrom;
 use std::str::FromStr;
 
@@ -256,7 +257,7 @@ impl Kill {
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct GameState {
     pub players: Vec<Player>,
-    pub buildings: Vec<Building>,
+    pub buildings: BTreeMap<EntityId, Building>,
     pub world: Option<World>,
     pub kills: Vec<Kill>,
     pub tick: u32,
@@ -289,37 +290,13 @@ impl GameState {
         entity_id: EntityId,
         class: BuildingClass,
     ) -> &mut Building {
-        let index = match self
-            .buildings
-            .iter()
-            .enumerate()
-            .find(|(_index, building)| building.entity_id() == entity_id)
-            .map(|(index, _)| index)
-        {
-            Some(index) => index,
-            None => {
-                let index = self.buildings.len();
-                self.buildings.push(Building::new(entity_id, class));
-                index
-            }
-        };
-
-        &mut self.buildings[index]
+        self.buildings
+            .entry(entity_id)
+            .or_insert_with(|| Building::new(entity_id, class))
     }
 
     pub fn remove_building(&mut self, entity_id: EntityId) {
-        match self
-            .buildings
-            .iter()
-            .enumerate()
-            .find(|(_index, building)| building.entity_id() == entity_id)
-            .map(|(index, _)| index)
-        {
-            Some(index) => {
-                self.buildings.remove(index);
-            }
-            _ => {}
-        };
+        self.buildings.remove(&entity_id);
     }
 }
 
@@ -352,6 +329,9 @@ impl MessageHandler for GameStateAnalyser {
                     self.state.kills.push(Kill::new(self.tick, death.as_ref()))
                 }
                 GameEvent::RoundStart(_) => {
+                    self.state.buildings.clear();
+                }
+                GameEvent::TeamPlayRoundStart(_) => {
                     self.state.buildings.clear();
                 }
                 GameEvent::ObjectDestroyed(ObjectDestroyedEvent { index, .. }) => {
