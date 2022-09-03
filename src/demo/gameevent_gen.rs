@@ -10298,6 +10298,508 @@ impl GameEvent {
             GameEvent::Unknown(raw) => raw.write(stream),
         }
     }
+    pub fn event_type(&self) -> GameEventType {
+        match &self {
+            GameEvent::ServerSpawn(_) => GameEventType::ServerSpawn,
+            GameEvent::ServerChangeLevelFailed(_) => {
+                GameEventType::ServerChangeLevelFailed
+            }
+            GameEvent::ServerShutdown(_) => GameEventType::ServerShutdown,
+            GameEvent::ServerCvar(_) => GameEventType::ServerCvar,
+            GameEvent::ServerMessage(_) => GameEventType::ServerMessage,
+            GameEvent::ServerAddBan(_) => GameEventType::ServerAddBan,
+            GameEvent::ServerRemoveBan(_) => GameEventType::ServerRemoveBan,
+            GameEvent::PlayerConnect(_) => GameEventType::PlayerConnect,
+            GameEvent::PlayerConnectClient(_) => GameEventType::PlayerConnectClient,
+            GameEvent::PlayerInfo(_) => GameEventType::PlayerInfo,
+            GameEvent::PlayerDisconnect(_) => GameEventType::PlayerDisconnect,
+            GameEvent::PlayerActivate(_) => GameEventType::PlayerActivate,
+            GameEvent::PlayerSay(_) => GameEventType::PlayerSay,
+            GameEvent::ClientDisconnect(_) => GameEventType::ClientDisconnect,
+            GameEvent::ClientBeginConnect(_) => GameEventType::ClientBeginConnect,
+            GameEvent::ClientConnected(_) => GameEventType::ClientConnected,
+            GameEvent::ClientFullConnect(_) => GameEventType::ClientFullConnect,
+            GameEvent::HostQuit(_) => GameEventType::HostQuit,
+            GameEvent::TeamInfo(_) => GameEventType::TeamInfo,
+            GameEvent::TeamScore(_) => GameEventType::TeamScore,
+            GameEvent::TeamPlayBroadcastAudio(_) => GameEventType::TeamPlayBroadcastAudio,
+            GameEvent::PlayerTeam(_) => GameEventType::PlayerTeam,
+            GameEvent::PlayerClass(_) => GameEventType::PlayerClass,
+            GameEvent::PlayerDeath(_) => GameEventType::PlayerDeath,
+            GameEvent::PlayerHurt(_) => GameEventType::PlayerHurt,
+            GameEvent::PlayerChat(_) => GameEventType::PlayerChat,
+            GameEvent::PlayerScore(_) => GameEventType::PlayerScore,
+            GameEvent::PlayerSpawn(_) => GameEventType::PlayerSpawn,
+            GameEvent::PlayerShoot(_) => GameEventType::PlayerShoot,
+            GameEvent::PlayerUse(_) => GameEventType::PlayerUse,
+            GameEvent::PlayerChangeName(_) => GameEventType::PlayerChangeName,
+            GameEvent::PlayerHintMessage(_) => GameEventType::PlayerHintMessage,
+            GameEvent::BasePlayerTeleported(_) => GameEventType::BasePlayerTeleported,
+            GameEvent::GameInit(_) => GameEventType::GameInit,
+            GameEvent::GameNewMap(_) => GameEventType::GameNewMap,
+            GameEvent::GameStart(_) => GameEventType::GameStart,
+            GameEvent::GameEnd(_) => GameEventType::GameEnd,
+            GameEvent::RoundStart(_) => GameEventType::RoundStart,
+            GameEvent::RoundEnd(_) => GameEventType::RoundEnd,
+            GameEvent::GameMessage(_) => GameEventType::GameMessage,
+            GameEvent::BreakBreakable(_) => GameEventType::BreakBreakable,
+            GameEvent::BreakProp(_) => GameEventType::BreakProp,
+            GameEvent::EntityKilled(_) => GameEventType::EntityKilled,
+            GameEvent::BonusUpdated(_) => GameEventType::BonusUpdated,
+            GameEvent::AchievementEvent(_) => GameEventType::AchievementEvent,
+            GameEvent::AchievementIncrement(_) => GameEventType::AchievementIncrement,
+            GameEvent::PhysgunPickup(_) => GameEventType::PhysgunPickup,
+            GameEvent::FlareIgniteNpc(_) => GameEventType::FlareIgniteNpc,
+            GameEvent::HelicopterGrenadePuntMiss(_) => {
+                GameEventType::HelicopterGrenadePuntMiss
+            }
+            GameEvent::UserDataDownloaded(_) => GameEventType::UserDataDownloaded,
+            GameEvent::RagdollDissolved(_) => GameEventType::RagdollDissolved,
+            GameEvent::HLTVChangedMode(_) => GameEventType::HLTVChangedMode,
+            GameEvent::HLTVChangedTarget(_) => GameEventType::HLTVChangedTarget,
+            GameEvent::VoteEnded(_) => GameEventType::VoteEnded,
+            GameEvent::VoteStarted(_) => GameEventType::VoteStarted,
+            GameEvent::VoteChanged(_) => GameEventType::VoteChanged,
+            GameEvent::VotePassed(_) => GameEventType::VotePassed,
+            GameEvent::VoteFailed(_) => GameEventType::VoteFailed,
+            GameEvent::VoteCast(_) => GameEventType::VoteCast,
+            GameEvent::VoteOptions(_) => GameEventType::VoteOptions,
+            GameEvent::ReplaySaved(_) => GameEventType::ReplaySaved,
+            GameEvent::EnteredPerformanceMode(_) => GameEventType::EnteredPerformanceMode,
+            GameEvent::BrowseReplays(_) => GameEventType::BrowseReplays,
+            GameEvent::ReplayYoutubeStats(_) => GameEventType::ReplayYoutubeStats,
+            GameEvent::InventoryUpdated(_) => GameEventType::InventoryUpdated,
+            GameEvent::CartUpdated(_) => GameEventType::CartUpdated,
+            GameEvent::StorePriceSheetUpdated(_) => GameEventType::StorePriceSheetUpdated,
+            GameEvent::EconInventoryConnected(_) => GameEventType::EconInventoryConnected,
+            GameEvent::ItemSchemaInitialized(_) => GameEventType::ItemSchemaInitialized,
+            GameEvent::GcNewSession(_) => GameEventType::GcNewSession,
+            GameEvent::GcLostSession(_) => GameEventType::GcLostSession,
+            GameEvent::IntroFinish(_) => GameEventType::IntroFinish,
+            GameEvent::IntroNextCamera(_) => GameEventType::IntroNextCamera,
+            GameEvent::PlayerChangeClass(_) => GameEventType::PlayerChangeClass,
+            GameEvent::TfMapTimeRemaining(_) => GameEventType::TfMapTimeRemaining,
+            GameEvent::TfGameOver(_) => GameEventType::TfGameOver,
+            GameEvent::CtfFlagCaptured(_) => GameEventType::CtfFlagCaptured,
+            GameEvent::ControlPointInitialized(_) => {
+                GameEventType::ControlPointInitialized
+            }
+            GameEvent::ControlPointUpdateImages(_) => {
+                GameEventType::ControlPointUpdateImages
+            }
+            GameEvent::ControlPointUpdateLayout(_) => {
+                GameEventType::ControlPointUpdateLayout
+            }
+            GameEvent::ControlPointUpdateCapping(_) => {
+                GameEventType::ControlPointUpdateCapping
+            }
+            GameEvent::ControlPointUpdateOwner(_) => {
+                GameEventType::ControlPointUpdateOwner
+            }
+            GameEvent::ControlPointStartTouch(_) => GameEventType::ControlPointStartTouch,
+            GameEvent::ControlPointEndTouch(_) => GameEventType::ControlPointEndTouch,
+            GameEvent::ControlPointPulseElement(_) => {
+                GameEventType::ControlPointPulseElement
+            }
+            GameEvent::ControlPointFakeCapture(_) => {
+                GameEventType::ControlPointFakeCapture
+            }
+            GameEvent::ControlPointFakeCaptureMultiplier(_) => {
+                GameEventType::ControlPointFakeCaptureMultiplier
+            }
+            GameEvent::TeamPlayRoundSelected(_) => GameEventType::TeamPlayRoundSelected,
+            GameEvent::TeamPlayRoundStart(_) => GameEventType::TeamPlayRoundStart,
+            GameEvent::TeamPlayRoundActive(_) => GameEventType::TeamPlayRoundActive,
+            GameEvent::TeamPlayWaitingBegins(_) => GameEventType::TeamPlayWaitingBegins,
+            GameEvent::TeamPlayWaitingEnds(_) => GameEventType::TeamPlayWaitingEnds,
+            GameEvent::TeamPlayWaitingAboutToEnd(_) => {
+                GameEventType::TeamPlayWaitingAboutToEnd
+            }
+            GameEvent::TeamPlayRestartRound(_) => GameEventType::TeamPlayRestartRound,
+            GameEvent::TeamPlayReadyRestart(_) => GameEventType::TeamPlayReadyRestart,
+            GameEvent::TeamPlayRoundRestartSeconds(_) => {
+                GameEventType::TeamPlayRoundRestartSeconds
+            }
+            GameEvent::TeamPlayTeamReady(_) => GameEventType::TeamPlayTeamReady,
+            GameEvent::TeamPlayRoundWin(_) => GameEventType::TeamPlayRoundWin,
+            GameEvent::TeamPlayUpdateTimer(_) => GameEventType::TeamPlayUpdateTimer,
+            GameEvent::TeamPlayRoundStalemate(_) => GameEventType::TeamPlayRoundStalemate,
+            GameEvent::TeamPlayOvertimeBegin(_) => GameEventType::TeamPlayOvertimeBegin,
+            GameEvent::TeamPlayOvertimeEnd(_) => GameEventType::TeamPlayOvertimeEnd,
+            GameEvent::TeamPlaySuddenDeathBegin(_) => {
+                GameEventType::TeamPlaySuddenDeathBegin
+            }
+            GameEvent::TeamPlaySuddenDeathEnd(_) => GameEventType::TeamPlaySuddenDeathEnd,
+            GameEvent::TeamPlayGameOver(_) => GameEventType::TeamPlayGameOver,
+            GameEvent::TeamPlayMapTimeRemaining(_) => {
+                GameEventType::TeamPlayMapTimeRemaining
+            }
+            GameEvent::TeamPlayTimerFlash(_) => GameEventType::TeamPlayTimerFlash,
+            GameEvent::TeamPlayTimerTimeAdded(_) => GameEventType::TeamPlayTimerTimeAdded,
+            GameEvent::TeamPlayPointStartCapture(_) => {
+                GameEventType::TeamPlayPointStartCapture
+            }
+            GameEvent::TeamPlayPointCaptured(_) => GameEventType::TeamPlayPointCaptured,
+            GameEvent::TeamPlayPointLocked(_) => GameEventType::TeamPlayPointLocked,
+            GameEvent::TeamPlayPointUnlocked(_) => GameEventType::TeamPlayPointUnlocked,
+            GameEvent::TeamPlayCaptureBroken(_) => GameEventType::TeamPlayCaptureBroken,
+            GameEvent::TeamPlayCaptureBlocked(_) => GameEventType::TeamPlayCaptureBlocked,
+            GameEvent::TeamPlayFlagEvent(_) => GameEventType::TeamPlayFlagEvent,
+            GameEvent::TeamPlayWinPanel(_) => GameEventType::TeamPlayWinPanel,
+            GameEvent::TeamPlayTeamBalancedPlayer(_) => {
+                GameEventType::TeamPlayTeamBalancedPlayer
+            }
+            GameEvent::TeamPlaySetupFinished(_) => GameEventType::TeamPlaySetupFinished,
+            GameEvent::TeamPlayAlert(_) => GameEventType::TeamPlayAlert,
+            GameEvent::TrainingComplete(_) => GameEventType::TrainingComplete,
+            GameEvent::ShowFreezePanel(_) => GameEventType::ShowFreezePanel,
+            GameEvent::HideFreezePanel(_) => GameEventType::HideFreezePanel,
+            GameEvent::FreezeCamStarted(_) => GameEventType::FreezeCamStarted,
+            GameEvent::LocalPlayerChangeTeam(_) => GameEventType::LocalPlayerChangeTeam,
+            GameEvent::LocalPlayerScoreChanged(_) => {
+                GameEventType::LocalPlayerScoreChanged
+            }
+            GameEvent::LocalPlayerChangeClass(_) => GameEventType::LocalPlayerChangeClass,
+            GameEvent::LocalPlayerRespawn(_) => GameEventType::LocalPlayerRespawn,
+            GameEvent::BuildingInfoChanged(_) => GameEventType::BuildingInfoChanged,
+            GameEvent::LocalPlayerChangeDisguise(_) => {
+                GameEventType::LocalPlayerChangeDisguise
+            }
+            GameEvent::PlayerAccountChanged(_) => GameEventType::PlayerAccountChanged,
+            GameEvent::SpyPdaReset(_) => GameEventType::SpyPdaReset,
+            GameEvent::FlagStatusUpdate(_) => GameEventType::FlagStatusUpdate,
+            GameEvent::PlayerStatsUpdated(_) => GameEventType::PlayerStatsUpdated,
+            GameEvent::PlayingCommentary(_) => GameEventType::PlayingCommentary,
+            GameEvent::PlayerChargeDeployed(_) => GameEventType::PlayerChargeDeployed,
+            GameEvent::PlayerBuiltObject(_) => GameEventType::PlayerBuiltObject,
+            GameEvent::PlayerUpgradedObject(_) => GameEventType::PlayerUpgradedObject,
+            GameEvent::PlayerCarryObject(_) => GameEventType::PlayerCarryObject,
+            GameEvent::PlayerDropObject(_) => GameEventType::PlayerDropObject,
+            GameEvent::ObjectRemoved(_) => GameEventType::ObjectRemoved,
+            GameEvent::ObjectDestroyed(_) => GameEventType::ObjectDestroyed,
+            GameEvent::ObjectDetonated(_) => GameEventType::ObjectDetonated,
+            GameEvent::AchievementEarned(_) => GameEventType::AchievementEarned,
+            GameEvent::SpecTargetUpdated(_) => GameEventType::SpecTargetUpdated,
+            GameEvent::TournamentStateUpdate(_) => GameEventType::TournamentStateUpdate,
+            GameEvent::TournamentEnableCountdown(_) => {
+                GameEventType::TournamentEnableCountdown
+            }
+            GameEvent::PlayerCalledForMedic(_) => GameEventType::PlayerCalledForMedic,
+            GameEvent::PlayerAskedForBall(_) => GameEventType::PlayerAskedForBall,
+            GameEvent::LocalPlayerBecameObserver(_) => {
+                GameEventType::LocalPlayerBecameObserver
+            }
+            GameEvent::PlayerIgnitedInv(_) => GameEventType::PlayerIgnitedInv,
+            GameEvent::PlayerIgnited(_) => GameEventType::PlayerIgnited,
+            GameEvent::PlayerExtinguished(_) => GameEventType::PlayerExtinguished,
+            GameEvent::PlayerTeleported(_) => GameEventType::PlayerTeleported,
+            GameEvent::PlayerHealedMedicCall(_) => GameEventType::PlayerHealedMedicCall,
+            GameEvent::LocalPlayerChargeReady(_) => GameEventType::LocalPlayerChargeReady,
+            GameEvent::LocalPlayerWindDown(_) => GameEventType::LocalPlayerWindDown,
+            GameEvent::PlayerInvulned(_) => GameEventType::PlayerInvulned,
+            GameEvent::EscortSpeed(_) => GameEventType::EscortSpeed,
+            GameEvent::EscortProgress(_) => GameEventType::EscortProgress,
+            GameEvent::EscortRecede(_) => GameEventType::EscortRecede,
+            GameEvent::GameUIActivated(_) => GameEventType::GameUIActivated,
+            GameEvent::GameUIHidden(_) => GameEventType::GameUIHidden,
+            GameEvent::PlayerEscortScore(_) => GameEventType::PlayerEscortScore,
+            GameEvent::PlayerHealOnHit(_) => GameEventType::PlayerHealOnHit,
+            GameEvent::PlayerStealSandvich(_) => GameEventType::PlayerStealSandvich,
+            GameEvent::ShowClassLayout(_) => GameEventType::ShowClassLayout,
+            GameEvent::ShowVsPanel(_) => GameEventType::ShowVsPanel,
+            GameEvent::PlayerDamaged(_) => GameEventType::PlayerDamaged,
+            GameEvent::ArenaPlayerNotification(_) => {
+                GameEventType::ArenaPlayerNotification
+            }
+            GameEvent::ArenaMatchMaxStreak(_) => GameEventType::ArenaMatchMaxStreak,
+            GameEvent::ArenaRoundStart(_) => GameEventType::ArenaRoundStart,
+            GameEvent::ArenaWinPanel(_) => GameEventType::ArenaWinPanel,
+            GameEvent::PveWinPanel(_) => GameEventType::PveWinPanel,
+            GameEvent::AirDash(_) => GameEventType::AirDash,
+            GameEvent::Landed(_) => GameEventType::Landed,
+            GameEvent::PlayerDamageDodged(_) => GameEventType::PlayerDamageDodged,
+            GameEvent::PlayerStunned(_) => GameEventType::PlayerStunned,
+            GameEvent::ScoutGrandSlam(_) => GameEventType::ScoutGrandSlam,
+            GameEvent::ScoutSlamdollLanded(_) => GameEventType::ScoutSlamdollLanded,
+            GameEvent::ArrowImpact(_) => GameEventType::ArrowImpact,
+            GameEvent::PlayerJarated(_) => GameEventType::PlayerJarated,
+            GameEvent::PlayerJaratedFade(_) => GameEventType::PlayerJaratedFade,
+            GameEvent::PlayerShieldBlocked(_) => GameEventType::PlayerShieldBlocked,
+            GameEvent::PlayerPinned(_) => GameEventType::PlayerPinned,
+            GameEvent::PlayerHealedByMedic(_) => GameEventType::PlayerHealedByMedic,
+            GameEvent::PlayerSappedObject(_) => GameEventType::PlayerSappedObject,
+            GameEvent::ItemFound(_) => GameEventType::ItemFound,
+            GameEvent::ShowAnnotation(_) => GameEventType::ShowAnnotation,
+            GameEvent::HideAnnotation(_) => GameEventType::HideAnnotation,
+            GameEvent::PostInventoryApplication(_) => {
+                GameEventType::PostInventoryApplication
+            }
+            GameEvent::ControlPointUnlockUpdated(_) => {
+                GameEventType::ControlPointUnlockUpdated
+            }
+            GameEvent::DeployBuffBanner(_) => GameEventType::DeployBuffBanner,
+            GameEvent::PlayerBuff(_) => GameEventType::PlayerBuff,
+            GameEvent::MedicDeath(_) => GameEventType::MedicDeath,
+            GameEvent::OvertimeNag(_) => GameEventType::OvertimeNag,
+            GameEvent::TeamsChanged(_) => GameEventType::TeamsChanged,
+            GameEvent::HalloweenPumpkinGrab(_) => GameEventType::HalloweenPumpkinGrab,
+            GameEvent::RocketJump(_) => GameEventType::RocketJump,
+            GameEvent::RocketJumpLanded(_) => GameEventType::RocketJumpLanded,
+            GameEvent::StickyJump(_) => GameEventType::StickyJump,
+            GameEvent::StickyJumpLanded(_) => GameEventType::StickyJumpLanded,
+            GameEvent::RocketPackLaunch(_) => GameEventType::RocketPackLaunch,
+            GameEvent::RocketPackLanded(_) => GameEventType::RocketPackLanded,
+            GameEvent::MedicDefended(_) => GameEventType::MedicDefended,
+            GameEvent::LocalPlayerHealed(_) => GameEventType::LocalPlayerHealed,
+            GameEvent::PlayerDestroyedPipeBomb(_) => {
+                GameEventType::PlayerDestroyedPipeBomb
+            }
+            GameEvent::ObjectDeflected(_) => GameEventType::ObjectDeflected,
+            GameEvent::PlayerMvp(_) => GameEventType::PlayerMvp,
+            GameEvent::RaidSpawnMob(_) => GameEventType::RaidSpawnMob,
+            GameEvent::RaidSpawnSquad(_) => GameEventType::RaidSpawnSquad,
+            GameEvent::NavBlocked(_) => GameEventType::NavBlocked,
+            GameEvent::PathTrackPassed(_) => GameEventType::PathTrackPassed,
+            GameEvent::NumCappersChanged(_) => GameEventType::NumCappersChanged,
+            GameEvent::PlayerRegenerate(_) => GameEventType::PlayerRegenerate,
+            GameEvent::UpdateStatusItem(_) => GameEventType::UpdateStatusItem,
+            GameEvent::StatsResetRound(_) => GameEventType::StatsResetRound,
+            GameEvent::ScoreStatsAccumulatedUpdate(_) => {
+                GameEventType::ScoreStatsAccumulatedUpdate
+            }
+            GameEvent::ScoreStatsAccumulatedReset(_) => {
+                GameEventType::ScoreStatsAccumulatedReset
+            }
+            GameEvent::AchievementEarnedLocal(_) => GameEventType::AchievementEarnedLocal,
+            GameEvent::PlayerHealed(_) => GameEventType::PlayerHealed,
+            GameEvent::BuildingHealed(_) => GameEventType::BuildingHealed,
+            GameEvent::ItemPickup(_) => GameEventType::ItemPickup,
+            GameEvent::DuelStatus(_) => GameEventType::DuelStatus,
+            GameEvent::FishNotice(_) => GameEventType::FishNotice,
+            GameEvent::FishNoticeArm(_) => GameEventType::FishNoticeArm,
+            GameEvent::SlapNotice(_) => GameEventType::SlapNotice,
+            GameEvent::ThrowableHit(_) => GameEventType::ThrowableHit,
+            GameEvent::PumpkinLordSummoned(_) => GameEventType::PumpkinLordSummoned,
+            GameEvent::PumpkinLordKilled(_) => GameEventType::PumpkinLordKilled,
+            GameEvent::MerasmusSummoned(_) => GameEventType::MerasmusSummoned,
+            GameEvent::MerasmusKilled(_) => GameEventType::MerasmusKilled,
+            GameEvent::MerasmusEscapeWarning(_) => GameEventType::MerasmusEscapeWarning,
+            GameEvent::MerasmusEscaped(_) => GameEventType::MerasmusEscaped,
+            GameEvent::EyeballBossSummoned(_) => GameEventType::EyeballBossSummoned,
+            GameEvent::EyeballBossStunned(_) => GameEventType::EyeballBossStunned,
+            GameEvent::EyeballBossKilled(_) => GameEventType::EyeballBossKilled,
+            GameEvent::EyeballBossKiller(_) => GameEventType::EyeballBossKiller,
+            GameEvent::EyeballBossEscapeImminent(_) => {
+                GameEventType::EyeballBossEscapeImminent
+            }
+            GameEvent::EyeballBossEscaped(_) => GameEventType::EyeballBossEscaped,
+            GameEvent::NpcHurt(_) => GameEventType::NpcHurt,
+            GameEvent::ControlPointTimerUpdated(_) => {
+                GameEventType::ControlPointTimerUpdated
+            }
+            GameEvent::PlayerHighFiveStart(_) => GameEventType::PlayerHighFiveStart,
+            GameEvent::PlayerHighFiveCancel(_) => GameEventType::PlayerHighFiveCancel,
+            GameEvent::PlayerHighFiveSuccess(_) => GameEventType::PlayerHighFiveSuccess,
+            GameEvent::PlayerBonusPoints(_) => GameEventType::PlayerBonusPoints,
+            GameEvent::PlayerUpgraded(_) => GameEventType::PlayerUpgraded,
+            GameEvent::PlayerBuyback(_) => GameEventType::PlayerBuyback,
+            GameEvent::PlayerUsedPowerUpBottle(_) => {
+                GameEventType::PlayerUsedPowerUpBottle
+            }
+            GameEvent::ChristmasGiftGrab(_) => GameEventType::ChristmasGiftGrab,
+            GameEvent::PlayerKilledAchievementZone(_) => {
+                GameEventType::PlayerKilledAchievementZone
+            }
+            GameEvent::PartyUpdated(_) => GameEventType::PartyUpdated,
+            GameEvent::PartyPrefChanged(_) => GameEventType::PartyPrefChanged,
+            GameEvent::PartyCriteriaChanged(_) => GameEventType::PartyCriteriaChanged,
+            GameEvent::PartyInvitesChanged(_) => GameEventType::PartyInvitesChanged,
+            GameEvent::PartyQueueStateChanged(_) => GameEventType::PartyQueueStateChanged,
+            GameEvent::PartyChat(_) => GameEventType::PartyChat,
+            GameEvent::PartyMemberJoin(_) => GameEventType::PartyMemberJoin,
+            GameEvent::PartyMemberLeave(_) => GameEventType::PartyMemberLeave,
+            GameEvent::MatchInvitesUpdated(_) => GameEventType::MatchInvitesUpdated,
+            GameEvent::LobbyUpdated(_) => GameEventType::LobbyUpdated,
+            GameEvent::MvmMissionUpdate(_) => GameEventType::MvmMissionUpdate,
+            GameEvent::RecalculateHolidays(_) => GameEventType::RecalculateHolidays,
+            GameEvent::PlayerCurrencyChanged(_) => GameEventType::PlayerCurrencyChanged,
+            GameEvent::DoomsdayRocketOpen(_) => GameEventType::DoomsdayRocketOpen,
+            GameEvent::RemoveNemesisRelationships(_) => {
+                GameEventType::RemoveNemesisRelationships
+            }
+            GameEvent::MvmCreditBonusWave(_) => GameEventType::MvmCreditBonusWave,
+            GameEvent::MvmCreditBonusAll(_) => GameEventType::MvmCreditBonusAll,
+            GameEvent::MvmCreditBonusAllAdvanced(_) => {
+                GameEventType::MvmCreditBonusAllAdvanced
+            }
+            GameEvent::MvmQuickSentryUpgrade(_) => GameEventType::MvmQuickSentryUpgrade,
+            GameEvent::MvmTankDestroyedByPlayers(_) => {
+                GameEventType::MvmTankDestroyedByPlayers
+            }
+            GameEvent::MvmKillRobotDeliveringBomb(_) => {
+                GameEventType::MvmKillRobotDeliveringBomb
+            }
+            GameEvent::MvmPickupCurrency(_) => GameEventType::MvmPickupCurrency,
+            GameEvent::MvmBombCarrierKilled(_) => GameEventType::MvmBombCarrierKilled,
+            GameEvent::MvmSentryBusterDetonate(_) => {
+                GameEventType::MvmSentryBusterDetonate
+            }
+            GameEvent::MvmScoutMarkedForDeath(_) => GameEventType::MvmScoutMarkedForDeath,
+            GameEvent::MvmMedicPowerUpShared(_) => GameEventType::MvmMedicPowerUpShared,
+            GameEvent::MvmBeginWave(_) => GameEventType::MvmBeginWave,
+            GameEvent::MvmWaveComplete(_) => GameEventType::MvmWaveComplete,
+            GameEvent::MvmMissionComplete(_) => GameEventType::MvmMissionComplete,
+            GameEvent::MvmBombResetByPlayer(_) => GameEventType::MvmBombResetByPlayer,
+            GameEvent::MvmBombAlarmTriggered(_) => GameEventType::MvmBombAlarmTriggered,
+            GameEvent::MvmBombDeployResetByPlayer(_) => {
+                GameEventType::MvmBombDeployResetByPlayer
+            }
+            GameEvent::MvmWaveFailed(_) => GameEventType::MvmWaveFailed,
+            GameEvent::MvmResetStats(_) => GameEventType::MvmResetStats,
+            GameEvent::DamageResisted(_) => GameEventType::DamageResisted,
+            GameEvent::RevivePlayerNotify(_) => GameEventType::RevivePlayerNotify,
+            GameEvent::RevivePlayerStopped(_) => GameEventType::RevivePlayerStopped,
+            GameEvent::RevivePlayerComplete(_) => GameEventType::RevivePlayerComplete,
+            GameEvent::PlayerTurnedToGhost(_) => GameEventType::PlayerTurnedToGhost,
+            GameEvent::MedigunShieldBlockedDamage(_) => {
+                GameEventType::MedigunShieldBlockedDamage
+            }
+            GameEvent::MvmAdvWaveCompleteNoGates(_) => {
+                GameEventType::MvmAdvWaveCompleteNoGates
+            }
+            GameEvent::MvmSniperHeadshotCurrency(_) => {
+                GameEventType::MvmSniperHeadshotCurrency
+            }
+            GameEvent::MvmMannhattanPit(_) => GameEventType::MvmMannhattanPit,
+            GameEvent::FlagCarriedInDetectionZone(_) => {
+                GameEventType::FlagCarriedInDetectionZone
+            }
+            GameEvent::MvmAdvWaveKilledStunRadio(_) => {
+                GameEventType::MvmAdvWaveKilledStunRadio
+            }
+            GameEvent::PlayerDirectHitStun(_) => GameEventType::PlayerDirectHitStun,
+            GameEvent::MvmSentryBusterKilled(_) => GameEventType::MvmSentryBusterKilled,
+            GameEvent::UpgradesFileChanged(_) => GameEventType::UpgradesFileChanged,
+            GameEvent::RdTeamPointsChanged(_) => GameEventType::RdTeamPointsChanged,
+            GameEvent::RdRulesStateChanged(_) => GameEventType::RdRulesStateChanged,
+            GameEvent::RdRobotKilled(_) => GameEventType::RdRobotKilled,
+            GameEvent::RdRobotImpact(_) => GameEventType::RdRobotImpact,
+            GameEvent::TeamPlayPreRoundTimeLeft(_) => {
+                GameEventType::TeamPlayPreRoundTimeLeft
+            }
+            GameEvent::ParachuteDeploy(_) => GameEventType::ParachuteDeploy,
+            GameEvent::ParachuteHolster(_) => GameEventType::ParachuteHolster,
+            GameEvent::KillRefillsMeter(_) => GameEventType::KillRefillsMeter,
+            GameEvent::RpsTauntEvent(_) => GameEventType::RpsTauntEvent,
+            GameEvent::CongaKill(_) => GameEventType::CongaKill,
+            GameEvent::PlayerInitialSpawn(_) => GameEventType::PlayerInitialSpawn,
+            GameEvent::CompetitiveVictory(_) => GameEventType::CompetitiveVictory,
+            GameEvent::CompetitiveStatsUpdate(_) => GameEventType::CompetitiveStatsUpdate,
+            GameEvent::MiniGameWin(_) => GameEventType::MiniGameWin,
+            GameEvent::SentryOnGoActive(_) => GameEventType::SentryOnGoActive,
+            GameEvent::DuckXpLevelUp(_) => GameEventType::DuckXpLevelUp,
+            GameEvent::QuestLogOpened(_) => GameEventType::QuestLogOpened,
+            GameEvent::SchemaUpdated(_) => GameEventType::SchemaUpdated,
+            GameEvent::LocalPlayerPickupWeapon(_) => {
+                GameEventType::LocalPlayerPickupWeapon
+            }
+            GameEvent::RdPlayerScorePoints(_) => GameEventType::RdPlayerScorePoints,
+            GameEvent::DemomanDetStickies(_) => GameEventType::DemomanDetStickies,
+            GameEvent::QuestObjectiveCompleted(_) => {
+                GameEventType::QuestObjectiveCompleted
+            }
+            GameEvent::PlayerScoreChanged(_) => GameEventType::PlayerScoreChanged,
+            GameEvent::KilledCappingPlayer(_) => GameEventType::KilledCappingPlayer,
+            GameEvent::EnvironmentalDeath(_) => GameEventType::EnvironmentalDeath,
+            GameEvent::ProjectileDirectHit(_) => GameEventType::ProjectileDirectHit,
+            GameEvent::PassGet(_) => GameEventType::PassGet,
+            GameEvent::PassScore(_) => GameEventType::PassScore,
+            GameEvent::PassFree(_) => GameEventType::PassFree,
+            GameEvent::PassPassCaught(_) => GameEventType::PassPassCaught,
+            GameEvent::PassBallStolen(_) => GameEventType::PassBallStolen,
+            GameEvent::PassBallBlocked(_) => GameEventType::PassBallBlocked,
+            GameEvent::DamagePrevented(_) => GameEventType::DamagePrevented,
+            GameEvent::HalloweenBossKilled(_) => GameEventType::HalloweenBossKilled,
+            GameEvent::EscapedLootIsland(_) => GameEventType::EscapedLootIsland,
+            GameEvent::TaggedPlayerAsIt(_) => GameEventType::TaggedPlayerAsIt,
+            GameEvent::MerasmusStunned(_) => GameEventType::MerasmusStunned,
+            GameEvent::MerasmusPropFound(_) => GameEventType::MerasmusPropFound,
+            GameEvent::HalloweenSkeletonKilled(_) => {
+                GameEventType::HalloweenSkeletonKilled
+            }
+            GameEvent::EscapeHell(_) => GameEventType::EscapeHell,
+            GameEvent::CrossSpectralBridge(_) => GameEventType::CrossSpectralBridge,
+            GameEvent::MiniGameWon(_) => GameEventType::MiniGameWon,
+            GameEvent::RespawnGhost(_) => GameEventType::RespawnGhost,
+            GameEvent::KillInHell(_) => GameEventType::KillInHell,
+            GameEvent::HalloweenDuckCollected(_) => GameEventType::HalloweenDuckCollected,
+            GameEvent::SpecialScore(_) => GameEventType::SpecialScore,
+            GameEvent::TeamLeaderKilled(_) => GameEventType::TeamLeaderKilled,
+            GameEvent::HalloweenSoulCollected(_) => GameEventType::HalloweenSoulCollected,
+            GameEvent::RecalculateTruce(_) => GameEventType::RecalculateTruce,
+            GameEvent::DeadRingerCheatDeath(_) => GameEventType::DeadRingerCheatDeath,
+            GameEvent::CrossbowHeal(_) => GameEventType::CrossbowHeal,
+            GameEvent::DamageMitigated(_) => GameEventType::DamageMitigated,
+            GameEvent::PayloadPushed(_) => GameEventType::PayloadPushed,
+            GameEvent::PlayerAbandonedMatch(_) => GameEventType::PlayerAbandonedMatch,
+            GameEvent::ClDrawline(_) => GameEventType::ClDrawline,
+            GameEvent::RestartTimerTime(_) => GameEventType::RestartTimerTime,
+            GameEvent::WinLimitChanged(_) => GameEventType::WinLimitChanged,
+            GameEvent::WinPanelShowScores(_) => GameEventType::WinPanelShowScores,
+            GameEvent::TopStreamsRequestFinished(_) => {
+                GameEventType::TopStreamsRequestFinished
+            }
+            GameEvent::CompetitiveStateChanged(_) => {
+                GameEventType::CompetitiveStateChanged
+            }
+            GameEvent::GlobalWarDataUpdated(_) => GameEventType::GlobalWarDataUpdated,
+            GameEvent::StopWatchChanged(_) => GameEventType::StopWatchChanged,
+            GameEvent::DsStop(_) => GameEventType::DsStop,
+            GameEvent::DsScreenshot(_) => GameEventType::DsScreenshot,
+            GameEvent::ShowMatchSummary(_) => GameEventType::ShowMatchSummary,
+            GameEvent::ExperienceChanged(_) => GameEventType::ExperienceChanged,
+            GameEvent::BeginXpLerp(_) => GameEventType::BeginXpLerp,
+            GameEvent::MatchmakerStatsUpdated(_) => GameEventType::MatchmakerStatsUpdated,
+            GameEvent::RematchVotePeriodOver(_) => GameEventType::RematchVotePeriodOver,
+            GameEvent::RematchFailedToCreate(_) => GameEventType::RematchFailedToCreate,
+            GameEvent::PlayerRematchChange(_) => GameEventType::PlayerRematchChange,
+            GameEvent::PingUpdated(_) => GameEventType::PingUpdated,
+            GameEvent::MMStatsUpdated(_) => GameEventType::MMStatsUpdated,
+            GameEvent::PlayerNextMapVoteChange(_) => {
+                GameEventType::PlayerNextMapVoteChange
+            }
+            GameEvent::VoteMapsChanged(_) => GameEventType::VoteMapsChanged,
+            GameEvent::ProtoDefChanged(_) => GameEventType::ProtoDefChanged,
+            GameEvent::PlayerDomination(_) => GameEventType::PlayerDomination,
+            GameEvent::PlayerRocketPackPushed(_) => GameEventType::PlayerRocketPackPushed,
+            GameEvent::QuestRequest(_) => GameEventType::QuestRequest,
+            GameEvent::QuestResponse(_) => GameEventType::QuestResponse,
+            GameEvent::QuestProgress(_) => GameEventType::QuestProgress,
+            GameEvent::ProjectileRemoved(_) => GameEventType::ProjectileRemoved,
+            GameEvent::QuestMapDataChanged(_) => GameEventType::QuestMapDataChanged,
+            GameEvent::GasDousedPlayerIgnited(_) => GameEventType::GasDousedPlayerIgnited,
+            GameEvent::QuestTurnInState(_) => GameEventType::QuestTurnInState,
+            GameEvent::ItemsAcknowledged(_) => GameEventType::ItemsAcknowledged,
+            GameEvent::CapperKilled(_) => GameEventType::CapperKilled,
+            GameEvent::MainMenuStabilized(_) => GameEventType::MainMenuStabilized,
+            GameEvent::WorldStatusChanged(_) => GameEventType::WorldStatusChanged,
+            GameEvent::HLTVStatus(_) => GameEventType::HLTVStatus,
+            GameEvent::HLTVCameraman(_) => GameEventType::HLTVCameraman,
+            GameEvent::HLTVRankCamera(_) => GameEventType::HLTVRankCamera,
+            GameEvent::HLTVRankEntity(_) => GameEventType::HLTVRankEntity,
+            GameEvent::HLTVFixed(_) => GameEventType::HLTVFixed,
+            GameEvent::HLTVChase(_) => GameEventType::HLTVChase,
+            GameEvent::HLTVMessage(_) => GameEventType::HLTVMessage,
+            GameEvent::HLTVTitle(_) => GameEventType::HLTVTitle,
+            GameEvent::HLTVChat(_) => GameEventType::HLTVChat,
+            GameEvent::ReplayStartRecord(_) => GameEventType::ReplayStartRecord,
+            GameEvent::ReplaySessionInfo(_) => GameEventType::ReplaySessionInfo,
+            GameEvent::ReplayEndRecord(_) => GameEventType::ReplayEndRecord,
+            GameEvent::ReplayReplaysAvailable(_) => GameEventType::ReplayReplaysAvailable,
+            GameEvent::ReplayServerError(_) => GameEventType::ReplayServerError,
+            GameEvent::Unknown(raw) => raw.event_type.clone(),
+        }
+    }
 }
 pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
     [

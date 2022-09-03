@@ -317,6 +317,13 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         quote!(GameEventType::#variant_name => #name_str,)
     });
 
+    let to_types = events.iter().map(|event| {
+        let name = get_event_name(event.event_type.as_str());
+        let variant_name = Ident::new(&name, span);
+
+        quote!(GameEvent::#variant_name(_) => GameEventType::#variant_name,)
+    });
+
     let read_events = events.iter().map(|event| {
         let name = get_event_name(event.event_type.as_str());
         let variant_name = Ident::new(&name, span);
@@ -423,6 +430,12 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
                 match &self {
                     #(#write_events)*
                     GameEvent::Unknown(raw) => raw.write(stream),
+                }
+            }
+            pub fn event_type(&self) -> GameEventType {
+                match &self {
+                    #(#to_types)*
+                    GameEvent::Unknown(raw) => raw.event_type.clone(),
                 }
             }
         }

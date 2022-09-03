@@ -29,6 +29,7 @@ impl MessageHandler for PropAnalyzer {
         &mut self,
         parse_tables: &[ParseSendTable],
         _server_classes: &[ServerClass],
+        _state: &ParserState,
     ) {
         let mut numeric_tables: FnvHashMap<String, usize> = HashMap::default();
         for table in parse_tables {
