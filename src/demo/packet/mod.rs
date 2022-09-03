@@ -139,3 +139,31 @@ impl Encode for Packet<'_> {
         }
     }
 }
+
+impl PacketType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            PacketType::Signon => "Signon",
+            PacketType::Message => "Message",
+            PacketType::SyncTick => "SyncTick",
+            PacketType::ConsoleCmd => "ConsoleCmd",
+            PacketType::UserCmd => "UserCmd",
+            PacketType::DataTables => "DataTables",
+            PacketType::Stop => "Stop",
+            PacketType::StringTables => "StringTables",
+        }
+    }
+
+    pub fn as_lowercase_str(&self) -> &'static str {
+        match self {
+            PacketType::Signon => "signon",
+            PacketType::Message => "message",
+            PacketType::SyncTick => "synctick",
+            PacketType::ConsoleCmd => "consolecmd",
+            PacketType::UserCmd => "usercmd",
+            PacketType::DataTables => "datatables",
+            PacketType::Stop => "stop",
+            PacketType::StringTables => "stringtables",
+        }
+    }
+}
