@@ -277,7 +277,7 @@
       "charge": 0
     }
   ],
-  "buildings": [],
+  "buildings": {},
   "world": {
     "boundary_min": {
       "x": -4523.0,

@@ -12,7 +12,8 @@ use bitbuffer::{
 use enumflags2::{bitflags, BitFlags};
 use num_traits::Signed;
 use parse_display::Display;
-use serde::{Deserialize, Serialize};
+use serde::de::Error;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::borrow::Cow;
 use std::cmp::min;
 use std::convert::{TryFrom, TryInto};
@@ -1116,7 +1117,7 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct SendPropIdentifier(u64);
 
 impl SendPropIdentifier {
@@ -1165,6 +1166,38 @@ impl Display for SendPropIdentifier {
             Some((table, prop)) => write!(f, "{}.{}", table, prop),
             None => write!(f, "Prop name {} not known", self.0),
         }
+    }
+}
+
+impl<'de> Deserialize<'de> for SendPropIdentifier {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Options<'a> {
+            Num(u64),
+            Str(&'a str),
+        }
+
+        let raw = Options::deserialize(deserializer)?;
+        Ok(match raw {
+            Options::Num(num) => SendPropIdentifier(num),
+            Options::Str(s) => {
+                let num: u64 = s.parse().map_err(|e| D::Error::custom(e))?;
+                SendPropIdentifier(num)
+            }
+        })
+    }
+}
+
+impl Serialize for SendPropIdentifier {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.0.to_string().serialize(serializer)
     }
 }
 
