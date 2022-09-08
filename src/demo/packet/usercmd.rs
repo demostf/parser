@@ -35,15 +35,15 @@ impl BitWrite<LittleEndian> for UserCmdPacket {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, BitRead, BitWrite, Serialize, Deserialize, Clone)]
 pub struct UserCmd {
-    command_number: Option<u32>,
-    tick_count: Option<u32>,
-    view_angles: [Option<f32>; 3],
-    movement: [Option<f32>; 3],
-    buttons: Option<u32>,
-    impulse: Option<u8>,
-    weapon_select: Option<WeaponSelect>,
-    mouse_dx: Option<u16>,
-    mouse_dy: Option<u16>,
+    pub command_number: Option<u32>,
+    pub tick_count: Option<u32>,
+    pub view_angles: [Option<f32>; 3],
+    pub movement: [Option<f32>; 3],
+    pub buttons: Option<u32>,
+    pub impulse: Option<u8>,
+    pub weapon_select: Option<WeaponSelect>,
+    pub mouse_dx: Option<u16>,
+    pub mouse_dy: Option<u16>,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
