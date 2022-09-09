@@ -379,27 +379,27 @@ pub struct TrainMessage {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct VoiceSubtitleMessage {
-    client: u8,
-    menu: u8,
-    item: u8,
+    pub client: u8,
+    pub menu: u8,
+    pub item: u8,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ShakeMessage {
-    command: u8,
-    amplitude: f32,
-    frequency: f32,
-    duration: f32,
+    pub command: u8,
+    pub amplitude: f32,
+    pub frequency: f32,
+    pub duration: f32,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct VGuiMenuMessage {
-    name: MaybeUtf8String,
-    show: u8,
+    pub name: MaybeUtf8String,
+    pub show: u8,
     #[size_bits = 8]
-    data: Vec<VGuiMenuMessageData>,
+    pub data: Vec<VGuiMenuMessageData>,
 }
 
 impl<E: Endianness> BitWrite<E> for VGuiMenuMessage {
@@ -417,37 +417,37 @@ impl<E: Endianness> BitWrite<E> for VGuiMenuMessage {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct VGuiMenuMessageData {
-    key: MaybeUtf8String,
-    data: MaybeUtf8String,
+    pub key: MaybeUtf8String,
+    pub data: MaybeUtf8String,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RumbleMessage {
-    waveform_index: u8,
-    rumble_data: u8,
-    rumble_flags: u8,
+    pub waveform_index: u8,
+    pub rumble_data: u8,
+    pub rumble_flags: u8,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FadeMessage {
-    duration: u16,
-    hold: u16,
-    flags: u16,
-    color: [u8; 4],
+    pub duration: u16,
+    pub hold: u16,
+    pub flags: u16,
+    pub color: [u8; 4],
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct HapMeleeContactMessage {
-    data: u8,
+    pub data: u8,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct UnknownUserMessage<'a> {
-    raw_type: u8,
-    data: Stream<'a>,
+    pub raw_type: u8,
+    pub data: Stream<'a>,
 }
