@@ -303,7 +303,6 @@ impl GameState {
 #[derive(Default, Debug)]
 pub struct GameStateAnalyser {
     pub state: GameState,
-    tick: u32,
     class_names: Vec<ServerClassName>, // indexed by ClassId
 }
 
@@ -317,7 +316,7 @@ impl MessageHandler for GameStateAnalyser {
         )
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32, parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, _server_tick: u32, client_tick: u32, parser_state: &ParserState) {
         match message {
             Message::PacketEntities(message) => {
                 for entity in &message.entities {
@@ -326,7 +325,7 @@ impl MessageHandler for GameStateAnalyser {
             }
             Message::GameEvent(GameEventMessage { event, .. }) => match event {
                 GameEvent::PlayerDeath(death) => {
-                    self.state.kills.push(Kill::new(self.tick, death.as_ref()))
+                    self.state.kills.push(Kill::new(client_tick, death.as_ref()))
                 }
                 GameEvent::RoundStart(_) => {
                     self.state.buildings.clear();
@@ -374,12 +373,11 @@ impl MessageHandler for GameStateAnalyser {
 
     fn handle_packet_meta(
         &mut self,
-        tick: u32,
+        client_tick: u32,
         _meta: &MessagePacketMeta,
         _parser_state: &ParserState,
     ) {
-        self.state.tick = tick;
-        self.tick = tick;
+        self.state.tick = client_tick;
     }
 
     fn into_output(self, _state: &ParserState) -> Self::Output {

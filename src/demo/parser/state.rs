@@ -221,7 +221,7 @@ impl<'a> ParserState {
         )
     }
 
-    pub fn handle_message(&mut self, message: Message, _tick: u32) {
+    pub fn handle_message(&mut self, message: Message, _server_tick: u32) {
         match message {
             Message::ServerInfo(message) => {
                 self.demo_meta.version = message.version;

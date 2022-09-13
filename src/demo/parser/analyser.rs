@@ -378,16 +378,16 @@ impl MessageHandler for Analyser {
         )
     }
 
-    fn handle_message(&mut self, message: &Message, tick: u32, _parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, server_tick: u32, _client_tick: u32, _parser_state: &ParserState) {
         if self.state.start_tick == 0 {
-            self.state.start_tick = tick;
+            self.state.start_tick = server_tick;
         }
         match message {
             Message::ServerInfo(message) => {
                 self.state.interval_per_tick = message.interval_per_tick
             }
-            Message::GameEvent(message) => self.handle_event(&message.event, tick),
-            Message::UserMessage(message) => self.handle_user_message(message, tick),
+            Message::GameEvent(message) => self.handle_event(&message.event, server_tick),
+            Message::UserMessage(message) => self.handle_user_message(message, server_tick),
             _ => {}
         }
     }

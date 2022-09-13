@@ -16,7 +16,7 @@ impl MessageHandler for MessageTypeAnalyser {
         true
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32, _parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, _server_tick: u32, _client_tick: u32, _parser_state: &ParserState) {
         self.packet_types.push(message.get_message_type())
     }
 
