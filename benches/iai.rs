@@ -12,7 +12,13 @@ impl MessageHandler for AllMessages {
         true
     }
 
-    fn handle_message(&mut self, message: &Message, _server_tick: u32, _client_tick: u32, _parser_state: &ParserState) {
+    fn handle_message(
+        &mut self,
+        message: &Message,
+        _server_tick: u32,
+        _client_tick: u32,
+        _parser_state: &ParserState,
+    ) {
         black_box(message);
     }
 

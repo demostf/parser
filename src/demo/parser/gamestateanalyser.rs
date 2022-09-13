@@ -316,7 +316,13 @@ impl MessageHandler for GameStateAnalyser {
         )
     }
 
-    fn handle_message(&mut self, message: &Message, _server_tick: u32, client_tick: u32, parser_state: &ParserState) {
+    fn handle_message(
+        &mut self,
+        message: &Message,
+        _server_tick: u32,
+        client_tick: u32,
+        parser_state: &ParserState,
+    ) {
         match message {
             Message::PacketEntities(message) => {
                 for entity in &message.entities {
@@ -324,9 +330,10 @@ impl MessageHandler for GameStateAnalyser {
                 }
             }
             Message::GameEvent(GameEventMessage { event, .. }) => match event {
-                GameEvent::PlayerDeath(death) => {
-                    self.state.kills.push(Kill::new(client_tick, death.as_ref()))
-                }
+                GameEvent::PlayerDeath(death) => self
+                    .state
+                    .kills
+                    .push(Kill::new(client_tick, death.as_ref())),
                 GameEvent::RoundStart(_) => {
                     self.state.buildings.clear();
                 }

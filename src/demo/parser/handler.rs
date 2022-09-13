@@ -16,7 +16,14 @@ pub trait MessageHandler {
 
     fn handle_header(&mut self, _header: &Header) {}
 
-    fn handle_message(&mut self, _message: &Message, _server_tick: u32, _client_tick: u32, _parser_state: &ParserState) {}
+    fn handle_message(
+        &mut self,
+        _message: &Message,
+        _server_tick: u32,
+        _client_tick: u32,
+        _parser_state: &ParserState,
+    ) {
+    }
 
     fn handle_string_entry(
         &mut self,
@@ -184,8 +191,12 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
     pub fn handle_message(&mut self, message: Message<'a>, client_tick: u32) {
         let message_type = message.get_message_type();
         if T::does_handle(message_type) {
-            self.analyser
-                .handle_message(&message, self.server_tick, client_tick, &self.state_handler);
+            self.analyser.handle_message(
+                &message,
+                self.server_tick,
+                client_tick,
+                &self.state_handler,
+            );
         }
         self.state_handler.handle_message(message, self.server_tick);
     }

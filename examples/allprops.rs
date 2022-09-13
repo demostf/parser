@@ -42,7 +42,13 @@ impl MessageHandler for PropAnalyzer {
         matches!(message_type, MessageType::PacketEntities)
     }
 
-    fn handle_message(&mut self, message: &Message, _server_tick: u32, _client_tick:u32, _parser_state: &ParserState) {
+    fn handle_message(
+        &mut self,
+        message: &Message,
+        _server_tick: u32,
+        _client_tick: u32,
+        _parser_state: &ParserState,
+    ) {
         if let Message::PacketEntities(message) = message {
             for entity in &message.entities {
                 for prop in &entity.props {

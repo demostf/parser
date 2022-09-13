@@ -1,7 +1,7 @@
-use std::ops::{Add, Sub};
 use bitbuffer::{BitRead, BitWrite};
 use parse_display::Display;
 use serde::{Deserialize, Serialize};
+use std::ops::{Add, Sub};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]

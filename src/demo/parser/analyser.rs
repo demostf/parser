@@ -378,7 +378,13 @@ impl MessageHandler for Analyser {
         )
     }
 
-    fn handle_message(&mut self, message: &Message, server_tick: u32, _client_tick: u32, _parser_state: &ParserState) {
+    fn handle_message(
+        &mut self,
+        message: &Message,
+        server_tick: u32,
+        _client_tick: u32,
+        _parser_state: &ParserState,
+    ) {
         if self.state.start_tick == 0 {
             self.state.start_tick = server_tick;
         }
