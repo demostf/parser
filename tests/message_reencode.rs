@@ -73,5 +73,5 @@ fn setup_message(handler: &mut DemoHandler<NullHandler>, input: &str) {
         &handler.state_handler,
     )
     .unwrap();
-    handler.handle_message(message);
+    handler.handle_message(message, 0);
 }

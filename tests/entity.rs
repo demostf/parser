@@ -94,13 +94,19 @@ impl MessageHandler for EntityDumper {
         }
     }
 
-    fn handle_message(&mut self, message: &Message, tick: u32, _parser_state: &ParserState) {
+    fn handle_message(
+        &mut self,
+        message: &Message,
+        server_tick: u32,
+        _client_tick: u32,
+        _parser_state: &ParserState
+    ) {
         match message {
             Message::PacketEntities(entity_message) => self.entities.extend(
                 entity_message
                     .entities
                     .iter()
-                    .map(|entity| (tick, entity.clone())),
+                    .map(|entity| (server_tick, entity.clone())),
             ),
             _ => {}
         }
