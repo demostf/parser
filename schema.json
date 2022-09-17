@@ -21,9 +21,7 @@
           "$ref": "#/definitions/MessagePacketMeta"
         },
         "tick": {
-          "type": "integer",
-          "format": "uint32",
-          "minimum": 0.0
+          "$ref": "#/definitions/DemoTick"
         },
         "type": {
           "type": "string",
@@ -52,9 +50,7 @@
           "$ref": "#/definitions/MessagePacketMeta"
         },
         "tick": {
-          "type": "integer",
-          "format": "uint32",
-          "minimum": 0.0
+          "$ref": "#/definitions/DemoTick"
         },
         "type": {
           "type": "string",
@@ -72,9 +68,7 @@
       ],
       "properties": {
         "tick": {
-          "type": "integer",
-          "format": "uint32",
-          "minimum": 0.0
+          "$ref": "#/definitions/DemoTick"
         },
         "type": {
           "type": "string",
@@ -96,9 +90,7 @@
           "type": "string"
         },
         "tick": {
-          "type": "integer",
-          "format": "uint32",
-          "minimum": 0.0
+          "$ref": "#/definitions/DemoTick"
         },
         "type": {
           "type": "string",
@@ -126,9 +118,7 @@
           "minimum": 0.0
         },
         "tick": {
-          "type": "integer",
-          "format": "uint32",
-          "minimum": 0.0
+          "$ref": "#/definitions/DemoTick"
         },
         "type": {
           "type": "string",
@@ -160,9 +150,7 @@
           }
         },
         "tick": {
-          "type": "integer",
-          "format": "uint32",
-          "minimum": 0.0
+          "$ref": "#/definitions/DemoTick"
         },
         "type": {
           "type": "string",
@@ -180,9 +168,7 @@
       ],
       "properties": {
         "tick": {
-          "type": "integer",
-          "format": "uint32",
-          "minimum": 0.0
+          "$ref": "#/definitions/DemoTick"
         },
         "type": {
           "type": "string",
@@ -207,9 +193,7 @@
           }
         },
         "tick": {
-          "type": "integer",
-          "format": "uint32",
-          "minimum": 0.0
+          "$ref": "#/definitions/DemoTick"
         },
         "type": {
           "type": "string",
@@ -295,6 +279,12 @@
           "type": "string"
         }
       }
+    },
+    "DemoTick": {
+      "description": "Tick relative to the start of the demo",
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
     },
     "EntityId": {
       "type": "integer",
@@ -11419,9 +11409,7 @@
               "minimum": 0.0
             },
             "tick": {
-              "type": "integer",
-              "format": "uint32",
-              "minimum": 0.0
+              "$ref": "#/definitions/ServerTick"
             },
             "type": {
               "type": "string",
@@ -12211,6 +12199,26 @@
               "type": "object",
               "required": [
                 "data",
+                "type"
+              ],
+              "properties": {
+                "data": {
+                  "type": "integer",
+                  "format": "uint8",
+                  "minimum": 0.0
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "HapMeleeContact"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "data",
                 "raw_type",
                 "type"
               ],
@@ -12533,7 +12541,7 @@
     "PacketEntity": {
       "type": "object",
       "required": [
-        "baseline_props",
+        "baseline_index",
         "entity_index",
         "in_pvs",
         "props",
@@ -12542,11 +12550,10 @@
         "update_type"
       ],
       "properties": {
-        "baseline_props": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SendProp"
-          }
+        "baseline_index": {
+          "type": "integer",
+          "format": "uint",
+          "minimum": 0.0
         },
         "delay": {
           "type": [
@@ -12554,6 +12561,14 @@
             "null"
           ],
           "format": "float"
+        },
+        "delta": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "format": "uint32",
+          "minimum": 0.0
         },
         "entity_index": {
           "$ref": "#/definitions/EntityId"
@@ -12781,6 +12796,12 @@
     },
     "ServerClassName": {
       "type": "string"
+    },
+    "ServerTick": {
+      "description": "Tick relative to the start of the game on the server",
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
     },
     "SignOnState": {
       "type": "string",
