@@ -9,6 +9,7 @@ use self::stop::StopPacket;
 use self::stringtable::StringTablePacket;
 use self::synctick::SyncTickPacket;
 use self::usercmd::UserCmdPacket;
+use crate::demo::data::DemoTick;
 use crate::demo::parser::Encode;
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "trace")]
@@ -38,7 +39,7 @@ pub enum Packet<'a> {
 }
 
 impl Packet<'_> {
-    pub fn tick(&self) -> u32 {
+    pub fn tick(&self) -> DemoTick {
         match self {
             Packet::Signon(msg) => msg.tick,
             Packet::Message(msg) => msg.tick,
@@ -51,7 +52,7 @@ impl Packet<'_> {
         }
     }
 
-    pub fn set_tick(&mut self, tick: u32) {
+    pub fn set_tick(&mut self, tick: DemoTick) {
         match self {
             Packet::Signon(msg) => msg.tick = tick,
             Packet::Message(msg) => msg.tick = tick,

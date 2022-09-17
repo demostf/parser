@@ -2,6 +2,7 @@ use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
+use crate::demo::data::DemoTick;
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::parser::Encode;
 use crate::{Parse, ParseError, ParserState, ReadResult, Result, Stream};
@@ -233,13 +234,13 @@ impl fmt::Debug for StringTableEntry<'_> {
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct StringTablePacket<'a> {
-    pub tick: u32,
+    pub tick: DemoTick,
     pub tables: Vec<StringTable<'a>>,
 }
 
 impl<'a> Parse<'a> for StringTablePacket<'a> {
     fn parse(stream: &mut Stream<'a>, _state: &ParserState) -> Result<Self> {
-        let tick = stream.read_int(32)?;
+        let tick = stream.read()?;
         let length: usize = stream.read_int(32)?;
         let mut packet_data = stream.read_bits(length.saturating_mul(8))?;
         let count: usize = packet_data.read_int(8)?;
@@ -274,14 +275,14 @@ fn test_string_table_packet_roundtrip() {
     let state = ParserState::new(24, |_| false, false);
     crate::test_roundtrip_encode(
         StringTablePacket {
-            tick: 1,
+            tick: 1.into(),
             tables: vec![],
         },
         &state,
     );
     crate::test_roundtrip_encode(
         StringTablePacket {
-            tick: 1,
+            tick: 1.into(),
             tables: vec![StringTable {
                 name: "table1".into(),
                 entries: vec![],
@@ -295,7 +296,7 @@ fn test_string_table_packet_roundtrip() {
     );
     crate::test_roundtrip_encode(
         StringTablePacket {
-            tick: 1,
+            tick: 1.into(),
             tables: vec![
                 StringTable {
                     name: "table1".into(),

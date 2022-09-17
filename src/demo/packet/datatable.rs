@@ -1,3 +1,4 @@
+use crate::demo::data::DemoTick;
 use crate::demo::parser::MalformedSendPropDefinitionError;
 use crate::demo::sendprop::{
     RawSendPropDefinition, SendPropDefinition, SendPropFlag, SendPropIdentifier, SendPropType,
@@ -403,7 +404,7 @@ pub struct SendTable {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct DataTablePacket {
-    pub tick: u32,
+    pub tick: DemoTick,
     pub tables: Vec<ParseSendTable>,
     pub server_classes: Vec<ServerClass>,
 }
@@ -460,7 +461,7 @@ fn test_data_table_packet_roundtrip() {
     let state = ParserState::new(24, |_| false, false);
     crate::test_roundtrip_encode(
         DataTablePacket {
-            tick: 123,
+            tick: 123.into(),
             tables: vec![],
             server_classes: vec![],
         },
@@ -545,7 +546,7 @@ fn test_data_table_packet_roundtrip() {
     };
     crate::test_roundtrip_encode(
         DataTablePacket {
-            tick: 1,
+            tick: 1.into(),
             tables: vec![table1, table2],
             server_classes: vec![
                 ServerClass {

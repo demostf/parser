@@ -14,6 +14,7 @@ use crate::demo::packet::datatable::{
 };
 use crate::demo::packet::stringtable::StringTableEntry;
 
+use crate::demo::data::DemoTick;
 use crate::demo::sendprop::{SendProp, SendPropIdentifier};
 use crate::nullhasher::NullHasherBuilder;
 use crate::{Result, Stream};
@@ -221,7 +222,7 @@ impl<'a> ParserState {
         )
     }
 
-    pub fn handle_message(&mut self, message: Message, _tick: u32) {
+    pub fn handle_message(&mut self, message: Message, _tick: DemoTick) {
         match message {
             Message::ServerInfo(message) => {
                 self.demo_meta.version = message.version;

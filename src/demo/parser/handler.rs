@@ -4,6 +4,7 @@ use crate::demo::packet::stringtable::{StringTable, StringTableEntry};
 use crate::demo::packet::Packet;
 use crate::Result;
 
+use crate::demo::data::{DemoTick, ServerTick};
 use crate::demo::header::Header;
 use crate::demo::packet::message::MessagePacketMeta;
 use crate::ParserState;
@@ -16,7 +17,8 @@ pub trait MessageHandler {
 
     fn handle_header(&mut self, _header: &Header) {}
 
-    fn handle_message(&mut self, _message: &Message, _tick: u32, _parser_state: &ParserState) {}
+    fn handle_message(&mut self, _message: &Message, _tick: DemoTick, _parser_state: &ParserState) {
+    }
 
     fn handle_string_entry(
         &mut self,
@@ -37,7 +39,7 @@ pub trait MessageHandler {
 
     fn handle_packet_meta(
         &mut self,
-        _tick: u32,
+        _tick: DemoTick,
         _meta: &MessagePacketMeta,
         _parser_state: &ParserState,
     ) {
@@ -64,7 +66,8 @@ impl MessageHandler for NullHandler {
 
 #[derive(Clone)]
 pub struct DemoHandler<'a, T: MessageHandler> {
-    pub tick: u32,
+    pub server_tick: ServerTick,
+    pub demo_tick: DemoTick,
     pub string_table_names: Vec<Cow<'a, str>>,
     analyser: T,
     pub state_handler: ParserState,
@@ -87,7 +90,8 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         let state_handler = ParserState::new(24, T::does_handle, false);
 
         DemoHandler {
-            tick: 0,
+            server_tick: ServerTick::default(),
+            demo_tick: DemoTick::default(),
             string_table_names: Vec::new(),
             analyser,
             state_handler,
@@ -97,7 +101,8 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         let state_handler = ParserState::new(24, T::does_handle, true);
 
         DemoHandler {
-            tick: 0,
+            server_tick: ServerTick::default(),
+            demo_tick: DemoTick::default(),
             string_table_names: Vec::new(),
             analyser,
             state_handler,
@@ -124,7 +129,10 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                     .handle_packet_meta(packet.tick, &packet.meta, &self.state_handler);
                 for message in packet.messages {
                     match message {
-                        Message::NetTick(message) => self.tick = message.tick,
+                        Message::NetTick(message) => {
+                            self.server_tick = message.tick;
+                            self.handle_message(Message::NetTick(message), packet.tick)
+                        }
                         Message::CreateStringTable(message) => {
                             self.handle_string_table(message.table)
                         }
@@ -132,9 +140,9 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
                             self.handle_table_update(message.table_id, message.entries)
                         }
                         Message::PacketEntities(msg) => {
-                            self.handle_message(Message::PacketEntities(msg))
+                            self.handle_message(Message::PacketEntities(msg), packet.tick)
                         }
-                        message => self.handle_message(message),
+                        message => self.handle_message(message, packet.tick),
                     }
                 }
             }
@@ -184,13 +192,13 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
             .handle_data_table(send_tables, server_classes)
     }
 
-    pub fn handle_message(&mut self, message: Message<'a>) {
+    pub fn handle_message(&mut self, message: Message<'a>, tick: DemoTick) {
         let message_type = message.get_message_type();
         if T::does_handle(message_type) {
             self.analyser
-                .handle_message(&message, self.tick, &self.state_handler);
+                .handle_message(&message, tick, &self.state_handler);
         }
-        self.state_handler.handle_message(message, self.tick);
+        self.state_handler.handle_message(message, tick);
     }
 
     pub fn into_output(self) -> T::Output {

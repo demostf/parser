@@ -1,3 +1,4 @@
+use crate::demo::data::DemoTick;
 use crate::demo::gameevent_gen::{ObjectDestroyedEvent, PlayerDeathEvent};
 use crate::demo::gamevent::GameEvent;
 use crate::demo::message::gameevent::GameEventMessage;
@@ -239,11 +240,11 @@ pub struct Kill {
     pub assister_id: u16,
     pub victim_id: u16,
     pub weapon: String,
-    pub tick: u32,
+    pub tick: DemoTick,
 }
 
 impl Kill {
-    fn new(tick: u32, death: &PlayerDeathEvent) -> Self {
+    fn new(tick: DemoTick, death: &PlayerDeathEvent) -> Self {
         Kill {
             attacker_id: death.attacker,
             assister_id: death.assister,
@@ -260,7 +261,7 @@ pub struct GameState {
     pub buildings: BTreeMap<EntityId, Building>,
     pub world: Option<World>,
     pub kills: Vec<Kill>,
-    pub tick: u32,
+    pub tick: DemoTick,
 }
 
 impl GameState {
@@ -303,7 +304,7 @@ impl GameState {
 #[derive(Default, Debug)]
 pub struct GameStateAnalyser {
     pub state: GameState,
-    tick: u32,
+    tick: DemoTick,
     class_names: Vec<ServerClassName>, // indexed by ClassId
 }
 
@@ -317,7 +318,7 @@ impl MessageHandler for GameStateAnalyser {
         )
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32, parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, _tick: DemoTick, parser_state: &ParserState) {
         match message {
             Message::PacketEntities(message) => {
                 for entity in &message.entities {
@@ -374,7 +375,7 @@ impl MessageHandler for GameStateAnalyser {
 
     fn handle_packet_meta(
         &mut self,
-        tick: u32,
+        tick: DemoTick,
         _meta: &MessagePacketMeta,
         _parser_state: &ParserState,
     ) {

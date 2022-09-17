@@ -1,3 +1,4 @@
+use crate::demo::data::DemoTick;
 use crate::demo::message::{Message, MessageType};
 
 use crate::demo::parser::handler::MessageHandler;
@@ -16,7 +17,7 @@ impl MessageHandler for MessageTypeAnalyser {
         true
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32, _parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, _tick: DemoTick, _parser_state: &ParserState) {
         self.packet_types.push(message.get_message_type())
     }
 

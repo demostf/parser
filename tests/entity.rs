@@ -6,6 +6,7 @@ use test_case::test_case;
 use fnv::FnvHashMap;
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
+use tf_demo_parser::demo::data::DemoTick;
 use tf_demo_parser::demo::message::packetentities::{EntityId, PacketEntity, UpdateType};
 use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::packet::datatable::{
@@ -39,7 +40,7 @@ impl From<UpdateType> for PVSCompat {
 #[derive(PartialEq, Clone, Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 struct EntityDump {
-    tick: u32,
+    tick: DemoTick,
     server_class: ServerClassName,
     id: EntityId,
     props: HashMap<String, SendPropValue>,
@@ -49,7 +50,7 @@ struct EntityDump {
 impl EntityDump {
     pub fn from_entity(
         entity: PacketEntity,
-        tick: u32,
+        tick: DemoTick,
         classes: &[ServerClass],
         prop_names: &FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
         state: &ParserState,
@@ -71,7 +72,7 @@ impl EntityDump {
 }
 
 struct EntityDumper {
-    entities: Vec<(u32, PacketEntity)>,
+    entities: Vec<(DemoTick, PacketEntity)>,
     prop_names: FnvHashMap<SendPropIdentifier, (SendTableName, SendPropName)>,
 }
 
@@ -94,7 +95,7 @@ impl MessageHandler for EntityDumper {
         }
     }
 
-    fn handle_message(&mut self, message: &Message, tick: u32, _parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, tick: DemoTick, _parser_state: &ParserState) {
         match message {
             Message::PacketEntities(entity_message) => self.entities.extend(
                 entity_message

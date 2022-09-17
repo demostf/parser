@@ -5,6 +5,7 @@ use std::fs;
 
 use bitbuffer::{BitError, BitRead, BitWrite, BitWriteStream, LittleEndian};
 use main_error::MainError;
+use tf_demo_parser::demo::data::DemoTick;
 use tf_demo_parser::demo::header::Header;
 use tf_demo_parser::demo::message::{setconvar::SetConVarMessage, Message, NetTickMessage};
 use tf_demo_parser::demo::packet::stop::StopPacket;
@@ -58,7 +59,7 @@ fn main() -> Result<(), MainError> {
 
         let mut packet_start = packets.pos();
         let mut has_stop = false;
-        let mut last_tick = 0;
+        let mut last_tick = DemoTick::default();
 
         while let Some(mut packet) = packets.next(&handler.state_handler)? {
             let packet_end = packets.pos();
@@ -116,7 +117,7 @@ fn header_fixup(header: &mut Header, mut packets: RawPacketStream) -> Result<(),
     let mut tickrate = 66;
 
     while let Some(packet) = packets.next(&handler.state_handler)? {
-        ticks = packet.tick();
+        ticks = packet.tick().into();
 
         if let Packet::Signon(message_packet) = &packet {
             for message in &message_packet.messages {

@@ -2,6 +2,7 @@ pub mod userinfo;
 
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, Endianness};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::cmp::Ordering;
 use std::fmt::{Debug, Display, Formatter};
 
 pub use userinfo::UserInfo;
@@ -125,5 +126,89 @@ impl schemars::JsonSchema for MaybeUtf8String {
 
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
         String::json_schema(gen)
+    }
+}
+
+/// Tick relative to the start of the game on the server
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+    BitRead,
+    BitWrite,
+    Serialize,
+    Deserialize,
+    Default,
+)]
+pub struct ServerTick(u32);
+
+impl PartialEq<u32> for ServerTick {
+    fn eq(&self, other: &u32) -> bool {
+        *other == self.0
+    }
+}
+
+impl PartialOrd<u32> for ServerTick {
+    fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
+        other.partial_cmp(&self.0)
+    }
+}
+
+impl From<u32> for ServerTick {
+    fn from(tick: u32) -> Self {
+        ServerTick(tick)
+    }
+}
+
+impl From<ServerTick> for u32 {
+    fn from(tick: ServerTick) -> Self {
+        tick.0
+    }
+}
+
+/// Tick relative to the start of the demo
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+    BitRead,
+    BitWrite,
+    Serialize,
+    Deserialize,
+    Default,
+)]
+pub struct DemoTick(u32);
+
+impl PartialEq<u32> for DemoTick {
+    fn eq(&self, other: &u32) -> bool {
+        *other == self.0
+    }
+}
+
+impl PartialOrd<u32> for DemoTick {
+    fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
+        other.partial_cmp(&self.0)
+    }
+}
+
+impl From<u32> for DemoTick {
+    fn from(tick: u32) -> Self {
+        DemoTick(tick)
+    }
+}
+
+impl From<DemoTick> for u32 {
+    fn from(tick: DemoTick) -> Self {
+        tick.0
     }
 }

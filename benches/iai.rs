@@ -1,4 +1,5 @@
 use iai::black_box;
+use tf_demo_parser::demo::data::DemoTick;
 use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::{Demo, DemoParser, MessageType, ParserState};
@@ -12,7 +13,7 @@ impl MessageHandler for AllMessages {
         true
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32, _parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, _tick: DemoTick, _parser_state: &ParserState) {
         black_box(message);
     }
 

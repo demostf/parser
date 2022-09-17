@@ -2,6 +2,7 @@ use fnv::{FnvHashMap, FnvHashSet};
 use main_error::MainError;
 use std::env;
 use std::fs;
+use tf_demo_parser::demo::data::DemoTick;
 use tf_demo_parser::demo::message::Message;
 use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass};
 use tf_demo_parser::demo::parser::MessageHandler;
@@ -42,7 +43,7 @@ impl MessageHandler for PropAnalyzer {
         matches!(message_type, MessageType::PacketEntities)
     }
 
-    fn handle_message(&mut self, message: &Message, _tick: u32, _parser_state: &ParserState) {
+    fn handle_message(&mut self, message: &Message, _tick: DemoTick, _parser_state: &ParserState) {
         if let Message::PacketEntities(message) = message {
             for entity in &message.entities {
                 for prop in &entity.props {

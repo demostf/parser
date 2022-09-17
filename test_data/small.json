@@ -1,1 +1,16 @@
-{"chat":[],"users":{"2":{"classes":{},"name":"Icewind | demos.tf","userId":2,"steamId":"[U:1:64229260]","team":"other"}},"deaths":[],"rounds":[],"startTick":4854,"intervalPerTick":0.015}
+{
+  "chat": [],
+  "users": {
+    "2": {
+      "classes": {},
+      "name": "Icewind | demos.tf",
+      "userId": 2,
+      "steamId": "[U:1:64229260]",
+      "team": "other"
+    }
+  },
+  "deaths": [],
+  "rounds": [],
+  "startTick": 68,
+  "intervalPerTick": 0.015
+}

@@ -1,10 +1,11 @@
+use crate::demo::data::DemoTick;
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct UserCmdPacket {
-    pub tick: u32,
+    pub tick: DemoTick,
     pub sequence_out: u32,
     pub cmd: UserCmd,
 }

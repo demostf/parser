@@ -1,3 +1,4 @@
+use crate::demo::data::{DemoTick, ServerTick};
 use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
@@ -22,11 +23,11 @@ pub struct ChatMessage {
     pub kind: ChatMessageKind,
     pub from: String,
     pub text: String,
-    pub tick: u32,
+    pub tick: DemoTick,
 }
 
 impl ChatMessage {
-    pub fn from_message(message: &SayText2Message, tick: u32) -> Self {
+    pub fn from_message(message: &SayText2Message, tick: DemoTick) -> Self {
         ChatMessage {
             kind: message.kind,
             from: message
@@ -264,11 +265,11 @@ pub struct Spawn {
     pub user: UserId,
     pub class: Class,
     pub team: Team,
-    pub tick: u32,
+    pub tick: DemoTick,
 }
 
 impl Spawn {
-    pub fn from_event(event: &PlayerSpawnEvent, tick: u32) -> Self {
+    pub fn from_event(event: &PlayerSpawnEvent, tick: DemoTick) -> Self {
         Spawn {
             user: UserId::from(event.user_id),
             class: Class::new(event.class),
@@ -319,11 +320,11 @@ pub struct Death {
     pub victim: UserId,
     pub assister: Option<UserId>,
     pub killer: UserId,
-    pub tick: u32,
+    pub tick: DemoTick,
 }
 
 impl Death {
-    pub fn from_event(event: &PlayerDeathEvent, tick: u32) -> Self {
+    pub fn from_event(event: &PlayerDeathEvent, tick: DemoTick) -> Self {
         let assister = if event.assister < (16 * 1024) {
             Some(UserId::from(event.assister))
         } else {
@@ -343,11 +344,11 @@ impl Death {
 pub struct Round {
     pub winner: Team,
     pub length: f32,
-    pub end_tick: u32,
+    pub end_tick: DemoTick,
 }
 
 impl Round {
-    pub fn from_event(event: &TeamPlayRoundWinEvent, tick: u32) -> Self {
+    pub fn from_event(event: &TeamPlayRoundWinEvent, tick: DemoTick) -> Self {
         Round {
             winner: Team::new(event.team),
             length: event.round_time,
@@ -374,15 +375,20 @@ impl MessageHandler for Analyser {
     fn does_handle(message_type: MessageType) -> bool {
         matches!(
             message_type,
-            MessageType::GameEvent | MessageType::UserMessage | MessageType::ServerInfo
+            MessageType::GameEvent
+                | MessageType::UserMessage
+                | MessageType::ServerInfo
+                | MessageType::NetTick
         )
     }
 
-    fn handle_message(&mut self, message: &Message, tick: u32, _parser_state: &ParserState) {
-        if self.state.start_tick == 0 {
-            self.state.start_tick = tick;
-        }
+    fn handle_message(&mut self, message: &Message, tick: DemoTick, _parser_state: &ParserState) {
         match message {
+            Message::NetTick(msg) => {
+                if self.state.start_tick == 0 {
+                    self.state.start_tick = msg.tick;
+                }
+            }
             Message::ServerInfo(message) => {
                 self.state.interval_per_tick = message.interval_per_tick
             }
@@ -424,7 +430,7 @@ impl Analyser {
         Self::default()
     }
 
-    fn handle_user_message(&mut self, message: &UserMessage, tick: u32) {
+    fn handle_user_message(&mut self, message: &UserMessage, tick: DemoTick) {
         if let UserMessage::SayText2(text_message) = message {
             if text_message.kind == ChatMessageKind::NameChange {
                 if let Some(from) = text_message.from.clone() {
@@ -444,7 +450,7 @@ impl Analyser {
         }
     }
 
-    fn handle_event(&mut self, event: &GameEvent, tick: u32) {
+    fn handle_event(&mut self, event: &GameEvent, tick: DemoTick) {
         const WIN_REASON_TIME_LIMIT: u8 = 6;
 
         match event {
@@ -494,6 +500,6 @@ pub struct MatchState {
     pub users: BTreeMap<UserId, UserInfo>,
     pub deaths: Vec<Death>,
     pub rounds: Vec<Round>,
-    pub start_tick: u32,
+    pub start_tick: ServerTick,
     pub interval_per_tick: f32,
 }

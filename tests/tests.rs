@@ -18,6 +18,12 @@ fn snapshot_test(input_file: &str, snapshot_file: &str) {
     let file = fs::read(format!("test_data/{}", input_file)).expect("Unable to read file");
     let demo = Demo::new(&file);
     let (_, state) = DemoParser::new(demo.get_stream()).parse().unwrap();
+    //
+    // fs::write(
+    //     format!("test_data/{}", snapshot_file),
+    //     serde_json::to_string_pretty(&state).unwrap(),
+    // )
+    // .unwrap();
 
     let expected: MatchState = serde_json::from_slice(
         fs::read(format!("test_data/{}", snapshot_file))

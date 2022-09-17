@@ -1,3 +1,4 @@
+use crate::demo::data::DemoTick;
 use crate::{ReadResult, Stream};
 use bitbuffer::{BitRead, BitWrite, LittleEndian};
 use serde::{Deserialize, Serialize};
@@ -5,13 +6,13 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct ConsoleCmdPacket {
-    pub tick: u32,
+    pub tick: DemoTick,
     pub command: String,
 }
 
 impl BitRead<'_, LittleEndian> for ConsoleCmdPacket {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let tick = stream.read_int(32)?;
+        let tick = stream.read()?;
         let len = stream.read_int::<usize>(32)?;
         let mut packet_data = stream.read_bits(len * 8)?;
         let command: String = packet_data.read()?;

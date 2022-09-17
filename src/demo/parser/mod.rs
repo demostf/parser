@@ -1,3 +1,4 @@
+use crate::demo::data::DemoTick;
 use bitbuffer::{BitError, BitRead, BitWrite, BitWriteStream, LittleEndian};
 
 pub use self::messagetypeanalyser::MessageTypeAnalyser;
@@ -208,5 +209,5 @@ impl<'a, A: MessageHandler + BorrowMessageHandler> DemoTicker<'a, A> {
 pub struct Tick<'a, State> {
     pub state: &'a State,
     pub parser_state: &'a ParserState,
-    pub tick: u32,
+    pub tick: DemoTick,
 }

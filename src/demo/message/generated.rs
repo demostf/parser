@@ -1,5 +1,5 @@
 /// Messages that consists only of primitives and string and can be derived
-use crate::demo::data::MaybeUtf8String;
+use crate::demo::data::{MaybeUtf8String, ServerTick};
 use crate::Stream;
 use bitbuffer::{BitRead, BitWrite, LittleEndian};
 use serde::{Deserialize, Serialize};
@@ -15,7 +15,7 @@ pub struct FileMessage {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct NetTickMessage {
-    pub tick: u32,
+    pub tick: ServerTick,
     pub frame_time: u16,
     pub std_dev: u16,
 }

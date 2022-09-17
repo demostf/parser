@@ -1,6 +1,7 @@
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
 
+use crate::demo::data::DemoTick;
 use crate::demo::message::{Message, MessageType};
 use crate::demo::parser::Encode;
 use crate::demo::vector::Vector;
@@ -21,7 +22,7 @@ pub struct MessagePacketMeta {
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Default)]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct MessagePacket<'a> {
-    pub tick: u32,
+    pub tick: DemoTick,
     pub messages: Vec<Message<'a>>,
     pub meta: MessagePacketMeta,
 }
