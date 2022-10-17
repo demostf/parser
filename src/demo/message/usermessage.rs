@@ -2,7 +2,7 @@ use bitbuffer::{BitError, BitRead, BitWrite, BitWriteStream, Endianness, LittleE
 use serde::{Deserialize, Serialize};
 
 use crate::demo::data::MaybeUtf8String;
-use crate::demo::parser::analyser::UserId;
+use crate::demo::message::packetentities::EntityId;
 use crate::{ReadResult, Stream};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -182,7 +182,7 @@ impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
 fn test_user_message_roundtrip() {
     crate::test_roundtrip_write(UserMessage::Train(TrainMessage { data: 12 }));
     crate::test_roundtrip_write(UserMessage::SayText2(Box::new(SayText2Message {
-        client: 3u8.into(),
+        client: 3u32.into(),
         raw: 1,
         kind: ChatMessageKind::ChatTeamDead,
         from: Some("Old Billy Riley".into()),
@@ -240,7 +240,7 @@ impl BitWrite<LittleEndian> for ChatMessageKind {
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SayText2Message {
-    pub client: UserId,
+    pub client: EntityId,
     pub raw: u8,
     pub kind: ChatMessageKind,
     pub from: Option<MaybeUtf8String>,
@@ -285,7 +285,7 @@ impl SayText2Message {
 
 impl BitRead<'_, LittleEndian> for SayText2Message {
     fn read(stream: &mut Stream) -> ReadResult<Self> {
-        let client = UserId(stream.read()?);
+        let client = EntityId::from(stream.read::<u8>()? as u32);
         let raw = stream.read()?;
         let (kind, from, text): (ChatMessageKind, Option<MaybeUtf8String>, MaybeUtf8String) =
             if stream.read::<u8>()? == 1 {
@@ -319,7 +319,7 @@ impl BitRead<'_, LittleEndian> for SayText2Message {
 
 impl BitWrite<LittleEndian> for SayText2Message {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
-        u8::from(self.client).write(stream)?;
+        (u32::from(self.client) as u8).write(stream)?;
         self.raw.write(stream)?;
 
         if let Some(from) = self.from.as_ref().map(|s| s.as_ref()) {
@@ -338,7 +338,7 @@ impl BitWrite<LittleEndian> for SayText2Message {
 #[test]
 fn test_say_text2_roundtrip() {
     crate::test_roundtrip_write(SayText2Message {
-        client: 3u8.into(),
+        client: 3u32.into(),
         raw: 1,
         kind: ChatMessageKind::ChatTeamDead,
         from: Some("Old Billy Riley".into()),
