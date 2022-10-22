@@ -4,6 +4,7 @@ use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, Endianness};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::cmp::Ordering;
 use std::fmt::{Debug, Display, Formatter};
+use std::ops::{Add, Range, RangeInclusive, Sub};
 
 pub use userinfo::UserInfo;
 
@@ -147,6 +148,12 @@ impl schemars::JsonSchema for MaybeUtf8String {
 )]
 pub struct ServerTick(u32);
 
+impl ServerTick {
+    pub fn range_inclusive(&self, till: Self) -> impl Iterator<Item = Self> {
+        (self.0..=till.0).into_iter().map(Self::from)
+    }
+}
+
 impl PartialEq<u32> for ServerTick {
     fn eq(&self, other: &u32) -> bool {
         *other == self.0
@@ -171,6 +178,38 @@ impl From<ServerTick> for u32 {
     }
 }
 
+impl Add<u32> for ServerTick {
+    type Output = ServerTick;
+
+    fn add(self, rhs: u32) -> Self::Output {
+        ServerTick(self.0 + rhs)
+    }
+}
+
+impl Add<ServerTick> for ServerTick {
+    type Output = ServerTick;
+
+    fn add(self, rhs: ServerTick) -> Self::Output {
+        ServerTick(self.0 + rhs.0)
+    }
+}
+
+impl Sub<u32> for ServerTick {
+    type Output = ServerTick;
+
+    fn sub(self, rhs: u32) -> Self::Output {
+        ServerTick(self.0 - rhs)
+    }
+}
+
+impl Sub<ServerTick> for ServerTick {
+    type Output = ServerTick;
+
+    fn sub(self, rhs: ServerTick) -> Self::Output {
+        ServerTick(self.0 - rhs.0)
+    }
+}
+
 /// Tick relative to the start of the demo
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
@@ -188,6 +227,12 @@ impl From<ServerTick> for u32 {
     Default,
 )]
 pub struct DemoTick(u32);
+
+impl DemoTick {
+    pub fn range_inclusive(&self, till: Self) -> impl Iterator<Item = Self> {
+        (self.0..=till.0).into_iter().map(Self::from)
+    }
+}
 
 impl PartialEq<u32> for DemoTick {
     fn eq(&self, other: &u32) -> bool {
@@ -210,5 +255,37 @@ impl From<u32> for DemoTick {
 impl From<DemoTick> for u32 {
     fn from(tick: DemoTick) -> Self {
         tick.0
+    }
+}
+
+impl Add<u32> for DemoTick {
+    type Output = DemoTick;
+
+    fn add(self, rhs: u32) -> Self::Output {
+        DemoTick(self.0 + rhs)
+    }
+}
+
+impl Add<DemoTick> for DemoTick {
+    type Output = DemoTick;
+
+    fn add(self, rhs: DemoTick) -> Self::Output {
+        DemoTick(self.0 + rhs.0)
+    }
+}
+
+impl Sub<u32> for DemoTick {
+    type Output = DemoTick;
+
+    fn sub(self, rhs: u32) -> Self::Output {
+        DemoTick(self.0 - rhs)
+    }
+}
+
+impl Sub<DemoTick> for DemoTick {
+    type Output = DemoTick;
+
+    fn sub(self, rhs: DemoTick) -> Self::Output {
+        DemoTick(self.0 - rhs.0)
     }
 }
