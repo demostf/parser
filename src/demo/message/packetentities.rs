@@ -142,7 +142,7 @@ impl PacketEntity {
         self.get_prop_by_identifier(&identifier, parser_state)
     }
 
-    fn get_baseline_props<'a>(&self, parser_state: &'a ParserState) -> Cow<'a, [SendProp]> {
+    pub fn get_baseline_props<'a>(&self, parser_state: &'a ParserState) -> Cow<'a, [SendProp]> {
         parser_state
             .get_baseline(
                 self.baseline_index,
