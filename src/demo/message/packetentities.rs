@@ -12,9 +12,9 @@ use parse_display::{Display, FromStr};
 use std::cmp::{min, Ordering};
 use std::collections::HashSet;
 
+use crate::demo::data::ServerTick;
 use itertools::Either;
 use std::fmt;
-use std::num::NonZeroU32;
 #[cfg(feature = "trace")]
 use tracing::trace;
 
@@ -95,7 +95,7 @@ pub struct PacketEntity {
     pub update_type: UpdateType,
     pub serial_number: u32,
     pub delay: Option<f32>,
-    pub delta: Option<u32>,
+    pub delta: Option<ServerTick>,
     pub baseline_index: usize,
 }
 
@@ -242,7 +242,7 @@ pub struct PacketEntitiesMessage {
     pub entities: Vec<PacketEntity>,
     pub removed_entities: Vec<EntityId>,
     pub max_entries: u16,
-    pub delta: Option<NonZeroU32>,
+    pub delta: Option<ServerTick>,
     pub base_line: u8,
     pub updated_base_line: bool,
 }
@@ -258,7 +258,7 @@ fn get_entity_for_update(
     state: &ParserState,
     entity_index: EntityId,
     update_type: UpdateType,
-    delta: Option<u32>,
+    delta: Option<ServerTick>,
 ) -> Result<PacketEntity> {
     let class_id = *state
         .entity_classes
@@ -281,7 +281,7 @@ fn get_entity_for_update(
 impl Parse<'_> for PacketEntitiesMessage {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let max_entries = stream.read_sized(11)?;
-        let delta: Option<u32> = stream.read()?;
+        let delta: Option<ServerTick> = stream.read()?;
         let base_line = stream.read_sized(1)?;
         let updated_entries: u16 = stream.read_sized(11)?;
         let length: u32 = stream.read_sized(20)?;
@@ -342,7 +342,7 @@ impl Parse<'_> for PacketEntitiesMessage {
             entities,
             removed_entities,
             max_entries,
-            delta: delta.and_then(NonZeroU32::new),
+            delta,
             base_line,
             updated_base_line,
         })
@@ -354,7 +354,7 @@ impl Encode for PacketEntitiesMessage {
         self.max_entries.write_sized(stream, 11)?;
         self.delta.is_some().write(stream)?;
         if let Some(delta) = self.delta {
-            delta.get().write(stream)?;
+            delta.write(stream)?;
         }
         self.base_line.write_sized(stream, 1)?;
         self.entities.len().write_sized(stream, 11)?;
@@ -407,7 +407,7 @@ impl PacketEntitiesMessage {
         entity_index: EntityId,
         state: &ParserState,
         baseline_index: usize,
-        delta: Option<u32>,
+        delta: Option<ServerTick>,
     ) -> Result<PacketEntity> {
         let bits = log_base2(state.server_classes.len()) + 1;
         let class_index: ClassId = stream.read_sized::<u16>(bits as usize)?.into();
