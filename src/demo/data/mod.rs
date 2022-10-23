@@ -4,7 +4,7 @@ use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, Endianness};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::cmp::Ordering;
 use std::fmt::{Debug, Display, Formatter};
-use std::ops::{Add, Range, RangeInclusive, Sub};
+use std::ops::{Add, Sub};
 
 pub use userinfo::UserInfo;
 
@@ -166,6 +166,18 @@ impl PartialOrd<u32> for ServerTick {
     }
 }
 
+impl PartialEq<ServerTick> for u32 {
+    fn eq(&self, other: &ServerTick) -> bool {
+        self.eq(&other.0)
+    }
+}
+
+impl PartialOrd<ServerTick> for u32 {
+    fn partial_cmp(&self, other: &ServerTick) -> Option<Ordering> {
+        self.partial_cmp(&other.0)
+    }
+}
+
 impl From<u32> for ServerTick {
     fn from(tick: u32) -> Self {
         ServerTick(tick)
@@ -243,6 +255,18 @@ impl PartialEq<u32> for DemoTick {
 impl PartialOrd<u32> for DemoTick {
     fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
         other.partial_cmp(&self.0)
+    }
+}
+
+impl PartialEq<DemoTick> for u32 {
+    fn eq(&self, other: &DemoTick) -> bool {
+        self.eq(&other.0)
+    }
+}
+
+impl PartialOrd<DemoTick> for u32 {
+    fn partial_cmp(&self, other: &DemoTick) -> Option<Ordering> {
+        self.partial_cmp(&other.0)
     }
 }
 
