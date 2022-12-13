@@ -319,11 +319,11 @@ fn test_parse_send_table_roundtrip() {
 impl ParseSendTable {
     pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Result<Vec<SendPropDefinition>> {
         let mut flat = Vec::with_capacity(32);
-        self.get_all_props(
+        self.push_props_end(
             tables,
-            &self.get_excludes(tables, &mut Vec::with_capacity(8)),
+            &self.get_excludes(tables),
             &mut flat,
-            Vec::with_capacity(8),
+            &mut Vec::with_capacity(16),
         )?;
 
         // sort often changed props before the others
@@ -340,13 +340,21 @@ impl ParseSendTable {
         Ok(flat)
     }
 
-    fn get_excludes<'a>(
+    fn get_excludes<'a>(&'a self, tables: &'a [ParseSendTable]) -> Vec<SendPropIdentifier> {
+        let mut excludes = Vec::with_capacity(8);
+
+        self.build_excludes(tables, &mut Vec::with_capacity(8), &mut excludes);
+
+        excludes
+    }
+
+    fn build_excludes<'a>(
         &'a self,
         tables: &'a [ParseSendTable],
-        processed_tables: &mut Vec<SendTableName>,
-    ) -> Vec<SendPropIdentifier> {
-        processed_tables.push(self.name.clone());
-        let mut excludes = Vec::with_capacity(8);
+        processed_tables: &mut Vec<&'a SendTableName>,
+        excludes: &mut Vec<SendPropIdentifier>,
+    ) {
+        processed_tables.push(&self.name);
 
         for prop in self.props.iter() {
             if let Some(exclude_table) = prop.get_exclude_table() {
@@ -355,73 +363,67 @@ impl ParseSendTable {
                     prop.name.as_str(),
                 ))
             } else if let Some(table) = prop.get_data_table(tables) {
-                if !processed_tables.contains(&table.name) {
-                    excludes.extend_from_slice(&table.get_excludes(tables, processed_tables));
+                if !processed_tables.contains(&&table.name) {
+                    table.build_excludes(tables, processed_tables, excludes);
                 }
             }
         }
-
-        excludes
     }
 
     // TODO: below is a direct port from the js which is a direct port from C++ and not very optimal
-    fn get_all_props(
-        &self,
-        tables: &[ParseSendTable],
+    fn push_props_end<'a>(
+        &'a self,
+        tables: &'a [ParseSendTable],
         excludes: &[SendPropIdentifier],
         props: &mut Vec<SendPropDefinition>,
-        processed_tables: Vec<SendTableName>,
+        table_stack: &mut Vec<&'a SendTableName>,
     ) -> Result<()> {
         let mut local_props = Vec::new();
 
-        self.get_all_props_iterator_props(
-            tables,
-            excludes,
-            &mut local_props,
-            props,
-            processed_tables,
-        )?;
+        self.push_props_collapse(tables, excludes, &mut local_props, props, table_stack)?;
         props.extend_from_slice(&local_props);
         Ok(())
     }
 
-    fn get_all_props_iterator_props(
-        &self,
-        tables: &[ParseSendTable],
+    fn push_props_collapse<'a>(
+        &'a self,
+        tables: &'a [ParseSendTable],
         excludes: &[SendPropIdentifier],
         local_props: &mut Vec<SendPropDefinition>,
         props: &mut Vec<SendPropDefinition>,
-        processed_tables: Vec<SendTableName>,
+        table_stack: &mut Vec<&'a SendTableName>,
     ) -> Result<()> {
-        let processed_tables = &processed_tables;
-        self.props
+        table_stack.push(&self.name);
+
+        let result = self
+            .props
             .iter()
             .filter(|prop| !prop.is_exclude())
             .filter(|prop| !excludes.iter().any(|exclude| *exclude == prop.identifier()))
             .try_for_each(|prop| {
-                let mut child_processed_tables = processed_tables.clone();
-                child_processed_tables.push(self.name.clone());
                 if let Some(table) = prop.get_data_table(tables) {
-                    if !processed_tables.contains(&table.name) {
+                    if !table_stack.contains(&&table.name) {
                         if prop.flags.contains(SendPropFlag::Collapsible) {
-                            table.get_all_props_iterator_props(
+                            table.push_props_collapse(
                                 tables,
                                 excludes,
                                 local_props,
                                 props,
-                                child_processed_tables,
+                                table_stack,
                             )?;
                         } else {
-                            table.get_all_props(tables, excludes, props, child_processed_tables)?;
+                            table.push_props_end(tables, excludes, props, table_stack)?;
                         }
-                    } else {
-                        dbg!(table.name.as_str());
                     }
                 } else {
                     local_props.push(SendPropDefinition::try_from(prop)?);
                 }
                 Ok(())
-            })
+            });
+
+        table_stack.pop();
+
+        result
     }
 }
 
