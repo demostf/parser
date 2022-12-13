@@ -2,7 +2,7 @@
   inputs = {
     utils.url = "github:numtide/flake-utils";
     naersk.url = "github:nix-community/naersk";
-    nixpkgs.url = "nixpkgs/release-22.05";
+    nixpkgs.url = "nixpkgs/release-22.11";
   };
 
   outputs = {
