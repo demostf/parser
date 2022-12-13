@@ -414,7 +414,7 @@ pub fn parse_string_table_update<'a>(
 
     for _ in 0..entry_count {
         let index = if stream.read()? {
-            (last_entry + 1) as u16
+            last_entry.saturating_add(1) as u16
         } else {
             stream.read_sized(entry_bits as usize)?
         };

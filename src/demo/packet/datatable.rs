@@ -319,7 +319,12 @@ fn test_parse_send_table_roundtrip() {
 impl ParseSendTable {
     pub fn flatten_props(&self, tables: &[ParseSendTable]) -> Result<Vec<SendPropDefinition>> {
         let mut flat = Vec::with_capacity(32);
-        self.get_all_props(tables, &self.get_excludes(tables), &mut flat)?;
+        self.get_all_props(
+            tables,
+            &self.get_excludes(tables, &mut Vec::with_capacity(8)),
+            &mut flat,
+            Vec::with_capacity(8),
+        )?;
 
         // sort often changed props before the others
         let mut start = 0;
@@ -335,7 +340,12 @@ impl ParseSendTable {
         Ok(flat)
     }
 
-    fn get_excludes<'a>(&'a self, tables: &'a [ParseSendTable]) -> Vec<SendPropIdentifier> {
+    fn get_excludes<'a>(
+        &'a self,
+        tables: &'a [ParseSendTable],
+        processed_tables: &mut Vec<SendTableName>,
+    ) -> Vec<SendPropIdentifier> {
+        processed_tables.push(self.name.clone());
         let mut excludes = Vec::with_capacity(8);
 
         for prop in self.props.iter() {
@@ -345,7 +355,9 @@ impl ParseSendTable {
                     prop.name.as_str(),
                 ))
             } else if let Some(table) = prop.get_data_table(tables) {
-                excludes.extend_from_slice(&table.get_excludes(tables));
+                if !processed_tables.contains(&table.name) {
+                    excludes.extend_from_slice(&table.get_excludes(tables, processed_tables));
+                }
             }
         }
 
@@ -358,10 +370,17 @@ impl ParseSendTable {
         tables: &[ParseSendTable],
         excludes: &[SendPropIdentifier],
         props: &mut Vec<SendPropDefinition>,
+        processed_tables: Vec<SendTableName>,
     ) -> Result<()> {
         let mut local_props = Vec::new();
 
-        self.get_all_props_iterator_props(tables, excludes, &mut local_props, props)?;
+        self.get_all_props_iterator_props(
+            tables,
+            excludes,
+            &mut local_props,
+            props,
+            processed_tables,
+        )?;
         props.extend_from_slice(&local_props);
         Ok(())
     }
@@ -372,17 +391,31 @@ impl ParseSendTable {
         excludes: &[SendPropIdentifier],
         local_props: &mut Vec<SendPropDefinition>,
         props: &mut Vec<SendPropDefinition>,
+        processed_tables: Vec<SendTableName>,
     ) -> Result<()> {
+        let processed_tables = &processed_tables;
         self.props
             .iter()
             .filter(|prop| !prop.is_exclude())
             .filter(|prop| !excludes.iter().any(|exclude| *exclude == prop.identifier()))
             .try_for_each(|prop| {
+                let mut child_processed_tables = processed_tables.clone();
+                child_processed_tables.push(self.name.clone());
                 if let Some(table) = prop.get_data_table(tables) {
-                    if prop.flags.contains(SendPropFlag::Collapsible) {
-                        table.get_all_props_iterator_props(tables, excludes, local_props, props)?;
+                    if !processed_tables.contains(&table.name) {
+                        if prop.flags.contains(SendPropFlag::Collapsible) {
+                            table.get_all_props_iterator_props(
+                                tables,
+                                excludes,
+                                local_props,
+                                props,
+                                child_processed_tables,
+                            )?;
+                        } else {
+                            table.get_all_props(tables, excludes, props, child_processed_tables)?;
+                        }
                     } else {
-                        table.get_all_props(tables, excludes, props)?;
+                        dbg!(table.name.as_str());
                     }
                 } else {
                     local_props.push(SendPropDefinition::try_from(prop)?);

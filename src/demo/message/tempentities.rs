@@ -54,7 +54,7 @@ impl Parse<'_> for TempEntitiesMessage {
 
             let class_id = if stream.read()? {
                 let bits = log_base2(state.server_classes.len()) + 1;
-                (stream.read_sized::<u16>(bits as usize)? - 1).into()
+                (stream.read_sized::<u16>(bits as usize)?.saturating_sub(1)).into()
             } else {
                 let last = events.last().ok_or(ParseError::InvalidDemo(
                     "temp entity update without previous",

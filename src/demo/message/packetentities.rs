@@ -297,6 +297,9 @@ impl Parse<'_> for PacketEntitiesMessage {
         for _ in 0..updated_entries {
             let diff: u32 = read_bit_var(&mut data)?;
             last_index = last_index.saturating_add(diff as i32).saturating_add(1);
+            if last_index >= 2048 {
+                return Err(ParseError::InvalidDemo("invalid entity index"));
+            }
             let entity_index = EntityId::from(last_index as u32);
 
             let update_type = data.read()?;
