@@ -17,6 +17,7 @@ pub mod error;
 pub mod gamestateanalyser;
 pub mod handler;
 pub mod messagetypeanalyser;
+pub mod player_summary_analyzer;
 pub mod state;
 
 pub use self::error::*;

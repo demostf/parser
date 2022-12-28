@@ -21,7 +21,7 @@ struct RawPlayerInfo {
     pub more_extra: u8,
 }
 
-#[derive(BitWrite, Debug, Clone)]
+#[derive(BitWrite, Debug, Clone, Default)]
 pub struct PlayerInfo {
     #[size = 32]
     pub name: String,
@@ -60,7 +60,7 @@ impl From<RawPlayerInfo> for PlayerInfo {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct UserInfo {
     pub entity_id: EntityId,
     pub player_info: PlayerInfo,

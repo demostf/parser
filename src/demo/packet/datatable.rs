@@ -58,6 +58,16 @@ impl PartialEq<u16> for ClassId {
     }
 }
 
+impl ClassId {
+    pub const fn new(val: u16) -> ClassId {
+        ClassId(val)
+    }
+
+    pub fn value(&self) -> u16 {
+        self.0
+    }
+}
+
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, PartialEq, Eq, Hash, Debug, Serialize, Deserialize, Clone, Display)]
 pub struct ServerClassName(String);
