@@ -38,11 +38,7 @@ fn main() -> Result<(), MainError> {
         let (_, state) = parser.parse()?;
         println!("{}", serde_json::to_string(&state)?);
     } else {
-        let parser = if all {
-            DemoParser::new_all_with_analyser(demo.get_stream(), PlayerSummaryAnalyzer::new())
-        } else {
-            DemoParser::new_with_analyser(demo.get_stream(), PlayerSummaryAnalyzer::new())
-        };
+        let parser = DemoParser::new_with_analyser(demo.get_stream(), PlayerSummaryAnalyzer::new());
         let (header, state) = parser.parse()?;
 
         println!("{:?}", header);
