@@ -566,7 +566,7 @@ impl GameStateAnalyser {
                         }
                         TARGET => {
                             sentry.auto_aim_target =
-                                UserId::from(i64::try_from(&prop.value).unwrap_or_default() as u8)
+                                UserId::from(i64::try_from(&prop.value).unwrap_or_default() as u16)
                         }
                         SHELLS => {
                             sentry.shells = i64::try_from(&prop.value).unwrap_or_default() as u16
@@ -676,7 +676,7 @@ impl GameStateAnalyser {
                             dispenser.healing = values
                                 .iter()
                                 .map(|val| {
-                                    UserId::from(i64::try_from(val).unwrap_or_default() as u8)
+                                    UserId::from(i64::try_from(val).unwrap_or_default() as u16)
                                 })
                                 .collect()
                         }
@@ -761,7 +761,7 @@ impl GameStateAnalyser {
                         LEVEL => *level = i64::try_from(&prop.value).unwrap_or_default() as u8,
                         BUILDER => {
                             *builder =
-                                UserId::from(i64::try_from(&prop.value).unwrap_or_default() as u8)
+                                UserId::from(i64::try_from(&prop.value).unwrap_or_default() as u16)
                         }
                         MAX_HEALTH => {
                             *max_health = i64::try_from(&prop.value).unwrap_or_default() as u16
