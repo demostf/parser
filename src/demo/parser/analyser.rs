@@ -216,7 +216,7 @@ impl From<HashMap<Class, u8>> for ClassList {
 #[derive(
     Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Default,
 )]
-pub struct UserId(pub u8);
+pub struct UserId(pub u16);
 
 impl<E: Endianness> BitWrite<E> for UserId {
     fn write(&self, stream: &mut BitWriteStream<E>) -> ReadResult<()> {
@@ -226,23 +226,23 @@ impl<E: Endianness> BitWrite<E> for UserId {
 
 impl From<u32> for UserId {
     fn from(int: u32) -> Self {
-        UserId((int & 255) as u8)
+        UserId(int as u16)
     }
 }
 
 impl From<u16> for UserId {
     fn from(int: u16) -> Self {
-        UserId((int & 255) as u8)
+        UserId(int)
     }
 }
 
 impl From<u8> for UserId {
     fn from(int: u8) -> Self {
-        UserId(int)
+        UserId(int as u16)
     }
 }
 
-impl From<UserId> for u8 {
+impl From<UserId> for u16 {
     fn from(id: UserId) -> Self {
         id.0
     }
@@ -254,8 +254,8 @@ impl From<UserId> for u32 {
     }
 }
 
-impl PartialEq<u8> for UserId {
-    fn eq(&self, other: &u8) -> bool {
+impl PartialEq<u16> for UserId {
+    fn eq(&self, other: &u16) -> bool {
         self.0 == *other
     }
 }
@@ -296,7 +296,7 @@ impl From<crate::demo::data::UserInfo> for UserInfo {
         UserInfo {
             classes: ClassList::default(),
             name: info.player_info.name,
-            user_id: info.player_info.user_id.into(),
+            user_id: info.player_info.user_id,
             steam_id: info.player_info.steam_id,
             entity_id: info.entity_id,
             team: Team::default(),
