@@ -216,7 +216,7 @@ impl From<HashMap<Class, u8>> for ClassList {
 #[derive(
     Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Default,
 )]
-pub struct UserId(pub u16);
+pub struct UserId(u16);
 
 impl<E: Endianness> BitWrite<E> for UserId {
     fn write(&self, stream: &mut BitWriteStream<E>) -> ReadResult<()> {
@@ -233,12 +233,6 @@ impl From<u32> for UserId {
 impl From<u16> for UserId {
     fn from(int: u16) -> Self {
         UserId(int)
-    }
-}
-
-impl From<u8> for UserId {
-    fn from(int: u8) -> Self {
-        UserId(int as u16)
     }
 }
 
