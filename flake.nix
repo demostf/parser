@@ -2,7 +2,7 @@
   inputs = {
     nixpkgs.url = "nixpkgs/release-23.05";
     utils.url = "github:numtide/flake-utils";
-    naersk.url = "github:nix-community/naersk";
+    naersk.url = "github:icewind1991/naersk?rev=21b870efb320d44ec1c2f661f6e6e8deca9bb239";
     naersk.inputs.nixpkgs.follows = "nixpkgs";
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
@@ -31,23 +31,25 @@
         cargo = toolchain;
         rustc = toolchain;
       };
+      hostNaersk = naerskForTarget hostTarget;
       src = lib.sources.sourceByRegex (lib.cleanSource ./.) ["Cargo.*" "(src|benches|tests|test_data)(/.*)?"];
+      nearskOpt = {
+        pname = "dispenser";
+        root = src;
+      };
     in rec {
       packages = (lib.attrsets.genAttrs targets (target: (naerskForTarget target).buildPackage {
         pname = "tf-demo-parser";
         root = src;
       })) // rec {
         tf-demo-parser = packages.${hostTarget};
-        check = (naerskForTarget hostTarget).buildPackage {
-          pname = "tf-demo-parser";
-          cargoBuild = _: ''cargo $cargo_options check $cargo_build_options >> $cargo_build_output_json'';
-          root = src;
-        };
-        test = (naerskForTarget hostTarget).buildPackage {
-          pname = "tf-demo-parser";
-          root = src;
-          doCheck = true;
-        };
+        check = hostNaersk.buildPackage (nearskOpt // {
+          checkOnly = true;
+        });
+        test = hostNaersk.buildPackage (nearskOpt // {
+          release = false;
+          testOnly = true;
+        });
         default = tf-demo-parser;
       };
 
