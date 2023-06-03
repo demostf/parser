@@ -46,6 +46,9 @@
         check = hostNaersk.buildPackage (nearskOpt // {
           checkOnly = true;
         });
+        clippy = hostNaersk.buildPackage (nearskOpt // {
+          clippyOnly = true;
+        });
         test = hostNaersk.buildPackage (nearskOpt // {
           release = false;
           testOnly = true;
