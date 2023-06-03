@@ -5,28 +5,22 @@ on:
     types: [created]
 
 jobs:
-  build:
-    name: Build Static Linux Binaries
+  release-binaries:
+    name: Build release binaries
     runs-on: ubuntu-latest
-
     steps:
-      - name: build dependencies
-        run: |
-          sudo apt-get install musl-tools
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v20
+      - uses: icewind1991/attic-action@v1
         with:
-          toolchain: stable
-          target: x86_64-unknown-linux-musl
-      - uses: Swatinem/rust-cache@v1
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --target x86_64-unknown-linux-musl
-      - uses: svenstaro/upload-release-action@v2
+          name: ci
+          instance: https://cache.icewind.me
+          authToken: '${{ secrets.ATTIC_TOKEN }}'
+      - run: nix build .#x86_64-unknown-linux-musl
+      - name: Upload binary to release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/x86_64-unknown-linux-musl/release/parse_demo
+          file: result/bin/parse_demo
           asset_name: parse_demo
           tag: ${{ github.ref }}
-
