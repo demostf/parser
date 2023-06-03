@@ -31,13 +31,23 @@
         cargo = toolchain;
         rustc = toolchain;
       };
-      src = lib.sources.sourceByRegex (lib.cleanSource ./.) ["Cargo.*" "(src|tests|benches)(/.*)?"];
+      src = lib.sources.sourceByRegex (lib.cleanSource ./.) ["Cargo.*" "(src|benches|tests|test_data)(/.*)?"];
     in rec {
       packages = (lib.attrsets.genAttrs targets (target: (naerskForTarget target).buildPackage {
         pname = "tf-demo-parser";
         root = src;
       })) // rec {
         tf-demo-parser = packages.${hostTarget};
+        check = (naerskForTarget hostTarget).buildPackage {
+          pname = "tf-demo-parser";
+          cargoBuild = _: ''cargo $cargo_options check $cargo_build_options >> $cargo_build_output_json'';
+          root = src;
+        };
+        test = (naerskForTarget hostTarget).buildPackage {
+          pname = "tf-demo-parser";
+          root = src;
+          doCheck = true;
+        };
         default = tf-demo-parser;
       };
 

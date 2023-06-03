@@ -22,29 +22,12 @@ jobs:
           name: ci
           instance: https://cache.icewind.me
           authToken: '${{ secrets.ATTIC_TOKEN }}'
-      - uses: Swatinem/rust-cache@v2
-      - uses: lriesebos/nix-develop-command@6f5f4830884d1957767e920c51d6118c9b0ac828
-        with:
-          command: "cargo check"
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: cachix/install-nix-action@v20
-      - uses: icewind1991/attic-action@v1
-        with:
-          name: ci
-          instance: https://cache.icewind.me
-          authToken: '${{ secrets.ATTIC_TOKEN }}'
-      - uses: Swatinem/rust-cache@v2
-      - uses: lriesebos/nix-develop-command@6f5f4830884d1957767e920c51d6118c9b0ac828
-        with:
-          command: "cargo test"
+      - run: nix build .#check
 
   build:
+    name: Build
     runs-on: ubuntu-latest
+    needs: check
     strategy:
       fail-fast: false
       matrix:
@@ -64,3 +47,17 @@ jobs:
         with:
           name: parser-${{ matrix.target }}
           path: result/bin/parse_demo
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v20
+      - uses: icewind1991/attic-action@v1
+        with:
+          name: ci
+          instance: https://cache.icewind.me
+          authToken: '${{ secrets.ATTIC_TOKEN }}'
+      - run: nix build .#test
