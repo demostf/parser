@@ -21,8 +21,9 @@ use std::str::FromStr;
 
 pub struct CachedEntities {}
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Default)]
 pub enum PlayerState {
+    #[default]
     Alive = 0,
     Dying = 1,
     Death = 2,
@@ -37,12 +38,6 @@ impl PlayerState {
             3 => PlayerState::Respawnable,
             _ => PlayerState::Alive,
         }
-    }
-}
-
-impl Default for PlayerState {
-    fn default() -> Self {
-        PlayerState::Alive
     }
 }
 
@@ -554,31 +549,26 @@ impl GameStateAnalyser {
             .state
             .get_or_create_building(entity.entity_index, BuildingClass::Sentry);
 
-        match building {
-            Building::Sentry(sentry) => {
-                for prop in entity.props(parser_state) {
-                    match prop.identifier {
-                        ANGLE => sentry.angle = f32::try_from(&prop.value).unwrap_or_default(),
-                        MINI => sentry.is_mini = i64::try_from(&prop.value).unwrap_or_default() > 0,
-                        CONTROLLED => {
-                            sentry.player_controlled =
-                                i64::try_from(&prop.value).unwrap_or_default() > 0
-                        }
-                        TARGET => {
-                            sentry.auto_aim_target =
-                                UserId::from(i64::try_from(&prop.value).unwrap_or_default() as u16)
-                        }
-                        SHELLS => {
-                            sentry.shells = i64::try_from(&prop.value).unwrap_or_default() as u16
-                        }
-                        ROCKETS => {
-                            sentry.rockets = i64::try_from(&prop.value).unwrap_or_default() as u16
-                        }
-                        _ => {}
+        if let Building::Sentry(sentry) = building {
+            for prop in entity.props(parser_state) {
+                match prop.identifier {
+                    ANGLE => sentry.angle = f32::try_from(&prop.value).unwrap_or_default(),
+                    MINI => sentry.is_mini = i64::try_from(&prop.value).unwrap_or_default() > 0,
+                    CONTROLLED => {
+                        sentry.player_controlled =
+                            i64::try_from(&prop.value).unwrap_or_default() > 0
                     }
+                    TARGET => {
+                        sentry.auto_aim_target =
+                            UserId::from(i64::try_from(&prop.value).unwrap_or_default() as u16)
+                    }
+                    SHELLS => sentry.shells = i64::try_from(&prop.value).unwrap_or_default() as u16,
+                    ROCKETS => {
+                        sentry.rockets = i64::try_from(&prop.value).unwrap_or_default() as u16
+                    }
+                    _ => {}
                 }
             }
-            _ => {}
         }
     }
 
@@ -607,39 +597,33 @@ impl GameStateAnalyser {
             .state
             .get_or_create_building(entity.entity_index, BuildingClass::Teleporter);
 
-        match building {
-            Building::Teleporter(teleporter) => {
-                for prop in entity.props(parser_state) {
-                    match prop.identifier {
-                        RECHARGE_TIME => {
-                            teleporter.recharge_time =
-                                f32::try_from(&prop.value).unwrap_or_default()
-                        }
-                        RECHARGE_DURATION => {
-                            teleporter.recharge_duration =
-                                f32::try_from(&prop.value).unwrap_or_default()
-                        }
-                        TIMES_USED => {
-                            teleporter.times_used =
-                                i64::try_from(&prop.value).unwrap_or_default() as u16
-                        }
-                        OTHER_END => {
-                            teleporter.other_end = EntityId::from(
-                                i64::try_from(&prop.value).unwrap_or_default() as u32,
-                            )
-                        }
-                        YAW_TO_EXIT => {
-                            teleporter.yaw_to_exit = f32::try_from(&prop.value).unwrap_or_default()
-                        }
-                        IS_ENTRANCE => {
-                            teleporter.is_entrance =
-                                i64::try_from(&prop.value).unwrap_or_default() == 0
-                        }
-                        _ => {}
+        if let Building::Teleporter(teleporter) = building {
+            for prop in entity.props(parser_state) {
+                match prop.identifier {
+                    RECHARGE_TIME => {
+                        teleporter.recharge_time = f32::try_from(&prop.value).unwrap_or_default()
                     }
+                    RECHARGE_DURATION => {
+                        teleporter.recharge_duration =
+                            f32::try_from(&prop.value).unwrap_or_default()
+                    }
+                    TIMES_USED => {
+                        teleporter.times_used =
+                            i64::try_from(&prop.value).unwrap_or_default() as u16
+                    }
+                    OTHER_END => {
+                        teleporter.other_end =
+                            EntityId::from(i64::try_from(&prop.value).unwrap_or_default() as u32)
+                    }
+                    YAW_TO_EXIT => {
+                        teleporter.yaw_to_exit = f32::try_from(&prop.value).unwrap_or_default()
+                    }
+                    IS_ENTRANCE => {
+                        teleporter.is_entrance = i64::try_from(&prop.value).unwrap_or_default() == 0
+                    }
+                    _ => {}
                 }
             }
-            _ => {}
         }
     }
 
@@ -660,31 +644,24 @@ impl GameStateAnalyser {
             .state
             .get_or_create_building(entity.entity_index, BuildingClass::Dispenser);
 
-        match building {
-            Building::Dispenser(dispenser) => {
-                for prop in entity.props(parser_state) {
-                    match prop.identifier {
-                        AMMO => {
-                            dispenser.metal = i64::try_from(&prop.value).unwrap_or_default() as u16
-                        }
-                        HEALING => {
-                            let values = match &prop.value {
-                                SendPropValue::Array(vec) => vec.as_slice(),
-                                _ => Default::default(),
-                            };
+        if let Building::Dispenser(dispenser) = building {
+            for prop in entity.props(parser_state) {
+                match prop.identifier {
+                    AMMO => dispenser.metal = i64::try_from(&prop.value).unwrap_or_default() as u16,
+                    HEALING => {
+                        let values = match &prop.value {
+                            SendPropValue::Array(vec) => vec.as_slice(),
+                            _ => Default::default(),
+                        };
 
-                            dispenser.healing = values
-                                .iter()
-                                .map(|val| {
-                                    UserId::from(i64::try_from(val).unwrap_or_default() as u16)
-                                })
-                                .collect()
-                        }
-                        _ => {}
+                        dispenser.healing = values
+                            .iter()
+                            .map(|val| UserId::from(i64::try_from(val).unwrap_or_default() as u16))
+                            .collect()
                     }
+                    _ => {}
                 }
             }
-            _ => {}
         }
     }
 

@@ -1185,7 +1185,7 @@ impl<'de> Deserialize<'de> for SendPropIdentifier {
         Ok(match raw {
             Options::Num(num) => SendPropIdentifier(num),
             Options::Str(s) => {
-                let num: u64 = s.parse().map_err(|e| D::Error::custom(e))?;
+                let num: u64 = s.parse().map_err(D::Error::custom)?;
                 SendPropIdentifier(num)
             }
         })

@@ -161,6 +161,7 @@ impl PacketEntity {
         if self.update_type == UpdateType::Enter {
             let mut found_props = HashSet::<SendPropIdentifier>::new();
             let props = self.props.iter().cloned();
+            #[allow(clippy::unnecessary_to_owned)]
             let baseline_props = self
                 .get_baseline_props(parser_state)
                 .into_owned()

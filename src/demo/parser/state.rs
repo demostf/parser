@@ -329,7 +329,7 @@ impl Baseline {
         self.instances[usize::from(index)] = Some(entity);
     }
 
-    pub fn keys<'a>(&'a self) -> impl Iterator<Item = EntityId> + 'a {
+    pub fn keys(&self) -> impl Iterator<Item = EntityId> + '_ {
         self.instances
             .iter()
             .filter_map(|entity| entity.as_ref().map(|entity| entity.entity_id))

@@ -2,9 +2,8 @@ use std::env;
 use std::fs;
 
 use main_error::MainError;
-pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Stream};
 use tf_demo_parser::demo::parser::player_summary_analyzer::PlayerSummaryAnalyzer;
-
+pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Stream};
 
 #[cfg(feature = "jemallocator")]
 #[global_allocator]
@@ -50,47 +49,41 @@ fn main() -> Result<(), MainError> {
 
         for (user_id, user_data) in state.users {
             let player_name = user_data.name;
-            let summary = state.player_summaries.get(&user_id);
-            match summary {
-                Some(s) => {
-                    let (color_code_start, color_code_end) = if player_name == header.nick {
-                        // Give the line for the player a green background with white text
-                        // ANSI color codes are in hex, since rust doesn't support octal literals in strings
-                        // See: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
-                        ("\x1b[1;42;37m", "\x1b[0m")
-                    } else {
-                        ("", "")
-                    };
+            if let Some(s) = state.player_summaries.get(&user_id) {
+                let (color_code_start, color_code_end) = if player_name == header.nick {
+                    // Give the line for the player a green background with white text
+                    // ANSI color codes are in hex, since rust doesn't support octal literals in strings
+                    // See: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+                    ("\x1b[1;42;37m", "\x1b[0m")
+                } else {
+                    ("", "")
+                };
 
-                    println!(
-                        "{}{:32} | {:10} | {:10} | {:10} | {:10} | {:11} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:12}{}",
-                        color_code_start,
+                println!(
+                    "{}{:32} | {:10} | {:10} | {:10} | {:10} | {:11} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:10} | {:12}{}",
+                    color_code_start,
 
-                        player_name,
-                        s.points,
-                        s.kills,
-                        s.deaths,
-                        s.assists,
-                        s.buildings_destroyed,
-                        s.captures,
-                        s.defenses,
-                        s.dominations,
-                        s.revenges,
-                        s.ubercharges,
-                        s.headshots,
-                        s.teleports,
-                        s.healing,
-                        s.backstabs,
-                        s.bonus_points,
-                        s.support,
-                        s.damage_dealt,
+                    player_name,
+                    s.points,
+                    s.kills,
+                    s.deaths,
+                    s.assists,
+                    s.buildings_destroyed,
+                    s.captures,
+                    s.defenses,
+                    s.dominations,
+                    s.revenges,
+                    s.ubercharges,
+                    s.headshots,
+                    s.teleports,
+                    s.healing,
+                    s.backstabs,
+                    s.bonus_points,
+                    s.support,
+                    s.damage_dealt,
 
-                        color_code_end,
-                    );
-                },
-                None => {
-                    // No summary for this player - they likely joined at the end of the match, or left before they did anything noteworthy
-                }
+                    color_code_end,
+                );
             }
         }
     }

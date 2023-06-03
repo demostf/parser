@@ -428,8 +428,8 @@ pub fn parse_string_table_update<'a>(
     Ok(entries.into_entries())
 }
 
-pub fn write_string_table_update<'a>(
-    entries: &[(u16, StringTableEntry<'a>)],
+pub fn write_string_table_update(
+    entries: &[(u16, StringTableEntry)],
     stream: &mut BitWriteStream<LittleEndian>,
     table_meta: &StringTableMeta,
 ) -> ReadResult<()> {

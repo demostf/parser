@@ -92,9 +92,9 @@ impl<E: Endianness> BitWrite<E> for MaybeUtf8String {
     }
 }
 
-impl Into<String> for MaybeUtf8String {
-    fn into(self) -> String {
-        match self {
+impl From<MaybeUtf8String> for String {
+    fn from(str: MaybeUtf8String) -> String {
+        match str {
             MaybeUtf8String::Valid(s) => s,
             MaybeUtf8String::Invalid(_) => "-- Malformed utf8 --".into(),
         }
@@ -150,7 +150,7 @@ pub struct ServerTick(u32);
 
 impl ServerTick {
     pub fn range_inclusive(&self, till: Self) -> impl Iterator<Item = Self> {
-        (self.0..=till.0).into_iter().map(Self::from)
+        (self.0..=till.0).map(Self::from)
     }
 }
 
@@ -242,7 +242,7 @@ pub struct DemoTick(u32);
 
 impl DemoTick {
     pub fn range_inclusive(&self, till: Self) -> impl Iterator<Item = Self> {
-        (self.0..=till.0).into_iter().map(Self::from)
+        (self.0..=till.0).map(Self::from)
     }
 }
 

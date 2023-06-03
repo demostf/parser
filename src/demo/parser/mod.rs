@@ -189,6 +189,7 @@ impl<'a, A: MessageHandler + BorrowMessageHandler> DemoTicker<'a, A> {
     }
 
     /// Process the next packet
+    #[allow(clippy::should_implement_trait)]
     pub fn next(&mut self) -> Result<Option<Tick<A::Output>>> {
         Ok(
             if let Some(packet) = self.packets.next(&self.handler.state_handler)? {

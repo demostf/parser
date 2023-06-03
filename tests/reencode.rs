@@ -65,7 +65,7 @@ fn re_encode_test(input_file: &str) {
         }
         let mut re_read = BitReadStream::new(BitReadBuffer::new(&out_buffer, LittleEndian));
         let re_decoded = Packet::parse(&mut re_read, &handler.state_handler)
-            .expect(&format!("while parsing {:?}", packet.packet_type()));
+            .unwrap_or_else(|_| panic!("while parsing {:?}", packet.packet_type()));
         assert_eq!(packet.packet_type(), re_decoded.packet_type());
         match (&packet, &re_decoded) {
             (
