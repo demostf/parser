@@ -1,8 +1,9 @@
 {
   inputs = {
+    nixpkgs.url = "nixpkgs/release-23.05";
     utils.url = "github:numtide/flake-utils";
     naersk.url = "github:nix-community/naersk";
-    nixpkgs.url = "nixpkgs/release-22.11";
+    naersk.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -15,24 +16,28 @@
       pkgs = (import nixpkgs) {
         inherit system;
       };
-      naersk = naersk.lib."${system}";
+      naersk' = pkgs.callPackage naersk {};
+      lib = pkgs.lib;
+      src = lib.sources.sourceByRegex (lib.cleanSource ./.) ["Cargo.*" "(src|tests|benches)(/.*)?"];
     in rec {
-      # `nix build`
-      packages.tf-demo-parser = naersk.buildPackage {
-        pname = "tf-demo-parser";
-        root = ./.;
+      packages = rec {
+        tf-demo-parser = naersk'.buildPackage {
+          pname = "tf-demo-parser";
+          root = src;
+        };
+        default = tf-demo-parser;
       };
-      defaultPackage = packages.tf-demo-parser;
 
-      # `nix run`
-      apps.tf-demo-parser = utils.lib.mkApp {
-        drv = packages.tf-demo-parser;
+      apps = rec {
+        tf-demo-parser = utils.lib.mkApp {
+          drv = packages.tf-demo-parser;
+          exePath = "/bin/parse_demo";
+        };
+        default = tf-demo-parser;
       };
-      defaultApp = apps.tf-demo-parser;
 
-      # `nix develop`
-      devShell = pkgs.mkShell {
-        nativeBuildInputs = with pkgs; [rustc cargo bacon cargo-edit cargo-outdated clippy cargo-audit hyperfine valgrind];
+      devShells.default = pkgs.mkShell {
+        nativeBuildInputs = with pkgs; [rustc cargo bacon cargo-edit cargo-outdated rustfmt clippy cargo-audit hyperfine valgrind];
       };
     });
 }
