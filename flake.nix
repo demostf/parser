@@ -1,63 +1,92 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs/release-23.05";
-    utils.url = "github:numtide/flake-utils";
-    naersk.url = "github:icewind1991/naersk?rev=21b870efb320d44ec1c2f661f6e6e8deca9bb239";
-    naersk.inputs.nixpkgs.follows = "nixpkgs";
+    flake-utils.url = "github:numtide/flake-utils";
+    naersk.url = "github:icewind1991/naersk?rev=6d245a3bbb2ee31ec726bb57b9a8b206302e7110";
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
-    rust-overlay.inputs.flake-utils.follows = "utils";
+    rust-overlay.inputs.flake-utils.follows = "flake-utils";
+    cross-naersk.url = "github:icewind1991/cross-naersk";
+    cross-naersk.inputs.nixpkgs.follows = "nixpkgs";
+    cross-naersk.inputs.naersk.follows = "naersk";
   };
 
   outputs = {
     self,
-    nixpkgs,
-    utils,
+    flake-utils,
+    cross-naersk,
     naersk,
+    nixpkgs,
     rust-overlay,
+    ...
   }:
-    utils.lib.eachDefaultSystem (system: let
+    flake-utils.lib.eachDefaultSystem (system: let
       overlays = [ (import rust-overlay) ];
       pkgs = (import nixpkgs) {
         inherit system overlays;
       };
-      naersk' = pkgs.callPackage naersk {};
-      hostTarget = pkgs.hostPlatform.config;
-      targets = ["x86_64-unknown-linux-musl" hostTarget];
       lib = pkgs.lib;
-      naerskForTarget = target: let
-        toolchain = pkgs.rust-bin.stable.latest.default.override { targets = [target]; };
-      in pkgs.callPackage naersk {
-        cargo = toolchain;
-        rustc = toolchain;
-      };
-      hostNaersk = naerskForTarget hostTarget;
+
+      hostTarget = pkgs.hostPlatform.config;
+      targets = [
+        "x86_64-unknown-linux-musl"
+        "i686-unknown-linux-musl"
+        "armv7-unknown-linux-musleabihf"
+        "aarch64-unknown-linux-musl"
+        "x86_64-pc-windows-gnu"
+        hostTarget
+      ];
+
+      releaseTargets = lib.lists.remove hostTarget targets;
+
+      toolchain = (pkgs.rust-bin.stable.latest.default.override { inherit targets; });
+      execSufficForTarget = target: if lib.strings.hasInfix "windows" target then ".exe" else "";
+      artifactForTarget = target: "parse_demo${execSufficForTarget target}";
+      assetNameForTarget = target: "parser-${builtins.replaceStrings ["-unknown" "-gnu" "-musl" "eabihf" "-pc"] ["" "" "" "" ""] target}${execSufficForTarget target}";
+
+      cross-naersk' = pkgs.callPackage cross-naersk {inherit naersk;};
       src = lib.sources.sourceByRegex (lib.cleanSource ./.) ["Cargo.*" "(src|benches|tests|test_data)(/.*)?"];
       nearskOpt = {
         pname = "dispenser";
         root = src;
       };
+
+      buildMatrix = targets: {
+        include = builtins.map (target: {
+          inherit target;
+          artifact_name = artifactForTarget target;
+          asset_name = assetNameForTarget target;
+        }) targets;
+      };
     in rec {
-      packages = (lib.attrsets.genAttrs targets (target: (naerskForTarget target).buildPackage {
-        pname = "tf-demo-parser";
-        root = src;
+      packages = lib.attrsets.genAttrs targets (target: (cross-naersk' target).buildPackage (nearskOpt // {
+        overrideMain = args: args // {
+          preConfigure = ''
+            cargo_build_options="$cargo_build_options --bin parse_demo"
+          '';
+        };
       })) // rec {
         tf-demo-parser = packages.${hostTarget};
-        check = hostNaersk.buildPackage (nearskOpt // {
-          checkOnly = true;
+        check = (cross-naersk' hostTarget).buildPackage (nearskOpt // {
+          mode = "check";
         });
-        clippy = hostNaersk.buildPackage (nearskOpt // {
-          clippyOnly = true;
+        clippy = (cross-naersk' hostTarget).buildPackage (nearskOpt // {
+          mode = "clippy";
         });
-        test = hostNaersk.buildPackage (nearskOpt // {
+        test = (cross-naersk' hostTarget).buildPackage (nearskOpt // {
           release = false;
-          testOnly = true;
+          mode = "test";
         });
         default = tf-demo-parser;
       };
 
+      inherit targets;
+      inherit releaseTargets;
+      matrix = buildMatrix targets;
+      releaseMatrix = buildMatrix releaseTargets;
+
       apps = rec {
-        tf-demo-parser = utils.lib.mkApp {
+        tf-demo-parser = flake-utils.lib.mkApp {
           drv = packages.tf-demo-parser;
           exePath = "/bin/parse_demo";
         };
