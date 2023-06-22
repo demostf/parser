@@ -54,6 +54,8 @@ pub struct Player {
     pub state: PlayerState,
     pub info: Option<UserInfo>,
     pub charge: u8,
+    pub simtime: u16,
+    pub in_pvs: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
@@ -472,6 +474,11 @@ impl GameStateAnalyser {
             SendPropIdentifier::new("DT_TFLocalPlayerExclusive", "m_angEyeAngles[0]");
         const NON_LOCAL_PITCH_ANGLES: SendPropIdentifier =
             SendPropIdentifier::new("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[0]");
+            
+        const SIMTIME_PROP: SendPropIdentifier =
+        SendPropIdentifier::new("DT_BaseEntity", "m_flSimulationTime");
+
+        player.in_pvs = entity.in_pvs;
 
         for prop in entity.props(parser_state) {
             match prop.identifier {
@@ -497,6 +504,9 @@ impl GameStateAnalyser {
                 }
                 LOCAL_PITCH_ANGLES | NON_LOCAL_PITCH_ANGLES => {
                     player.pitch_angle = f32::try_from(&prop.value).unwrap_or_default()
+                }
+                SIMTIME_PROP => {
+                    player.simtime = i64::try_from(&prop.value).unwrap_or_default() as u16
                 }
                 _ => {}
             }
