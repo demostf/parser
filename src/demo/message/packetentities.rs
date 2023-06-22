@@ -316,6 +316,7 @@ impl Parse<'_> for PacketEntitiesMessage {
                 let send_table = get_send_table(state, entity.server_class)?;
 
                 Self::read_update(&mut data, send_table, &mut entity.props, entity_index)?;
+                entity.in_pvs = true;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {
