@@ -21,7 +21,9 @@
         "steamId": "[U:1:64229260]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 78,
+      "in_pvs": true
     }
   ],
   "buildings": {},

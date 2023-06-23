@@ -21,7 +21,9 @@
         "steamId": "[U:1:78023051]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 89,
+      "in_pvs": true
     },
     {
       "entity": 3,
@@ -44,7 +46,9 @@
         "steamId": "[U:1:151261665]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 85,
+      "in_pvs": false
     },
     {
       "entity": 4,
@@ -67,7 +71,9 @@
         "steamId": "[U:1:105458702]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 80,
+      "in_pvs": false
     },
     {
       "entity": 5,
@@ -90,7 +96,9 @@
         "steamId": "[U:1:81747492]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 92,
+      "in_pvs": true
     },
     {
       "entity": 6,
@@ -113,7 +121,9 @@
         "steamId": "[U:1:50363269]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 85,
+      "in_pvs": false
     },
     {
       "entity": 7,
@@ -136,7 +146,9 @@
         "steamId": "[U:1:192228451]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 87,
+      "in_pvs": false
     },
     {
       "entity": 8,
@@ -159,7 +171,9 @@
         "steamId": "[U:1:103356736]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 83,
+      "in_pvs": false
     },
     {
       "entity": 9,
@@ -182,7 +196,9 @@
         "steamId": "[U:1:85558037]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 84,
+      "in_pvs": false
     },
     {
       "entity": 10,
@@ -205,7 +221,9 @@
         "steamId": "[U:1:101328438]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 86,
+      "in_pvs": false
     },
     {
       "entity": 11,
@@ -228,7 +246,9 @@
         "steamId": "[U:1:63292929]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 88,
+      "in_pvs": false
     },
     {
       "entity": 12,
@@ -251,7 +271,9 @@
         "steamId": "[U:1:91304212]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 81,
+      "in_pvs": false
     },
     {
       "entity": 13,
@@ -274,7 +296,9 @@
         "steamId": "[U:1:82128674]",
         "team": "other"
       },
-      "charge": 0
+      "charge": 0,
+      "simtime": 83,
+      "in_pvs": false
     }
   ],
   "buildings": {},

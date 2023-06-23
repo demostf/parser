@@ -657,7 +657,7 @@ fn test_packet_entitier_message_roundtrip() {
                             value: SendPropValue::Float(1.0),
                         },
                     ],
-                    in_pvs: false,
+                    in_pvs: true,
                     update_type: UpdateType::Preserve,
                     serial_number: 0,
                     delay: None,
