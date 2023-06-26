@@ -316,6 +316,7 @@ impl Parse<'_> for PacketEntitiesMessage {
                 let send_table = get_send_table(state, entity.server_class)?;
 
                 Self::read_update(&mut data, send_table, &mut entity.props, entity_index)?;
+                entity.in_pvs = true;
 
                 entities.push(entity);
             } else if state.entity_classes.contains_key(&entity_index) {
@@ -656,7 +657,7 @@ fn test_packet_entitier_message_roundtrip() {
                             value: SendPropValue::Float(1.0),
                         },
                     ],
-                    in_pvs: false,
+                    in_pvs: true,
                     update_type: UpdateType::Preserve,
                     serial_number: 0,
                     delay: None,
