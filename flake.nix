@@ -39,10 +39,8 @@
 
       releaseTargets = lib.lists.remove hostTarget targets;
 
-      toolchain = (pkgs.rust-bin.stable.latest.default.override { inherit targets; });
-      execSufficForTarget = target: if lib.strings.hasInfix "windows" target then ".exe" else "";
-      artifactForTarget = target: "parse_demo${execSufficForTarget target}";
-      assetNameForTarget = target: "parser-${builtins.replaceStrings ["-unknown" "-gnu" "-musl" "eabihf" "-pc"] ["" "" "" "" ""] target}${execSufficForTarget target}";
+      artifactForTarget = target: "parse_demo${cross-naersk'.execSufficForTarget target}";
+      assetNameForTarget = target: "parser-${builtins.replaceStrings ["-unknown" "-gnu" "-musl" "eabihf" "-pc"] ["" "" "" "" ""] target}${cross-naersk'.execSufficForTarget target}";
 
       cross-naersk' = pkgs.callPackage cross-naersk {inherit naersk;};
       src = lib.sources.sourceByRegex (lib.cleanSource ./.) ["Cargo.*" "(src|benches|tests|test_data)(/.*)?"];
@@ -58,8 +56,9 @@
           asset_name = assetNameForTarget target;
         }) targets;
       };
+      hostNaersk = cross-naersk'.hostNaersk;
     in rec {
-      packages = lib.attrsets.genAttrs targets (target: (cross-naersk' target).buildPackage (nearskOpt // {
+      packages = lib.attrsets.genAttrs targets (target: (cross-naersk'.buildPackage target) (nearskOpt // {
         overrideMain = args: args // {
           preConfigure = ''
             cargo_build_options="$cargo_build_options --bin parse_demo"
@@ -67,13 +66,13 @@
         };
       })) // rec {
         tf-demo-parser = packages.${hostTarget};
-        check = (cross-naersk' hostTarget).buildPackage (nearskOpt // {
+        check = hostNaersk.buildPackage (nearskOpt // {
           mode = "check";
         });
-        clippy = (cross-naersk' hostTarget).buildPackage (nearskOpt // {
+        clippy = hostNaersk.buildPackage (nearskOpt // {
           mode = "clippy";
         });
-        test = (cross-naersk' hostTarget).buildPackage (nearskOpt // {
+        test = hostNaersk.buildPackage (nearskOpt // {
           release = false;
           mode = "test";
         });
