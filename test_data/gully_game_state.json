@@ -23,6 +23,7 @@
       },
       "charge": 0,
       "simtime": 89,
+      "ping": 41,
       "in_pvs": true
     },
     {
@@ -48,6 +49,7 @@
       },
       "charge": 0,
       "simtime": 85,
+      "ping": 41,
       "in_pvs": false
     },
     {
@@ -73,6 +75,7 @@
       },
       "charge": 0,
       "simtime": 80,
+      "ping": 21,
       "in_pvs": false
     },
     {
@@ -98,6 +101,7 @@
       },
       "charge": 0,
       "simtime": 92,
+      "ping": 60,
       "in_pvs": true
     },
     {
@@ -123,6 +127,7 @@
       },
       "charge": 0,
       "simtime": 85,
+      "ping": 48,
       "in_pvs": false
     },
     {
@@ -148,6 +153,7 @@
       },
       "charge": 0,
       "simtime": 87,
+      "ping": 58,
       "in_pvs": false
     },
     {
@@ -173,6 +179,7 @@
       },
       "charge": 0,
       "simtime": 83,
+      "ping": 40,
       "in_pvs": false
     },
     {
@@ -198,6 +205,7 @@
       },
       "charge": 0,
       "simtime": 84,
+      "ping": 41,
       "in_pvs": false
     },
     {
@@ -223,6 +231,7 @@
       },
       "charge": 0,
       "simtime": 86,
+      "ping": 81,
       "in_pvs": false
     },
     {
@@ -248,6 +257,7 @@
       },
       "charge": 0,
       "simtime": 88,
+      "ping": 26,
       "in_pvs": false
     },
     {
@@ -273,6 +283,7 @@
       },
       "charge": 0,
       "simtime": 81,
+      "ping": 37,
       "in_pvs": false
     },
     {
@@ -298,6 +309,7 @@
       },
       "charge": 0,
       "simtime": 83,
+      "ping": 16,
       "in_pvs": false
     }
   ],
