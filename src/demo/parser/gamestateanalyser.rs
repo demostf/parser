@@ -55,6 +55,7 @@ pub struct Player {
     pub info: Option<UserInfo>,
     pub charge: u8,
     pub simtime: u16,
+    pub ping: u16,
     pub in_pvs: bool,
 }
 
@@ -439,6 +440,9 @@ impl GameStateAnalyser {
                             }
                             "m_iChargeLevel" => {
                                 player.charge = i64::try_from(&prop.value).unwrap_or_default() as u8
+                            }
+                            "m_iPing" => {
+                                player.ping = i64::try_from(&prop.value).unwrap_or_default() as u16
                             }
                             _ => {}
                         }
