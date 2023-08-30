@@ -5,6 +5,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::cmp::Ordering;
 use std::fmt::{Debug, Display, Formatter};
 use std::ops::{Add, Sub};
+use parse_display::Display;
 
 pub use userinfo::UserInfo;
 
@@ -145,6 +146,7 @@ impl schemars::JsonSchema for MaybeUtf8String {
     Serialize,
     Deserialize,
     Default,
+    Display,
 )]
 pub struct ServerTick(u32);
 
@@ -237,6 +239,7 @@ impl Sub<ServerTick> for ServerTick {
     Serialize,
     Deserialize,
     Default,
+    Display,
 )]
 pub struct DemoTick(u32);
 
