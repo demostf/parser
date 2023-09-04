@@ -126,7 +126,7 @@ impl<'a> Parse<'a> for Packet<'a> {
 impl Encode for Packet<'_> {
     fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
         #[cfg(feature = "trace")]
-        let _span = span!(Level::INFO, "encoding packet", packet_type = ?self.packet_type(), tick = self.tick()).entered();
+        let _span = span!(Level::INFO, "encoding packet", packet_type = ?self.packet_type(), tick = ?self.tick()).entered();
         self.packet_type().write(stream)?;
         match self {
             Packet::Signon(inner) => inner.encode(stream, state),

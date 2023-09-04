@@ -71,7 +71,7 @@ impl<'a> Parse<'a> for MessagePacket<'a> {
             let message_type = MessageType::read(&mut packet_data)?;
             #[cfg(feature = "trace")]
             let _span =
-                span!(Level::DEBUG, "reading message", message_type = ?message_type, tick = tick)
+                span!(Level::DEBUG, "reading message", message_type = ?message_type, tick = ?tick)
                     .entered();
 
             if state.should_parse_message(message_type) && message_type != MessageType::Empty {
