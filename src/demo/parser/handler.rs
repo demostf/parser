@@ -189,7 +189,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         self.analyser
             .handle_data_tables(&send_tables, &server_classes, &self.state_handler);
         self.state_handler
-            .handle_data_table(send_tables, server_classes)
+            .handle_data_table(&send_tables, server_classes)
     }
 
     pub fn handle_message(&mut self, message: Message<'a>, tick: DemoTick) {

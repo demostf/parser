@@ -160,20 +160,19 @@ impl<'a> ParserState {
 
     pub fn handle_data_table(
         &mut self,
-        parse_tables: Vec<ParseSendTable>,
+        parse_tables: &[ParseSendTable],
         server_classes: Vec<ServerClass>,
     ) -> Result<()> {
         if self.handle_entities {
             let mut send_tables: FnvHashMap<SendTableName, SendTable> = parse_tables
                 .iter()
                 .map(|parse_table| {
-                    let flat = parse_table.flatten_props(&parse_tables);
+                    let flat = parse_table.flatten_props(parse_tables);
                     Ok((
                         parse_table.name.clone(),
                         SendTable {
                             name: parse_table.name.clone(),
                             needs_decoder: parse_table.needs_decoder,
-                            raw_props: parse_table.props.clone(),
                             flattened_props: flat?,
                         },
                     ))
