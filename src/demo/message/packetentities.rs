@@ -562,13 +562,11 @@ fn test_packet_entitier_message_roundtrip() {
         SendTable {
             name: SendTableName::from("table1"),
             needs_decoder: false,
-            raw_props: vec![],
             flattened_props: vec![],
         },
         SendTable {
             name: SendTableName::from("table2"),
             needs_decoder: false,
-            raw_props: vec![],
             flattened_props: vec![
                 SendPropDefinition {
                     identifier: SendPropIdentifier::new("table2", "prop1"),

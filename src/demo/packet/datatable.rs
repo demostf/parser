@@ -432,7 +432,6 @@ impl ParseSendTable {
 pub struct SendTable {
     pub name: SendTableName,
     pub needs_decoder: bool,
-    pub raw_props: Vec<RawSendPropDefinition>,
     pub flattened_props: Vec<SendPropDefinition>,
 }
 
