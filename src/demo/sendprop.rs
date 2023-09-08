@@ -549,12 +549,10 @@ impl TryFrom<&RawSendPropDefinition> for SendPropParseDefinition {
                 )?,
             }),
             SendPropType::Array => {
-                let count_bit_count = log_base2(
-                    definition
-                        .element_count
-                        .ok_or(MalformedSendPropDefinitionError::UnsizedArray)?,
-                ) as u16
-                    + 1;
+                let element_count = definition
+                    .element_count
+                    .ok_or(MalformedSendPropDefinitionError::UnsizedArray)?;
+                let count_bit_count = log_base2(element_count) as u16 + 1;
                 let child_definition = definition
                     .array_property
                     .as_deref()
