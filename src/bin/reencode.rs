@@ -13,16 +13,6 @@ use tf_demo_parser::demo::packet::{Packet, PacketType};
 use tf_demo_parser::demo::parser::{DemoHandler, Encode, RawPacketStream};
 use tf_demo_parser::{Demo, ParseError};
 
-const COPY_TYPES: &[PacketType] = &[
-    // PacketType::Signon,
-    // PacketType::Message,
-    // PacketType::SyncTick,   // bit perfect
-    // PacketType::ConsoleCmd, // bit perfect
-    // PacketType::DataTables, // bit perfect
-    // PacketType::StringTables, // close enough
-    // PacketType::UserCmd, // close enough
-];
-
 fn main() -> Result<(), MainError> {
     #[cfg(feature = "trace")]
     tracing_subscriber::fmt::init();
@@ -56,43 +46,56 @@ fn main() -> Result<(), MainError> {
         header.write(&mut out_stream)?;
 
         let mut handler = DemoHandler::default();
+        let mut encode_handler = DemoHandler::default();
 
-        let mut packet_start = packets.pos();
         let mut has_stop = false;
         let mut last_tick = DemoTick::default();
 
-        while let Some(mut packet) = packets.next(&handler.state_handler)? {
-            let packet_end = packets.pos();
+        while let Some(packet) = packets.next(&handler.state_handler)? {
             last_tick = packet.tick();
-            let packet_bits = stream.read_bits(packet_end - packet_start)?;
-            if COPY_TYPES.contains(&packet.packet_type()) {
-                packet_bits.write(&mut out_stream)?;
-            } else {
-                match &mut packet {
-                    Packet::Signon(message_packet) | Packet::Message(message_packet)
-                        if strip_pov =>
-                    {
-                        message_packet.meta.view_angles = Default::default();
-                        message_packet.messages.iter_mut().for_each(|msg| {
-                            if let Message::ServerInfo(info) = msg {
-                                info.stv = true;
-                            }
-                        });
-                    }
-                    Packet::Stop(_) => {
-                        has_stop = true;
-                    }
-                    _ => {}
-                }
-
-                if packet.packet_type() != PacketType::ConsoleCmd {
-                    packet
-                        .encode(&mut out_stream, &handler.state_handler)
-                        .unwrap();
-                }
+            if packet.packet_type() == PacketType::Stop {
+                has_stop = true;
             }
+
+            let mut encode_packet = packet.clone();
+            match &mut encode_packet {
+                Packet::DataTables(tables_packet) => {
+                    for table in tables_packet.tables.iter_mut() {
+                        for prop in table.props.iter_mut() {
+                            match (table.name.as_str(), prop.name.as_str()) {
+                                ("DT_ObjectDispenser", "\"healing_array\"") => {
+                                    prop.element_count = Some(101);
+                                }
+                                ("DT_Team", "\"player_array\"") => {
+                                    prop.element_count = Some(101);
+                                }
+                                ("DT_TFTeam", "\"team_object_array\"") => {
+                                    prop.element_count = Some(606);
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+                Packet::Signon(message_packet) | Packet::Message(message_packet) if strip_pov => {
+                    message_packet.meta.view_angles = Default::default();
+                    message_packet.messages.iter_mut().for_each(|msg| {
+                        if let Message::ServerInfo(info) = msg {
+                            info.stv = true;
+                        }
+                    });
+                }
+                _ => {}
+            }
+
+            if encode_packet.packet_type() != PacketType::ConsoleCmd {
+                encode_packet
+                    .encode(&mut out_stream, &encode_handler.state_handler)
+                    .unwrap();
+            }
+
             handler.handle_packet(packet).unwrap();
-            packet_start = packet_end;
+            encode_handler.handle_packet(encode_packet).unwrap();
         }
 
         if packets.incomplete {
@@ -101,7 +104,7 @@ fn main() -> Result<(), MainError> {
 
         if !has_stop {
             Packet::Stop(StopPacket { tick: last_tick })
-                .encode(&mut out_stream, &handler.state_handler)
+                .encode(&mut out_stream, &encode_handler.state_handler)
                 .unwrap();
         }
     }
