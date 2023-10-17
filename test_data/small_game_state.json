@@ -23,6 +23,7 @@
       },
       "charge": 0,
       "simtime": 78,
+      "ping": 5,
       "in_pvs": true
     }
   ],
