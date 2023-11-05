@@ -164,7 +164,7 @@ impl PartialEq<u32> for ServerTick {
 
 impl PartialOrd<u32> for ServerTick {
     fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
-        other.partial_cmp(&self.0)
+        self.0.partial_cmp(other)
     }
 }
 
@@ -257,7 +257,7 @@ impl PartialEq<u32> for DemoTick {
 
 impl PartialOrd<u32> for DemoTick {
     fn partial_cmp(&self, other: &u32) -> Option<Ordering> {
-        other.partial_cmp(&self.0)
+        self.0.partial_cmp(other)
     }
 }
 
