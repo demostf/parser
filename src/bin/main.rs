@@ -2,12 +2,23 @@ use std::env;
 use std::fs;
 
 use main_error::MainError;
+use serde::{Deserialize, Serialize};
+use tf_demo_parser::demo::header::Header;
+use tf_demo_parser::demo::parser::analyser::MatchState;
 use tf_demo_parser::demo::parser::player_summary_analyzer::PlayerSummaryAnalyzer;
 pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Stream};
 
 #[cfg(feature = "jemallocator")]
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct JsonDemo {
+    header: Header,
+    #[serde(flatten)]
+    state: MatchState,
+}
 
 fn main() -> Result<(), MainError> {
     #[cfg(feature = "better_panic")]
@@ -34,8 +45,9 @@ fn main() -> Result<(), MainError> {
         } else {
             DemoParser::new(demo.get_stream())
         };
-        let (_, state) = parser.parse()?;
-        println!("{}", serde_json::to_string(&state)?);
+        let (header, state) = parser.parse()?;
+        let demo = JsonDemo { header, state };
+        println!("{}", serde_json::to_string(&demo)?);
     } else {
         let parser = DemoParser::new_with_analyser(demo.get_stream(), PlayerSummaryAnalyzer::new());
         let (header, state) = parser.parse()?;
