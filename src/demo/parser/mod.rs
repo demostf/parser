@@ -58,7 +58,7 @@ impl<'a, T: BitRead<'a, LittleEndian>> ParseBitSkip<'a> for T {
 }
 
 pub struct DemoParser<'a, A: MessageHandler> {
-    handler: DemoHandler<'a, A>,
+    handler: DemoHandler<A>,
     stream: Stream<'a>,
 }
 
@@ -154,7 +154,7 @@ impl<'a> RawPacketStream<'a> {
 
 #[derive(Clone)]
 pub struct DemoTicker<'a, A: MessageHandler> {
-    handler: DemoHandler<'a, A>,
+    handler: DemoHandler<A>,
     packets: RawPacketStream<'a>,
 }
 

@@ -8,7 +8,7 @@ use crate::demo::data::{DemoTick, ServerTick};
 use crate::demo::header::Header;
 use crate::demo::packet::message::MessagePacketMeta;
 use crate::ParserState;
-use std::borrow::Cow;
+use std::sync::Arc;
 
 pub trait MessageHandler {
     type Output;
@@ -65,27 +65,27 @@ impl MessageHandler for NullHandler {
 }
 
 #[derive(Clone)]
-pub struct DemoHandler<'a, T: MessageHandler> {
+pub struct DemoHandler<T: MessageHandler> {
     pub server_tick: ServerTick,
     pub demo_tick: DemoTick,
-    pub string_table_names: Vec<Cow<'a, str>>,
+    pub string_table_names: Vec<Arc<str>>,
     analyser: T,
     pub state_handler: ParserState,
 }
 
-impl<'a> DemoHandler<'a, NullHandler> {
+impl DemoHandler<NullHandler> {
     pub fn new() -> Self {
         Self::parse_all_with_analyser(NullHandler)
     }
 }
 
-impl<'a> Default for DemoHandler<'a, NullHandler> {
+impl Default for DemoHandler<NullHandler> {
     fn default() -> Self {
         DemoHandler::new()
     }
 }
 
-impl<'a, T: MessageHandler> DemoHandler<'a, T> {
+impl<T: MessageHandler> DemoHandler<T> {
     pub fn with_analyser(analyser: T) -> Self {
         let state_handler = ParserState::new(24, T::does_handle, false);
 
@@ -114,7 +114,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         self.analyser.handle_header(header);
     }
 
-    pub fn handle_packet(&mut self, packet: Packet<'a>) -> Result<()> {
+    pub fn handle_packet(&mut self, packet: Packet) -> Result<()> {
         match packet {
             Packet::DataTables(packet) => {
                 self.handle_data_table(packet.tables, packet.server_classes)?;
@@ -151,7 +151,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
         Ok(())
     }
 
-    fn handle_string_table(&mut self, table: StringTable<'a>) {
+    fn handle_string_table(&mut self, table: StringTable) {
         self.state_handler
             .handle_string_table_meta(table.get_table_meta());
         for (entry_index, entry) in table.entries.into_iter() {
@@ -166,10 +166,10 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
             );
         }
 
-        self.string_table_names.push(table.name);
+        self.string_table_names.push(table.name.into());
     }
 
-    fn handle_table_update(&mut self, table_id: u8, entries: Vec<(u16, StringTableEntry<'a>)>) {
+    fn handle_table_update(&mut self, table_id: u8, entries: Vec<(u16, StringTableEntry)>) {
         if let Some(table_name) = self.string_table_names.get(table_id as usize) {
             for (index, entry) in entries {
                 let index = index as usize;
@@ -192,7 +192,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
             .handle_data_table(send_tables, server_classes)
     }
 
-    pub fn handle_message(&mut self, message: Message<'a>, tick: DemoTick) {
+    pub fn handle_message(&mut self, message: Message, tick: DemoTick) {
         let message_type = message.get_message_type();
         if T::does_handle(message_type) {
             self.analyser
@@ -210,7 +210,7 @@ impl<'a, T: MessageHandler> DemoHandler<'a, T> {
     }
 }
 
-impl<T: MessageHandler + BorrowMessageHandler> DemoHandler<'_, T> {
+impl<T: MessageHandler + BorrowMessageHandler> DemoHandler<T> {
     pub fn borrow_output(&self) -> &T::Output {
         self.analyser.borrow_output(&self.state_handler)
     }
