@@ -2,7 +2,7 @@ use std::fs;
 use test_case::test_case;
 
 use fnv::FnvHashMap;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass};
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::demo::sendprop::{SendPropIdentifier, SendPropName};
@@ -53,8 +53,8 @@ impl MessageHandler for SendPropAnalyser {
     }
 }
 
-#[test_case("test_data/gully.dem", "test_data/gully_props.json"; "gully.dem")]
-fn flatten_test(input_file: &str, snapshot_file: &str) {
+#[test_case("test_data/gully.dem")]
+fn flatten_test(input_file: &str) {
     let file = fs::read(input_file).expect("Unable to read file");
     let demo = Demo::new(&file);
     let (_, (send_tables, prop_names)) =
@@ -79,18 +79,7 @@ fn flatten_test(input_file: &str, snapshot_file: &str) {
         })
         .collect();
 
-    let expected: HashMap<SendTableName, Vec<String>> = serde_json::from_slice(
-        fs::read(snapshot_file)
-            .expect("Unable to read file")
-            .as_slice(),
-    )
-    .unwrap();
-
-    let expected_tables: HashSet<_> = expected.keys().collect();
-    let actual_tables: HashSet<_> = flat_props.keys().collect();
-
-    pretty_assertions::assert_eq!(expected_tables, actual_tables);
-    for table in expected_tables {
-        pretty_assertions::assert_eq!(expected[table], flat_props[table]);
-    }
+    insta::with_settings!({sort_maps =>true}, {
+        insta::assert_json_snapshot!(flat_props);
+    });
 }

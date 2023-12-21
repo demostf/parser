@@ -1,3 +1,7 @@
+---
+source: tests/tests.rs
+expression: state
+---
 {
   "chat": [
     {
@@ -1298,5 +1302,11 @@
     }
   ],
   "startTick": 11793,
-  "intervalPerTick": 0.015
+  "intervalPerTick": 0.015,
+  "pauses": [
+    {
+      "from": 14081,
+      "to": 16714
+    }
+  ]
 }
