@@ -356,6 +356,12 @@ pub struct Analyser {
     user_id_map: HashMap<EntityId, UserId>,
 }
 
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
+pub struct Pause {
+    from: DemoTick,
+    to: DemoTick,
+}
+
 impl MessageHandler for Analyser {
     type Output = MatchState;
 
@@ -387,7 +393,10 @@ impl MessageHandler for Analyser {
                     self.pause_start = Some(tick);
                 } else {
                     let start = self.pause_start.unwrap_or_default();
-                    self.state.pauses.push((start, tick))
+                    self.state.pauses.push(Pause {
+                        from: start,
+                        to: tick,
+                    })
                 }
             }
             _ => {}
@@ -498,5 +507,5 @@ pub struct MatchState {
     pub rounds: Vec<Round>,
     pub start_tick: ServerTick,
     pub interval_per_tick: f32,
-    pub pauses: Vec<(DemoTick, DemoTick)>,
+    pub pauses: Vec<Pause>,
 }
