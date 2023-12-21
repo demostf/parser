@@ -352,6 +352,7 @@ pub struct World {
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Analyser {
     state: MatchState,
+    pause_start: Option<DemoTick>,
     user_id_map: HashMap<EntityId, UserId>,
 }
 
@@ -365,6 +366,7 @@ impl MessageHandler for Analyser {
                 | MessageType::UserMessage
                 | MessageType::ServerInfo
                 | MessageType::NetTick
+                | MessageType::SetPause
         )
     }
 
@@ -380,6 +382,14 @@ impl MessageHandler for Analyser {
             }
             Message::GameEvent(message) => self.handle_event(&message.event, tick),
             Message::UserMessage(message) => self.handle_user_message(message, tick),
+            Message::SetPause(message) => {
+                if message.pause {
+                    self.pause_start = Some(tick);
+                } else {
+                    let start = self.pause_start.unwrap_or_default();
+                    self.state.pauses.push((start, tick))
+                }
+            }
             _ => {}
         }
     }
@@ -488,4 +498,5 @@ pub struct MatchState {
     pub rounds: Vec<Round>,
     pub start_tick: ServerTick,
     pub interval_per_tick: f32,
+    pub pauses: Vec<(DemoTick, DemoTick)>,
 }
