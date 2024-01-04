@@ -1,11 +1,11 @@
 pub mod userinfo;
 
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, Endianness};
+use parse_display::Display;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::cmp::Ordering;
 use std::fmt::{Debug, Display, Formatter};
 use std::ops::{Add, Sub};
-use parse_display::Display;
 
 pub use userinfo::UserInfo;
 
