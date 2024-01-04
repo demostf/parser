@@ -1,9 +1,9 @@
 use super::gamevent::{EventValue, GameEventDefinition, GameEventEntry, RawGameEvent};
+use crate::demo::data::MaybeUtf8String;
 use crate::demo::Stream;
 use crate::{ParseError, Result};
-use bitbuffer::{BitRead, LittleEndian, BitWrite, BitWriteStream};
+use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
 use serde::{Deserialize, Serialize};
-use crate::demo::data::MaybeUtf8String;
 fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     stream: &mut Stream<'a>,
     entry: Option<&GameEventEntry>,
@@ -132,9 +132,7 @@ impl ServerAddBanEvent {
         Ok(ServerAddBanEvent {
             name: read_value::<MaybeUtf8String>(stream, iter.next(), "name")?,
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            network_id: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "network_id")?,
+            network_id: read_value::<MaybeUtf8String>(stream, iter.next(), "network_id")?,
             ip: read_value::<MaybeUtf8String>(stream, iter.next(), "ip")?,
             duration: read_value::<MaybeUtf8String>(stream, iter.next(), "duration")?,
             by: read_value::<MaybeUtf8String>(stream, iter.next(), "by")?,
@@ -154,9 +152,7 @@ impl ServerRemoveBanEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(ServerRemoveBanEvent {
-            network_id: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "network_id")?,
+            network_id: read_value::<MaybeUtf8String>(stream, iter.next(), "network_id")?,
             ip: read_value::<MaybeUtf8String>(stream, iter.next(), "ip")?,
             by: read_value::<MaybeUtf8String>(stream, iter.next(), "by")?,
         })
@@ -180,9 +176,7 @@ impl PlayerConnectEvent {
             name: read_value::<MaybeUtf8String>(stream, iter.next(), "name")?,
             index: read_value::<u8>(stream, iter.next(), "index")?,
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            network_id: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "network_id")?,
+            network_id: read_value::<MaybeUtf8String>(stream, iter.next(), "network_id")?,
             address: read_value::<MaybeUtf8String>(stream, iter.next(), "address")?,
             bot: read_value::<u16>(stream, iter.next(), "bot")?,
         })
@@ -205,9 +199,7 @@ impl PlayerConnectClientEvent {
             name: read_value::<MaybeUtf8String>(stream, iter.next(), "name")?,
             index: read_value::<u8>(stream, iter.next(), "index")?,
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            network_id: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "network_id")?,
+            network_id: read_value::<MaybeUtf8String>(stream, iter.next(), "network_id")?,
             bot: read_value::<u16>(stream, iter.next(), "bot")?,
         })
     }
@@ -229,9 +221,7 @@ impl PlayerInfoEvent {
             name: read_value::<MaybeUtf8String>(stream, iter.next(), "name")?,
             index: read_value::<u8>(stream, iter.next(), "index")?,
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            network_id: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "network_id")?,
+            network_id: read_value::<MaybeUtf8String>(stream, iter.next(), "network_id")?,
             bot: read_value::<bool>(stream, iter.next(), "bot")?,
         })
     }
@@ -253,9 +243,7 @@ impl PlayerDisconnectEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
             reason: read_value::<MaybeUtf8String>(stream, iter.next(), "reason")?,
             name: read_value::<MaybeUtf8String>(stream, iter.next(), "name")?,
-            network_id: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "network_id")?,
+            network_id: read_value::<MaybeUtf8String>(stream, iter.next(), "network_id")?,
             bot: read_value::<u16>(stream, iter.next(), "bot")?,
         })
     }
@@ -497,54 +485,42 @@ impl PlayerDeathEvent {
         let mut iter = definition.entries.iter();
         Ok(PlayerDeathEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<MaybeUtf8String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            player_penetrate_count: read_value::<
-                u16,
-            >(stream, iter.next(), "player_penetrate_count")?,
-            assister_fallback: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "assister_fallback")?,
-            kill_streak_total: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_streak_total")?,
+            player_penetrate_count: read_value::<u16>(
+                stream,
+                iter.next(),
+                "player_penetrate_count",
+            )?,
+            assister_fallback: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "assister_fallback",
+            )?,
+            kill_streak_total: read_value::<u16>(stream, iter.next(), "kill_streak_total")?,
             kill_streak_wep: read_value::<u16>(stream, iter.next(), "kill_streak_wep")?,
-            kill_streak_assist: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_streak_assist")?,
-            kill_streak_victim: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_streak_victim")?,
+            kill_streak_assist: read_value::<u16>(stream, iter.next(), "kill_streak_assist")?,
+            kill_streak_victim: read_value::<u16>(stream, iter.next(), "kill_streak_victim")?,
             ducks_streaked: read_value::<u16>(stream, iter.next(), "ducks_streaked")?,
-            duck_streak_total: read_value::<
-                u16,
-            >(stream, iter.next(), "duck_streak_total")?,
-            duck_streak_assist: read_value::<
-                u16,
-            >(stream, iter.next(), "duck_streak_assist")?,
-            duck_streak_victim: read_value::<
-                u16,
-            >(stream, iter.next(), "duck_streak_victim")?,
+            duck_streak_total: read_value::<u16>(stream, iter.next(), "duck_streak_total")?,
+            duck_streak_assist: read_value::<u16>(stream, iter.next(), "duck_streak_assist")?,
+            duck_streak_victim: read_value::<u16>(stream, iter.next(), "duck_streak_victim")?,
             rocket_jump: read_value::<bool>(stream, iter.next(), "rocket_jump")?,
-            weapon_def_index: read_value::<
-                u32,
-            >(stream, iter.next(), "weapon_def_index")?,
+            weapon_def_index: read_value::<u32>(stream, iter.next(), "weapon_def_index")?,
             crit_type: read_value::<u16>(stream, iter.next(), "crit_type")?,
         })
     }
@@ -574,9 +550,7 @@ impl PlayerHurtEvent {
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             damage_amount: read_value::<u16>(stream, iter.next(), "damage_amount")?,
             custom: read_value::<u16>(stream, iter.next(), "custom")?,
-            show_disguised_crit: read_value::<
-                bool,
-            >(stream, iter.next(), "show_disguised_crit")?,
+            show_disguised_crit: read_value::<bool>(stream, iter.next(), "show_disguised_crit")?,
             crit: read_value::<bool>(stream, iter.next(), "crit")?,
             mini_crit: read_value::<bool>(stream, iter.next(), "mini_crit")?,
             all_see_crit: read_value::<bool>(stream, iter.next(), "all_see_crit")?,
@@ -703,9 +677,7 @@ impl PlayerHintMessageEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerHintMessageEvent {
-            hint_message: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "hint_message")?,
+            hint_message: read_value::<MaybeUtf8String>(stream, iter.next(), "hint_message")?,
         })
     }
 }
@@ -879,15 +851,9 @@ impl EntityKilledEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(EntityKilledEvent {
-            ent_index_killed: read_value::<
-                u32,
-            >(stream, iter.next(), "ent_index_killed")?,
-            ent_index_attacker: read_value::<
-                u32,
-            >(stream, iter.next(), "ent_index_attacker")?,
-            ent_index_inflictor: read_value::<
-                u32,
-            >(stream, iter.next(), "ent_index_inflictor")?,
+            ent_index_killed: read_value::<u32>(stream, iter.next(), "ent_index_killed")?,
+            ent_index_attacker: read_value::<u32>(stream, iter.next(), "ent_index_attacker")?,
+            ent_index_inflictor: read_value::<u32>(stream, iter.next(), "ent_index_inflictor")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
         })
     }
@@ -924,9 +890,11 @@ impl AchievementEventEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(AchievementEventEvent {
-            achievement_name: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "achievement_name")?,
+            achievement_name: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "achievement_name",
+            )?,
             cur_val: read_value::<u16>(stream, iter.next(), "cur_val")?,
             max_val: read_value::<u16>(stream, iter.next(), "max_val")?,
         })
@@ -1365,9 +1333,7 @@ impl CtfFlagCapturedEvent {
         let mut iter = definition.entries.iter();
         Ok(CtfFlagCapturedEvent {
             capping_team: read_value::<u16>(stream, iter.next(), "capping_team")?,
-            capping_team_score: read_value::<
-                u16,
-            >(stream, iter.next(), "capping_team_score")?,
+            capping_team_score: read_value::<u16>(stream, iter.next(), "capping_team_score")?,
         })
     }
 }
@@ -1645,9 +1611,7 @@ impl TeamPlayRoundWinEvent {
             flag_cap_limit: read_value::<u16>(stream, iter.next(), "flag_cap_limit")?,
             full_round: read_value::<u16>(stream, iter.next(), "full_round")?,
             round_time: read_value::<f32>(stream, iter.next(), "round_time")?,
-            losing_team_num_caps: read_value::<
-                u16,
-            >(stream, iter.next(), "losing_team_num_caps")?,
+            losing_team_num_caps: read_value::<u16>(stream, iter.next(), "losing_team_num_caps")?,
             was_sudden_death: read_value::<u8>(stream, iter.next(), "was_sudden_death")?,
         })
     }
@@ -1948,21 +1912,19 @@ impl TeamPlayWinPanelEvent {
             blue_score_prev: read_value::<u16>(stream, iter.next(), "blue_score_prev")?,
             red_score_prev: read_value::<u16>(stream, iter.next(), "red_score_prev")?,
             round_complete: read_value::<u16>(stream, iter.next(), "round_complete")?,
-            rounds_remaining: read_value::<
-                u16,
-            >(stream, iter.next(), "rounds_remaining")?,
+            rounds_remaining: read_value::<u16>(stream, iter.next(), "rounds_remaining")?,
             player_1: read_value::<u16>(stream, iter.next(), "player_1")?,
             player_1_points: read_value::<u16>(stream, iter.next(), "player_1_points")?,
             player_2: read_value::<u16>(stream, iter.next(), "player_2")?,
             player_2_points: read_value::<u16>(stream, iter.next(), "player_2_points")?,
             player_3: read_value::<u16>(stream, iter.next(), "player_3")?,
             player_3_points: read_value::<u16>(stream, iter.next(), "player_3_points")?,
-            kill_stream_player_1: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_stream_player_1")?,
-            kill_stream_player_1_count: read_value::<
-                u16,
-            >(stream, iter.next(), "kill_stream_player_1_count")?,
+            kill_stream_player_1: read_value::<u16>(stream, iter.next(), "kill_stream_player_1")?,
+            kill_stream_player_1_count: read_value::<u16>(
+                stream,
+                iter.next(),
+                "kill_stream_player_1_count",
+            )?,
             game_over: read_value::<u8>(stream, iter.next(), "game_over")?,
         })
     }
@@ -2488,9 +2450,7 @@ impl PlayerExtinguishedEvent {
         Ok(PlayerExtinguishedEvent {
             victim: read_value::<u8>(stream, iter.next(), "victim")?,
             healer: read_value::<u8>(stream, iter.next(), "healer")?,
-            item_definition_index: read_value::<
-                u16,
-            >(stream, iter.next(), "item_definition_index")?,
+            item_definition_index: read_value::<u16>(stream, iter.next(), "item_definition_index")?,
         })
     }
 }
@@ -2826,57 +2786,33 @@ impl ArenaWinPanelEvent {
             round_complete: read_value::<u16>(stream, iter.next(), "round_complete")?,
             player_1: read_value::<u16>(stream, iter.next(), "player_1")?,
             player_1_damage: read_value::<u16>(stream, iter.next(), "player_1_damage")?,
-            player_1_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_1_healing")?,
-            player_1_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_1_lifetime")?,
+            player_1_healing: read_value::<u16>(stream, iter.next(), "player_1_healing")?,
+            player_1_lifetime: read_value::<u16>(stream, iter.next(), "player_1_lifetime")?,
             player_1_kills: read_value::<u16>(stream, iter.next(), "player_1_kills")?,
             player_2: read_value::<u16>(stream, iter.next(), "player_2")?,
             player_2_damage: read_value::<u16>(stream, iter.next(), "player_2_damage")?,
-            player_2_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_2_healing")?,
-            player_2_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_2_lifetime")?,
+            player_2_healing: read_value::<u16>(stream, iter.next(), "player_2_healing")?,
+            player_2_lifetime: read_value::<u16>(stream, iter.next(), "player_2_lifetime")?,
             player_2_kills: read_value::<u16>(stream, iter.next(), "player_2_kills")?,
             player_3: read_value::<u16>(stream, iter.next(), "player_3")?,
             player_3_damage: read_value::<u16>(stream, iter.next(), "player_3_damage")?,
-            player_3_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_3_healing")?,
-            player_3_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_3_lifetime")?,
+            player_3_healing: read_value::<u16>(stream, iter.next(), "player_3_healing")?,
+            player_3_lifetime: read_value::<u16>(stream, iter.next(), "player_3_lifetime")?,
             player_3_kills: read_value::<u16>(stream, iter.next(), "player_3_kills")?,
             player_4: read_value::<u16>(stream, iter.next(), "player_4")?,
             player_4_damage: read_value::<u16>(stream, iter.next(), "player_4_damage")?,
-            player_4_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_4_healing")?,
-            player_4_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_4_lifetime")?,
+            player_4_healing: read_value::<u16>(stream, iter.next(), "player_4_healing")?,
+            player_4_lifetime: read_value::<u16>(stream, iter.next(), "player_4_lifetime")?,
             player_4_kills: read_value::<u16>(stream, iter.next(), "player_4_kills")?,
             player_5: read_value::<u16>(stream, iter.next(), "player_5")?,
             player_5_damage: read_value::<u16>(stream, iter.next(), "player_5_damage")?,
-            player_5_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_5_healing")?,
-            player_5_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_5_lifetime")?,
+            player_5_healing: read_value::<u16>(stream, iter.next(), "player_5_healing")?,
+            player_5_lifetime: read_value::<u16>(stream, iter.next(), "player_5_lifetime")?,
             player_5_kills: read_value::<u16>(stream, iter.next(), "player_5_kills")?,
             player_6: read_value::<u16>(stream, iter.next(), "player_6")?,
             player_6_damage: read_value::<u16>(stream, iter.next(), "player_6_damage")?,
-            player_6_healing: read_value::<
-                u16,
-            >(stream, iter.next(), "player_6_healing")?,
-            player_6_lifetime: read_value::<
-                u16,
-            >(stream, iter.next(), "player_6_lifetime")?,
+            player_6_healing: read_value::<u16>(stream, iter.next(), "player_6_healing")?,
+            player_6_lifetime: read_value::<u16>(stream, iter.next(), "player_6_lifetime")?,
             player_6_kills: read_value::<u16>(stream, iter.next(), "player_6_kills")?,
         })
     }
@@ -3019,9 +2955,7 @@ impl ArrowImpactEvent {
         Ok(ArrowImpactEvent {
             attached_entity: read_value::<u16>(stream, iter.next(), "attached_entity")?,
             shooter: read_value::<u16>(stream, iter.next(), "shooter")?,
-            bone_index_attached: read_value::<
-                u16,
-            >(stream, iter.next(), "bone_index_attached")?,
+            bone_index_attached: read_value::<u16>(stream, iter.next(), "bone_index_attached")?,
             bone_position_x: read_value::<f32>(stream, iter.next(), "bone_position_x")?,
             bone_position_y: read_value::<f32>(stream, iter.next(), "bone_position_y")?,
             bone_position_z: read_value::<f32>(stream, iter.next(), "bone_position_z")?,
@@ -3044,9 +2978,7 @@ impl PlayerJaratedEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerJaratedEvent {
-            thrower_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "thrower_ent_index")?,
+            thrower_ent_index: read_value::<u8>(stream, iter.next(), "thrower_ent_index")?,
             victim_ent_index: read_value::<u8>(stream, iter.next(), "victim_ent_index")?,
         })
     }
@@ -3062,9 +2994,7 @@ impl PlayerJaratedFadeEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerJaratedFadeEvent {
-            thrower_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "thrower_ent_index")?,
+            thrower_ent_index: read_value::<u8>(stream, iter.next(), "thrower_ent_index")?,
             victim_ent_index: read_value::<u8>(stream, iter.next(), "victim_ent_index")?,
         })
     }
@@ -3080,12 +3010,8 @@ impl PlayerShieldBlockedEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerShieldBlockedEvent {
-            attacker_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "attacker_ent_index")?,
-            blocker_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "blocker_ent_index")?,
+            attacker_ent_index: read_value::<u8>(stream, iter.next(), "attacker_ent_index")?,
+            blocker_ent_index: read_value::<u8>(stream, iter.next(), "blocker_ent_index")?,
         })
     }
 }
@@ -3195,16 +3121,10 @@ impl ShowAnnotationEvent {
             id: read_value::<u32>(stream, iter.next(), "id")?,
             text: read_value::<MaybeUtf8String>(stream, iter.next(), "text")?,
             lifetime: read_value::<f32>(stream, iter.next(), "lifetime")?,
-            visibility_bit_field: read_value::<
-                u32,
-            >(stream, iter.next(), "visibility_bit_field")?,
-            follow_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "follow_ent_index")?,
+            visibility_bit_field: read_value::<u32>(stream, iter.next(), "visibility_bit_field")?,
+            follow_ent_index: read_value::<u32>(stream, iter.next(), "follow_ent_index")?,
             show_distance: read_value::<bool>(stream, iter.next(), "show_distance")?,
-            play_sound: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "play_sound")?,
+            play_sound: read_value::<MaybeUtf8String>(stream, iter.next(), "play_sound")?,
             show_effect: read_value::<bool>(stream, iter.next(), "show_effect")?,
         })
     }
@@ -3611,8 +3531,7 @@ pub struct ScoreStatsAccumulatedUpdateEvent {}
 impl ScoreStatsAccumulatedUpdateEvent {
     #[allow(unused_variables)]
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
-        Ok(ScoreStatsAccumulatedUpdateEvent {
-        })
+        Ok(ScoreStatsAccumulatedUpdateEvent {})
     }
 }
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
@@ -3738,27 +3657,27 @@ impl FishNoticeEvent {
         let mut iter = definition.entries.iter();
         Ok(FishNoticeEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<MaybeUtf8String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            assister_fallback: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "assister_fallback")?,
+            assister_fallback: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "assister_fallback",
+            )?,
         })
     }
 }
@@ -3786,27 +3705,27 @@ impl FishNoticeArmEvent {
         let mut iter = definition.entries.iter();
         Ok(FishNoticeArmEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<MaybeUtf8String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            assister_fallback: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "assister_fallback")?,
+            assister_fallback: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "assister_fallback",
+            )?,
         })
     }
 }
@@ -3834,27 +3753,27 @@ impl SlapNoticeEvent {
         let mut iter = definition.entries.iter();
         Ok(SlapNoticeEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<MaybeUtf8String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            assister_fallback: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "assister_fallback")?,
+            assister_fallback: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "assister_fallback",
+            )?,
         })
     }
 }
@@ -3883,27 +3802,27 @@ impl ThrowableHitEvent {
         let mut iter = definition.entries.iter();
         Ok(ThrowableHitEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<MaybeUtf8String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
             assister: read_value::<u16>(stream, iter.next(), "assister")?,
-            weapon_log_class_name: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
             stun_flags: read_value::<u16>(stream, iter.next(), "stun_flags")?,
             death_flags: read_value::<u16>(stream, iter.next(), "death_flags")?,
             silent_kill: read_value::<bool>(stream, iter.next(), "silent_kill")?,
-            assister_fallback: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "assister_fallback")?,
+            assister_fallback: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "assister_fallback",
+            )?,
             total_hits: read_value::<u16>(stream, iter.next(), "total_hits")?,
         })
     }
@@ -4155,12 +4074,8 @@ impl PlayerHighFiveSuccessEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(PlayerHighFiveSuccessEvent {
-            initiator_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "initiator_ent_index")?,
-            partner_ent_index: read_value::<
-                u8,
-            >(stream, iter.next(), "partner_ent_index")?,
+            initiator_ent_index: read_value::<u8>(stream, iter.next(), "initiator_ent_index")?,
+            partner_ent_index: read_value::<u8>(stream, iter.next(), "partner_ent_index")?,
         })
     }
 }
@@ -4177,9 +4092,7 @@ impl PlayerBonusPointsEvent {
         let mut iter = definition.entries.iter();
         Ok(PlayerBonusPointsEvent {
             points: read_value::<u16>(stream, iter.next(), "points")?,
-            player_ent_index: read_value::<
-                u16,
-            >(stream, iter.next(), "player_ent_index")?,
+            player_ent_index: read_value::<u16>(stream, iter.next(), "player_ent_index")?,
             source_ent_index: read_value::<u16>(stream, iter.next(), "source_ent_index")?,
         })
     }
@@ -4918,20 +4831,18 @@ impl RdRobotKilledEvent {
         let mut iter = definition.entries.iter();
         Ok(RdRobotKilledEvent {
             user_id: read_value::<u16>(stream, iter.next(), "user_id")?,
-            victim_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "victim_ent_index")?,
-            inflictor_ent_index: read_value::<
-                u32,
-            >(stream, iter.next(), "inflictor_ent_index")?,
+            victim_ent_index: read_value::<u32>(stream, iter.next(), "victim_ent_index")?,
+            inflictor_ent_index: read_value::<u32>(stream, iter.next(), "inflictor_ent_index")?,
             attacker: read_value::<u16>(stream, iter.next(), "attacker")?,
             weapon: read_value::<MaybeUtf8String>(stream, iter.next(), "weapon")?,
             weapon_id: read_value::<u16>(stream, iter.next(), "weapon_id")?,
             damage_bits: read_value::<u32>(stream, iter.next(), "damage_bits")?,
             custom_kill: read_value::<u16>(stream, iter.next(), "custom_kill")?,
-            weapon_log_class_name: read_value::<
-                MaybeUtf8String,
-            >(stream, iter.next(), "weapon_log_class_name")?,
+            weapon_log_class_name: read_value::<MaybeUtf8String>(
+                stream,
+                iter.next(),
+                "weapon_log_class_name",
+            )?,
         })
     }
 }
@@ -5208,15 +5119,9 @@ impl QuestObjectiveCompletedEvent {
     fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
         let mut iter = definition.entries.iter();
         Ok(QuestObjectiveCompletedEvent {
-            quest_item_id_low: read_value::<
-                u32,
-            >(stream, iter.next(), "quest_item_id_low")?,
-            quest_item_id_hi: read_value::<
-                u32,
-            >(stream, iter.next(), "quest_item_id_hi")?,
-            quest_objective_id: read_value::<
-                u32,
-            >(stream, iter.next(), "quest_objective_id")?,
+            quest_item_id_low: read_value::<u32>(stream, iter.next(), "quest_item_id_low")?,
+            quest_item_id_hi: read_value::<u32>(stream, iter.next(), "quest_item_id_hi")?,
+            quest_objective_id: read_value::<u32>(stream, iter.next(), "quest_objective_id")?,
             scorer_user_id: read_value::<u16>(stream, iter.next(), "scorer_user_id")?,
         })
     }
@@ -5630,9 +5535,7 @@ impl HalloweenSoulCollectedEvent {
         let mut iter = definition.entries.iter();
         Ok(HalloweenSoulCollectedEvent {
             intended_target: read_value::<u8>(stream, iter.next(), "intended_target")?,
-            collecting_player: read_value::<
-                u8,
-            >(stream, iter.next(), "collecting_player")?,
+            collecting_player: read_value::<u8>(stream, iter.next(), "collecting_player")?,
             soul_count: read_value::<u8>(stream, iter.next(), "soul_count")?,
         })
     }
@@ -5696,9 +5599,7 @@ impl DamageMitigatedEvent {
             mitigator: read_value::<u8>(stream, iter.next(), "mitigator")?,
             damaged: read_value::<u8>(stream, iter.next(), "damaged")?,
             amount: read_value::<u16>(stream, iter.next(), "amount")?,
-            item_definition_index: read_value::<
-                u16,
-            >(stream, iter.next(), "item_definition_index")?,
+            item_definition_index: read_value::<u16>(stream, iter.next(), "item_definition_index")?,
         })
     }
 }
@@ -5971,9 +5872,7 @@ impl ProtoDefChangedEvent {
         let mut iter = definition.entries.iter();
         Ok(ProtoDefChangedEvent {
             kind: read_value::<u8>(stream, iter.next(), "kind")?,
-            definition_index: read_value::<
-                u32,
-            >(stream, iter.next(), "definition_index")?,
+            definition_index: read_value::<u32>(stream, iter.next(), "definition_index")?,
             created: read_value::<bool>(stream, iter.next(), "created")?,
             deleted: read_value::<bool>(stream, iter.next(), "deleted")?,
             erase_history: read_value::<bool>(stream, iter.next(), "erase_history")?,
@@ -6066,9 +5965,11 @@ impl QuestProgressEvent {
             scorer: read_value::<u16>(stream, iter.next(), "scorer")?,
             kind: read_value::<u8>(stream, iter.next(), "kind")?,
             completed: read_value::<bool>(stream, iter.next(), "completed")?,
-            quest_definition_index: read_value::<
-                u32,
-            >(stream, iter.next(), "quest_definition_index")?,
+            quest_definition_index: read_value::<u32>(
+                stream,
+                iter.next(),
+                "quest_definition_index",
+            )?,
         })
     }
 }
@@ -6086,9 +5987,7 @@ impl ProjectileRemovedEvent {
         let mut iter = definition.entries.iter();
         Ok(ProjectileRemovedEvent {
             attacker: read_value::<u8>(stream, iter.next(), "attacker")?,
-            weapon_def_index: read_value::<
-                u32,
-            >(stream, iter.next(), "weapon_def_index")?,
+            weapon_def_index: read_value::<u32>(stream, iter.next(), "weapon_def_index")?,
             num_hit: read_value::<u8>(stream, iter.next(), "num_hit")?,
             num_direct_hit: read_value::<u8>(stream, iter.next(), "num_direct_hit")?,
         })
@@ -7307,9 +7206,7 @@ impl GameEventType {
             "controlpoint_endtouch" => GameEventType::ControlPointEndTouch,
             "controlpoint_pulse_element" => GameEventType::ControlPointPulseElement,
             "controlpoint_fake_capture" => GameEventType::ControlPointFakeCapture,
-            "controlpoint_fake_capture_mult" => {
-                GameEventType::ControlPointFakeCaptureMultiplier
-            }
+            "controlpoint_fake_capture_mult" => GameEventType::ControlPointFakeCaptureMultiplier,
             "teamplay_round_selected" => GameEventType::TeamPlayRoundSelected,
             "teamplay_round_start" => GameEventType::TeamPlayRoundStart,
             "teamplay_round_active" => GameEventType::TeamPlayRoundActive,
@@ -7318,9 +7215,7 @@ impl GameEventType {
             "teamplay_waiting_abouttoend" => GameEventType::TeamPlayWaitingAboutToEnd,
             "teamplay_restart_round" => GameEventType::TeamPlayRestartRound,
             "teamplay_ready_restart" => GameEventType::TeamPlayReadyRestart,
-            "teamplay_round_restart_seconds" => {
-                GameEventType::TeamPlayRoundRestartSeconds
-            }
+            "teamplay_round_restart_seconds" => GameEventType::TeamPlayRoundRestartSeconds,
             "teamplay_team_ready" => GameEventType::TeamPlayTeamReady,
             "teamplay_round_win" => GameEventType::TeamPlayRoundWin,
             "teamplay_update_timer" => GameEventType::TeamPlayUpdateTimer,
@@ -7474,9 +7369,7 @@ impl GameEventType {
             "player_buyback" => GameEventType::PlayerBuyback,
             "player_used_powerup_bottle" => GameEventType::PlayerUsedPowerUpBottle,
             "christmas_gift_grab" => GameEventType::ChristmasGiftGrab,
-            "player_killed_achievement_zone" => {
-                GameEventType::PlayerKilledAchievementZone
-            }
+            "player_killed_achievement_zone" => GameEventType::PlayerKilledAchievementZone,
             "party_updated" => GameEventType::PartyUpdated,
             "party_pref_changed" => GameEventType::PartyPrefChanged,
             "party_criteria_changed" => GameEventType::PartyCriteriaChanged,
@@ -7508,9 +7401,7 @@ impl GameEventType {
             "mvm_mission_complete" => GameEventType::MvmMissionComplete,
             "mvm_bomb_reset_by_player" => GameEventType::MvmBombResetByPlayer,
             "mvm_bomb_alarm_triggered" => GameEventType::MvmBombAlarmTriggered,
-            "mvm_bomb_deploy_reset_by_player" => {
-                GameEventType::MvmBombDeployResetByPlayer
-            }
+            "mvm_bomb_deploy_reset_by_player" => GameEventType::MvmBombDeployResetByPlayer,
             "mvm_wave_failed" => GameEventType::MvmWaveFailed,
             "mvm_reset_stats" => GameEventType::MvmResetStats,
             "damage_resisted" => GameEventType::DamageResisted,
@@ -7721,9 +7612,7 @@ impl GameEventType {
             GameEventType::ControlPointEndTouch => "controlpoint_endtouch",
             GameEventType::ControlPointPulseElement => "controlpoint_pulse_element",
             GameEventType::ControlPointFakeCapture => "controlpoint_fake_capture",
-            GameEventType::ControlPointFakeCaptureMultiplier => {
-                "controlpoint_fake_capture_mult"
-            }
+            GameEventType::ControlPointFakeCaptureMultiplier => "controlpoint_fake_capture_mult",
             GameEventType::TeamPlayRoundSelected => "teamplay_round_selected",
             GameEventType::TeamPlayRoundStart => "teamplay_round_start",
             GameEventType::TeamPlayRoundActive => "teamplay_round_active",
@@ -7732,9 +7621,7 @@ impl GameEventType {
             GameEventType::TeamPlayWaitingAboutToEnd => "teamplay_waiting_abouttoend",
             GameEventType::TeamPlayRestartRound => "teamplay_restart_round",
             GameEventType::TeamPlayReadyRestart => "teamplay_ready_restart",
-            GameEventType::TeamPlayRoundRestartSeconds => {
-                "teamplay_round_restart_seconds"
-            }
+            GameEventType::TeamPlayRoundRestartSeconds => "teamplay_round_restart_seconds",
             GameEventType::TeamPlayTeamReady => "teamplay_team_ready",
             GameEventType::TeamPlayRoundWin => "teamplay_round_win",
             GameEventType::TeamPlayUpdateTimer => "teamplay_update_timer",
@@ -7888,9 +7775,7 @@ impl GameEventType {
             GameEventType::PlayerBuyback => "player_buyback",
             GameEventType::PlayerUsedPowerUpBottle => "player_used_powerup_bottle",
             GameEventType::ChristmasGiftGrab => "christmas_gift_grab",
-            GameEventType::PlayerKilledAchievementZone => {
-                "player_killed_achievement_zone"
-            }
+            GameEventType::PlayerKilledAchievementZone => "player_killed_achievement_zone",
             GameEventType::PartyUpdated => "party_updated",
             GameEventType::PartyPrefChanged => "party_pref_changed",
             GameEventType::PartyCriteriaChanged => "party_criteria_changed",
@@ -7922,9 +7807,7 @@ impl GameEventType {
             GameEventType::MvmMissionComplete => "mvm_mission_complete",
             GameEventType::MvmBombResetByPlayer => "mvm_bomb_reset_by_player",
             GameEventType::MvmBombAlarmTriggered => "mvm_bomb_alarm_triggered",
-            GameEventType::MvmBombDeployResetByPlayer => {
-                "mvm_bomb_deploy_reset_by_player"
-            }
+            GameEventType::MvmBombDeployResetByPlayer => "mvm_bomb_deploy_reset_by_player",
             GameEventType::MvmWaveFailed => "mvm_wave_failed",
             GameEventType::MvmResetStats => "mvm_reset_stats",
             GameEventType::DamageResisted => "damage_resisted",
@@ -8050,1849 +7933,1206 @@ impl GameEventType {
 }
 impl GameEvent {
     pub fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
-        Ok(
-            match definition.event_type {
-                GameEventType::ServerSpawn => {
-                    GameEvent::ServerSpawn(
-                        Box::new(<ServerSpawnEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::ServerChangeLevelFailed => {
-                    GameEvent::ServerChangeLevelFailed(
-                        ServerChangeLevelFailedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ServerShutdown => {
-                    GameEvent::ServerShutdown(
-                        ServerShutdownEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ServerCvar => {
-                    GameEvent::ServerCvar(ServerCvarEvent::read(stream, definition)?)
-                }
-                GameEventType::ServerMessage => {
-                    GameEvent::ServerMessage(
-                        ServerMessageEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ServerAddBan => {
-                    GameEvent::ServerAddBan(
-                        Box::new(<ServerAddBanEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::ServerRemoveBan => {
-                    GameEvent::ServerRemoveBan(
-                        ServerRemoveBanEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerConnect => {
-                    GameEvent::PlayerConnect(
-                        PlayerConnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerConnectClient => {
-                    GameEvent::PlayerConnectClient(
-                        PlayerConnectClientEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerInfo => {
-                    GameEvent::PlayerInfo(PlayerInfoEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerDisconnect => {
-                    GameEvent::PlayerDisconnect(
-                        PlayerDisconnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerActivate => {
-                    GameEvent::PlayerActivate(
-                        PlayerActivateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerSay => {
-                    GameEvent::PlayerSay(PlayerSayEvent::read(stream, definition)?)
-                }
-                GameEventType::ClientDisconnect => {
-                    GameEvent::ClientDisconnect(
-                        ClientDisconnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ClientBeginConnect => {
-                    GameEvent::ClientBeginConnect(
-                        ClientBeginConnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ClientConnected => {
-                    GameEvent::ClientConnected(
-                        ClientConnectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ClientFullConnect => {
-                    GameEvent::ClientFullConnect(
-                        ClientFullConnectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HostQuit => {
-                    GameEvent::HostQuit(HostQuitEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamInfo => {
-                    GameEvent::TeamInfo(TeamInfoEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamScore => {
-                    GameEvent::TeamScore(TeamScoreEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamPlayBroadcastAudio => {
-                    GameEvent::TeamPlayBroadcastAudio(
-                        TeamPlayBroadcastAudioEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerTeam => {
-                    GameEvent::PlayerTeam(PlayerTeamEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerClass => {
-                    GameEvent::PlayerClass(PlayerClassEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerDeath => {
-                    GameEvent::PlayerDeath(
-                        Box::new(<PlayerDeathEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::PlayerHurt => {
-                    GameEvent::PlayerHurt(PlayerHurtEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerChat => {
-                    GameEvent::PlayerChat(PlayerChatEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerScore => {
-                    GameEvent::PlayerScore(PlayerScoreEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerSpawn => {
-                    GameEvent::PlayerSpawn(PlayerSpawnEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerShoot => {
-                    GameEvent::PlayerShoot(PlayerShootEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerUse => {
-                    GameEvent::PlayerUse(PlayerUseEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerChangeName => {
-                    GameEvent::PlayerChangeName(
-                        PlayerChangeNameEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHintMessage => {
-                    GameEvent::PlayerHintMessage(
-                        PlayerHintMessageEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BasePlayerTeleported => {
-                    GameEvent::BasePlayerTeleported(
-                        BasePlayerTeleportedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GameInit => {
-                    GameEvent::GameInit(GameInitEvent::read(stream, definition)?)
-                }
-                GameEventType::GameNewMap => {
-                    GameEvent::GameNewMap(GameNewMapEvent::read(stream, definition)?)
-                }
-                GameEventType::GameStart => {
-                    GameEvent::GameStart(GameStartEvent::read(stream, definition)?)
-                }
-                GameEventType::GameEnd => {
-                    GameEvent::GameEnd(GameEndEvent::read(stream, definition)?)
-                }
-                GameEventType::RoundStart => {
-                    GameEvent::RoundStart(RoundStartEvent::read(stream, definition)?)
-                }
-                GameEventType::RoundEnd => {
-                    GameEvent::RoundEnd(RoundEndEvent::read(stream, definition)?)
-                }
-                GameEventType::GameMessage => {
-                    GameEvent::GameMessage(GameMessageEvent::read(stream, definition)?)
-                }
-                GameEventType::BreakBreakable => {
-                    GameEvent::BreakBreakable(
-                        BreakBreakableEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BreakProp => {
-                    GameEvent::BreakProp(BreakPropEvent::read(stream, definition)?)
-                }
-                GameEventType::EntityKilled => {
-                    GameEvent::EntityKilled(EntityKilledEvent::read(stream, definition)?)
-                }
-                GameEventType::BonusUpdated => {
-                    GameEvent::BonusUpdated(BonusUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::AchievementEvent => {
-                    GameEvent::AchievementEvent(
-                        AchievementEventEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::AchievementIncrement => {
-                    GameEvent::AchievementIncrement(
-                        AchievementIncrementEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PhysgunPickup => {
-                    GameEvent::PhysgunPickup(
-                        PhysgunPickupEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::FlareIgniteNpc => {
-                    GameEvent::FlareIgniteNpc(
-                        FlareIgniteNpcEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HelicopterGrenadePuntMiss => {
-                    GameEvent::HelicopterGrenadePuntMiss(
-                        HelicopterGrenadePuntMissEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::UserDataDownloaded => {
-                    GameEvent::UserDataDownloaded(
-                        UserDataDownloadedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RagdollDissolved => {
-                    GameEvent::RagdollDissolved(
-                        RagdollDissolvedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVChangedMode => {
-                    GameEvent::HLTVChangedMode(
-                        HLTVChangedModeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVChangedTarget => {
-                    GameEvent::HLTVChangedTarget(
-                        HLTVChangedTargetEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::VoteEnded => {
-                    GameEvent::VoteEnded(VoteEndedEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteStarted => {
-                    GameEvent::VoteStarted(VoteStartedEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteChanged => {
-                    GameEvent::VoteChanged(VoteChangedEvent::read(stream, definition)?)
-                }
-                GameEventType::VotePassed => {
-                    GameEvent::VotePassed(VotePassedEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteFailed => {
-                    GameEvent::VoteFailed(VoteFailedEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteCast => {
-                    GameEvent::VoteCast(VoteCastEvent::read(stream, definition)?)
-                }
-                GameEventType::VoteOptions => {
-                    GameEvent::VoteOptions(
-                        Box::new(<VoteOptionsEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::ReplaySaved => {
-                    GameEvent::ReplaySaved(ReplaySavedEvent::read(stream, definition)?)
-                }
-                GameEventType::EnteredPerformanceMode => {
-                    GameEvent::EnteredPerformanceMode(
-                        EnteredPerformanceModeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BrowseReplays => {
-                    GameEvent::BrowseReplays(
-                        BrowseReplaysEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplayYoutubeStats => {
-                    GameEvent::ReplayYoutubeStats(
-                        ReplayYoutubeStatsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::InventoryUpdated => {
-                    GameEvent::InventoryUpdated(
-                        InventoryUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CartUpdated => {
-                    GameEvent::CartUpdated(CartUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::StorePriceSheetUpdated => {
-                    GameEvent::StorePriceSheetUpdated(
-                        StorePriceSheetUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EconInventoryConnected => {
-                    GameEvent::EconInventoryConnected(
-                        EconInventoryConnectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ItemSchemaInitialized => {
-                    GameEvent::ItemSchemaInitialized(
-                        ItemSchemaInitializedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GcNewSession => {
-                    GameEvent::GcNewSession(GcNewSessionEvent::read(stream, definition)?)
-                }
-                GameEventType::GcLostSession => {
-                    GameEvent::GcLostSession(
-                        GcLostSessionEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::IntroFinish => {
-                    GameEvent::IntroFinish(IntroFinishEvent::read(stream, definition)?)
-                }
-                GameEventType::IntroNextCamera => {
-                    GameEvent::IntroNextCamera(
-                        IntroNextCameraEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerChangeClass => {
-                    GameEvent::PlayerChangeClass(
-                        PlayerChangeClassEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TfMapTimeRemaining => {
-                    GameEvent::TfMapTimeRemaining(
-                        TfMapTimeRemainingEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TfGameOver => {
-                    GameEvent::TfGameOver(TfGameOverEvent::read(stream, definition)?)
-                }
-                GameEventType::CtfFlagCaptured => {
-                    GameEvent::CtfFlagCaptured(
-                        CtfFlagCapturedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointInitialized => {
-                    GameEvent::ControlPointInitialized(
-                        ControlPointInitializedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUpdateImages => {
-                    GameEvent::ControlPointUpdateImages(
-                        ControlPointUpdateImagesEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUpdateLayout => {
-                    GameEvent::ControlPointUpdateLayout(
-                        ControlPointUpdateLayoutEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUpdateCapping => {
-                    GameEvent::ControlPointUpdateCapping(
-                        ControlPointUpdateCappingEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUpdateOwner => {
-                    GameEvent::ControlPointUpdateOwner(
-                        ControlPointUpdateOwnerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointStartTouch => {
-                    GameEvent::ControlPointStartTouch(
-                        ControlPointStartTouchEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointEndTouch => {
-                    GameEvent::ControlPointEndTouch(
-                        ControlPointEndTouchEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointPulseElement => {
-                    GameEvent::ControlPointPulseElement(
-                        ControlPointPulseElementEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointFakeCapture => {
-                    GameEvent::ControlPointFakeCapture(
-                        ControlPointFakeCaptureEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointFakeCaptureMultiplier => {
-                    GameEvent::ControlPointFakeCaptureMultiplier(
-                        ControlPointFakeCaptureMultiplierEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundSelected => {
-                    GameEvent::TeamPlayRoundSelected(
-                        TeamPlayRoundSelectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundStart => {
-                    GameEvent::TeamPlayRoundStart(
-                        TeamPlayRoundStartEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundActive => {
-                    GameEvent::TeamPlayRoundActive(
-                        TeamPlayRoundActiveEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayWaitingBegins => {
-                    GameEvent::TeamPlayWaitingBegins(
-                        TeamPlayWaitingBeginsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayWaitingEnds => {
-                    GameEvent::TeamPlayWaitingEnds(
-                        TeamPlayWaitingEndsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayWaitingAboutToEnd => {
-                    GameEvent::TeamPlayWaitingAboutToEnd(
-                        TeamPlayWaitingAboutToEndEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRestartRound => {
-                    GameEvent::TeamPlayRestartRound(
-                        TeamPlayRestartRoundEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayReadyRestart => {
-                    GameEvent::TeamPlayReadyRestart(
-                        TeamPlayReadyRestartEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundRestartSeconds => {
-                    GameEvent::TeamPlayRoundRestartSeconds(
-                        TeamPlayRoundRestartSecondsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayTeamReady => {
-                    GameEvent::TeamPlayTeamReady(
-                        TeamPlayTeamReadyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundWin => {
-                    GameEvent::TeamPlayRoundWin(
-                        TeamPlayRoundWinEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayUpdateTimer => {
-                    GameEvent::TeamPlayUpdateTimer(
-                        TeamPlayUpdateTimerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayRoundStalemate => {
-                    GameEvent::TeamPlayRoundStalemate(
-                        TeamPlayRoundStalemateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayOvertimeBegin => {
-                    GameEvent::TeamPlayOvertimeBegin(
-                        TeamPlayOvertimeBeginEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayOvertimeEnd => {
-                    GameEvent::TeamPlayOvertimeEnd(
-                        TeamPlayOvertimeEndEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlaySuddenDeathBegin => {
-                    GameEvent::TeamPlaySuddenDeathBegin(
-                        TeamPlaySuddenDeathBeginEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlaySuddenDeathEnd => {
-                    GameEvent::TeamPlaySuddenDeathEnd(
-                        TeamPlaySuddenDeathEndEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayGameOver => {
-                    GameEvent::TeamPlayGameOver(
-                        TeamPlayGameOverEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayMapTimeRemaining => {
-                    GameEvent::TeamPlayMapTimeRemaining(
-                        TeamPlayMapTimeRemainingEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayTimerFlash => {
-                    GameEvent::TeamPlayTimerFlash(
-                        TeamPlayTimerFlashEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayTimerTimeAdded => {
-                    GameEvent::TeamPlayTimerTimeAdded(
-                        TeamPlayTimerTimeAddedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPointStartCapture => {
-                    GameEvent::TeamPlayPointStartCapture(
-                        TeamPlayPointStartCaptureEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPointCaptured => {
-                    GameEvent::TeamPlayPointCaptured(
-                        TeamPlayPointCapturedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPointLocked => {
-                    GameEvent::TeamPlayPointLocked(
-                        TeamPlayPointLockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPointUnlocked => {
-                    GameEvent::TeamPlayPointUnlocked(
-                        TeamPlayPointUnlockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayCaptureBroken => {
-                    GameEvent::TeamPlayCaptureBroken(
-                        TeamPlayCaptureBrokenEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayCaptureBlocked => {
-                    GameEvent::TeamPlayCaptureBlocked(
-                        TeamPlayCaptureBlockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayFlagEvent => {
-                    GameEvent::TeamPlayFlagEvent(
-                        TeamPlayFlagEventEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayWinPanel => {
-                    GameEvent::TeamPlayWinPanel(
-                        TeamPlayWinPanelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayTeamBalancedPlayer => {
-                    GameEvent::TeamPlayTeamBalancedPlayer(
-                        TeamPlayTeamBalancedPlayerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlaySetupFinished => {
-                    GameEvent::TeamPlaySetupFinished(
-                        TeamPlaySetupFinishedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayAlert => {
-                    GameEvent::TeamPlayAlert(
-                        TeamPlayAlertEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TrainingComplete => {
-                    GameEvent::TrainingComplete(
-                        TrainingCompleteEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ShowFreezePanel => {
-                    GameEvent::ShowFreezePanel(
-                        ShowFreezePanelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HideFreezePanel => {
-                    GameEvent::HideFreezePanel(
-                        HideFreezePanelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::FreezeCamStarted => {
-                    GameEvent::FreezeCamStarted(
-                        FreezeCamStartedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerChangeTeam => {
-                    GameEvent::LocalPlayerChangeTeam(
-                        LocalPlayerChangeTeamEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerScoreChanged => {
-                    GameEvent::LocalPlayerScoreChanged(
-                        LocalPlayerScoreChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerChangeClass => {
-                    GameEvent::LocalPlayerChangeClass(
-                        LocalPlayerChangeClassEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerRespawn => {
-                    GameEvent::LocalPlayerRespawn(
-                        LocalPlayerRespawnEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BuildingInfoChanged => {
-                    GameEvent::BuildingInfoChanged(
-                        BuildingInfoChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerChangeDisguise => {
-                    GameEvent::LocalPlayerChangeDisguise(
-                        LocalPlayerChangeDisguiseEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerAccountChanged => {
-                    GameEvent::PlayerAccountChanged(
-                        PlayerAccountChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SpyPdaReset => {
-                    GameEvent::SpyPdaReset(SpyPdaResetEvent::read(stream, definition)?)
-                }
-                GameEventType::FlagStatusUpdate => {
-                    GameEvent::FlagStatusUpdate(
-                        FlagStatusUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerStatsUpdated => {
-                    GameEvent::PlayerStatsUpdated(
-                        PlayerStatsUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayingCommentary => {
-                    GameEvent::PlayingCommentary(
-                        PlayingCommentaryEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerChargeDeployed => {
-                    GameEvent::PlayerChargeDeployed(
-                        PlayerChargeDeployedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerBuiltObject => {
-                    GameEvent::PlayerBuiltObject(
-                        PlayerBuiltObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerUpgradedObject => {
-                    GameEvent::PlayerUpgradedObject(
-                        PlayerUpgradedObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerCarryObject => {
-                    GameEvent::PlayerCarryObject(
-                        PlayerCarryObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerDropObject => {
-                    GameEvent::PlayerDropObject(
-                        PlayerDropObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ObjectRemoved => {
-                    GameEvent::ObjectRemoved(
-                        ObjectRemovedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ObjectDestroyed => {
-                    GameEvent::ObjectDestroyed(
-                        ObjectDestroyedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ObjectDetonated => {
-                    GameEvent::ObjectDetonated(
-                        ObjectDetonatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::AchievementEarned => {
-                    GameEvent::AchievementEarned(
-                        AchievementEarnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SpecTargetUpdated => {
-                    GameEvent::SpecTargetUpdated(
-                        SpecTargetUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TournamentStateUpdate => {
-                    GameEvent::TournamentStateUpdate(
-                        TournamentStateUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TournamentEnableCountdown => {
-                    GameEvent::TournamentEnableCountdown(
-                        TournamentEnableCountdownEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerCalledForMedic => {
-                    GameEvent::PlayerCalledForMedic(
-                        PlayerCalledForMedicEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerAskedForBall => {
-                    GameEvent::PlayerAskedForBall(
-                        PlayerAskedForBallEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerBecameObserver => {
-                    GameEvent::LocalPlayerBecameObserver(
-                        LocalPlayerBecameObserverEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerIgnitedInv => {
-                    GameEvent::PlayerIgnitedInv(
-                        PlayerIgnitedInvEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerIgnited => {
-                    GameEvent::PlayerIgnited(
-                        PlayerIgnitedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerExtinguished => {
-                    GameEvent::PlayerExtinguished(
-                        PlayerExtinguishedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerTeleported => {
-                    GameEvent::PlayerTeleported(
-                        PlayerTeleportedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHealedMedicCall => {
-                    GameEvent::PlayerHealedMedicCall(
-                        PlayerHealedMedicCallEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerChargeReady => {
-                    GameEvent::LocalPlayerChargeReady(
-                        LocalPlayerChargeReadyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerWindDown => {
-                    GameEvent::LocalPlayerWindDown(
-                        LocalPlayerWindDownEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerInvulned => {
-                    GameEvent::PlayerInvulned(
-                        PlayerInvulnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EscortSpeed => {
-                    GameEvent::EscortSpeed(EscortSpeedEvent::read(stream, definition)?)
-                }
-                GameEventType::EscortProgress => {
-                    GameEvent::EscortProgress(
-                        EscortProgressEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EscortRecede => {
-                    GameEvent::EscortRecede(EscortRecedeEvent::read(stream, definition)?)
-                }
-                GameEventType::GameUIActivated => {
-                    GameEvent::GameUIActivated(
-                        GameUIActivatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GameUIHidden => {
-                    GameEvent::GameUIHidden(GameUIHiddenEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerEscortScore => {
-                    GameEvent::PlayerEscortScore(
-                        PlayerEscortScoreEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHealOnHit => {
-                    GameEvent::PlayerHealOnHit(
-                        PlayerHealOnHitEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerStealSandvich => {
-                    GameEvent::PlayerStealSandvich(
-                        PlayerStealSandvichEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ShowClassLayout => {
-                    GameEvent::ShowClassLayout(
-                        ShowClassLayoutEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ShowVsPanel => {
-                    GameEvent::ShowVsPanel(ShowVsPanelEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerDamaged => {
-                    GameEvent::PlayerDamaged(
-                        PlayerDamagedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArenaPlayerNotification => {
-                    GameEvent::ArenaPlayerNotification(
-                        ArenaPlayerNotificationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArenaMatchMaxStreak => {
-                    GameEvent::ArenaMatchMaxStreak(
-                        ArenaMatchMaxStreakEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArenaRoundStart => {
-                    GameEvent::ArenaRoundStart(
-                        ArenaRoundStartEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArenaWinPanel => {
-                    GameEvent::ArenaWinPanel(
-                        ArenaWinPanelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PveWinPanel => {
-                    GameEvent::PveWinPanel(PveWinPanelEvent::read(stream, definition)?)
-                }
-                GameEventType::AirDash => {
-                    GameEvent::AirDash(AirDashEvent::read(stream, definition)?)
-                }
-                GameEventType::Landed => {
-                    GameEvent::Landed(LandedEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerDamageDodged => {
-                    GameEvent::PlayerDamageDodged(
-                        PlayerDamageDodgedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerStunned => {
-                    GameEvent::PlayerStunned(
-                        PlayerStunnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ScoutGrandSlam => {
-                    GameEvent::ScoutGrandSlam(
-                        ScoutGrandSlamEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ScoutSlamdollLanded => {
-                    GameEvent::ScoutSlamdollLanded(
-                        ScoutSlamdollLandedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ArrowImpact => {
-                    GameEvent::ArrowImpact(ArrowImpactEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerJarated => {
-                    GameEvent::PlayerJarated(
-                        PlayerJaratedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerJaratedFade => {
-                    GameEvent::PlayerJaratedFade(
-                        PlayerJaratedFadeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerShieldBlocked => {
-                    GameEvent::PlayerShieldBlocked(
-                        PlayerShieldBlockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerPinned => {
-                    GameEvent::PlayerPinned(PlayerPinnedEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerHealedByMedic => {
-                    GameEvent::PlayerHealedByMedic(
-                        PlayerHealedByMedicEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerSappedObject => {
-                    GameEvent::PlayerSappedObject(
-                        PlayerSappedObjectEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ItemFound => {
-                    GameEvent::ItemFound(ItemFoundEvent::read(stream, definition)?)
-                }
-                GameEventType::ShowAnnotation => {
-                    GameEvent::ShowAnnotation(
-                        ShowAnnotationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HideAnnotation => {
-                    GameEvent::HideAnnotation(
-                        HideAnnotationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PostInventoryApplication => {
-                    GameEvent::PostInventoryApplication(
-                        PostInventoryApplicationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ControlPointUnlockUpdated => {
-                    GameEvent::ControlPointUnlockUpdated(
-                        ControlPointUnlockUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DeployBuffBanner => {
-                    GameEvent::DeployBuffBanner(
-                        DeployBuffBannerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerBuff => {
-                    GameEvent::PlayerBuff(PlayerBuffEvent::read(stream, definition)?)
-                }
-                GameEventType::MedicDeath => {
-                    GameEvent::MedicDeath(MedicDeathEvent::read(stream, definition)?)
-                }
-                GameEventType::OvertimeNag => {
-                    GameEvent::OvertimeNag(OvertimeNagEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamsChanged => {
-                    GameEvent::TeamsChanged(TeamsChangedEvent::read(stream, definition)?)
-                }
-                GameEventType::HalloweenPumpkinGrab => {
-                    GameEvent::HalloweenPumpkinGrab(
-                        HalloweenPumpkinGrabEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RocketJump => {
-                    GameEvent::RocketJump(RocketJumpEvent::read(stream, definition)?)
-                }
-                GameEventType::RocketJumpLanded => {
-                    GameEvent::RocketJumpLanded(
-                        RocketJumpLandedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::StickyJump => {
-                    GameEvent::StickyJump(StickyJumpEvent::read(stream, definition)?)
-                }
-                GameEventType::StickyJumpLanded => {
-                    GameEvent::StickyJumpLanded(
-                        StickyJumpLandedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RocketPackLaunch => {
-                    GameEvent::RocketPackLaunch(
-                        RocketPackLaunchEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RocketPackLanded => {
-                    GameEvent::RocketPackLanded(
-                        RocketPackLandedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MedicDefended => {
-                    GameEvent::MedicDefended(
-                        MedicDefendedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerHealed => {
-                    GameEvent::LocalPlayerHealed(
-                        LocalPlayerHealedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerDestroyedPipeBomb => {
-                    GameEvent::PlayerDestroyedPipeBomb(
-                        PlayerDestroyedPipeBombEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ObjectDeflected => {
-                    GameEvent::ObjectDeflected(
-                        ObjectDeflectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerMvp => {
-                    GameEvent::PlayerMvp(PlayerMvpEvent::read(stream, definition)?)
-                }
-                GameEventType::RaidSpawnMob => {
-                    GameEvent::RaidSpawnMob(RaidSpawnMobEvent::read(stream, definition)?)
-                }
-                GameEventType::RaidSpawnSquad => {
-                    GameEvent::RaidSpawnSquad(
-                        RaidSpawnSquadEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::NavBlocked => {
-                    GameEvent::NavBlocked(NavBlockedEvent::read(stream, definition)?)
-                }
-                GameEventType::PathTrackPassed => {
-                    GameEvent::PathTrackPassed(
-                        PathTrackPassedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::NumCappersChanged => {
-                    GameEvent::NumCappersChanged(
-                        NumCappersChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerRegenerate => {
-                    GameEvent::PlayerRegenerate(
-                        PlayerRegenerateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::UpdateStatusItem => {
-                    GameEvent::UpdateStatusItem(
-                        UpdateStatusItemEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::StatsResetRound => {
-                    GameEvent::StatsResetRound(
-                        StatsResetRoundEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ScoreStatsAccumulatedUpdate => {
-                    GameEvent::ScoreStatsAccumulatedUpdate(
-                        ScoreStatsAccumulatedUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ScoreStatsAccumulatedReset => {
-                    GameEvent::ScoreStatsAccumulatedReset(
-                        ScoreStatsAccumulatedResetEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::AchievementEarnedLocal => {
-                    GameEvent::AchievementEarnedLocal(
-                        AchievementEarnedLocalEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHealed => {
-                    GameEvent::PlayerHealed(PlayerHealedEvent::read(stream, definition)?)
-                }
-                GameEventType::BuildingHealed => {
-                    GameEvent::BuildingHealed(
-                        BuildingHealedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ItemPickup => {
-                    GameEvent::ItemPickup(ItemPickupEvent::read(stream, definition)?)
-                }
-                GameEventType::DuelStatus => {
-                    GameEvent::DuelStatus(DuelStatusEvent::read(stream, definition)?)
-                }
-                GameEventType::FishNotice => {
-                    GameEvent::FishNotice(
-                        Box::new(<FishNoticeEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::FishNoticeArm => {
-                    GameEvent::FishNoticeArm(
-                        Box::new(<FishNoticeArmEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::SlapNotice => {
-                    GameEvent::SlapNotice(
-                        Box::new(<SlapNoticeEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::ThrowableHit => {
-                    GameEvent::ThrowableHit(
-                        Box::new(<ThrowableHitEvent>::read(stream, definition)?),
-                    )
-                }
-                GameEventType::PumpkinLordSummoned => {
-                    GameEvent::PumpkinLordSummoned(
-                        PumpkinLordSummonedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PumpkinLordKilled => {
-                    GameEvent::PumpkinLordKilled(
-                        PumpkinLordKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusSummoned => {
-                    GameEvent::MerasmusSummoned(
-                        MerasmusSummonedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusKilled => {
-                    GameEvent::MerasmusKilled(
-                        MerasmusKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusEscapeWarning => {
-                    GameEvent::MerasmusEscapeWarning(
-                        MerasmusEscapeWarningEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusEscaped => {
-                    GameEvent::MerasmusEscaped(
-                        MerasmusEscapedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossSummoned => {
-                    GameEvent::EyeballBossSummoned(
-                        EyeballBossSummonedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossStunned => {
-                    GameEvent::EyeballBossStunned(
-                        EyeballBossStunnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossKilled => {
-                    GameEvent::EyeballBossKilled(
-                        EyeballBossKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossKiller => {
-                    GameEvent::EyeballBossKiller(
-                        EyeballBossKillerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossEscapeImminent => {
-                    GameEvent::EyeballBossEscapeImminent(
-                        EyeballBossEscapeImminentEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EyeballBossEscaped => {
-                    GameEvent::EyeballBossEscaped(
-                        EyeballBossEscapedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::NpcHurt => {
-                    GameEvent::NpcHurt(NpcHurtEvent::read(stream, definition)?)
-                }
-                GameEventType::ControlPointTimerUpdated => {
-                    GameEvent::ControlPointTimerUpdated(
-                        ControlPointTimerUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHighFiveStart => {
-                    GameEvent::PlayerHighFiveStart(
-                        PlayerHighFiveStartEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHighFiveCancel => {
-                    GameEvent::PlayerHighFiveCancel(
-                        PlayerHighFiveCancelEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerHighFiveSuccess => {
-                    GameEvent::PlayerHighFiveSuccess(
-                        PlayerHighFiveSuccessEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerBonusPoints => {
-                    GameEvent::PlayerBonusPoints(
-                        PlayerBonusPointsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerUpgraded => {
-                    GameEvent::PlayerUpgraded(
-                        PlayerUpgradedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerBuyback => {
-                    GameEvent::PlayerBuyback(
-                        PlayerBuybackEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerUsedPowerUpBottle => {
-                    GameEvent::PlayerUsedPowerUpBottle(
-                        PlayerUsedPowerUpBottleEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ChristmasGiftGrab => {
-                    GameEvent::ChristmasGiftGrab(
-                        ChristmasGiftGrabEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerKilledAchievementZone => {
-                    GameEvent::PlayerKilledAchievementZone(
-                        PlayerKilledAchievementZoneEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyUpdated => {
-                    GameEvent::PartyUpdated(PartyUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::PartyPrefChanged => {
-                    GameEvent::PartyPrefChanged(
-                        PartyPrefChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyCriteriaChanged => {
-                    GameEvent::PartyCriteriaChanged(
-                        PartyCriteriaChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyInvitesChanged => {
-                    GameEvent::PartyInvitesChanged(
-                        PartyInvitesChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyQueueStateChanged => {
-                    GameEvent::PartyQueueStateChanged(
-                        PartyQueueStateChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyChat => {
-                    GameEvent::PartyChat(PartyChatEvent::read(stream, definition)?)
-                }
-                GameEventType::PartyMemberJoin => {
-                    GameEvent::PartyMemberJoin(
-                        PartyMemberJoinEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PartyMemberLeave => {
-                    GameEvent::PartyMemberLeave(
-                        PartyMemberLeaveEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MatchInvitesUpdated => {
-                    GameEvent::MatchInvitesUpdated(
-                        MatchInvitesUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LobbyUpdated => {
-                    GameEvent::LobbyUpdated(LobbyUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::MvmMissionUpdate => {
-                    GameEvent::MvmMissionUpdate(
-                        MvmMissionUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RecalculateHolidays => {
-                    GameEvent::RecalculateHolidays(
-                        RecalculateHolidaysEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerCurrencyChanged => {
-                    GameEvent::PlayerCurrencyChanged(
-                        PlayerCurrencyChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DoomsdayRocketOpen => {
-                    GameEvent::DoomsdayRocketOpen(
-                        DoomsdayRocketOpenEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RemoveNemesisRelationships => {
-                    GameEvent::RemoveNemesisRelationships(
-                        RemoveNemesisRelationshipsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmCreditBonusWave => {
-                    GameEvent::MvmCreditBonusWave(
-                        MvmCreditBonusWaveEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmCreditBonusAll => {
-                    GameEvent::MvmCreditBonusAll(
-                        MvmCreditBonusAllEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmCreditBonusAllAdvanced => {
-                    GameEvent::MvmCreditBonusAllAdvanced(
-                        MvmCreditBonusAllAdvancedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmQuickSentryUpgrade => {
-                    GameEvent::MvmQuickSentryUpgrade(
-                        MvmQuickSentryUpgradeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmTankDestroyedByPlayers => {
-                    GameEvent::MvmTankDestroyedByPlayers(
-                        MvmTankDestroyedByPlayersEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmKillRobotDeliveringBomb => {
-                    GameEvent::MvmKillRobotDeliveringBomb(
-                        MvmKillRobotDeliveringBombEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmPickupCurrency => {
-                    GameEvent::MvmPickupCurrency(
-                        MvmPickupCurrencyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBombCarrierKilled => {
-                    GameEvent::MvmBombCarrierKilled(
-                        MvmBombCarrierKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmSentryBusterDetonate => {
-                    GameEvent::MvmSentryBusterDetonate(
-                        MvmSentryBusterDetonateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmScoutMarkedForDeath => {
-                    GameEvent::MvmScoutMarkedForDeath(
-                        MvmScoutMarkedForDeathEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmMedicPowerUpShared => {
-                    GameEvent::MvmMedicPowerUpShared(
-                        MvmMedicPowerUpSharedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBeginWave => {
-                    GameEvent::MvmBeginWave(MvmBeginWaveEvent::read(stream, definition)?)
-                }
-                GameEventType::MvmWaveComplete => {
-                    GameEvent::MvmWaveComplete(
-                        MvmWaveCompleteEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmMissionComplete => {
-                    GameEvent::MvmMissionComplete(
-                        MvmMissionCompleteEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBombResetByPlayer => {
-                    GameEvent::MvmBombResetByPlayer(
-                        MvmBombResetByPlayerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBombAlarmTriggered => {
-                    GameEvent::MvmBombAlarmTriggered(
-                        MvmBombAlarmTriggeredEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmBombDeployResetByPlayer => {
-                    GameEvent::MvmBombDeployResetByPlayer(
-                        MvmBombDeployResetByPlayerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmWaveFailed => {
-                    GameEvent::MvmWaveFailed(
-                        MvmWaveFailedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmResetStats => {
-                    GameEvent::MvmResetStats(
-                        MvmResetStatsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DamageResisted => {
-                    GameEvent::DamageResisted(
-                        DamageResistedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RevivePlayerNotify => {
-                    GameEvent::RevivePlayerNotify(
-                        RevivePlayerNotifyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RevivePlayerStopped => {
-                    GameEvent::RevivePlayerStopped(
-                        RevivePlayerStoppedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RevivePlayerComplete => {
-                    GameEvent::RevivePlayerComplete(
-                        RevivePlayerCompleteEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerTurnedToGhost => {
-                    GameEvent::PlayerTurnedToGhost(
-                        PlayerTurnedToGhostEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MedigunShieldBlockedDamage => {
-                    GameEvent::MedigunShieldBlockedDamage(
-                        MedigunShieldBlockedDamageEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmAdvWaveCompleteNoGates => {
-                    GameEvent::MvmAdvWaveCompleteNoGates(
-                        MvmAdvWaveCompleteNoGatesEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmSniperHeadshotCurrency => {
-                    GameEvent::MvmSniperHeadshotCurrency(
-                        MvmSniperHeadshotCurrencyEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmMannhattanPit => {
-                    GameEvent::MvmMannhattanPit(
-                        MvmMannhattanPitEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::FlagCarriedInDetectionZone => {
-                    GameEvent::FlagCarriedInDetectionZone(
-                        FlagCarriedInDetectionZoneEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmAdvWaveKilledStunRadio => {
-                    GameEvent::MvmAdvWaveKilledStunRadio(
-                        MvmAdvWaveKilledStunRadioEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerDirectHitStun => {
-                    GameEvent::PlayerDirectHitStun(
-                        PlayerDirectHitStunEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MvmSentryBusterKilled => {
-                    GameEvent::MvmSentryBusterKilled(
-                        MvmSentryBusterKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::UpgradesFileChanged => {
-                    GameEvent::UpgradesFileChanged(
-                        UpgradesFileChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdTeamPointsChanged => {
-                    GameEvent::RdTeamPointsChanged(
-                        RdTeamPointsChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdRulesStateChanged => {
-                    GameEvent::RdRulesStateChanged(
-                        RdRulesStateChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdRobotKilled => {
-                    GameEvent::RdRobotKilled(
-                        RdRobotKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdRobotImpact => {
-                    GameEvent::RdRobotImpact(
-                        RdRobotImpactEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TeamPlayPreRoundTimeLeft => {
-                    GameEvent::TeamPlayPreRoundTimeLeft(
-                        TeamPlayPreRoundTimeLeftEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ParachuteDeploy => {
-                    GameEvent::ParachuteDeploy(
-                        ParachuteDeployEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ParachuteHolster => {
-                    GameEvent::ParachuteHolster(
-                        ParachuteHolsterEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::KillRefillsMeter => {
-                    GameEvent::KillRefillsMeter(
-                        KillRefillsMeterEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RpsTauntEvent => {
-                    GameEvent::RpsTauntEvent(
-                        RpsTauntEventEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CongaKill => {
-                    GameEvent::CongaKill(CongaKillEvent::read(stream, definition)?)
-                }
-                GameEventType::PlayerInitialSpawn => {
-                    GameEvent::PlayerInitialSpawn(
-                        PlayerInitialSpawnEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CompetitiveVictory => {
-                    GameEvent::CompetitiveVictory(
-                        CompetitiveVictoryEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CompetitiveStatsUpdate => {
-                    GameEvent::CompetitiveStatsUpdate(
-                        CompetitiveStatsUpdateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MiniGameWin => {
-                    GameEvent::MiniGameWin(MiniGameWinEvent::read(stream, definition)?)
-                }
-                GameEventType::SentryOnGoActive => {
-                    GameEvent::SentryOnGoActive(
-                        SentryOnGoActiveEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DuckXpLevelUp => {
-                    GameEvent::DuckXpLevelUp(
-                        DuckXpLevelUpEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestLogOpened => {
-                    GameEvent::QuestLogOpened(
-                        QuestLogOpenedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SchemaUpdated => {
-                    GameEvent::SchemaUpdated(
-                        SchemaUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::LocalPlayerPickupWeapon => {
-                    GameEvent::LocalPlayerPickupWeapon(
-                        LocalPlayerPickupWeaponEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RdPlayerScorePoints => {
-                    GameEvent::RdPlayerScorePoints(
-                        RdPlayerScorePointsEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DemomanDetStickies => {
-                    GameEvent::DemomanDetStickies(
-                        DemomanDetStickiesEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestObjectiveCompleted => {
-                    GameEvent::QuestObjectiveCompleted(
-                        QuestObjectiveCompletedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerScoreChanged => {
-                    GameEvent::PlayerScoreChanged(
-                        PlayerScoreChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::KilledCappingPlayer => {
-                    GameEvent::KilledCappingPlayer(
-                        KilledCappingPlayerEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EnvironmentalDeath => {
-                    GameEvent::EnvironmentalDeath(
-                        EnvironmentalDeathEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ProjectileDirectHit => {
-                    GameEvent::ProjectileDirectHit(
-                        ProjectileDirectHitEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PassGet => {
-                    GameEvent::PassGet(PassGetEvent::read(stream, definition)?)
-                }
-                GameEventType::PassScore => {
-                    GameEvent::PassScore(PassScoreEvent::read(stream, definition)?)
-                }
-                GameEventType::PassFree => {
-                    GameEvent::PassFree(PassFreeEvent::read(stream, definition)?)
-                }
-                GameEventType::PassPassCaught => {
-                    GameEvent::PassPassCaught(
-                        PassPassCaughtEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PassBallStolen => {
-                    GameEvent::PassBallStolen(
-                        PassBallStolenEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PassBallBlocked => {
-                    GameEvent::PassBallBlocked(
-                        PassBallBlockedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DamagePrevented => {
-                    GameEvent::DamagePrevented(
-                        DamagePreventedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HalloweenBossKilled => {
-                    GameEvent::HalloweenBossKilled(
-                        HalloweenBossKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EscapedLootIsland => {
-                    GameEvent::EscapedLootIsland(
-                        EscapedLootIslandEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TaggedPlayerAsIt => {
-                    GameEvent::TaggedPlayerAsIt(
-                        TaggedPlayerAsItEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusStunned => {
-                    GameEvent::MerasmusStunned(
-                        MerasmusStunnedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MerasmusPropFound => {
-                    GameEvent::MerasmusPropFound(
-                        MerasmusPropFoundEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HalloweenSkeletonKilled => {
-                    GameEvent::HalloweenSkeletonKilled(
-                        HalloweenSkeletonKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::EscapeHell => {
-                    GameEvent::EscapeHell(EscapeHellEvent::read(stream, definition)?)
-                }
-                GameEventType::CrossSpectralBridge => {
-                    GameEvent::CrossSpectralBridge(
-                        CrossSpectralBridgeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::MiniGameWon => {
-                    GameEvent::MiniGameWon(MiniGameWonEvent::read(stream, definition)?)
-                }
-                GameEventType::RespawnGhost => {
-                    GameEvent::RespawnGhost(RespawnGhostEvent::read(stream, definition)?)
-                }
-                GameEventType::KillInHell => {
-                    GameEvent::KillInHell(KillInHellEvent::read(stream, definition)?)
-                }
-                GameEventType::HalloweenDuckCollected => {
-                    GameEvent::HalloweenDuckCollected(
-                        HalloweenDuckCollectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::SpecialScore => {
-                    GameEvent::SpecialScore(SpecialScoreEvent::read(stream, definition)?)
-                }
-                GameEventType::TeamLeaderKilled => {
-                    GameEvent::TeamLeaderKilled(
-                        TeamLeaderKilledEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HalloweenSoulCollected => {
-                    GameEvent::HalloweenSoulCollected(
-                        HalloweenSoulCollectedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RecalculateTruce => {
-                    GameEvent::RecalculateTruce(
-                        RecalculateTruceEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DeadRingerCheatDeath => {
-                    GameEvent::DeadRingerCheatDeath(
-                        DeadRingerCheatDeathEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CrossbowHeal => {
-                    GameEvent::CrossbowHeal(CrossbowHealEvent::read(stream, definition)?)
-                }
-                GameEventType::DamageMitigated => {
-                    GameEvent::DamageMitigated(
-                        DamageMitigatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PayloadPushed => {
-                    GameEvent::PayloadPushed(
-                        PayloadPushedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerAbandonedMatch => {
-                    GameEvent::PlayerAbandonedMatch(
-                        PlayerAbandonedMatchEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ClDrawline => {
-                    GameEvent::ClDrawline(ClDrawlineEvent::read(stream, definition)?)
-                }
-                GameEventType::RestartTimerTime => {
-                    GameEvent::RestartTimerTime(
-                        RestartTimerTimeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::WinLimitChanged => {
-                    GameEvent::WinLimitChanged(
-                        WinLimitChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::WinPanelShowScores => {
-                    GameEvent::WinPanelShowScores(
-                        WinPanelShowScoresEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::TopStreamsRequestFinished => {
-                    GameEvent::TopStreamsRequestFinished(
-                        TopStreamsRequestFinishedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CompetitiveStateChanged => {
-                    GameEvent::CompetitiveStateChanged(
-                        CompetitiveStateChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GlobalWarDataUpdated => {
-                    GameEvent::GlobalWarDataUpdated(
-                        GlobalWarDataUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::StopWatchChanged => {
-                    GameEvent::StopWatchChanged(
-                        StopWatchChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::DsStop => {
-                    GameEvent::DsStop(DsStopEvent::read(stream, definition)?)
-                }
-                GameEventType::DsScreenshot => {
-                    GameEvent::DsScreenshot(DsScreenshotEvent::read(stream, definition)?)
-                }
-                GameEventType::ShowMatchSummary => {
-                    GameEvent::ShowMatchSummary(
-                        ShowMatchSummaryEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ExperienceChanged => {
-                    GameEvent::ExperienceChanged(
-                        ExperienceChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::BeginXpLerp => {
-                    GameEvent::BeginXpLerp(BeginXpLerpEvent::read(stream, definition)?)
-                }
-                GameEventType::MatchmakerStatsUpdated => {
-                    GameEvent::MatchmakerStatsUpdated(
-                        MatchmakerStatsUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RematchVotePeriodOver => {
-                    GameEvent::RematchVotePeriodOver(
-                        RematchVotePeriodOverEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::RematchFailedToCreate => {
-                    GameEvent::RematchFailedToCreate(
-                        RematchFailedToCreateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerRematchChange => {
-                    GameEvent::PlayerRematchChange(
-                        PlayerRematchChangeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PingUpdated => {
-                    GameEvent::PingUpdated(PingUpdatedEvent::read(stream, definition)?)
-                }
-                GameEventType::MMStatsUpdated => {
-                    GameEvent::MMStatsUpdated(
-                        MMStatsUpdatedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerNextMapVoteChange => {
-                    GameEvent::PlayerNextMapVoteChange(
-                        PlayerNextMapVoteChangeEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::VoteMapsChanged => {
-                    GameEvent::VoteMapsChanged(
-                        VoteMapsChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ProtoDefChanged => {
-                    GameEvent::ProtoDefChanged(
-                        ProtoDefChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerDomination => {
-                    GameEvent::PlayerDomination(
-                        PlayerDominationEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::PlayerRocketPackPushed => {
-                    GameEvent::PlayerRocketPackPushed(
-                        PlayerRocketPackPushedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestRequest => {
-                    GameEvent::QuestRequest(QuestRequestEvent::read(stream, definition)?)
-                }
-                GameEventType::QuestResponse => {
-                    GameEvent::QuestResponse(
-                        QuestResponseEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestProgress => {
-                    GameEvent::QuestProgress(
-                        QuestProgressEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ProjectileRemoved => {
-                    GameEvent::ProjectileRemoved(
-                        ProjectileRemovedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestMapDataChanged => {
-                    GameEvent::QuestMapDataChanged(
-                        QuestMapDataChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::GasDousedPlayerIgnited => {
-                    GameEvent::GasDousedPlayerIgnited(
-                        GasDousedPlayerIgnitedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::QuestTurnInState => {
-                    GameEvent::QuestTurnInState(
-                        QuestTurnInStateEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ItemsAcknowledged => {
-                    GameEvent::ItemsAcknowledged(
-                        ItemsAcknowledgedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::CapperKilled => {
-                    GameEvent::CapperKilled(CapperKilledEvent::read(stream, definition)?)
-                }
-                GameEventType::MainMenuStabilized => {
-                    GameEvent::MainMenuStabilized(
-                        MainMenuStabilizedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::WorldStatusChanged => {
-                    GameEvent::WorldStatusChanged(
-                        WorldStatusChangedEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVStatus => {
-                    GameEvent::HLTVStatus(HLTVStatusEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVCameraman => {
-                    GameEvent::HLTVCameraman(
-                        HLTVCameramanEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVRankCamera => {
-                    GameEvent::HLTVRankCamera(
-                        HLTVRankCameraEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVRankEntity => {
-                    GameEvent::HLTVRankEntity(
-                        HLTVRankEntityEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::HLTVFixed => {
-                    GameEvent::HLTVFixed(HLTVFixedEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVChase => {
-                    GameEvent::HLTVChase(HLTVChaseEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVMessage => {
-                    GameEvent::HLTVMessage(HLTVMessageEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVTitle => {
-                    GameEvent::HLTVTitle(HLTVTitleEvent::read(stream, definition)?)
-                }
-                GameEventType::HLTVChat => {
-                    GameEvent::HLTVChat(HLTVChatEvent::read(stream, definition)?)
-                }
-                GameEventType::ReplayStartRecord => {
-                    GameEvent::ReplayStartRecord(
-                        ReplayStartRecordEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplaySessionInfo => {
-                    GameEvent::ReplaySessionInfo(
-                        ReplaySessionInfoEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplayEndRecord => {
-                    GameEvent::ReplayEndRecord(
-                        ReplayEndRecordEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplayReplaysAvailable => {
-                    GameEvent::ReplayReplaysAvailable(
-                        ReplayReplaysAvailableEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::ReplayServerError => {
-                    GameEvent::ReplayServerError(
-                        ReplayServerErrorEvent::read(stream, definition)?,
-                    )
-                }
-                GameEventType::Unknown(_) => {
-                    GameEvent::Unknown(RawGameEvent::read(stream, definition)?)
-                }
-            },
-        )
+        Ok(match definition.event_type {
+            GameEventType::ServerSpawn => {
+                GameEvent::ServerSpawn(Box::new(<ServerSpawnEvent>::read(stream, definition)?))
+            }
+            GameEventType::ServerChangeLevelFailed => GameEvent::ServerChangeLevelFailed(
+                ServerChangeLevelFailedEvent::read(stream, definition)?,
+            ),
+            GameEventType::ServerShutdown => {
+                GameEvent::ServerShutdown(ServerShutdownEvent::read(stream, definition)?)
+            }
+            GameEventType::ServerCvar => {
+                GameEvent::ServerCvar(ServerCvarEvent::read(stream, definition)?)
+            }
+            GameEventType::ServerMessage => {
+                GameEvent::ServerMessage(ServerMessageEvent::read(stream, definition)?)
+            }
+            GameEventType::ServerAddBan => {
+                GameEvent::ServerAddBan(Box::new(<ServerAddBanEvent>::read(stream, definition)?))
+            }
+            GameEventType::ServerRemoveBan => {
+                GameEvent::ServerRemoveBan(ServerRemoveBanEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerConnect => {
+                GameEvent::PlayerConnect(PlayerConnectEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerConnectClient => {
+                GameEvent::PlayerConnectClient(PlayerConnectClientEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerInfo => {
+                GameEvent::PlayerInfo(PlayerInfoEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDisconnect => {
+                GameEvent::PlayerDisconnect(PlayerDisconnectEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerActivate => {
+                GameEvent::PlayerActivate(PlayerActivateEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerSay => {
+                GameEvent::PlayerSay(PlayerSayEvent::read(stream, definition)?)
+            }
+            GameEventType::ClientDisconnect => {
+                GameEvent::ClientDisconnect(ClientDisconnectEvent::read(stream, definition)?)
+            }
+            GameEventType::ClientBeginConnect => {
+                GameEvent::ClientBeginConnect(ClientBeginConnectEvent::read(stream, definition)?)
+            }
+            GameEventType::ClientConnected => {
+                GameEvent::ClientConnected(ClientConnectedEvent::read(stream, definition)?)
+            }
+            GameEventType::ClientFullConnect => {
+                GameEvent::ClientFullConnect(ClientFullConnectEvent::read(stream, definition)?)
+            }
+            GameEventType::HostQuit => {
+                GameEvent::HostQuit(HostQuitEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamInfo => {
+                GameEvent::TeamInfo(TeamInfoEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamScore => {
+                GameEvent::TeamScore(TeamScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayBroadcastAudio => GameEvent::TeamPlayBroadcastAudio(
+                TeamPlayBroadcastAudioEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerTeam => {
+                GameEvent::PlayerTeam(PlayerTeamEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerClass => {
+                GameEvent::PlayerClass(PlayerClassEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDeath => {
+                GameEvent::PlayerDeath(Box::new(<PlayerDeathEvent>::read(stream, definition)?))
+            }
+            GameEventType::PlayerHurt => {
+                GameEvent::PlayerHurt(PlayerHurtEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerChat => {
+                GameEvent::PlayerChat(PlayerChatEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerScore => {
+                GameEvent::PlayerScore(PlayerScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerSpawn => {
+                GameEvent::PlayerSpawn(PlayerSpawnEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerShoot => {
+                GameEvent::PlayerShoot(PlayerShootEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerUse => {
+                GameEvent::PlayerUse(PlayerUseEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerChangeName => {
+                GameEvent::PlayerChangeName(PlayerChangeNameEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHintMessage => {
+                GameEvent::PlayerHintMessage(PlayerHintMessageEvent::read(stream, definition)?)
+            }
+            GameEventType::BasePlayerTeleported => GameEvent::BasePlayerTeleported(
+                BasePlayerTeleportedEvent::read(stream, definition)?,
+            ),
+            GameEventType::GameInit => {
+                GameEvent::GameInit(GameInitEvent::read(stream, definition)?)
+            }
+            GameEventType::GameNewMap => {
+                GameEvent::GameNewMap(GameNewMapEvent::read(stream, definition)?)
+            }
+            GameEventType::GameStart => {
+                GameEvent::GameStart(GameStartEvent::read(stream, definition)?)
+            }
+            GameEventType::GameEnd => GameEvent::GameEnd(GameEndEvent::read(stream, definition)?),
+            GameEventType::RoundStart => {
+                GameEvent::RoundStart(RoundStartEvent::read(stream, definition)?)
+            }
+            GameEventType::RoundEnd => {
+                GameEvent::RoundEnd(RoundEndEvent::read(stream, definition)?)
+            }
+            GameEventType::GameMessage => {
+                GameEvent::GameMessage(GameMessageEvent::read(stream, definition)?)
+            }
+            GameEventType::BreakBreakable => {
+                GameEvent::BreakBreakable(BreakBreakableEvent::read(stream, definition)?)
+            }
+            GameEventType::BreakProp => {
+                GameEvent::BreakProp(BreakPropEvent::read(stream, definition)?)
+            }
+            GameEventType::EntityKilled => {
+                GameEvent::EntityKilled(EntityKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::BonusUpdated => {
+                GameEvent::BonusUpdated(BonusUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::AchievementEvent => {
+                GameEvent::AchievementEvent(AchievementEventEvent::read(stream, definition)?)
+            }
+            GameEventType::AchievementIncrement => GameEvent::AchievementIncrement(
+                AchievementIncrementEvent::read(stream, definition)?,
+            ),
+            GameEventType::PhysgunPickup => {
+                GameEvent::PhysgunPickup(PhysgunPickupEvent::read(stream, definition)?)
+            }
+            GameEventType::FlareIgniteNpc => {
+                GameEvent::FlareIgniteNpc(FlareIgniteNpcEvent::read(stream, definition)?)
+            }
+            GameEventType::HelicopterGrenadePuntMiss => GameEvent::HelicopterGrenadePuntMiss(
+                HelicopterGrenadePuntMissEvent::read(stream, definition)?,
+            ),
+            GameEventType::UserDataDownloaded => {
+                GameEvent::UserDataDownloaded(UserDataDownloadedEvent::read(stream, definition)?)
+            }
+            GameEventType::RagdollDissolved => {
+                GameEvent::RagdollDissolved(RagdollDissolvedEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVChangedMode => {
+                GameEvent::HLTVChangedMode(HLTVChangedModeEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVChangedTarget => {
+                GameEvent::HLTVChangedTarget(HLTVChangedTargetEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteEnded => {
+                GameEvent::VoteEnded(VoteEndedEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteStarted => {
+                GameEvent::VoteStarted(VoteStartedEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteChanged => {
+                GameEvent::VoteChanged(VoteChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::VotePassed => {
+                GameEvent::VotePassed(VotePassedEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteFailed => {
+                GameEvent::VoteFailed(VoteFailedEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteCast => {
+                GameEvent::VoteCast(VoteCastEvent::read(stream, definition)?)
+            }
+            GameEventType::VoteOptions => {
+                GameEvent::VoteOptions(Box::new(<VoteOptionsEvent>::read(stream, definition)?))
+            }
+            GameEventType::ReplaySaved => {
+                GameEvent::ReplaySaved(ReplaySavedEvent::read(stream, definition)?)
+            }
+            GameEventType::EnteredPerformanceMode => GameEvent::EnteredPerformanceMode(
+                EnteredPerformanceModeEvent::read(stream, definition)?,
+            ),
+            GameEventType::BrowseReplays => {
+                GameEvent::BrowseReplays(BrowseReplaysEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplayYoutubeStats => {
+                GameEvent::ReplayYoutubeStats(ReplayYoutubeStatsEvent::read(stream, definition)?)
+            }
+            GameEventType::InventoryUpdated => {
+                GameEvent::InventoryUpdated(InventoryUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::CartUpdated => {
+                GameEvent::CartUpdated(CartUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::StorePriceSheetUpdated => GameEvent::StorePriceSheetUpdated(
+                StorePriceSheetUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::EconInventoryConnected => GameEvent::EconInventoryConnected(
+                EconInventoryConnectedEvent::read(stream, definition)?,
+            ),
+            GameEventType::ItemSchemaInitialized => GameEvent::ItemSchemaInitialized(
+                ItemSchemaInitializedEvent::read(stream, definition)?,
+            ),
+            GameEventType::GcNewSession => {
+                GameEvent::GcNewSession(GcNewSessionEvent::read(stream, definition)?)
+            }
+            GameEventType::GcLostSession => {
+                GameEvent::GcLostSession(GcLostSessionEvent::read(stream, definition)?)
+            }
+            GameEventType::IntroFinish => {
+                GameEvent::IntroFinish(IntroFinishEvent::read(stream, definition)?)
+            }
+            GameEventType::IntroNextCamera => {
+                GameEvent::IntroNextCamera(IntroNextCameraEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerChangeClass => {
+                GameEvent::PlayerChangeClass(PlayerChangeClassEvent::read(stream, definition)?)
+            }
+            GameEventType::TfMapTimeRemaining => {
+                GameEvent::TfMapTimeRemaining(TfMapTimeRemainingEvent::read(stream, definition)?)
+            }
+            GameEventType::TfGameOver => {
+                GameEvent::TfGameOver(TfGameOverEvent::read(stream, definition)?)
+            }
+            GameEventType::CtfFlagCaptured => {
+                GameEvent::CtfFlagCaptured(CtfFlagCapturedEvent::read(stream, definition)?)
+            }
+            GameEventType::ControlPointInitialized => GameEvent::ControlPointInitialized(
+                ControlPointInitializedEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUpdateImages => GameEvent::ControlPointUpdateImages(
+                ControlPointUpdateImagesEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUpdateLayout => GameEvent::ControlPointUpdateLayout(
+                ControlPointUpdateLayoutEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUpdateCapping => GameEvent::ControlPointUpdateCapping(
+                ControlPointUpdateCappingEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUpdateOwner => GameEvent::ControlPointUpdateOwner(
+                ControlPointUpdateOwnerEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointStartTouch => GameEvent::ControlPointStartTouch(
+                ControlPointStartTouchEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointEndTouch => GameEvent::ControlPointEndTouch(
+                ControlPointEndTouchEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointPulseElement => GameEvent::ControlPointPulseElement(
+                ControlPointPulseElementEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointFakeCapture => GameEvent::ControlPointFakeCapture(
+                ControlPointFakeCaptureEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointFakeCaptureMultiplier => {
+                GameEvent::ControlPointFakeCaptureMultiplier(
+                    ControlPointFakeCaptureMultiplierEvent::read(stream, definition)?,
+                )
+            }
+            GameEventType::TeamPlayRoundSelected => GameEvent::TeamPlayRoundSelected(
+                TeamPlayRoundSelectedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayRoundStart => {
+                GameEvent::TeamPlayRoundStart(TeamPlayRoundStartEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayRoundActive => {
+                GameEvent::TeamPlayRoundActive(TeamPlayRoundActiveEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayWaitingBegins => GameEvent::TeamPlayWaitingBegins(
+                TeamPlayWaitingBeginsEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayWaitingEnds => {
+                GameEvent::TeamPlayWaitingEnds(TeamPlayWaitingEndsEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayWaitingAboutToEnd => GameEvent::TeamPlayWaitingAboutToEnd(
+                TeamPlayWaitingAboutToEndEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayRestartRound => GameEvent::TeamPlayRestartRound(
+                TeamPlayRestartRoundEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayReadyRestart => GameEvent::TeamPlayReadyRestart(
+                TeamPlayReadyRestartEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayRoundRestartSeconds => GameEvent::TeamPlayRoundRestartSeconds(
+                TeamPlayRoundRestartSecondsEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayTeamReady => {
+                GameEvent::TeamPlayTeamReady(TeamPlayTeamReadyEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayRoundWin => {
+                GameEvent::TeamPlayRoundWin(TeamPlayRoundWinEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayUpdateTimer => {
+                GameEvent::TeamPlayUpdateTimer(TeamPlayUpdateTimerEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayRoundStalemate => GameEvent::TeamPlayRoundStalemate(
+                TeamPlayRoundStalemateEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayOvertimeBegin => GameEvent::TeamPlayOvertimeBegin(
+                TeamPlayOvertimeBeginEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayOvertimeEnd => {
+                GameEvent::TeamPlayOvertimeEnd(TeamPlayOvertimeEndEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlaySuddenDeathBegin => GameEvent::TeamPlaySuddenDeathBegin(
+                TeamPlaySuddenDeathBeginEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlaySuddenDeathEnd => GameEvent::TeamPlaySuddenDeathEnd(
+                TeamPlaySuddenDeathEndEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayGameOver => {
+                GameEvent::TeamPlayGameOver(TeamPlayGameOverEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayMapTimeRemaining => GameEvent::TeamPlayMapTimeRemaining(
+                TeamPlayMapTimeRemainingEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayTimerFlash => {
+                GameEvent::TeamPlayTimerFlash(TeamPlayTimerFlashEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayTimerTimeAdded => GameEvent::TeamPlayTimerTimeAdded(
+                TeamPlayTimerTimeAddedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayPointStartCapture => GameEvent::TeamPlayPointStartCapture(
+                TeamPlayPointStartCaptureEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayPointCaptured => GameEvent::TeamPlayPointCaptured(
+                TeamPlayPointCapturedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayPointLocked => {
+                GameEvent::TeamPlayPointLocked(TeamPlayPointLockedEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayPointUnlocked => GameEvent::TeamPlayPointUnlocked(
+                TeamPlayPointUnlockedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayCaptureBroken => GameEvent::TeamPlayCaptureBroken(
+                TeamPlayCaptureBrokenEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayCaptureBlocked => GameEvent::TeamPlayCaptureBlocked(
+                TeamPlayCaptureBlockedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayFlagEvent => {
+                GameEvent::TeamPlayFlagEvent(TeamPlayFlagEventEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayWinPanel => {
+                GameEvent::TeamPlayWinPanel(TeamPlayWinPanelEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayTeamBalancedPlayer => GameEvent::TeamPlayTeamBalancedPlayer(
+                TeamPlayTeamBalancedPlayerEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlaySetupFinished => GameEvent::TeamPlaySetupFinished(
+                TeamPlaySetupFinishedEvent::read(stream, definition)?,
+            ),
+            GameEventType::TeamPlayAlert => {
+                GameEvent::TeamPlayAlert(TeamPlayAlertEvent::read(stream, definition)?)
+            }
+            GameEventType::TrainingComplete => {
+                GameEvent::TrainingComplete(TrainingCompleteEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowFreezePanel => {
+                GameEvent::ShowFreezePanel(ShowFreezePanelEvent::read(stream, definition)?)
+            }
+            GameEventType::HideFreezePanel => {
+                GameEvent::HideFreezePanel(HideFreezePanelEvent::read(stream, definition)?)
+            }
+            GameEventType::FreezeCamStarted => {
+                GameEvent::FreezeCamStarted(FreezeCamStartedEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerChangeTeam => GameEvent::LocalPlayerChangeTeam(
+                LocalPlayerChangeTeamEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerScoreChanged => GameEvent::LocalPlayerScoreChanged(
+                LocalPlayerScoreChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerChangeClass => GameEvent::LocalPlayerChangeClass(
+                LocalPlayerChangeClassEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerRespawn => {
+                GameEvent::LocalPlayerRespawn(LocalPlayerRespawnEvent::read(stream, definition)?)
+            }
+            GameEventType::BuildingInfoChanged => {
+                GameEvent::BuildingInfoChanged(BuildingInfoChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerChangeDisguise => GameEvent::LocalPlayerChangeDisguise(
+                LocalPlayerChangeDisguiseEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerAccountChanged => GameEvent::PlayerAccountChanged(
+                PlayerAccountChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::SpyPdaReset => {
+                GameEvent::SpyPdaReset(SpyPdaResetEvent::read(stream, definition)?)
+            }
+            GameEventType::FlagStatusUpdate => {
+                GameEvent::FlagStatusUpdate(FlagStatusUpdateEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerStatsUpdated => {
+                GameEvent::PlayerStatsUpdated(PlayerStatsUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayingCommentary => {
+                GameEvent::PlayingCommentary(PlayingCommentaryEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerChargeDeployed => GameEvent::PlayerChargeDeployed(
+                PlayerChargeDeployedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerBuiltObject => {
+                GameEvent::PlayerBuiltObject(PlayerBuiltObjectEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerUpgradedObject => GameEvent::PlayerUpgradedObject(
+                PlayerUpgradedObjectEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerCarryObject => {
+                GameEvent::PlayerCarryObject(PlayerCarryObjectEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDropObject => {
+                GameEvent::PlayerDropObject(PlayerDropObjectEvent::read(stream, definition)?)
+            }
+            GameEventType::ObjectRemoved => {
+                GameEvent::ObjectRemoved(ObjectRemovedEvent::read(stream, definition)?)
+            }
+            GameEventType::ObjectDestroyed => {
+                GameEvent::ObjectDestroyed(ObjectDestroyedEvent::read(stream, definition)?)
+            }
+            GameEventType::ObjectDetonated => {
+                GameEvent::ObjectDetonated(ObjectDetonatedEvent::read(stream, definition)?)
+            }
+            GameEventType::AchievementEarned => {
+                GameEvent::AchievementEarned(AchievementEarnedEvent::read(stream, definition)?)
+            }
+            GameEventType::SpecTargetUpdated => {
+                GameEvent::SpecTargetUpdated(SpecTargetUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::TournamentStateUpdate => GameEvent::TournamentStateUpdate(
+                TournamentStateUpdateEvent::read(stream, definition)?,
+            ),
+            GameEventType::TournamentEnableCountdown => GameEvent::TournamentEnableCountdown(
+                TournamentEnableCountdownEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerCalledForMedic => GameEvent::PlayerCalledForMedic(
+                PlayerCalledForMedicEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerAskedForBall => {
+                GameEvent::PlayerAskedForBall(PlayerAskedForBallEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerBecameObserver => GameEvent::LocalPlayerBecameObserver(
+                LocalPlayerBecameObserverEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerIgnitedInv => {
+                GameEvent::PlayerIgnitedInv(PlayerIgnitedInvEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerIgnited => {
+                GameEvent::PlayerIgnited(PlayerIgnitedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerExtinguished => {
+                GameEvent::PlayerExtinguished(PlayerExtinguishedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerTeleported => {
+                GameEvent::PlayerTeleported(PlayerTeleportedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHealedMedicCall => GameEvent::PlayerHealedMedicCall(
+                PlayerHealedMedicCallEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerChargeReady => GameEvent::LocalPlayerChargeReady(
+                LocalPlayerChargeReadyEvent::read(stream, definition)?,
+            ),
+            GameEventType::LocalPlayerWindDown => {
+                GameEvent::LocalPlayerWindDown(LocalPlayerWindDownEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerInvulned => {
+                GameEvent::PlayerInvulned(PlayerInvulnedEvent::read(stream, definition)?)
+            }
+            GameEventType::EscortSpeed => {
+                GameEvent::EscortSpeed(EscortSpeedEvent::read(stream, definition)?)
+            }
+            GameEventType::EscortProgress => {
+                GameEvent::EscortProgress(EscortProgressEvent::read(stream, definition)?)
+            }
+            GameEventType::EscortRecede => {
+                GameEvent::EscortRecede(EscortRecedeEvent::read(stream, definition)?)
+            }
+            GameEventType::GameUIActivated => {
+                GameEvent::GameUIActivated(GameUIActivatedEvent::read(stream, definition)?)
+            }
+            GameEventType::GameUIHidden => {
+                GameEvent::GameUIHidden(GameUIHiddenEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerEscortScore => {
+                GameEvent::PlayerEscortScore(PlayerEscortScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHealOnHit => {
+                GameEvent::PlayerHealOnHit(PlayerHealOnHitEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerStealSandvich => {
+                GameEvent::PlayerStealSandvich(PlayerStealSandvichEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowClassLayout => {
+                GameEvent::ShowClassLayout(ShowClassLayoutEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowVsPanel => {
+                GameEvent::ShowVsPanel(ShowVsPanelEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDamaged => {
+                GameEvent::PlayerDamaged(PlayerDamagedEvent::read(stream, definition)?)
+            }
+            GameEventType::ArenaPlayerNotification => GameEvent::ArenaPlayerNotification(
+                ArenaPlayerNotificationEvent::read(stream, definition)?,
+            ),
+            GameEventType::ArenaMatchMaxStreak => {
+                GameEvent::ArenaMatchMaxStreak(ArenaMatchMaxStreakEvent::read(stream, definition)?)
+            }
+            GameEventType::ArenaRoundStart => {
+                GameEvent::ArenaRoundStart(ArenaRoundStartEvent::read(stream, definition)?)
+            }
+            GameEventType::ArenaWinPanel => {
+                GameEvent::ArenaWinPanel(ArenaWinPanelEvent::read(stream, definition)?)
+            }
+            GameEventType::PveWinPanel => {
+                GameEvent::PveWinPanel(PveWinPanelEvent::read(stream, definition)?)
+            }
+            GameEventType::AirDash => GameEvent::AirDash(AirDashEvent::read(stream, definition)?),
+            GameEventType::Landed => GameEvent::Landed(LandedEvent::read(stream, definition)?),
+            GameEventType::PlayerDamageDodged => {
+                GameEvent::PlayerDamageDodged(PlayerDamageDodgedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerStunned => {
+                GameEvent::PlayerStunned(PlayerStunnedEvent::read(stream, definition)?)
+            }
+            GameEventType::ScoutGrandSlam => {
+                GameEvent::ScoutGrandSlam(ScoutGrandSlamEvent::read(stream, definition)?)
+            }
+            GameEventType::ScoutSlamdollLanded => {
+                GameEvent::ScoutSlamdollLanded(ScoutSlamdollLandedEvent::read(stream, definition)?)
+            }
+            GameEventType::ArrowImpact => {
+                GameEvent::ArrowImpact(ArrowImpactEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerJarated => {
+                GameEvent::PlayerJarated(PlayerJaratedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerJaratedFade => {
+                GameEvent::PlayerJaratedFade(PlayerJaratedFadeEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerShieldBlocked => {
+                GameEvent::PlayerShieldBlocked(PlayerShieldBlockedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerPinned => {
+                GameEvent::PlayerPinned(PlayerPinnedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHealedByMedic => {
+                GameEvent::PlayerHealedByMedic(PlayerHealedByMedicEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerSappedObject => {
+                GameEvent::PlayerSappedObject(PlayerSappedObjectEvent::read(stream, definition)?)
+            }
+            GameEventType::ItemFound => {
+                GameEvent::ItemFound(ItemFoundEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowAnnotation => {
+                GameEvent::ShowAnnotation(ShowAnnotationEvent::read(stream, definition)?)
+            }
+            GameEventType::HideAnnotation => {
+                GameEvent::HideAnnotation(HideAnnotationEvent::read(stream, definition)?)
+            }
+            GameEventType::PostInventoryApplication => GameEvent::PostInventoryApplication(
+                PostInventoryApplicationEvent::read(stream, definition)?,
+            ),
+            GameEventType::ControlPointUnlockUpdated => GameEvent::ControlPointUnlockUpdated(
+                ControlPointUnlockUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::DeployBuffBanner => {
+                GameEvent::DeployBuffBanner(DeployBuffBannerEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerBuff => {
+                GameEvent::PlayerBuff(PlayerBuffEvent::read(stream, definition)?)
+            }
+            GameEventType::MedicDeath => {
+                GameEvent::MedicDeath(MedicDeathEvent::read(stream, definition)?)
+            }
+            GameEventType::OvertimeNag => {
+                GameEvent::OvertimeNag(OvertimeNagEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamsChanged => {
+                GameEvent::TeamsChanged(TeamsChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenPumpkinGrab => GameEvent::HalloweenPumpkinGrab(
+                HalloweenPumpkinGrabEvent::read(stream, definition)?,
+            ),
+            GameEventType::RocketJump => {
+                GameEvent::RocketJump(RocketJumpEvent::read(stream, definition)?)
+            }
+            GameEventType::RocketJumpLanded => {
+                GameEvent::RocketJumpLanded(RocketJumpLandedEvent::read(stream, definition)?)
+            }
+            GameEventType::StickyJump => {
+                GameEvent::StickyJump(StickyJumpEvent::read(stream, definition)?)
+            }
+            GameEventType::StickyJumpLanded => {
+                GameEvent::StickyJumpLanded(StickyJumpLandedEvent::read(stream, definition)?)
+            }
+            GameEventType::RocketPackLaunch => {
+                GameEvent::RocketPackLaunch(RocketPackLaunchEvent::read(stream, definition)?)
+            }
+            GameEventType::RocketPackLanded => {
+                GameEvent::RocketPackLanded(RocketPackLandedEvent::read(stream, definition)?)
+            }
+            GameEventType::MedicDefended => {
+                GameEvent::MedicDefended(MedicDefendedEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerHealed => {
+                GameEvent::LocalPlayerHealed(LocalPlayerHealedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDestroyedPipeBomb => GameEvent::PlayerDestroyedPipeBomb(
+                PlayerDestroyedPipeBombEvent::read(stream, definition)?,
+            ),
+            GameEventType::ObjectDeflected => {
+                GameEvent::ObjectDeflected(ObjectDeflectedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerMvp => {
+                GameEvent::PlayerMvp(PlayerMvpEvent::read(stream, definition)?)
+            }
+            GameEventType::RaidSpawnMob => {
+                GameEvent::RaidSpawnMob(RaidSpawnMobEvent::read(stream, definition)?)
+            }
+            GameEventType::RaidSpawnSquad => {
+                GameEvent::RaidSpawnSquad(RaidSpawnSquadEvent::read(stream, definition)?)
+            }
+            GameEventType::NavBlocked => {
+                GameEvent::NavBlocked(NavBlockedEvent::read(stream, definition)?)
+            }
+            GameEventType::PathTrackPassed => {
+                GameEvent::PathTrackPassed(PathTrackPassedEvent::read(stream, definition)?)
+            }
+            GameEventType::NumCappersChanged => {
+                GameEvent::NumCappersChanged(NumCappersChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerRegenerate => {
+                GameEvent::PlayerRegenerate(PlayerRegenerateEvent::read(stream, definition)?)
+            }
+            GameEventType::UpdateStatusItem => {
+                GameEvent::UpdateStatusItem(UpdateStatusItemEvent::read(stream, definition)?)
+            }
+            GameEventType::StatsResetRound => {
+                GameEvent::StatsResetRound(StatsResetRoundEvent::read(stream, definition)?)
+            }
+            GameEventType::ScoreStatsAccumulatedUpdate => GameEvent::ScoreStatsAccumulatedUpdate(
+                ScoreStatsAccumulatedUpdateEvent::read(stream, definition)?,
+            ),
+            GameEventType::ScoreStatsAccumulatedReset => GameEvent::ScoreStatsAccumulatedReset(
+                ScoreStatsAccumulatedResetEvent::read(stream, definition)?,
+            ),
+            GameEventType::AchievementEarnedLocal => GameEvent::AchievementEarnedLocal(
+                AchievementEarnedLocalEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerHealed => {
+                GameEvent::PlayerHealed(PlayerHealedEvent::read(stream, definition)?)
+            }
+            GameEventType::BuildingHealed => {
+                GameEvent::BuildingHealed(BuildingHealedEvent::read(stream, definition)?)
+            }
+            GameEventType::ItemPickup => {
+                GameEvent::ItemPickup(ItemPickupEvent::read(stream, definition)?)
+            }
+            GameEventType::DuelStatus => {
+                GameEvent::DuelStatus(DuelStatusEvent::read(stream, definition)?)
+            }
+            GameEventType::FishNotice => {
+                GameEvent::FishNotice(Box::new(<FishNoticeEvent>::read(stream, definition)?))
+            }
+            GameEventType::FishNoticeArm => {
+                GameEvent::FishNoticeArm(Box::new(<FishNoticeArmEvent>::read(stream, definition)?))
+            }
+            GameEventType::SlapNotice => {
+                GameEvent::SlapNotice(Box::new(<SlapNoticeEvent>::read(stream, definition)?))
+            }
+            GameEventType::ThrowableHit => {
+                GameEvent::ThrowableHit(Box::new(<ThrowableHitEvent>::read(stream, definition)?))
+            }
+            GameEventType::PumpkinLordSummoned => {
+                GameEvent::PumpkinLordSummoned(PumpkinLordSummonedEvent::read(stream, definition)?)
+            }
+            GameEventType::PumpkinLordKilled => {
+                GameEvent::PumpkinLordKilled(PumpkinLordKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusSummoned => {
+                GameEvent::MerasmusSummoned(MerasmusSummonedEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusKilled => {
+                GameEvent::MerasmusKilled(MerasmusKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusEscapeWarning => GameEvent::MerasmusEscapeWarning(
+                MerasmusEscapeWarningEvent::read(stream, definition)?,
+            ),
+            GameEventType::MerasmusEscaped => {
+                GameEvent::MerasmusEscaped(MerasmusEscapedEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossSummoned => {
+                GameEvent::EyeballBossSummoned(EyeballBossSummonedEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossStunned => {
+                GameEvent::EyeballBossStunned(EyeballBossStunnedEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossKilled => {
+                GameEvent::EyeballBossKilled(EyeballBossKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossKiller => {
+                GameEvent::EyeballBossKiller(EyeballBossKillerEvent::read(stream, definition)?)
+            }
+            GameEventType::EyeballBossEscapeImminent => GameEvent::EyeballBossEscapeImminent(
+                EyeballBossEscapeImminentEvent::read(stream, definition)?,
+            ),
+            GameEventType::EyeballBossEscaped => {
+                GameEvent::EyeballBossEscaped(EyeballBossEscapedEvent::read(stream, definition)?)
+            }
+            GameEventType::NpcHurt => GameEvent::NpcHurt(NpcHurtEvent::read(stream, definition)?),
+            GameEventType::ControlPointTimerUpdated => GameEvent::ControlPointTimerUpdated(
+                ControlPointTimerUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerHighFiveStart => {
+                GameEvent::PlayerHighFiveStart(PlayerHighFiveStartEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerHighFiveCancel => GameEvent::PlayerHighFiveCancel(
+                PlayerHighFiveCancelEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerHighFiveSuccess => GameEvent::PlayerHighFiveSuccess(
+                PlayerHighFiveSuccessEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerBonusPoints => {
+                GameEvent::PlayerBonusPoints(PlayerBonusPointsEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerUpgraded => {
+                GameEvent::PlayerUpgraded(PlayerUpgradedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerBuyback => {
+                GameEvent::PlayerBuyback(PlayerBuybackEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerUsedPowerUpBottle => GameEvent::PlayerUsedPowerUpBottle(
+                PlayerUsedPowerUpBottleEvent::read(stream, definition)?,
+            ),
+            GameEventType::ChristmasGiftGrab => {
+                GameEvent::ChristmasGiftGrab(ChristmasGiftGrabEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerKilledAchievementZone => GameEvent::PlayerKilledAchievementZone(
+                PlayerKilledAchievementZoneEvent::read(stream, definition)?,
+            ),
+            GameEventType::PartyUpdated => {
+                GameEvent::PartyUpdated(PartyUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyPrefChanged => {
+                GameEvent::PartyPrefChanged(PartyPrefChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyCriteriaChanged => GameEvent::PartyCriteriaChanged(
+                PartyCriteriaChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PartyInvitesChanged => {
+                GameEvent::PartyInvitesChanged(PartyInvitesChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyQueueStateChanged => GameEvent::PartyQueueStateChanged(
+                PartyQueueStateChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PartyChat => {
+                GameEvent::PartyChat(PartyChatEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyMemberJoin => {
+                GameEvent::PartyMemberJoin(PartyMemberJoinEvent::read(stream, definition)?)
+            }
+            GameEventType::PartyMemberLeave => {
+                GameEvent::PartyMemberLeave(PartyMemberLeaveEvent::read(stream, definition)?)
+            }
+            GameEventType::MatchInvitesUpdated => {
+                GameEvent::MatchInvitesUpdated(MatchInvitesUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::LobbyUpdated => {
+                GameEvent::LobbyUpdated(LobbyUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmMissionUpdate => {
+                GameEvent::MvmMissionUpdate(MvmMissionUpdateEvent::read(stream, definition)?)
+            }
+            GameEventType::RecalculateHolidays => {
+                GameEvent::RecalculateHolidays(RecalculateHolidaysEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerCurrencyChanged => GameEvent::PlayerCurrencyChanged(
+                PlayerCurrencyChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::DoomsdayRocketOpen => {
+                GameEvent::DoomsdayRocketOpen(DoomsdayRocketOpenEvent::read(stream, definition)?)
+            }
+            GameEventType::RemoveNemesisRelationships => GameEvent::RemoveNemesisRelationships(
+                RemoveNemesisRelationshipsEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmCreditBonusWave => {
+                GameEvent::MvmCreditBonusWave(MvmCreditBonusWaveEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmCreditBonusAll => {
+                GameEvent::MvmCreditBonusAll(MvmCreditBonusAllEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmCreditBonusAllAdvanced => GameEvent::MvmCreditBonusAllAdvanced(
+                MvmCreditBonusAllAdvancedEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmQuickSentryUpgrade => GameEvent::MvmQuickSentryUpgrade(
+                MvmQuickSentryUpgradeEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmTankDestroyedByPlayers => GameEvent::MvmTankDestroyedByPlayers(
+                MvmTankDestroyedByPlayersEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmKillRobotDeliveringBomb => GameEvent::MvmKillRobotDeliveringBomb(
+                MvmKillRobotDeliveringBombEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmPickupCurrency => {
+                GameEvent::MvmPickupCurrency(MvmPickupCurrencyEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmBombCarrierKilled => GameEvent::MvmBombCarrierKilled(
+                MvmBombCarrierKilledEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmSentryBusterDetonate => GameEvent::MvmSentryBusterDetonate(
+                MvmSentryBusterDetonateEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmScoutMarkedForDeath => GameEvent::MvmScoutMarkedForDeath(
+                MvmScoutMarkedForDeathEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmMedicPowerUpShared => GameEvent::MvmMedicPowerUpShared(
+                MvmMedicPowerUpSharedEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmBeginWave => {
+                GameEvent::MvmBeginWave(MvmBeginWaveEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmWaveComplete => {
+                GameEvent::MvmWaveComplete(MvmWaveCompleteEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmMissionComplete => {
+                GameEvent::MvmMissionComplete(MvmMissionCompleteEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmBombResetByPlayer => GameEvent::MvmBombResetByPlayer(
+                MvmBombResetByPlayerEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmBombAlarmTriggered => GameEvent::MvmBombAlarmTriggered(
+                MvmBombAlarmTriggeredEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmBombDeployResetByPlayer => GameEvent::MvmBombDeployResetByPlayer(
+                MvmBombDeployResetByPlayerEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmWaveFailed => {
+                GameEvent::MvmWaveFailed(MvmWaveFailedEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmResetStats => {
+                GameEvent::MvmResetStats(MvmResetStatsEvent::read(stream, definition)?)
+            }
+            GameEventType::DamageResisted => {
+                GameEvent::DamageResisted(DamageResistedEvent::read(stream, definition)?)
+            }
+            GameEventType::RevivePlayerNotify => {
+                GameEvent::RevivePlayerNotify(RevivePlayerNotifyEvent::read(stream, definition)?)
+            }
+            GameEventType::RevivePlayerStopped => {
+                GameEvent::RevivePlayerStopped(RevivePlayerStoppedEvent::read(stream, definition)?)
+            }
+            GameEventType::RevivePlayerComplete => GameEvent::RevivePlayerComplete(
+                RevivePlayerCompleteEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerTurnedToGhost => {
+                GameEvent::PlayerTurnedToGhost(PlayerTurnedToGhostEvent::read(stream, definition)?)
+            }
+            GameEventType::MedigunShieldBlockedDamage => GameEvent::MedigunShieldBlockedDamage(
+                MedigunShieldBlockedDamageEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmAdvWaveCompleteNoGates => GameEvent::MvmAdvWaveCompleteNoGates(
+                MvmAdvWaveCompleteNoGatesEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmSniperHeadshotCurrency => GameEvent::MvmSniperHeadshotCurrency(
+                MvmSniperHeadshotCurrencyEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmMannhattanPit => {
+                GameEvent::MvmMannhattanPit(MvmMannhattanPitEvent::read(stream, definition)?)
+            }
+            GameEventType::FlagCarriedInDetectionZone => GameEvent::FlagCarriedInDetectionZone(
+                FlagCarriedInDetectionZoneEvent::read(stream, definition)?,
+            ),
+            GameEventType::MvmAdvWaveKilledStunRadio => GameEvent::MvmAdvWaveKilledStunRadio(
+                MvmAdvWaveKilledStunRadioEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerDirectHitStun => {
+                GameEvent::PlayerDirectHitStun(PlayerDirectHitStunEvent::read(stream, definition)?)
+            }
+            GameEventType::MvmSentryBusterKilled => GameEvent::MvmSentryBusterKilled(
+                MvmSentryBusterKilledEvent::read(stream, definition)?,
+            ),
+            GameEventType::UpgradesFileChanged => {
+                GameEvent::UpgradesFileChanged(UpgradesFileChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::RdTeamPointsChanged => {
+                GameEvent::RdTeamPointsChanged(RdTeamPointsChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::RdRulesStateChanged => {
+                GameEvent::RdRulesStateChanged(RdRulesStateChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::RdRobotKilled => {
+                GameEvent::RdRobotKilled(RdRobotKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::RdRobotImpact => {
+                GameEvent::RdRobotImpact(RdRobotImpactEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamPlayPreRoundTimeLeft => GameEvent::TeamPlayPreRoundTimeLeft(
+                TeamPlayPreRoundTimeLeftEvent::read(stream, definition)?,
+            ),
+            GameEventType::ParachuteDeploy => {
+                GameEvent::ParachuteDeploy(ParachuteDeployEvent::read(stream, definition)?)
+            }
+            GameEventType::ParachuteHolster => {
+                GameEvent::ParachuteHolster(ParachuteHolsterEvent::read(stream, definition)?)
+            }
+            GameEventType::KillRefillsMeter => {
+                GameEvent::KillRefillsMeter(KillRefillsMeterEvent::read(stream, definition)?)
+            }
+            GameEventType::RpsTauntEvent => {
+                GameEvent::RpsTauntEvent(RpsTauntEventEvent::read(stream, definition)?)
+            }
+            GameEventType::CongaKill => {
+                GameEvent::CongaKill(CongaKillEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerInitialSpawn => {
+                GameEvent::PlayerInitialSpawn(PlayerInitialSpawnEvent::read(stream, definition)?)
+            }
+            GameEventType::CompetitiveVictory => {
+                GameEvent::CompetitiveVictory(CompetitiveVictoryEvent::read(stream, definition)?)
+            }
+            GameEventType::CompetitiveStatsUpdate => GameEvent::CompetitiveStatsUpdate(
+                CompetitiveStatsUpdateEvent::read(stream, definition)?,
+            ),
+            GameEventType::MiniGameWin => {
+                GameEvent::MiniGameWin(MiniGameWinEvent::read(stream, definition)?)
+            }
+            GameEventType::SentryOnGoActive => {
+                GameEvent::SentryOnGoActive(SentryOnGoActiveEvent::read(stream, definition)?)
+            }
+            GameEventType::DuckXpLevelUp => {
+                GameEvent::DuckXpLevelUp(DuckXpLevelUpEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestLogOpened => {
+                GameEvent::QuestLogOpened(QuestLogOpenedEvent::read(stream, definition)?)
+            }
+            GameEventType::SchemaUpdated => {
+                GameEvent::SchemaUpdated(SchemaUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::LocalPlayerPickupWeapon => GameEvent::LocalPlayerPickupWeapon(
+                LocalPlayerPickupWeaponEvent::read(stream, definition)?,
+            ),
+            GameEventType::RdPlayerScorePoints => {
+                GameEvent::RdPlayerScorePoints(RdPlayerScorePointsEvent::read(stream, definition)?)
+            }
+            GameEventType::DemomanDetStickies => {
+                GameEvent::DemomanDetStickies(DemomanDetStickiesEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestObjectiveCompleted => GameEvent::QuestObjectiveCompleted(
+                QuestObjectiveCompletedEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerScoreChanged => {
+                GameEvent::PlayerScoreChanged(PlayerScoreChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::KilledCappingPlayer => {
+                GameEvent::KilledCappingPlayer(KilledCappingPlayerEvent::read(stream, definition)?)
+            }
+            GameEventType::EnvironmentalDeath => {
+                GameEvent::EnvironmentalDeath(EnvironmentalDeathEvent::read(stream, definition)?)
+            }
+            GameEventType::ProjectileDirectHit => {
+                GameEvent::ProjectileDirectHit(ProjectileDirectHitEvent::read(stream, definition)?)
+            }
+            GameEventType::PassGet => GameEvent::PassGet(PassGetEvent::read(stream, definition)?),
+            GameEventType::PassScore => {
+                GameEvent::PassScore(PassScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::PassFree => {
+                GameEvent::PassFree(PassFreeEvent::read(stream, definition)?)
+            }
+            GameEventType::PassPassCaught => {
+                GameEvent::PassPassCaught(PassPassCaughtEvent::read(stream, definition)?)
+            }
+            GameEventType::PassBallStolen => {
+                GameEvent::PassBallStolen(PassBallStolenEvent::read(stream, definition)?)
+            }
+            GameEventType::PassBallBlocked => {
+                GameEvent::PassBallBlocked(PassBallBlockedEvent::read(stream, definition)?)
+            }
+            GameEventType::DamagePrevented => {
+                GameEvent::DamagePrevented(DamagePreventedEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenBossKilled => {
+                GameEvent::HalloweenBossKilled(HalloweenBossKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::EscapedLootIsland => {
+                GameEvent::EscapedLootIsland(EscapedLootIslandEvent::read(stream, definition)?)
+            }
+            GameEventType::TaggedPlayerAsIt => {
+                GameEvent::TaggedPlayerAsIt(TaggedPlayerAsItEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusStunned => {
+                GameEvent::MerasmusStunned(MerasmusStunnedEvent::read(stream, definition)?)
+            }
+            GameEventType::MerasmusPropFound => {
+                GameEvent::MerasmusPropFound(MerasmusPropFoundEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenSkeletonKilled => GameEvent::HalloweenSkeletonKilled(
+                HalloweenSkeletonKilledEvent::read(stream, definition)?,
+            ),
+            GameEventType::EscapeHell => {
+                GameEvent::EscapeHell(EscapeHellEvent::read(stream, definition)?)
+            }
+            GameEventType::CrossSpectralBridge => {
+                GameEvent::CrossSpectralBridge(CrossSpectralBridgeEvent::read(stream, definition)?)
+            }
+            GameEventType::MiniGameWon => {
+                GameEvent::MiniGameWon(MiniGameWonEvent::read(stream, definition)?)
+            }
+            GameEventType::RespawnGhost => {
+                GameEvent::RespawnGhost(RespawnGhostEvent::read(stream, definition)?)
+            }
+            GameEventType::KillInHell => {
+                GameEvent::KillInHell(KillInHellEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenDuckCollected => GameEvent::HalloweenDuckCollected(
+                HalloweenDuckCollectedEvent::read(stream, definition)?,
+            ),
+            GameEventType::SpecialScore => {
+                GameEvent::SpecialScore(SpecialScoreEvent::read(stream, definition)?)
+            }
+            GameEventType::TeamLeaderKilled => {
+                GameEvent::TeamLeaderKilled(TeamLeaderKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::HalloweenSoulCollected => GameEvent::HalloweenSoulCollected(
+                HalloweenSoulCollectedEvent::read(stream, definition)?,
+            ),
+            GameEventType::RecalculateTruce => {
+                GameEvent::RecalculateTruce(RecalculateTruceEvent::read(stream, definition)?)
+            }
+            GameEventType::DeadRingerCheatDeath => GameEvent::DeadRingerCheatDeath(
+                DeadRingerCheatDeathEvent::read(stream, definition)?,
+            ),
+            GameEventType::CrossbowHeal => {
+                GameEvent::CrossbowHeal(CrossbowHealEvent::read(stream, definition)?)
+            }
+            GameEventType::DamageMitigated => {
+                GameEvent::DamageMitigated(DamageMitigatedEvent::read(stream, definition)?)
+            }
+            GameEventType::PayloadPushed => {
+                GameEvent::PayloadPushed(PayloadPushedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerAbandonedMatch => GameEvent::PlayerAbandonedMatch(
+                PlayerAbandonedMatchEvent::read(stream, definition)?,
+            ),
+            GameEventType::ClDrawline => {
+                GameEvent::ClDrawline(ClDrawlineEvent::read(stream, definition)?)
+            }
+            GameEventType::RestartTimerTime => {
+                GameEvent::RestartTimerTime(RestartTimerTimeEvent::read(stream, definition)?)
+            }
+            GameEventType::WinLimitChanged => {
+                GameEvent::WinLimitChanged(WinLimitChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::WinPanelShowScores => {
+                GameEvent::WinPanelShowScores(WinPanelShowScoresEvent::read(stream, definition)?)
+            }
+            GameEventType::TopStreamsRequestFinished => GameEvent::TopStreamsRequestFinished(
+                TopStreamsRequestFinishedEvent::read(stream, definition)?,
+            ),
+            GameEventType::CompetitiveStateChanged => GameEvent::CompetitiveStateChanged(
+                CompetitiveStateChangedEvent::read(stream, definition)?,
+            ),
+            GameEventType::GlobalWarDataUpdated => GameEvent::GlobalWarDataUpdated(
+                GlobalWarDataUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::StopWatchChanged => {
+                GameEvent::StopWatchChanged(StopWatchChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::DsStop => GameEvent::DsStop(DsStopEvent::read(stream, definition)?),
+            GameEventType::DsScreenshot => {
+                GameEvent::DsScreenshot(DsScreenshotEvent::read(stream, definition)?)
+            }
+            GameEventType::ShowMatchSummary => {
+                GameEvent::ShowMatchSummary(ShowMatchSummaryEvent::read(stream, definition)?)
+            }
+            GameEventType::ExperienceChanged => {
+                GameEvent::ExperienceChanged(ExperienceChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::BeginXpLerp => {
+                GameEvent::BeginXpLerp(BeginXpLerpEvent::read(stream, definition)?)
+            }
+            GameEventType::MatchmakerStatsUpdated => GameEvent::MatchmakerStatsUpdated(
+                MatchmakerStatsUpdatedEvent::read(stream, definition)?,
+            ),
+            GameEventType::RematchVotePeriodOver => GameEvent::RematchVotePeriodOver(
+                RematchVotePeriodOverEvent::read(stream, definition)?,
+            ),
+            GameEventType::RematchFailedToCreate => GameEvent::RematchFailedToCreate(
+                RematchFailedToCreateEvent::read(stream, definition)?,
+            ),
+            GameEventType::PlayerRematchChange => {
+                GameEvent::PlayerRematchChange(PlayerRematchChangeEvent::read(stream, definition)?)
+            }
+            GameEventType::PingUpdated => {
+                GameEvent::PingUpdated(PingUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::MMStatsUpdated => {
+                GameEvent::MMStatsUpdated(MMStatsUpdatedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerNextMapVoteChange => GameEvent::PlayerNextMapVoteChange(
+                PlayerNextMapVoteChangeEvent::read(stream, definition)?,
+            ),
+            GameEventType::VoteMapsChanged => {
+                GameEvent::VoteMapsChanged(VoteMapsChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::ProtoDefChanged => {
+                GameEvent::ProtoDefChanged(ProtoDefChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerDomination => {
+                GameEvent::PlayerDomination(PlayerDominationEvent::read(stream, definition)?)
+            }
+            GameEventType::PlayerRocketPackPushed => GameEvent::PlayerRocketPackPushed(
+                PlayerRocketPackPushedEvent::read(stream, definition)?,
+            ),
+            GameEventType::QuestRequest => {
+                GameEvent::QuestRequest(QuestRequestEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestResponse => {
+                GameEvent::QuestResponse(QuestResponseEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestProgress => {
+                GameEvent::QuestProgress(QuestProgressEvent::read(stream, definition)?)
+            }
+            GameEventType::ProjectileRemoved => {
+                GameEvent::ProjectileRemoved(ProjectileRemovedEvent::read(stream, definition)?)
+            }
+            GameEventType::QuestMapDataChanged => {
+                GameEvent::QuestMapDataChanged(QuestMapDataChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::GasDousedPlayerIgnited => GameEvent::GasDousedPlayerIgnited(
+                GasDousedPlayerIgnitedEvent::read(stream, definition)?,
+            ),
+            GameEventType::QuestTurnInState => {
+                GameEvent::QuestTurnInState(QuestTurnInStateEvent::read(stream, definition)?)
+            }
+            GameEventType::ItemsAcknowledged => {
+                GameEvent::ItemsAcknowledged(ItemsAcknowledgedEvent::read(stream, definition)?)
+            }
+            GameEventType::CapperKilled => {
+                GameEvent::CapperKilled(CapperKilledEvent::read(stream, definition)?)
+            }
+            GameEventType::MainMenuStabilized => {
+                GameEvent::MainMenuStabilized(MainMenuStabilizedEvent::read(stream, definition)?)
+            }
+            GameEventType::WorldStatusChanged => {
+                GameEvent::WorldStatusChanged(WorldStatusChangedEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVStatus => {
+                GameEvent::HLTVStatus(HLTVStatusEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVCameraman => {
+                GameEvent::HLTVCameraman(HLTVCameramanEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVRankCamera => {
+                GameEvent::HLTVRankCamera(HLTVRankCameraEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVRankEntity => {
+                GameEvent::HLTVRankEntity(HLTVRankEntityEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVFixed => {
+                GameEvent::HLTVFixed(HLTVFixedEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVChase => {
+                GameEvent::HLTVChase(HLTVChaseEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVMessage => {
+                GameEvent::HLTVMessage(HLTVMessageEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVTitle => {
+                GameEvent::HLTVTitle(HLTVTitleEvent::read(stream, definition)?)
+            }
+            GameEventType::HLTVChat => {
+                GameEvent::HLTVChat(HLTVChatEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplayStartRecord => {
+                GameEvent::ReplayStartRecord(ReplayStartRecordEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplaySessionInfo => {
+                GameEvent::ReplaySessionInfo(ReplaySessionInfoEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplayEndRecord => {
+                GameEvent::ReplayEndRecord(ReplayEndRecordEvent::read(stream, definition)?)
+            }
+            GameEventType::ReplayReplaysAvailable => GameEvent::ReplayReplaysAvailable(
+                ReplayReplaysAvailableEvent::read(stream, definition)?,
+            ),
+            GameEventType::ReplayServerError => {
+                GameEvent::ReplayServerError(ReplayServerErrorEvent::read(stream, definition)?)
+            }
+            GameEventType::Unknown(_) => {
+                GameEvent::Unknown(RawGameEvent::read(stream, definition)?)
+            }
+        })
     }
-    pub fn write(
-        &self,
-        stream: &mut BitWriteStream<LittleEndian>,
-    ) -> bitbuffer::Result<()> {
+    pub fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> bitbuffer::Result<()> {
         match &self {
             GameEvent::ServerSpawn(event) => event.write(stream),
             GameEvent::ServerChangeLevelFailed(event) => event.write(stream),
@@ -10301,9 +9541,7 @@ impl GameEvent {
     pub fn event_type(&self) -> GameEventType {
         match &self {
             GameEvent::ServerSpawn(_) => GameEventType::ServerSpawn,
-            GameEvent::ServerChangeLevelFailed(_) => {
-                GameEventType::ServerChangeLevelFailed
-            }
+            GameEvent::ServerChangeLevelFailed(_) => GameEventType::ServerChangeLevelFailed,
             GameEvent::ServerShutdown(_) => GameEventType::ServerShutdown,
             GameEvent::ServerCvar(_) => GameEventType::ServerCvar,
             GameEvent::ServerMessage(_) => GameEventType::ServerMessage,
@@ -10350,9 +9588,7 @@ impl GameEvent {
             GameEvent::AchievementIncrement(_) => GameEventType::AchievementIncrement,
             GameEvent::PhysgunPickup(_) => GameEventType::PhysgunPickup,
             GameEvent::FlareIgniteNpc(_) => GameEventType::FlareIgniteNpc,
-            GameEvent::HelicopterGrenadePuntMiss(_) => {
-                GameEventType::HelicopterGrenadePuntMiss
-            }
+            GameEvent::HelicopterGrenadePuntMiss(_) => GameEventType::HelicopterGrenadePuntMiss,
             GameEvent::UserDataDownloaded(_) => GameEventType::UserDataDownloaded,
             GameEvent::RagdollDissolved(_) => GameEventType::RagdollDissolved,
             GameEvent::HLTVChangedMode(_) => GameEventType::HLTVChangedMode,
@@ -10381,29 +9617,15 @@ impl GameEvent {
             GameEvent::TfMapTimeRemaining(_) => GameEventType::TfMapTimeRemaining,
             GameEvent::TfGameOver(_) => GameEventType::TfGameOver,
             GameEvent::CtfFlagCaptured(_) => GameEventType::CtfFlagCaptured,
-            GameEvent::ControlPointInitialized(_) => {
-                GameEventType::ControlPointInitialized
-            }
-            GameEvent::ControlPointUpdateImages(_) => {
-                GameEventType::ControlPointUpdateImages
-            }
-            GameEvent::ControlPointUpdateLayout(_) => {
-                GameEventType::ControlPointUpdateLayout
-            }
-            GameEvent::ControlPointUpdateCapping(_) => {
-                GameEventType::ControlPointUpdateCapping
-            }
-            GameEvent::ControlPointUpdateOwner(_) => {
-                GameEventType::ControlPointUpdateOwner
-            }
+            GameEvent::ControlPointInitialized(_) => GameEventType::ControlPointInitialized,
+            GameEvent::ControlPointUpdateImages(_) => GameEventType::ControlPointUpdateImages,
+            GameEvent::ControlPointUpdateLayout(_) => GameEventType::ControlPointUpdateLayout,
+            GameEvent::ControlPointUpdateCapping(_) => GameEventType::ControlPointUpdateCapping,
+            GameEvent::ControlPointUpdateOwner(_) => GameEventType::ControlPointUpdateOwner,
             GameEvent::ControlPointStartTouch(_) => GameEventType::ControlPointStartTouch,
             GameEvent::ControlPointEndTouch(_) => GameEventType::ControlPointEndTouch,
-            GameEvent::ControlPointPulseElement(_) => {
-                GameEventType::ControlPointPulseElement
-            }
-            GameEvent::ControlPointFakeCapture(_) => {
-                GameEventType::ControlPointFakeCapture
-            }
+            GameEvent::ControlPointPulseElement(_) => GameEventType::ControlPointPulseElement,
+            GameEvent::ControlPointFakeCapture(_) => GameEventType::ControlPointFakeCapture,
             GameEvent::ControlPointFakeCaptureMultiplier(_) => {
                 GameEventType::ControlPointFakeCaptureMultiplier
             }
@@ -10412,33 +9634,23 @@ impl GameEvent {
             GameEvent::TeamPlayRoundActive(_) => GameEventType::TeamPlayRoundActive,
             GameEvent::TeamPlayWaitingBegins(_) => GameEventType::TeamPlayWaitingBegins,
             GameEvent::TeamPlayWaitingEnds(_) => GameEventType::TeamPlayWaitingEnds,
-            GameEvent::TeamPlayWaitingAboutToEnd(_) => {
-                GameEventType::TeamPlayWaitingAboutToEnd
-            }
+            GameEvent::TeamPlayWaitingAboutToEnd(_) => GameEventType::TeamPlayWaitingAboutToEnd,
             GameEvent::TeamPlayRestartRound(_) => GameEventType::TeamPlayRestartRound,
             GameEvent::TeamPlayReadyRestart(_) => GameEventType::TeamPlayReadyRestart,
-            GameEvent::TeamPlayRoundRestartSeconds(_) => {
-                GameEventType::TeamPlayRoundRestartSeconds
-            }
+            GameEvent::TeamPlayRoundRestartSeconds(_) => GameEventType::TeamPlayRoundRestartSeconds,
             GameEvent::TeamPlayTeamReady(_) => GameEventType::TeamPlayTeamReady,
             GameEvent::TeamPlayRoundWin(_) => GameEventType::TeamPlayRoundWin,
             GameEvent::TeamPlayUpdateTimer(_) => GameEventType::TeamPlayUpdateTimer,
             GameEvent::TeamPlayRoundStalemate(_) => GameEventType::TeamPlayRoundStalemate,
             GameEvent::TeamPlayOvertimeBegin(_) => GameEventType::TeamPlayOvertimeBegin,
             GameEvent::TeamPlayOvertimeEnd(_) => GameEventType::TeamPlayOvertimeEnd,
-            GameEvent::TeamPlaySuddenDeathBegin(_) => {
-                GameEventType::TeamPlaySuddenDeathBegin
-            }
+            GameEvent::TeamPlaySuddenDeathBegin(_) => GameEventType::TeamPlaySuddenDeathBegin,
             GameEvent::TeamPlaySuddenDeathEnd(_) => GameEventType::TeamPlaySuddenDeathEnd,
             GameEvent::TeamPlayGameOver(_) => GameEventType::TeamPlayGameOver,
-            GameEvent::TeamPlayMapTimeRemaining(_) => {
-                GameEventType::TeamPlayMapTimeRemaining
-            }
+            GameEvent::TeamPlayMapTimeRemaining(_) => GameEventType::TeamPlayMapTimeRemaining,
             GameEvent::TeamPlayTimerFlash(_) => GameEventType::TeamPlayTimerFlash,
             GameEvent::TeamPlayTimerTimeAdded(_) => GameEventType::TeamPlayTimerTimeAdded,
-            GameEvent::TeamPlayPointStartCapture(_) => {
-                GameEventType::TeamPlayPointStartCapture
-            }
+            GameEvent::TeamPlayPointStartCapture(_) => GameEventType::TeamPlayPointStartCapture,
             GameEvent::TeamPlayPointCaptured(_) => GameEventType::TeamPlayPointCaptured,
             GameEvent::TeamPlayPointLocked(_) => GameEventType::TeamPlayPointLocked,
             GameEvent::TeamPlayPointUnlocked(_) => GameEventType::TeamPlayPointUnlocked,
@@ -10446,9 +9658,7 @@ impl GameEvent {
             GameEvent::TeamPlayCaptureBlocked(_) => GameEventType::TeamPlayCaptureBlocked,
             GameEvent::TeamPlayFlagEvent(_) => GameEventType::TeamPlayFlagEvent,
             GameEvent::TeamPlayWinPanel(_) => GameEventType::TeamPlayWinPanel,
-            GameEvent::TeamPlayTeamBalancedPlayer(_) => {
-                GameEventType::TeamPlayTeamBalancedPlayer
-            }
+            GameEvent::TeamPlayTeamBalancedPlayer(_) => GameEventType::TeamPlayTeamBalancedPlayer,
             GameEvent::TeamPlaySetupFinished(_) => GameEventType::TeamPlaySetupFinished,
             GameEvent::TeamPlayAlert(_) => GameEventType::TeamPlayAlert,
             GameEvent::TrainingComplete(_) => GameEventType::TrainingComplete,
@@ -10456,15 +9666,11 @@ impl GameEvent {
             GameEvent::HideFreezePanel(_) => GameEventType::HideFreezePanel,
             GameEvent::FreezeCamStarted(_) => GameEventType::FreezeCamStarted,
             GameEvent::LocalPlayerChangeTeam(_) => GameEventType::LocalPlayerChangeTeam,
-            GameEvent::LocalPlayerScoreChanged(_) => {
-                GameEventType::LocalPlayerScoreChanged
-            }
+            GameEvent::LocalPlayerScoreChanged(_) => GameEventType::LocalPlayerScoreChanged,
             GameEvent::LocalPlayerChangeClass(_) => GameEventType::LocalPlayerChangeClass,
             GameEvent::LocalPlayerRespawn(_) => GameEventType::LocalPlayerRespawn,
             GameEvent::BuildingInfoChanged(_) => GameEventType::BuildingInfoChanged,
-            GameEvent::LocalPlayerChangeDisguise(_) => {
-                GameEventType::LocalPlayerChangeDisguise
-            }
+            GameEvent::LocalPlayerChangeDisguise(_) => GameEventType::LocalPlayerChangeDisguise,
             GameEvent::PlayerAccountChanged(_) => GameEventType::PlayerAccountChanged,
             GameEvent::SpyPdaReset(_) => GameEventType::SpyPdaReset,
             GameEvent::FlagStatusUpdate(_) => GameEventType::FlagStatusUpdate,
@@ -10481,14 +9687,10 @@ impl GameEvent {
             GameEvent::AchievementEarned(_) => GameEventType::AchievementEarned,
             GameEvent::SpecTargetUpdated(_) => GameEventType::SpecTargetUpdated,
             GameEvent::TournamentStateUpdate(_) => GameEventType::TournamentStateUpdate,
-            GameEvent::TournamentEnableCountdown(_) => {
-                GameEventType::TournamentEnableCountdown
-            }
+            GameEvent::TournamentEnableCountdown(_) => GameEventType::TournamentEnableCountdown,
             GameEvent::PlayerCalledForMedic(_) => GameEventType::PlayerCalledForMedic,
             GameEvent::PlayerAskedForBall(_) => GameEventType::PlayerAskedForBall,
-            GameEvent::LocalPlayerBecameObserver(_) => {
-                GameEventType::LocalPlayerBecameObserver
-            }
+            GameEvent::LocalPlayerBecameObserver(_) => GameEventType::LocalPlayerBecameObserver,
             GameEvent::PlayerIgnitedInv(_) => GameEventType::PlayerIgnitedInv,
             GameEvent::PlayerIgnited(_) => GameEventType::PlayerIgnited,
             GameEvent::PlayerExtinguished(_) => GameEventType::PlayerExtinguished,
@@ -10508,9 +9710,7 @@ impl GameEvent {
             GameEvent::ShowClassLayout(_) => GameEventType::ShowClassLayout,
             GameEvent::ShowVsPanel(_) => GameEventType::ShowVsPanel,
             GameEvent::PlayerDamaged(_) => GameEventType::PlayerDamaged,
-            GameEvent::ArenaPlayerNotification(_) => {
-                GameEventType::ArenaPlayerNotification
-            }
+            GameEvent::ArenaPlayerNotification(_) => GameEventType::ArenaPlayerNotification,
             GameEvent::ArenaMatchMaxStreak(_) => GameEventType::ArenaMatchMaxStreak,
             GameEvent::ArenaRoundStart(_) => GameEventType::ArenaRoundStart,
             GameEvent::ArenaWinPanel(_) => GameEventType::ArenaWinPanel,
@@ -10531,12 +9731,8 @@ impl GameEvent {
             GameEvent::ItemFound(_) => GameEventType::ItemFound,
             GameEvent::ShowAnnotation(_) => GameEventType::ShowAnnotation,
             GameEvent::HideAnnotation(_) => GameEventType::HideAnnotation,
-            GameEvent::PostInventoryApplication(_) => {
-                GameEventType::PostInventoryApplication
-            }
-            GameEvent::ControlPointUnlockUpdated(_) => {
-                GameEventType::ControlPointUnlockUpdated
-            }
+            GameEvent::PostInventoryApplication(_) => GameEventType::PostInventoryApplication,
+            GameEvent::ControlPointUnlockUpdated(_) => GameEventType::ControlPointUnlockUpdated,
             GameEvent::DeployBuffBanner(_) => GameEventType::DeployBuffBanner,
             GameEvent::PlayerBuff(_) => GameEventType::PlayerBuff,
             GameEvent::MedicDeath(_) => GameEventType::MedicDeath,
@@ -10551,9 +9747,7 @@ impl GameEvent {
             GameEvent::RocketPackLanded(_) => GameEventType::RocketPackLanded,
             GameEvent::MedicDefended(_) => GameEventType::MedicDefended,
             GameEvent::LocalPlayerHealed(_) => GameEventType::LocalPlayerHealed,
-            GameEvent::PlayerDestroyedPipeBomb(_) => {
-                GameEventType::PlayerDestroyedPipeBomb
-            }
+            GameEvent::PlayerDestroyedPipeBomb(_) => GameEventType::PlayerDestroyedPipeBomb,
             GameEvent::ObjectDeflected(_) => GameEventType::ObjectDeflected,
             GameEvent::PlayerMvp(_) => GameEventType::PlayerMvp,
             GameEvent::RaidSpawnMob(_) => GameEventType::RaidSpawnMob,
@@ -10564,12 +9758,8 @@ impl GameEvent {
             GameEvent::PlayerRegenerate(_) => GameEventType::PlayerRegenerate,
             GameEvent::UpdateStatusItem(_) => GameEventType::UpdateStatusItem,
             GameEvent::StatsResetRound(_) => GameEventType::StatsResetRound,
-            GameEvent::ScoreStatsAccumulatedUpdate(_) => {
-                GameEventType::ScoreStatsAccumulatedUpdate
-            }
-            GameEvent::ScoreStatsAccumulatedReset(_) => {
-                GameEventType::ScoreStatsAccumulatedReset
-            }
+            GameEvent::ScoreStatsAccumulatedUpdate(_) => GameEventType::ScoreStatsAccumulatedUpdate,
+            GameEvent::ScoreStatsAccumulatedReset(_) => GameEventType::ScoreStatsAccumulatedReset,
             GameEvent::AchievementEarnedLocal(_) => GameEventType::AchievementEarnedLocal,
             GameEvent::PlayerHealed(_) => GameEventType::PlayerHealed,
             GameEvent::BuildingHealed(_) => GameEventType::BuildingHealed,
@@ -10589,27 +9779,19 @@ impl GameEvent {
             GameEvent::EyeballBossStunned(_) => GameEventType::EyeballBossStunned,
             GameEvent::EyeballBossKilled(_) => GameEventType::EyeballBossKilled,
             GameEvent::EyeballBossKiller(_) => GameEventType::EyeballBossKiller,
-            GameEvent::EyeballBossEscapeImminent(_) => {
-                GameEventType::EyeballBossEscapeImminent
-            }
+            GameEvent::EyeballBossEscapeImminent(_) => GameEventType::EyeballBossEscapeImminent,
             GameEvent::EyeballBossEscaped(_) => GameEventType::EyeballBossEscaped,
             GameEvent::NpcHurt(_) => GameEventType::NpcHurt,
-            GameEvent::ControlPointTimerUpdated(_) => {
-                GameEventType::ControlPointTimerUpdated
-            }
+            GameEvent::ControlPointTimerUpdated(_) => GameEventType::ControlPointTimerUpdated,
             GameEvent::PlayerHighFiveStart(_) => GameEventType::PlayerHighFiveStart,
             GameEvent::PlayerHighFiveCancel(_) => GameEventType::PlayerHighFiveCancel,
             GameEvent::PlayerHighFiveSuccess(_) => GameEventType::PlayerHighFiveSuccess,
             GameEvent::PlayerBonusPoints(_) => GameEventType::PlayerBonusPoints,
             GameEvent::PlayerUpgraded(_) => GameEventType::PlayerUpgraded,
             GameEvent::PlayerBuyback(_) => GameEventType::PlayerBuyback,
-            GameEvent::PlayerUsedPowerUpBottle(_) => {
-                GameEventType::PlayerUsedPowerUpBottle
-            }
+            GameEvent::PlayerUsedPowerUpBottle(_) => GameEventType::PlayerUsedPowerUpBottle,
             GameEvent::ChristmasGiftGrab(_) => GameEventType::ChristmasGiftGrab,
-            GameEvent::PlayerKilledAchievementZone(_) => {
-                GameEventType::PlayerKilledAchievementZone
-            }
+            GameEvent::PlayerKilledAchievementZone(_) => GameEventType::PlayerKilledAchievementZone,
             GameEvent::PartyUpdated(_) => GameEventType::PartyUpdated,
             GameEvent::PartyPrefChanged(_) => GameEventType::PartyPrefChanged,
             GameEvent::PartyCriteriaChanged(_) => GameEventType::PartyCriteriaChanged,
@@ -10624,26 +9806,16 @@ impl GameEvent {
             GameEvent::RecalculateHolidays(_) => GameEventType::RecalculateHolidays,
             GameEvent::PlayerCurrencyChanged(_) => GameEventType::PlayerCurrencyChanged,
             GameEvent::DoomsdayRocketOpen(_) => GameEventType::DoomsdayRocketOpen,
-            GameEvent::RemoveNemesisRelationships(_) => {
-                GameEventType::RemoveNemesisRelationships
-            }
+            GameEvent::RemoveNemesisRelationships(_) => GameEventType::RemoveNemesisRelationships,
             GameEvent::MvmCreditBonusWave(_) => GameEventType::MvmCreditBonusWave,
             GameEvent::MvmCreditBonusAll(_) => GameEventType::MvmCreditBonusAll,
-            GameEvent::MvmCreditBonusAllAdvanced(_) => {
-                GameEventType::MvmCreditBonusAllAdvanced
-            }
+            GameEvent::MvmCreditBonusAllAdvanced(_) => GameEventType::MvmCreditBonusAllAdvanced,
             GameEvent::MvmQuickSentryUpgrade(_) => GameEventType::MvmQuickSentryUpgrade,
-            GameEvent::MvmTankDestroyedByPlayers(_) => {
-                GameEventType::MvmTankDestroyedByPlayers
-            }
-            GameEvent::MvmKillRobotDeliveringBomb(_) => {
-                GameEventType::MvmKillRobotDeliveringBomb
-            }
+            GameEvent::MvmTankDestroyedByPlayers(_) => GameEventType::MvmTankDestroyedByPlayers,
+            GameEvent::MvmKillRobotDeliveringBomb(_) => GameEventType::MvmKillRobotDeliveringBomb,
             GameEvent::MvmPickupCurrency(_) => GameEventType::MvmPickupCurrency,
             GameEvent::MvmBombCarrierKilled(_) => GameEventType::MvmBombCarrierKilled,
-            GameEvent::MvmSentryBusterDetonate(_) => {
-                GameEventType::MvmSentryBusterDetonate
-            }
+            GameEvent::MvmSentryBusterDetonate(_) => GameEventType::MvmSentryBusterDetonate,
             GameEvent::MvmScoutMarkedForDeath(_) => GameEventType::MvmScoutMarkedForDeath,
             GameEvent::MvmMedicPowerUpShared(_) => GameEventType::MvmMedicPowerUpShared,
             GameEvent::MvmBeginWave(_) => GameEventType::MvmBeginWave,
@@ -10651,9 +9823,7 @@ impl GameEvent {
             GameEvent::MvmMissionComplete(_) => GameEventType::MvmMissionComplete,
             GameEvent::MvmBombResetByPlayer(_) => GameEventType::MvmBombResetByPlayer,
             GameEvent::MvmBombAlarmTriggered(_) => GameEventType::MvmBombAlarmTriggered,
-            GameEvent::MvmBombDeployResetByPlayer(_) => {
-                GameEventType::MvmBombDeployResetByPlayer
-            }
+            GameEvent::MvmBombDeployResetByPlayer(_) => GameEventType::MvmBombDeployResetByPlayer,
             GameEvent::MvmWaveFailed(_) => GameEventType::MvmWaveFailed,
             GameEvent::MvmResetStats(_) => GameEventType::MvmResetStats,
             GameEvent::DamageResisted(_) => GameEventType::DamageResisted,
@@ -10661,22 +9831,12 @@ impl GameEvent {
             GameEvent::RevivePlayerStopped(_) => GameEventType::RevivePlayerStopped,
             GameEvent::RevivePlayerComplete(_) => GameEventType::RevivePlayerComplete,
             GameEvent::PlayerTurnedToGhost(_) => GameEventType::PlayerTurnedToGhost,
-            GameEvent::MedigunShieldBlockedDamage(_) => {
-                GameEventType::MedigunShieldBlockedDamage
-            }
-            GameEvent::MvmAdvWaveCompleteNoGates(_) => {
-                GameEventType::MvmAdvWaveCompleteNoGates
-            }
-            GameEvent::MvmSniperHeadshotCurrency(_) => {
-                GameEventType::MvmSniperHeadshotCurrency
-            }
+            GameEvent::MedigunShieldBlockedDamage(_) => GameEventType::MedigunShieldBlockedDamage,
+            GameEvent::MvmAdvWaveCompleteNoGates(_) => GameEventType::MvmAdvWaveCompleteNoGates,
+            GameEvent::MvmSniperHeadshotCurrency(_) => GameEventType::MvmSniperHeadshotCurrency,
             GameEvent::MvmMannhattanPit(_) => GameEventType::MvmMannhattanPit,
-            GameEvent::FlagCarriedInDetectionZone(_) => {
-                GameEventType::FlagCarriedInDetectionZone
-            }
-            GameEvent::MvmAdvWaveKilledStunRadio(_) => {
-                GameEventType::MvmAdvWaveKilledStunRadio
-            }
+            GameEvent::FlagCarriedInDetectionZone(_) => GameEventType::FlagCarriedInDetectionZone,
+            GameEvent::MvmAdvWaveKilledStunRadio(_) => GameEventType::MvmAdvWaveKilledStunRadio,
             GameEvent::PlayerDirectHitStun(_) => GameEventType::PlayerDirectHitStun,
             GameEvent::MvmSentryBusterKilled(_) => GameEventType::MvmSentryBusterKilled,
             GameEvent::UpgradesFileChanged(_) => GameEventType::UpgradesFileChanged,
@@ -10684,9 +9844,7 @@ impl GameEvent {
             GameEvent::RdRulesStateChanged(_) => GameEventType::RdRulesStateChanged,
             GameEvent::RdRobotKilled(_) => GameEventType::RdRobotKilled,
             GameEvent::RdRobotImpact(_) => GameEventType::RdRobotImpact,
-            GameEvent::TeamPlayPreRoundTimeLeft(_) => {
-                GameEventType::TeamPlayPreRoundTimeLeft
-            }
+            GameEvent::TeamPlayPreRoundTimeLeft(_) => GameEventType::TeamPlayPreRoundTimeLeft,
             GameEvent::ParachuteDeploy(_) => GameEventType::ParachuteDeploy,
             GameEvent::ParachuteHolster(_) => GameEventType::ParachuteHolster,
             GameEvent::KillRefillsMeter(_) => GameEventType::KillRefillsMeter,
@@ -10700,14 +9858,10 @@ impl GameEvent {
             GameEvent::DuckXpLevelUp(_) => GameEventType::DuckXpLevelUp,
             GameEvent::QuestLogOpened(_) => GameEventType::QuestLogOpened,
             GameEvent::SchemaUpdated(_) => GameEventType::SchemaUpdated,
-            GameEvent::LocalPlayerPickupWeapon(_) => {
-                GameEventType::LocalPlayerPickupWeapon
-            }
+            GameEvent::LocalPlayerPickupWeapon(_) => GameEventType::LocalPlayerPickupWeapon,
             GameEvent::RdPlayerScorePoints(_) => GameEventType::RdPlayerScorePoints,
             GameEvent::DemomanDetStickies(_) => GameEventType::DemomanDetStickies,
-            GameEvent::QuestObjectiveCompleted(_) => {
-                GameEventType::QuestObjectiveCompleted
-            }
+            GameEvent::QuestObjectiveCompleted(_) => GameEventType::QuestObjectiveCompleted,
             GameEvent::PlayerScoreChanged(_) => GameEventType::PlayerScoreChanged,
             GameEvent::KilledCappingPlayer(_) => GameEventType::KilledCappingPlayer,
             GameEvent::EnvironmentalDeath(_) => GameEventType::EnvironmentalDeath,
@@ -10724,9 +9878,7 @@ impl GameEvent {
             GameEvent::TaggedPlayerAsIt(_) => GameEventType::TaggedPlayerAsIt,
             GameEvent::MerasmusStunned(_) => GameEventType::MerasmusStunned,
             GameEvent::MerasmusPropFound(_) => GameEventType::MerasmusPropFound,
-            GameEvent::HalloweenSkeletonKilled(_) => {
-                GameEventType::HalloweenSkeletonKilled
-            }
+            GameEvent::HalloweenSkeletonKilled(_) => GameEventType::HalloweenSkeletonKilled,
             GameEvent::EscapeHell(_) => GameEventType::EscapeHell,
             GameEvent::CrossSpectralBridge(_) => GameEventType::CrossSpectralBridge,
             GameEvent::MiniGameWon(_) => GameEventType::MiniGameWon,
@@ -10746,12 +9898,8 @@ impl GameEvent {
             GameEvent::RestartTimerTime(_) => GameEventType::RestartTimerTime,
             GameEvent::WinLimitChanged(_) => GameEventType::WinLimitChanged,
             GameEvent::WinPanelShowScores(_) => GameEventType::WinPanelShowScores,
-            GameEvent::TopStreamsRequestFinished(_) => {
-                GameEventType::TopStreamsRequestFinished
-            }
-            GameEvent::CompetitiveStateChanged(_) => {
-                GameEventType::CompetitiveStateChanged
-            }
+            GameEvent::TopStreamsRequestFinished(_) => GameEventType::TopStreamsRequestFinished,
+            GameEvent::CompetitiveStateChanged(_) => GameEventType::CompetitiveStateChanged,
             GameEvent::GlobalWarDataUpdated(_) => GameEventType::GlobalWarDataUpdated,
             GameEvent::StopWatchChanged(_) => GameEventType::StopWatchChanged,
             GameEvent::DsStop(_) => GameEventType::DsStop,
@@ -10765,9 +9913,7 @@ impl GameEvent {
             GameEvent::PlayerRematchChange(_) => GameEventType::PlayerRematchChange,
             GameEvent::PingUpdated(_) => GameEventType::PingUpdated,
             GameEvent::MMStatsUpdated(_) => GameEventType::MMStatsUpdated,
-            GameEvent::PlayerNextMapVoteChange(_) => {
-                GameEventType::PlayerNextMapVoteChange
-            }
+            GameEvent::PlayerNextMapVoteChange(_) => GameEventType::PlayerNextMapVoteChange,
             GameEvent::VoteMapsChanged(_) => GameEventType::VoteMapsChanged,
             GameEvent::ProtoDefChanged(_) => GameEventType::ProtoDefChanged,
             GameEvent::PlayerDomination(_) => GameEventType::PlayerDomination,
@@ -10804,26 +9950,53 @@ impl GameEvent {
 pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
     [
         ("ServerSpawn", std::mem::size_of::<ServerSpawnEvent>()),
-        ("ServerChangeLevelFailed", std::mem::size_of::<ServerChangeLevelFailedEvent>()),
+        (
+            "ServerChangeLevelFailed",
+            std::mem::size_of::<ServerChangeLevelFailedEvent>(),
+        ),
         ("ServerShutdown", std::mem::size_of::<ServerShutdownEvent>()),
         ("ServerCvar", std::mem::size_of::<ServerCvarEvent>()),
         ("ServerMessage", std::mem::size_of::<ServerMessageEvent>()),
         ("ServerAddBan", std::mem::size_of::<ServerAddBanEvent>()),
-        ("ServerRemoveBan", std::mem::size_of::<ServerRemoveBanEvent>()),
+        (
+            "ServerRemoveBan",
+            std::mem::size_of::<ServerRemoveBanEvent>(),
+        ),
         ("PlayerConnect", std::mem::size_of::<PlayerConnectEvent>()),
-        ("PlayerConnectClient", std::mem::size_of::<PlayerConnectClientEvent>()),
+        (
+            "PlayerConnectClient",
+            std::mem::size_of::<PlayerConnectClientEvent>(),
+        ),
         ("PlayerInfo", std::mem::size_of::<PlayerInfoEvent>()),
-        ("PlayerDisconnect", std::mem::size_of::<PlayerDisconnectEvent>()),
+        (
+            "PlayerDisconnect",
+            std::mem::size_of::<PlayerDisconnectEvent>(),
+        ),
         ("PlayerActivate", std::mem::size_of::<PlayerActivateEvent>()),
         ("PlayerSay", std::mem::size_of::<PlayerSayEvent>()),
-        ("ClientDisconnect", std::mem::size_of::<ClientDisconnectEvent>()),
-        ("ClientBeginConnect", std::mem::size_of::<ClientBeginConnectEvent>()),
-        ("ClientConnected", std::mem::size_of::<ClientConnectedEvent>()),
-        ("ClientFullConnect", std::mem::size_of::<ClientFullConnectEvent>()),
+        (
+            "ClientDisconnect",
+            std::mem::size_of::<ClientDisconnectEvent>(),
+        ),
+        (
+            "ClientBeginConnect",
+            std::mem::size_of::<ClientBeginConnectEvent>(),
+        ),
+        (
+            "ClientConnected",
+            std::mem::size_of::<ClientConnectedEvent>(),
+        ),
+        (
+            "ClientFullConnect",
+            std::mem::size_of::<ClientFullConnectEvent>(),
+        ),
         ("HostQuit", std::mem::size_of::<HostQuitEvent>()),
         ("TeamInfo", std::mem::size_of::<TeamInfoEvent>()),
         ("TeamScore", std::mem::size_of::<TeamScoreEvent>()),
-        ("TeamPlayBroadcastAudio", std::mem::size_of::<TeamPlayBroadcastAudioEvent>()),
+        (
+            "TeamPlayBroadcastAudio",
+            std::mem::size_of::<TeamPlayBroadcastAudioEvent>(),
+        ),
         ("PlayerTeam", std::mem::size_of::<PlayerTeamEvent>()),
         ("PlayerClass", std::mem::size_of::<PlayerClassEvent>()),
         ("PlayerDeath", std::mem::size_of::<PlayerDeathEvent>()),
@@ -10833,9 +10006,18 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("PlayerSpawn", std::mem::size_of::<PlayerSpawnEvent>()),
         ("PlayerShoot", std::mem::size_of::<PlayerShootEvent>()),
         ("PlayerUse", std::mem::size_of::<PlayerUseEvent>()),
-        ("PlayerChangeName", std::mem::size_of::<PlayerChangeNameEvent>()),
-        ("PlayerHintMessage", std::mem::size_of::<PlayerHintMessageEvent>()),
-        ("BasePlayerTeleported", std::mem::size_of::<BasePlayerTeleportedEvent>()),
+        (
+            "PlayerChangeName",
+            std::mem::size_of::<PlayerChangeNameEvent>(),
+        ),
+        (
+            "PlayerHintMessage",
+            std::mem::size_of::<PlayerHintMessageEvent>(),
+        ),
+        (
+            "BasePlayerTeleported",
+            std::mem::size_of::<BasePlayerTeleportedEvent>(),
+        ),
         ("GameInit", std::mem::size_of::<GameInitEvent>()),
         ("GameNewMap", std::mem::size_of::<GameNewMapEvent>()),
         ("GameStart", std::mem::size_of::<GameStartEvent>()),
@@ -10847,18 +10029,36 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("BreakProp", std::mem::size_of::<BreakPropEvent>()),
         ("EntityKilled", std::mem::size_of::<EntityKilledEvent>()),
         ("BonusUpdated", std::mem::size_of::<BonusUpdatedEvent>()),
-        ("AchievementEvent", std::mem::size_of::<AchievementEventEvent>()),
-        ("AchievementIncrement", std::mem::size_of::<AchievementIncrementEvent>()),
+        (
+            "AchievementEvent",
+            std::mem::size_of::<AchievementEventEvent>(),
+        ),
+        (
+            "AchievementIncrement",
+            std::mem::size_of::<AchievementIncrementEvent>(),
+        ),
         ("PhysgunPickup", std::mem::size_of::<PhysgunPickupEvent>()),
         ("FlareIgniteNpc", std::mem::size_of::<FlareIgniteNpcEvent>()),
         (
             "HelicopterGrenadePuntMiss",
             std::mem::size_of::<HelicopterGrenadePuntMissEvent>(),
         ),
-        ("UserDataDownloaded", std::mem::size_of::<UserDataDownloadedEvent>()),
-        ("RagdollDissolved", std::mem::size_of::<RagdollDissolvedEvent>()),
-        ("HLTVChangedMode", std::mem::size_of::<HLTVChangedModeEvent>()),
-        ("HLTVChangedTarget", std::mem::size_of::<HLTVChangedTargetEvent>()),
+        (
+            "UserDataDownloaded",
+            std::mem::size_of::<UserDataDownloadedEvent>(),
+        ),
+        (
+            "RagdollDissolved",
+            std::mem::size_of::<RagdollDissolvedEvent>(),
+        ),
+        (
+            "HLTVChangedMode",
+            std::mem::size_of::<HLTVChangedModeEvent>(),
+        ),
+        (
+            "HLTVChangedTarget",
+            std::mem::size_of::<HLTVChangedTargetEvent>(),
+        ),
         ("VoteEnded", std::mem::size_of::<VoteEndedEvent>()),
         ("VoteStarted", std::mem::size_of::<VoteStartedEvent>()),
         ("VoteChanged", std::mem::size_of::<VoteChangedEvent>()),
@@ -10867,23 +10067,56 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("VoteCast", std::mem::size_of::<VoteCastEvent>()),
         ("VoteOptions", std::mem::size_of::<VoteOptionsEvent>()),
         ("ReplaySaved", std::mem::size_of::<ReplaySavedEvent>()),
-        ("EnteredPerformanceMode", std::mem::size_of::<EnteredPerformanceModeEvent>()),
+        (
+            "EnteredPerformanceMode",
+            std::mem::size_of::<EnteredPerformanceModeEvent>(),
+        ),
         ("BrowseReplays", std::mem::size_of::<BrowseReplaysEvent>()),
-        ("ReplayYoutubeStats", std::mem::size_of::<ReplayYoutubeStatsEvent>()),
-        ("InventoryUpdated", std::mem::size_of::<InventoryUpdatedEvent>()),
+        (
+            "ReplayYoutubeStats",
+            std::mem::size_of::<ReplayYoutubeStatsEvent>(),
+        ),
+        (
+            "InventoryUpdated",
+            std::mem::size_of::<InventoryUpdatedEvent>(),
+        ),
         ("CartUpdated", std::mem::size_of::<CartUpdatedEvent>()),
-        ("StorePriceSheetUpdated", std::mem::size_of::<StorePriceSheetUpdatedEvent>()),
-        ("EconInventoryConnected", std::mem::size_of::<EconInventoryConnectedEvent>()),
-        ("ItemSchemaInitialized", std::mem::size_of::<ItemSchemaInitializedEvent>()),
+        (
+            "StorePriceSheetUpdated",
+            std::mem::size_of::<StorePriceSheetUpdatedEvent>(),
+        ),
+        (
+            "EconInventoryConnected",
+            std::mem::size_of::<EconInventoryConnectedEvent>(),
+        ),
+        (
+            "ItemSchemaInitialized",
+            std::mem::size_of::<ItemSchemaInitializedEvent>(),
+        ),
         ("GcNewSession", std::mem::size_of::<GcNewSessionEvent>()),
         ("GcLostSession", std::mem::size_of::<GcLostSessionEvent>()),
         ("IntroFinish", std::mem::size_of::<IntroFinishEvent>()),
-        ("IntroNextCamera", std::mem::size_of::<IntroNextCameraEvent>()),
-        ("PlayerChangeClass", std::mem::size_of::<PlayerChangeClassEvent>()),
-        ("TfMapTimeRemaining", std::mem::size_of::<TfMapTimeRemainingEvent>()),
+        (
+            "IntroNextCamera",
+            std::mem::size_of::<IntroNextCameraEvent>(),
+        ),
+        (
+            "PlayerChangeClass",
+            std::mem::size_of::<PlayerChangeClassEvent>(),
+        ),
+        (
+            "TfMapTimeRemaining",
+            std::mem::size_of::<TfMapTimeRemainingEvent>(),
+        ),
         ("TfGameOver", std::mem::size_of::<TfGameOverEvent>()),
-        ("CtfFlagCaptured", std::mem::size_of::<CtfFlagCapturedEvent>()),
-        ("ControlPointInitialized", std::mem::size_of::<ControlPointInitializedEvent>()),
+        (
+            "CtfFlagCaptured",
+            std::mem::size_of::<CtfFlagCapturedEvent>(),
+        ),
+        (
+            "ControlPointInitialized",
+            std::mem::size_of::<ControlPointInitializedEvent>(),
+        ),
         (
             "ControlPointUpdateImages",
             std::mem::size_of::<ControlPointUpdateImagesEvent>(),
@@ -10896,144 +10129,366 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "ControlPointUpdateCapping",
             std::mem::size_of::<ControlPointUpdateCappingEvent>(),
         ),
-        ("ControlPointUpdateOwner", std::mem::size_of::<ControlPointUpdateOwnerEvent>()),
-        ("ControlPointStartTouch", std::mem::size_of::<ControlPointStartTouchEvent>()),
-        ("ControlPointEndTouch", std::mem::size_of::<ControlPointEndTouchEvent>()),
+        (
+            "ControlPointUpdateOwner",
+            std::mem::size_of::<ControlPointUpdateOwnerEvent>(),
+        ),
+        (
+            "ControlPointStartTouch",
+            std::mem::size_of::<ControlPointStartTouchEvent>(),
+        ),
+        (
+            "ControlPointEndTouch",
+            std::mem::size_of::<ControlPointEndTouchEvent>(),
+        ),
         (
             "ControlPointPulseElement",
             std::mem::size_of::<ControlPointPulseElementEvent>(),
         ),
-        ("ControlPointFakeCapture", std::mem::size_of::<ControlPointFakeCaptureEvent>()),
+        (
+            "ControlPointFakeCapture",
+            std::mem::size_of::<ControlPointFakeCaptureEvent>(),
+        ),
         (
             "ControlPointFakeCaptureMultiplier",
             std::mem::size_of::<ControlPointFakeCaptureMultiplierEvent>(),
         ),
-        ("TeamPlayRoundSelected", std::mem::size_of::<TeamPlayRoundSelectedEvent>()),
-        ("TeamPlayRoundStart", std::mem::size_of::<TeamPlayRoundStartEvent>()),
-        ("TeamPlayRoundActive", std::mem::size_of::<TeamPlayRoundActiveEvent>()),
-        ("TeamPlayWaitingBegins", std::mem::size_of::<TeamPlayWaitingBeginsEvent>()),
-        ("TeamPlayWaitingEnds", std::mem::size_of::<TeamPlayWaitingEndsEvent>()),
+        (
+            "TeamPlayRoundSelected",
+            std::mem::size_of::<TeamPlayRoundSelectedEvent>(),
+        ),
+        (
+            "TeamPlayRoundStart",
+            std::mem::size_of::<TeamPlayRoundStartEvent>(),
+        ),
+        (
+            "TeamPlayRoundActive",
+            std::mem::size_of::<TeamPlayRoundActiveEvent>(),
+        ),
+        (
+            "TeamPlayWaitingBegins",
+            std::mem::size_of::<TeamPlayWaitingBeginsEvent>(),
+        ),
+        (
+            "TeamPlayWaitingEnds",
+            std::mem::size_of::<TeamPlayWaitingEndsEvent>(),
+        ),
         (
             "TeamPlayWaitingAboutToEnd",
             std::mem::size_of::<TeamPlayWaitingAboutToEndEvent>(),
         ),
-        ("TeamPlayRestartRound", std::mem::size_of::<TeamPlayRestartRoundEvent>()),
-        ("TeamPlayReadyRestart", std::mem::size_of::<TeamPlayReadyRestartEvent>()),
+        (
+            "TeamPlayRestartRound",
+            std::mem::size_of::<TeamPlayRestartRoundEvent>(),
+        ),
+        (
+            "TeamPlayReadyRestart",
+            std::mem::size_of::<TeamPlayReadyRestartEvent>(),
+        ),
         (
             "TeamPlayRoundRestartSeconds",
             std::mem::size_of::<TeamPlayRoundRestartSecondsEvent>(),
         ),
-        ("TeamPlayTeamReady", std::mem::size_of::<TeamPlayTeamReadyEvent>()),
-        ("TeamPlayRoundWin", std::mem::size_of::<TeamPlayRoundWinEvent>()),
-        ("TeamPlayUpdateTimer", std::mem::size_of::<TeamPlayUpdateTimerEvent>()),
-        ("TeamPlayRoundStalemate", std::mem::size_of::<TeamPlayRoundStalemateEvent>()),
-        ("TeamPlayOvertimeBegin", std::mem::size_of::<TeamPlayOvertimeBeginEvent>()),
-        ("TeamPlayOvertimeEnd", std::mem::size_of::<TeamPlayOvertimeEndEvent>()),
+        (
+            "TeamPlayTeamReady",
+            std::mem::size_of::<TeamPlayTeamReadyEvent>(),
+        ),
+        (
+            "TeamPlayRoundWin",
+            std::mem::size_of::<TeamPlayRoundWinEvent>(),
+        ),
+        (
+            "TeamPlayUpdateTimer",
+            std::mem::size_of::<TeamPlayUpdateTimerEvent>(),
+        ),
+        (
+            "TeamPlayRoundStalemate",
+            std::mem::size_of::<TeamPlayRoundStalemateEvent>(),
+        ),
+        (
+            "TeamPlayOvertimeBegin",
+            std::mem::size_of::<TeamPlayOvertimeBeginEvent>(),
+        ),
+        (
+            "TeamPlayOvertimeEnd",
+            std::mem::size_of::<TeamPlayOvertimeEndEvent>(),
+        ),
         (
             "TeamPlaySuddenDeathBegin",
             std::mem::size_of::<TeamPlaySuddenDeathBeginEvent>(),
         ),
-        ("TeamPlaySuddenDeathEnd", std::mem::size_of::<TeamPlaySuddenDeathEndEvent>()),
-        ("TeamPlayGameOver", std::mem::size_of::<TeamPlayGameOverEvent>()),
+        (
+            "TeamPlaySuddenDeathEnd",
+            std::mem::size_of::<TeamPlaySuddenDeathEndEvent>(),
+        ),
+        (
+            "TeamPlayGameOver",
+            std::mem::size_of::<TeamPlayGameOverEvent>(),
+        ),
         (
             "TeamPlayMapTimeRemaining",
             std::mem::size_of::<TeamPlayMapTimeRemainingEvent>(),
         ),
-        ("TeamPlayTimerFlash", std::mem::size_of::<TeamPlayTimerFlashEvent>()),
-        ("TeamPlayTimerTimeAdded", std::mem::size_of::<TeamPlayTimerTimeAddedEvent>()),
+        (
+            "TeamPlayTimerFlash",
+            std::mem::size_of::<TeamPlayTimerFlashEvent>(),
+        ),
+        (
+            "TeamPlayTimerTimeAdded",
+            std::mem::size_of::<TeamPlayTimerTimeAddedEvent>(),
+        ),
         (
             "TeamPlayPointStartCapture",
             std::mem::size_of::<TeamPlayPointStartCaptureEvent>(),
         ),
-        ("TeamPlayPointCaptured", std::mem::size_of::<TeamPlayPointCapturedEvent>()),
-        ("TeamPlayPointLocked", std::mem::size_of::<TeamPlayPointLockedEvent>()),
-        ("TeamPlayPointUnlocked", std::mem::size_of::<TeamPlayPointUnlockedEvent>()),
-        ("TeamPlayCaptureBroken", std::mem::size_of::<TeamPlayCaptureBrokenEvent>()),
-        ("TeamPlayCaptureBlocked", std::mem::size_of::<TeamPlayCaptureBlockedEvent>()),
-        ("TeamPlayFlagEvent", std::mem::size_of::<TeamPlayFlagEventEvent>()),
-        ("TeamPlayWinPanel", std::mem::size_of::<TeamPlayWinPanelEvent>()),
+        (
+            "TeamPlayPointCaptured",
+            std::mem::size_of::<TeamPlayPointCapturedEvent>(),
+        ),
+        (
+            "TeamPlayPointLocked",
+            std::mem::size_of::<TeamPlayPointLockedEvent>(),
+        ),
+        (
+            "TeamPlayPointUnlocked",
+            std::mem::size_of::<TeamPlayPointUnlockedEvent>(),
+        ),
+        (
+            "TeamPlayCaptureBroken",
+            std::mem::size_of::<TeamPlayCaptureBrokenEvent>(),
+        ),
+        (
+            "TeamPlayCaptureBlocked",
+            std::mem::size_of::<TeamPlayCaptureBlockedEvent>(),
+        ),
+        (
+            "TeamPlayFlagEvent",
+            std::mem::size_of::<TeamPlayFlagEventEvent>(),
+        ),
+        (
+            "TeamPlayWinPanel",
+            std::mem::size_of::<TeamPlayWinPanelEvent>(),
+        ),
         (
             "TeamPlayTeamBalancedPlayer",
             std::mem::size_of::<TeamPlayTeamBalancedPlayerEvent>(),
         ),
-        ("TeamPlaySetupFinished", std::mem::size_of::<TeamPlaySetupFinishedEvent>()),
+        (
+            "TeamPlaySetupFinished",
+            std::mem::size_of::<TeamPlaySetupFinishedEvent>(),
+        ),
         ("TeamPlayAlert", std::mem::size_of::<TeamPlayAlertEvent>()),
-        ("TrainingComplete", std::mem::size_of::<TrainingCompleteEvent>()),
-        ("ShowFreezePanel", std::mem::size_of::<ShowFreezePanelEvent>()),
-        ("HideFreezePanel", std::mem::size_of::<HideFreezePanelEvent>()),
-        ("FreezeCamStarted", std::mem::size_of::<FreezeCamStartedEvent>()),
-        ("LocalPlayerChangeTeam", std::mem::size_of::<LocalPlayerChangeTeamEvent>()),
-        ("LocalPlayerScoreChanged", std::mem::size_of::<LocalPlayerScoreChangedEvent>()),
-        ("LocalPlayerChangeClass", std::mem::size_of::<LocalPlayerChangeClassEvent>()),
-        ("LocalPlayerRespawn", std::mem::size_of::<LocalPlayerRespawnEvent>()),
-        ("BuildingInfoChanged", std::mem::size_of::<BuildingInfoChangedEvent>()),
+        (
+            "TrainingComplete",
+            std::mem::size_of::<TrainingCompleteEvent>(),
+        ),
+        (
+            "ShowFreezePanel",
+            std::mem::size_of::<ShowFreezePanelEvent>(),
+        ),
+        (
+            "HideFreezePanel",
+            std::mem::size_of::<HideFreezePanelEvent>(),
+        ),
+        (
+            "FreezeCamStarted",
+            std::mem::size_of::<FreezeCamStartedEvent>(),
+        ),
+        (
+            "LocalPlayerChangeTeam",
+            std::mem::size_of::<LocalPlayerChangeTeamEvent>(),
+        ),
+        (
+            "LocalPlayerScoreChanged",
+            std::mem::size_of::<LocalPlayerScoreChangedEvent>(),
+        ),
+        (
+            "LocalPlayerChangeClass",
+            std::mem::size_of::<LocalPlayerChangeClassEvent>(),
+        ),
+        (
+            "LocalPlayerRespawn",
+            std::mem::size_of::<LocalPlayerRespawnEvent>(),
+        ),
+        (
+            "BuildingInfoChanged",
+            std::mem::size_of::<BuildingInfoChangedEvent>(),
+        ),
         (
             "LocalPlayerChangeDisguise",
             std::mem::size_of::<LocalPlayerChangeDisguiseEvent>(),
         ),
-        ("PlayerAccountChanged", std::mem::size_of::<PlayerAccountChangedEvent>()),
+        (
+            "PlayerAccountChanged",
+            std::mem::size_of::<PlayerAccountChangedEvent>(),
+        ),
         ("SpyPdaReset", std::mem::size_of::<SpyPdaResetEvent>()),
-        ("FlagStatusUpdate", std::mem::size_of::<FlagStatusUpdateEvent>()),
-        ("PlayerStatsUpdated", std::mem::size_of::<PlayerStatsUpdatedEvent>()),
-        ("PlayingCommentary", std::mem::size_of::<PlayingCommentaryEvent>()),
-        ("PlayerChargeDeployed", std::mem::size_of::<PlayerChargeDeployedEvent>()),
-        ("PlayerBuiltObject", std::mem::size_of::<PlayerBuiltObjectEvent>()),
-        ("PlayerUpgradedObject", std::mem::size_of::<PlayerUpgradedObjectEvent>()),
-        ("PlayerCarryObject", std::mem::size_of::<PlayerCarryObjectEvent>()),
-        ("PlayerDropObject", std::mem::size_of::<PlayerDropObjectEvent>()),
+        (
+            "FlagStatusUpdate",
+            std::mem::size_of::<FlagStatusUpdateEvent>(),
+        ),
+        (
+            "PlayerStatsUpdated",
+            std::mem::size_of::<PlayerStatsUpdatedEvent>(),
+        ),
+        (
+            "PlayingCommentary",
+            std::mem::size_of::<PlayingCommentaryEvent>(),
+        ),
+        (
+            "PlayerChargeDeployed",
+            std::mem::size_of::<PlayerChargeDeployedEvent>(),
+        ),
+        (
+            "PlayerBuiltObject",
+            std::mem::size_of::<PlayerBuiltObjectEvent>(),
+        ),
+        (
+            "PlayerUpgradedObject",
+            std::mem::size_of::<PlayerUpgradedObjectEvent>(),
+        ),
+        (
+            "PlayerCarryObject",
+            std::mem::size_of::<PlayerCarryObjectEvent>(),
+        ),
+        (
+            "PlayerDropObject",
+            std::mem::size_of::<PlayerDropObjectEvent>(),
+        ),
         ("ObjectRemoved", std::mem::size_of::<ObjectRemovedEvent>()),
-        ("ObjectDestroyed", std::mem::size_of::<ObjectDestroyedEvent>()),
-        ("ObjectDetonated", std::mem::size_of::<ObjectDetonatedEvent>()),
-        ("AchievementEarned", std::mem::size_of::<AchievementEarnedEvent>()),
-        ("SpecTargetUpdated", std::mem::size_of::<SpecTargetUpdatedEvent>()),
-        ("TournamentStateUpdate", std::mem::size_of::<TournamentStateUpdateEvent>()),
+        (
+            "ObjectDestroyed",
+            std::mem::size_of::<ObjectDestroyedEvent>(),
+        ),
+        (
+            "ObjectDetonated",
+            std::mem::size_of::<ObjectDetonatedEvent>(),
+        ),
+        (
+            "AchievementEarned",
+            std::mem::size_of::<AchievementEarnedEvent>(),
+        ),
+        (
+            "SpecTargetUpdated",
+            std::mem::size_of::<SpecTargetUpdatedEvent>(),
+        ),
+        (
+            "TournamentStateUpdate",
+            std::mem::size_of::<TournamentStateUpdateEvent>(),
+        ),
         (
             "TournamentEnableCountdown",
             std::mem::size_of::<TournamentEnableCountdownEvent>(),
         ),
-        ("PlayerCalledForMedic", std::mem::size_of::<PlayerCalledForMedicEvent>()),
-        ("PlayerAskedForBall", std::mem::size_of::<PlayerAskedForBallEvent>()),
+        (
+            "PlayerCalledForMedic",
+            std::mem::size_of::<PlayerCalledForMedicEvent>(),
+        ),
+        (
+            "PlayerAskedForBall",
+            std::mem::size_of::<PlayerAskedForBallEvent>(),
+        ),
         (
             "LocalPlayerBecameObserver",
             std::mem::size_of::<LocalPlayerBecameObserverEvent>(),
         ),
-        ("PlayerIgnitedInv", std::mem::size_of::<PlayerIgnitedInvEvent>()),
+        (
+            "PlayerIgnitedInv",
+            std::mem::size_of::<PlayerIgnitedInvEvent>(),
+        ),
         ("PlayerIgnited", std::mem::size_of::<PlayerIgnitedEvent>()),
-        ("PlayerExtinguished", std::mem::size_of::<PlayerExtinguishedEvent>()),
-        ("PlayerTeleported", std::mem::size_of::<PlayerTeleportedEvent>()),
-        ("PlayerHealedMedicCall", std::mem::size_of::<PlayerHealedMedicCallEvent>()),
-        ("LocalPlayerChargeReady", std::mem::size_of::<LocalPlayerChargeReadyEvent>()),
-        ("LocalPlayerWindDown", std::mem::size_of::<LocalPlayerWindDownEvent>()),
+        (
+            "PlayerExtinguished",
+            std::mem::size_of::<PlayerExtinguishedEvent>(),
+        ),
+        (
+            "PlayerTeleported",
+            std::mem::size_of::<PlayerTeleportedEvent>(),
+        ),
+        (
+            "PlayerHealedMedicCall",
+            std::mem::size_of::<PlayerHealedMedicCallEvent>(),
+        ),
+        (
+            "LocalPlayerChargeReady",
+            std::mem::size_of::<LocalPlayerChargeReadyEvent>(),
+        ),
+        (
+            "LocalPlayerWindDown",
+            std::mem::size_of::<LocalPlayerWindDownEvent>(),
+        ),
         ("PlayerInvulned", std::mem::size_of::<PlayerInvulnedEvent>()),
         ("EscortSpeed", std::mem::size_of::<EscortSpeedEvent>()),
         ("EscortProgress", std::mem::size_of::<EscortProgressEvent>()),
         ("EscortRecede", std::mem::size_of::<EscortRecedeEvent>()),
-        ("GameUIActivated", std::mem::size_of::<GameUIActivatedEvent>()),
+        (
+            "GameUIActivated",
+            std::mem::size_of::<GameUIActivatedEvent>(),
+        ),
         ("GameUIHidden", std::mem::size_of::<GameUIHiddenEvent>()),
-        ("PlayerEscortScore", std::mem::size_of::<PlayerEscortScoreEvent>()),
-        ("PlayerHealOnHit", std::mem::size_of::<PlayerHealOnHitEvent>()),
-        ("PlayerStealSandvich", std::mem::size_of::<PlayerStealSandvichEvent>()),
-        ("ShowClassLayout", std::mem::size_of::<ShowClassLayoutEvent>()),
+        (
+            "PlayerEscortScore",
+            std::mem::size_of::<PlayerEscortScoreEvent>(),
+        ),
+        (
+            "PlayerHealOnHit",
+            std::mem::size_of::<PlayerHealOnHitEvent>(),
+        ),
+        (
+            "PlayerStealSandvich",
+            std::mem::size_of::<PlayerStealSandvichEvent>(),
+        ),
+        (
+            "ShowClassLayout",
+            std::mem::size_of::<ShowClassLayoutEvent>(),
+        ),
         ("ShowVsPanel", std::mem::size_of::<ShowVsPanelEvent>()),
         ("PlayerDamaged", std::mem::size_of::<PlayerDamagedEvent>()),
-        ("ArenaPlayerNotification", std::mem::size_of::<ArenaPlayerNotificationEvent>()),
-        ("ArenaMatchMaxStreak", std::mem::size_of::<ArenaMatchMaxStreakEvent>()),
-        ("ArenaRoundStart", std::mem::size_of::<ArenaRoundStartEvent>()),
+        (
+            "ArenaPlayerNotification",
+            std::mem::size_of::<ArenaPlayerNotificationEvent>(),
+        ),
+        (
+            "ArenaMatchMaxStreak",
+            std::mem::size_of::<ArenaMatchMaxStreakEvent>(),
+        ),
+        (
+            "ArenaRoundStart",
+            std::mem::size_of::<ArenaRoundStartEvent>(),
+        ),
         ("ArenaWinPanel", std::mem::size_of::<ArenaWinPanelEvent>()),
         ("PveWinPanel", std::mem::size_of::<PveWinPanelEvent>()),
         ("AirDash", std::mem::size_of::<AirDashEvent>()),
         ("Landed", std::mem::size_of::<LandedEvent>()),
-        ("PlayerDamageDodged", std::mem::size_of::<PlayerDamageDodgedEvent>()),
+        (
+            "PlayerDamageDodged",
+            std::mem::size_of::<PlayerDamageDodgedEvent>(),
+        ),
         ("PlayerStunned", std::mem::size_of::<PlayerStunnedEvent>()),
         ("ScoutGrandSlam", std::mem::size_of::<ScoutGrandSlamEvent>()),
-        ("ScoutSlamdollLanded", std::mem::size_of::<ScoutSlamdollLandedEvent>()),
+        (
+            "ScoutSlamdollLanded",
+            std::mem::size_of::<ScoutSlamdollLandedEvent>(),
+        ),
         ("ArrowImpact", std::mem::size_of::<ArrowImpactEvent>()),
         ("PlayerJarated", std::mem::size_of::<PlayerJaratedEvent>()),
-        ("PlayerJaratedFade", std::mem::size_of::<PlayerJaratedFadeEvent>()),
-        ("PlayerShieldBlocked", std::mem::size_of::<PlayerShieldBlockedEvent>()),
+        (
+            "PlayerJaratedFade",
+            std::mem::size_of::<PlayerJaratedFadeEvent>(),
+        ),
+        (
+            "PlayerShieldBlocked",
+            std::mem::size_of::<PlayerShieldBlockedEvent>(),
+        ),
         ("PlayerPinned", std::mem::size_of::<PlayerPinnedEvent>()),
-        ("PlayerHealedByMedic", std::mem::size_of::<PlayerHealedByMedicEvent>()),
-        ("PlayerSappedObject", std::mem::size_of::<PlayerSappedObjectEvent>()),
+        (
+            "PlayerHealedByMedic",
+            std::mem::size_of::<PlayerHealedByMedicEvent>(),
+        ),
+        (
+            "PlayerSappedObject",
+            std::mem::size_of::<PlayerSappedObjectEvent>(),
+        ),
         ("ItemFound", std::mem::size_of::<ItemFoundEvent>()),
         ("ShowAnnotation", std::mem::size_of::<ShowAnnotationEvent>()),
         ("HideAnnotation", std::mem::size_of::<HideAnnotationEvent>()),
@@ -11045,31 +10500,73 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "ControlPointUnlockUpdated",
             std::mem::size_of::<ControlPointUnlockUpdatedEvent>(),
         ),
-        ("DeployBuffBanner", std::mem::size_of::<DeployBuffBannerEvent>()),
+        (
+            "DeployBuffBanner",
+            std::mem::size_of::<DeployBuffBannerEvent>(),
+        ),
         ("PlayerBuff", std::mem::size_of::<PlayerBuffEvent>()),
         ("MedicDeath", std::mem::size_of::<MedicDeathEvent>()),
         ("OvertimeNag", std::mem::size_of::<OvertimeNagEvent>()),
         ("TeamsChanged", std::mem::size_of::<TeamsChangedEvent>()),
-        ("HalloweenPumpkinGrab", std::mem::size_of::<HalloweenPumpkinGrabEvent>()),
+        (
+            "HalloweenPumpkinGrab",
+            std::mem::size_of::<HalloweenPumpkinGrabEvent>(),
+        ),
         ("RocketJump", std::mem::size_of::<RocketJumpEvent>()),
-        ("RocketJumpLanded", std::mem::size_of::<RocketJumpLandedEvent>()),
+        (
+            "RocketJumpLanded",
+            std::mem::size_of::<RocketJumpLandedEvent>(),
+        ),
         ("StickyJump", std::mem::size_of::<StickyJumpEvent>()),
-        ("StickyJumpLanded", std::mem::size_of::<StickyJumpLandedEvent>()),
-        ("RocketPackLaunch", std::mem::size_of::<RocketPackLaunchEvent>()),
-        ("RocketPackLanded", std::mem::size_of::<RocketPackLandedEvent>()),
+        (
+            "StickyJumpLanded",
+            std::mem::size_of::<StickyJumpLandedEvent>(),
+        ),
+        (
+            "RocketPackLaunch",
+            std::mem::size_of::<RocketPackLaunchEvent>(),
+        ),
+        (
+            "RocketPackLanded",
+            std::mem::size_of::<RocketPackLandedEvent>(),
+        ),
         ("MedicDefended", std::mem::size_of::<MedicDefendedEvent>()),
-        ("LocalPlayerHealed", std::mem::size_of::<LocalPlayerHealedEvent>()),
-        ("PlayerDestroyedPipeBomb", std::mem::size_of::<PlayerDestroyedPipeBombEvent>()),
-        ("ObjectDeflected", std::mem::size_of::<ObjectDeflectedEvent>()),
+        (
+            "LocalPlayerHealed",
+            std::mem::size_of::<LocalPlayerHealedEvent>(),
+        ),
+        (
+            "PlayerDestroyedPipeBomb",
+            std::mem::size_of::<PlayerDestroyedPipeBombEvent>(),
+        ),
+        (
+            "ObjectDeflected",
+            std::mem::size_of::<ObjectDeflectedEvent>(),
+        ),
         ("PlayerMvp", std::mem::size_of::<PlayerMvpEvent>()),
         ("RaidSpawnMob", std::mem::size_of::<RaidSpawnMobEvent>()),
         ("RaidSpawnSquad", std::mem::size_of::<RaidSpawnSquadEvent>()),
         ("NavBlocked", std::mem::size_of::<NavBlockedEvent>()),
-        ("PathTrackPassed", std::mem::size_of::<PathTrackPassedEvent>()),
-        ("NumCappersChanged", std::mem::size_of::<NumCappersChangedEvent>()),
-        ("PlayerRegenerate", std::mem::size_of::<PlayerRegenerateEvent>()),
-        ("UpdateStatusItem", std::mem::size_of::<UpdateStatusItemEvent>()),
-        ("StatsResetRound", std::mem::size_of::<StatsResetRoundEvent>()),
+        (
+            "PathTrackPassed",
+            std::mem::size_of::<PathTrackPassedEvent>(),
+        ),
+        (
+            "NumCappersChanged",
+            std::mem::size_of::<NumCappersChangedEvent>(),
+        ),
+        (
+            "PlayerRegenerate",
+            std::mem::size_of::<PlayerRegenerateEvent>(),
+        ),
+        (
+            "UpdateStatusItem",
+            std::mem::size_of::<UpdateStatusItemEvent>(),
+        ),
+        (
+            "StatsResetRound",
+            std::mem::size_of::<StatsResetRoundEvent>(),
+        ),
         (
             "ScoreStatsAccumulatedUpdate",
             std::mem::size_of::<ScoreStatsAccumulatedUpdateEvent>(),
@@ -11078,7 +10575,10 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "ScoreStatsAccumulatedReset",
             std::mem::size_of::<ScoreStatsAccumulatedResetEvent>(),
         ),
-        ("AchievementEarnedLocal", std::mem::size_of::<AchievementEarnedLocalEvent>()),
+        (
+            "AchievementEarnedLocal",
+            std::mem::size_of::<AchievementEarnedLocalEvent>(),
+        ),
         ("PlayerHealed", std::mem::size_of::<PlayerHealedEvent>()),
         ("BuildingHealed", std::mem::size_of::<BuildingHealedEvent>()),
         ("ItemPickup", std::mem::size_of::<ItemPickupEvent>()),
@@ -11087,63 +10587,153 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("FishNoticeArm", std::mem::size_of::<FishNoticeArmEvent>()),
         ("SlapNotice", std::mem::size_of::<SlapNoticeEvent>()),
         ("ThrowableHit", std::mem::size_of::<ThrowableHitEvent>()),
-        ("PumpkinLordSummoned", std::mem::size_of::<PumpkinLordSummonedEvent>()),
-        ("PumpkinLordKilled", std::mem::size_of::<PumpkinLordKilledEvent>()),
-        ("MerasmusSummoned", std::mem::size_of::<MerasmusSummonedEvent>()),
+        (
+            "PumpkinLordSummoned",
+            std::mem::size_of::<PumpkinLordSummonedEvent>(),
+        ),
+        (
+            "PumpkinLordKilled",
+            std::mem::size_of::<PumpkinLordKilledEvent>(),
+        ),
+        (
+            "MerasmusSummoned",
+            std::mem::size_of::<MerasmusSummonedEvent>(),
+        ),
         ("MerasmusKilled", std::mem::size_of::<MerasmusKilledEvent>()),
-        ("MerasmusEscapeWarning", std::mem::size_of::<MerasmusEscapeWarningEvent>()),
-        ("MerasmusEscaped", std::mem::size_of::<MerasmusEscapedEvent>()),
-        ("EyeballBossSummoned", std::mem::size_of::<EyeballBossSummonedEvent>()),
-        ("EyeballBossStunned", std::mem::size_of::<EyeballBossStunnedEvent>()),
-        ("EyeballBossKilled", std::mem::size_of::<EyeballBossKilledEvent>()),
-        ("EyeballBossKiller", std::mem::size_of::<EyeballBossKillerEvent>()),
+        (
+            "MerasmusEscapeWarning",
+            std::mem::size_of::<MerasmusEscapeWarningEvent>(),
+        ),
+        (
+            "MerasmusEscaped",
+            std::mem::size_of::<MerasmusEscapedEvent>(),
+        ),
+        (
+            "EyeballBossSummoned",
+            std::mem::size_of::<EyeballBossSummonedEvent>(),
+        ),
+        (
+            "EyeballBossStunned",
+            std::mem::size_of::<EyeballBossStunnedEvent>(),
+        ),
+        (
+            "EyeballBossKilled",
+            std::mem::size_of::<EyeballBossKilledEvent>(),
+        ),
+        (
+            "EyeballBossKiller",
+            std::mem::size_of::<EyeballBossKillerEvent>(),
+        ),
         (
             "EyeballBossEscapeImminent",
             std::mem::size_of::<EyeballBossEscapeImminentEvent>(),
         ),
-        ("EyeballBossEscaped", std::mem::size_of::<EyeballBossEscapedEvent>()),
+        (
+            "EyeballBossEscaped",
+            std::mem::size_of::<EyeballBossEscapedEvent>(),
+        ),
         ("NpcHurt", std::mem::size_of::<NpcHurtEvent>()),
         (
             "ControlPointTimerUpdated",
             std::mem::size_of::<ControlPointTimerUpdatedEvent>(),
         ),
-        ("PlayerHighFiveStart", std::mem::size_of::<PlayerHighFiveStartEvent>()),
-        ("PlayerHighFiveCancel", std::mem::size_of::<PlayerHighFiveCancelEvent>()),
-        ("PlayerHighFiveSuccess", std::mem::size_of::<PlayerHighFiveSuccessEvent>()),
-        ("PlayerBonusPoints", std::mem::size_of::<PlayerBonusPointsEvent>()),
+        (
+            "PlayerHighFiveStart",
+            std::mem::size_of::<PlayerHighFiveStartEvent>(),
+        ),
+        (
+            "PlayerHighFiveCancel",
+            std::mem::size_of::<PlayerHighFiveCancelEvent>(),
+        ),
+        (
+            "PlayerHighFiveSuccess",
+            std::mem::size_of::<PlayerHighFiveSuccessEvent>(),
+        ),
+        (
+            "PlayerBonusPoints",
+            std::mem::size_of::<PlayerBonusPointsEvent>(),
+        ),
         ("PlayerUpgraded", std::mem::size_of::<PlayerUpgradedEvent>()),
         ("PlayerBuyback", std::mem::size_of::<PlayerBuybackEvent>()),
-        ("PlayerUsedPowerUpBottle", std::mem::size_of::<PlayerUsedPowerUpBottleEvent>()),
-        ("ChristmasGiftGrab", std::mem::size_of::<ChristmasGiftGrabEvent>()),
+        (
+            "PlayerUsedPowerUpBottle",
+            std::mem::size_of::<PlayerUsedPowerUpBottleEvent>(),
+        ),
+        (
+            "ChristmasGiftGrab",
+            std::mem::size_of::<ChristmasGiftGrabEvent>(),
+        ),
         (
             "PlayerKilledAchievementZone",
             std::mem::size_of::<PlayerKilledAchievementZoneEvent>(),
         ),
         ("PartyUpdated", std::mem::size_of::<PartyUpdatedEvent>()),
-        ("PartyPrefChanged", std::mem::size_of::<PartyPrefChangedEvent>()),
-        ("PartyCriteriaChanged", std::mem::size_of::<PartyCriteriaChangedEvent>()),
-        ("PartyInvitesChanged", std::mem::size_of::<PartyInvitesChangedEvent>()),
-        ("PartyQueueStateChanged", std::mem::size_of::<PartyQueueStateChangedEvent>()),
+        (
+            "PartyPrefChanged",
+            std::mem::size_of::<PartyPrefChangedEvent>(),
+        ),
+        (
+            "PartyCriteriaChanged",
+            std::mem::size_of::<PartyCriteriaChangedEvent>(),
+        ),
+        (
+            "PartyInvitesChanged",
+            std::mem::size_of::<PartyInvitesChangedEvent>(),
+        ),
+        (
+            "PartyQueueStateChanged",
+            std::mem::size_of::<PartyQueueStateChangedEvent>(),
+        ),
         ("PartyChat", std::mem::size_of::<PartyChatEvent>()),
-        ("PartyMemberJoin", std::mem::size_of::<PartyMemberJoinEvent>()),
-        ("PartyMemberLeave", std::mem::size_of::<PartyMemberLeaveEvent>()),
-        ("MatchInvitesUpdated", std::mem::size_of::<MatchInvitesUpdatedEvent>()),
+        (
+            "PartyMemberJoin",
+            std::mem::size_of::<PartyMemberJoinEvent>(),
+        ),
+        (
+            "PartyMemberLeave",
+            std::mem::size_of::<PartyMemberLeaveEvent>(),
+        ),
+        (
+            "MatchInvitesUpdated",
+            std::mem::size_of::<MatchInvitesUpdatedEvent>(),
+        ),
         ("LobbyUpdated", std::mem::size_of::<LobbyUpdatedEvent>()),
-        ("MvmMissionUpdate", std::mem::size_of::<MvmMissionUpdateEvent>()),
-        ("RecalculateHolidays", std::mem::size_of::<RecalculateHolidaysEvent>()),
-        ("PlayerCurrencyChanged", std::mem::size_of::<PlayerCurrencyChangedEvent>()),
-        ("DoomsdayRocketOpen", std::mem::size_of::<DoomsdayRocketOpenEvent>()),
+        (
+            "MvmMissionUpdate",
+            std::mem::size_of::<MvmMissionUpdateEvent>(),
+        ),
+        (
+            "RecalculateHolidays",
+            std::mem::size_of::<RecalculateHolidaysEvent>(),
+        ),
+        (
+            "PlayerCurrencyChanged",
+            std::mem::size_of::<PlayerCurrencyChangedEvent>(),
+        ),
+        (
+            "DoomsdayRocketOpen",
+            std::mem::size_of::<DoomsdayRocketOpenEvent>(),
+        ),
         (
             "RemoveNemesisRelationships",
             std::mem::size_of::<RemoveNemesisRelationshipsEvent>(),
         ),
-        ("MvmCreditBonusWave", std::mem::size_of::<MvmCreditBonusWaveEvent>()),
-        ("MvmCreditBonusAll", std::mem::size_of::<MvmCreditBonusAllEvent>()),
+        (
+            "MvmCreditBonusWave",
+            std::mem::size_of::<MvmCreditBonusWaveEvent>(),
+        ),
+        (
+            "MvmCreditBonusAll",
+            std::mem::size_of::<MvmCreditBonusAllEvent>(),
+        ),
         (
             "MvmCreditBonusAllAdvanced",
             std::mem::size_of::<MvmCreditBonusAllAdvancedEvent>(),
         ),
-        ("MvmQuickSentryUpgrade", std::mem::size_of::<MvmQuickSentryUpgradeEvent>()),
+        (
+            "MvmQuickSentryUpgrade",
+            std::mem::size_of::<MvmQuickSentryUpgradeEvent>(),
+        ),
         (
             "MvmTankDestroyedByPlayers",
             std::mem::size_of::<MvmTankDestroyedByPlayersEvent>(),
@@ -11152,16 +10742,43 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "MvmKillRobotDeliveringBomb",
             std::mem::size_of::<MvmKillRobotDeliveringBombEvent>(),
         ),
-        ("MvmPickupCurrency", std::mem::size_of::<MvmPickupCurrencyEvent>()),
-        ("MvmBombCarrierKilled", std::mem::size_of::<MvmBombCarrierKilledEvent>()),
-        ("MvmSentryBusterDetonate", std::mem::size_of::<MvmSentryBusterDetonateEvent>()),
-        ("MvmScoutMarkedForDeath", std::mem::size_of::<MvmScoutMarkedForDeathEvent>()),
-        ("MvmMedicPowerUpShared", std::mem::size_of::<MvmMedicPowerUpSharedEvent>()),
+        (
+            "MvmPickupCurrency",
+            std::mem::size_of::<MvmPickupCurrencyEvent>(),
+        ),
+        (
+            "MvmBombCarrierKilled",
+            std::mem::size_of::<MvmBombCarrierKilledEvent>(),
+        ),
+        (
+            "MvmSentryBusterDetonate",
+            std::mem::size_of::<MvmSentryBusterDetonateEvent>(),
+        ),
+        (
+            "MvmScoutMarkedForDeath",
+            std::mem::size_of::<MvmScoutMarkedForDeathEvent>(),
+        ),
+        (
+            "MvmMedicPowerUpShared",
+            std::mem::size_of::<MvmMedicPowerUpSharedEvent>(),
+        ),
         ("MvmBeginWave", std::mem::size_of::<MvmBeginWaveEvent>()),
-        ("MvmWaveComplete", std::mem::size_of::<MvmWaveCompleteEvent>()),
-        ("MvmMissionComplete", std::mem::size_of::<MvmMissionCompleteEvent>()),
-        ("MvmBombResetByPlayer", std::mem::size_of::<MvmBombResetByPlayerEvent>()),
-        ("MvmBombAlarmTriggered", std::mem::size_of::<MvmBombAlarmTriggeredEvent>()),
+        (
+            "MvmWaveComplete",
+            std::mem::size_of::<MvmWaveCompleteEvent>(),
+        ),
+        (
+            "MvmMissionComplete",
+            std::mem::size_of::<MvmMissionCompleteEvent>(),
+        ),
+        (
+            "MvmBombResetByPlayer",
+            std::mem::size_of::<MvmBombResetByPlayerEvent>(),
+        ),
+        (
+            "MvmBombAlarmTriggered",
+            std::mem::size_of::<MvmBombAlarmTriggeredEvent>(),
+        ),
         (
             "MvmBombDeployResetByPlayer",
             std::mem::size_of::<MvmBombDeployResetByPlayerEvent>(),
@@ -11169,10 +10786,22 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("MvmWaveFailed", std::mem::size_of::<MvmWaveFailedEvent>()),
         ("MvmResetStats", std::mem::size_of::<MvmResetStatsEvent>()),
         ("DamageResisted", std::mem::size_of::<DamageResistedEvent>()),
-        ("RevivePlayerNotify", std::mem::size_of::<RevivePlayerNotifyEvent>()),
-        ("RevivePlayerStopped", std::mem::size_of::<RevivePlayerStoppedEvent>()),
-        ("RevivePlayerComplete", std::mem::size_of::<RevivePlayerCompleteEvent>()),
-        ("PlayerTurnedToGhost", std::mem::size_of::<PlayerTurnedToGhostEvent>()),
+        (
+            "RevivePlayerNotify",
+            std::mem::size_of::<RevivePlayerNotifyEvent>(),
+        ),
+        (
+            "RevivePlayerStopped",
+            std::mem::size_of::<RevivePlayerStoppedEvent>(),
+        ),
+        (
+            "RevivePlayerComplete",
+            std::mem::size_of::<RevivePlayerCompleteEvent>(),
+        ),
+        (
+            "PlayerTurnedToGhost",
+            std::mem::size_of::<PlayerTurnedToGhostEvent>(),
+        ),
         (
             "MedigunShieldBlockedDamage",
             std::mem::size_of::<MedigunShieldBlockedDamageEvent>(),
@@ -11185,7 +10814,10 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "MvmSniperHeadshotCurrency",
             std::mem::size_of::<MvmSniperHeadshotCurrencyEvent>(),
         ),
-        ("MvmMannhattanPit", std::mem::size_of::<MvmMannhattanPitEvent>()),
+        (
+            "MvmMannhattanPit",
+            std::mem::size_of::<MvmMannhattanPitEvent>(),
+        ),
         (
             "FlagCarriedInDetectionZone",
             std::mem::size_of::<FlagCarriedInDetectionZoneEvent>(),
@@ -11194,104 +10826,284 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
             "MvmAdvWaveKilledStunRadio",
             std::mem::size_of::<MvmAdvWaveKilledStunRadioEvent>(),
         ),
-        ("PlayerDirectHitStun", std::mem::size_of::<PlayerDirectHitStunEvent>()),
-        ("MvmSentryBusterKilled", std::mem::size_of::<MvmSentryBusterKilledEvent>()),
-        ("UpgradesFileChanged", std::mem::size_of::<UpgradesFileChangedEvent>()),
-        ("RdTeamPointsChanged", std::mem::size_of::<RdTeamPointsChangedEvent>()),
-        ("RdRulesStateChanged", std::mem::size_of::<RdRulesStateChangedEvent>()),
+        (
+            "PlayerDirectHitStun",
+            std::mem::size_of::<PlayerDirectHitStunEvent>(),
+        ),
+        (
+            "MvmSentryBusterKilled",
+            std::mem::size_of::<MvmSentryBusterKilledEvent>(),
+        ),
+        (
+            "UpgradesFileChanged",
+            std::mem::size_of::<UpgradesFileChangedEvent>(),
+        ),
+        (
+            "RdTeamPointsChanged",
+            std::mem::size_of::<RdTeamPointsChangedEvent>(),
+        ),
+        (
+            "RdRulesStateChanged",
+            std::mem::size_of::<RdRulesStateChangedEvent>(),
+        ),
         ("RdRobotKilled", std::mem::size_of::<RdRobotKilledEvent>()),
         ("RdRobotImpact", std::mem::size_of::<RdRobotImpactEvent>()),
         (
             "TeamPlayPreRoundTimeLeft",
             std::mem::size_of::<TeamPlayPreRoundTimeLeftEvent>(),
         ),
-        ("ParachuteDeploy", std::mem::size_of::<ParachuteDeployEvent>()),
-        ("ParachuteHolster", std::mem::size_of::<ParachuteHolsterEvent>()),
-        ("KillRefillsMeter", std::mem::size_of::<KillRefillsMeterEvent>()),
+        (
+            "ParachuteDeploy",
+            std::mem::size_of::<ParachuteDeployEvent>(),
+        ),
+        (
+            "ParachuteHolster",
+            std::mem::size_of::<ParachuteHolsterEvent>(),
+        ),
+        (
+            "KillRefillsMeter",
+            std::mem::size_of::<KillRefillsMeterEvent>(),
+        ),
         ("RpsTauntEvent", std::mem::size_of::<RpsTauntEventEvent>()),
         ("CongaKill", std::mem::size_of::<CongaKillEvent>()),
-        ("PlayerInitialSpawn", std::mem::size_of::<PlayerInitialSpawnEvent>()),
-        ("CompetitiveVictory", std::mem::size_of::<CompetitiveVictoryEvent>()),
-        ("CompetitiveStatsUpdate", std::mem::size_of::<CompetitiveStatsUpdateEvent>()),
+        (
+            "PlayerInitialSpawn",
+            std::mem::size_of::<PlayerInitialSpawnEvent>(),
+        ),
+        (
+            "CompetitiveVictory",
+            std::mem::size_of::<CompetitiveVictoryEvent>(),
+        ),
+        (
+            "CompetitiveStatsUpdate",
+            std::mem::size_of::<CompetitiveStatsUpdateEvent>(),
+        ),
         ("MiniGameWin", std::mem::size_of::<MiniGameWinEvent>()),
-        ("SentryOnGoActive", std::mem::size_of::<SentryOnGoActiveEvent>()),
+        (
+            "SentryOnGoActive",
+            std::mem::size_of::<SentryOnGoActiveEvent>(),
+        ),
         ("DuckXpLevelUp", std::mem::size_of::<DuckXpLevelUpEvent>()),
         ("QuestLogOpened", std::mem::size_of::<QuestLogOpenedEvent>()),
         ("SchemaUpdated", std::mem::size_of::<SchemaUpdatedEvent>()),
-        ("LocalPlayerPickupWeapon", std::mem::size_of::<LocalPlayerPickupWeaponEvent>()),
-        ("RdPlayerScorePoints", std::mem::size_of::<RdPlayerScorePointsEvent>()),
-        ("DemomanDetStickies", std::mem::size_of::<DemomanDetStickiesEvent>()),
-        ("QuestObjectiveCompleted", std::mem::size_of::<QuestObjectiveCompletedEvent>()),
-        ("PlayerScoreChanged", std::mem::size_of::<PlayerScoreChangedEvent>()),
-        ("KilledCappingPlayer", std::mem::size_of::<KilledCappingPlayerEvent>()),
-        ("EnvironmentalDeath", std::mem::size_of::<EnvironmentalDeathEvent>()),
-        ("ProjectileDirectHit", std::mem::size_of::<ProjectileDirectHitEvent>()),
+        (
+            "LocalPlayerPickupWeapon",
+            std::mem::size_of::<LocalPlayerPickupWeaponEvent>(),
+        ),
+        (
+            "RdPlayerScorePoints",
+            std::mem::size_of::<RdPlayerScorePointsEvent>(),
+        ),
+        (
+            "DemomanDetStickies",
+            std::mem::size_of::<DemomanDetStickiesEvent>(),
+        ),
+        (
+            "QuestObjectiveCompleted",
+            std::mem::size_of::<QuestObjectiveCompletedEvent>(),
+        ),
+        (
+            "PlayerScoreChanged",
+            std::mem::size_of::<PlayerScoreChangedEvent>(),
+        ),
+        (
+            "KilledCappingPlayer",
+            std::mem::size_of::<KilledCappingPlayerEvent>(),
+        ),
+        (
+            "EnvironmentalDeath",
+            std::mem::size_of::<EnvironmentalDeathEvent>(),
+        ),
+        (
+            "ProjectileDirectHit",
+            std::mem::size_of::<ProjectileDirectHitEvent>(),
+        ),
         ("PassGet", std::mem::size_of::<PassGetEvent>()),
         ("PassScore", std::mem::size_of::<PassScoreEvent>()),
         ("PassFree", std::mem::size_of::<PassFreeEvent>()),
         ("PassPassCaught", std::mem::size_of::<PassPassCaughtEvent>()),
         ("PassBallStolen", std::mem::size_of::<PassBallStolenEvent>()),
-        ("PassBallBlocked", std::mem::size_of::<PassBallBlockedEvent>()),
-        ("DamagePrevented", std::mem::size_of::<DamagePreventedEvent>()),
-        ("HalloweenBossKilled", std::mem::size_of::<HalloweenBossKilledEvent>()),
-        ("EscapedLootIsland", std::mem::size_of::<EscapedLootIslandEvent>()),
-        ("TaggedPlayerAsIt", std::mem::size_of::<TaggedPlayerAsItEvent>()),
-        ("MerasmusStunned", std::mem::size_of::<MerasmusStunnedEvent>()),
-        ("MerasmusPropFound", std::mem::size_of::<MerasmusPropFoundEvent>()),
-        ("HalloweenSkeletonKilled", std::mem::size_of::<HalloweenSkeletonKilledEvent>()),
+        (
+            "PassBallBlocked",
+            std::mem::size_of::<PassBallBlockedEvent>(),
+        ),
+        (
+            "DamagePrevented",
+            std::mem::size_of::<DamagePreventedEvent>(),
+        ),
+        (
+            "HalloweenBossKilled",
+            std::mem::size_of::<HalloweenBossKilledEvent>(),
+        ),
+        (
+            "EscapedLootIsland",
+            std::mem::size_of::<EscapedLootIslandEvent>(),
+        ),
+        (
+            "TaggedPlayerAsIt",
+            std::mem::size_of::<TaggedPlayerAsItEvent>(),
+        ),
+        (
+            "MerasmusStunned",
+            std::mem::size_of::<MerasmusStunnedEvent>(),
+        ),
+        (
+            "MerasmusPropFound",
+            std::mem::size_of::<MerasmusPropFoundEvent>(),
+        ),
+        (
+            "HalloweenSkeletonKilled",
+            std::mem::size_of::<HalloweenSkeletonKilledEvent>(),
+        ),
         ("EscapeHell", std::mem::size_of::<EscapeHellEvent>()),
-        ("CrossSpectralBridge", std::mem::size_of::<CrossSpectralBridgeEvent>()),
+        (
+            "CrossSpectralBridge",
+            std::mem::size_of::<CrossSpectralBridgeEvent>(),
+        ),
         ("MiniGameWon", std::mem::size_of::<MiniGameWonEvent>()),
         ("RespawnGhost", std::mem::size_of::<RespawnGhostEvent>()),
         ("KillInHell", std::mem::size_of::<KillInHellEvent>()),
-        ("HalloweenDuckCollected", std::mem::size_of::<HalloweenDuckCollectedEvent>()),
+        (
+            "HalloweenDuckCollected",
+            std::mem::size_of::<HalloweenDuckCollectedEvent>(),
+        ),
         ("SpecialScore", std::mem::size_of::<SpecialScoreEvent>()),
-        ("TeamLeaderKilled", std::mem::size_of::<TeamLeaderKilledEvent>()),
-        ("HalloweenSoulCollected", std::mem::size_of::<HalloweenSoulCollectedEvent>()),
-        ("RecalculateTruce", std::mem::size_of::<RecalculateTruceEvent>()),
-        ("DeadRingerCheatDeath", std::mem::size_of::<DeadRingerCheatDeathEvent>()),
+        (
+            "TeamLeaderKilled",
+            std::mem::size_of::<TeamLeaderKilledEvent>(),
+        ),
+        (
+            "HalloweenSoulCollected",
+            std::mem::size_of::<HalloweenSoulCollectedEvent>(),
+        ),
+        (
+            "RecalculateTruce",
+            std::mem::size_of::<RecalculateTruceEvent>(),
+        ),
+        (
+            "DeadRingerCheatDeath",
+            std::mem::size_of::<DeadRingerCheatDeathEvent>(),
+        ),
         ("CrossbowHeal", std::mem::size_of::<CrossbowHealEvent>()),
-        ("DamageMitigated", std::mem::size_of::<DamageMitigatedEvent>()),
+        (
+            "DamageMitigated",
+            std::mem::size_of::<DamageMitigatedEvent>(),
+        ),
         ("PayloadPushed", std::mem::size_of::<PayloadPushedEvent>()),
-        ("PlayerAbandonedMatch", std::mem::size_of::<PlayerAbandonedMatchEvent>()),
+        (
+            "PlayerAbandonedMatch",
+            std::mem::size_of::<PlayerAbandonedMatchEvent>(),
+        ),
         ("ClDrawline", std::mem::size_of::<ClDrawlineEvent>()),
-        ("RestartTimerTime", std::mem::size_of::<RestartTimerTimeEvent>()),
-        ("WinLimitChanged", std::mem::size_of::<WinLimitChangedEvent>()),
-        ("WinPanelShowScores", std::mem::size_of::<WinPanelShowScoresEvent>()),
+        (
+            "RestartTimerTime",
+            std::mem::size_of::<RestartTimerTimeEvent>(),
+        ),
+        (
+            "WinLimitChanged",
+            std::mem::size_of::<WinLimitChangedEvent>(),
+        ),
+        (
+            "WinPanelShowScores",
+            std::mem::size_of::<WinPanelShowScoresEvent>(),
+        ),
         (
             "TopStreamsRequestFinished",
             std::mem::size_of::<TopStreamsRequestFinishedEvent>(),
         ),
-        ("CompetitiveStateChanged", std::mem::size_of::<CompetitiveStateChangedEvent>()),
-        ("GlobalWarDataUpdated", std::mem::size_of::<GlobalWarDataUpdatedEvent>()),
-        ("StopWatchChanged", std::mem::size_of::<StopWatchChangedEvent>()),
+        (
+            "CompetitiveStateChanged",
+            std::mem::size_of::<CompetitiveStateChangedEvent>(),
+        ),
+        (
+            "GlobalWarDataUpdated",
+            std::mem::size_of::<GlobalWarDataUpdatedEvent>(),
+        ),
+        (
+            "StopWatchChanged",
+            std::mem::size_of::<StopWatchChangedEvent>(),
+        ),
         ("DsStop", std::mem::size_of::<DsStopEvent>()),
         ("DsScreenshot", std::mem::size_of::<DsScreenshotEvent>()),
-        ("ShowMatchSummary", std::mem::size_of::<ShowMatchSummaryEvent>()),
-        ("ExperienceChanged", std::mem::size_of::<ExperienceChangedEvent>()),
+        (
+            "ShowMatchSummary",
+            std::mem::size_of::<ShowMatchSummaryEvent>(),
+        ),
+        (
+            "ExperienceChanged",
+            std::mem::size_of::<ExperienceChangedEvent>(),
+        ),
         ("BeginXpLerp", std::mem::size_of::<BeginXpLerpEvent>()),
-        ("MatchmakerStatsUpdated", std::mem::size_of::<MatchmakerStatsUpdatedEvent>()),
-        ("RematchVotePeriodOver", std::mem::size_of::<RematchVotePeriodOverEvent>()),
-        ("RematchFailedToCreate", std::mem::size_of::<RematchFailedToCreateEvent>()),
-        ("PlayerRematchChange", std::mem::size_of::<PlayerRematchChangeEvent>()),
+        (
+            "MatchmakerStatsUpdated",
+            std::mem::size_of::<MatchmakerStatsUpdatedEvent>(),
+        ),
+        (
+            "RematchVotePeriodOver",
+            std::mem::size_of::<RematchVotePeriodOverEvent>(),
+        ),
+        (
+            "RematchFailedToCreate",
+            std::mem::size_of::<RematchFailedToCreateEvent>(),
+        ),
+        (
+            "PlayerRematchChange",
+            std::mem::size_of::<PlayerRematchChangeEvent>(),
+        ),
         ("PingUpdated", std::mem::size_of::<PingUpdatedEvent>()),
         ("MMStatsUpdated", std::mem::size_of::<MMStatsUpdatedEvent>()),
-        ("PlayerNextMapVoteChange", std::mem::size_of::<PlayerNextMapVoteChangeEvent>()),
-        ("VoteMapsChanged", std::mem::size_of::<VoteMapsChangedEvent>()),
-        ("ProtoDefChanged", std::mem::size_of::<ProtoDefChangedEvent>()),
-        ("PlayerDomination", std::mem::size_of::<PlayerDominationEvent>()),
-        ("PlayerRocketPackPushed", std::mem::size_of::<PlayerRocketPackPushedEvent>()),
+        (
+            "PlayerNextMapVoteChange",
+            std::mem::size_of::<PlayerNextMapVoteChangeEvent>(),
+        ),
+        (
+            "VoteMapsChanged",
+            std::mem::size_of::<VoteMapsChangedEvent>(),
+        ),
+        (
+            "ProtoDefChanged",
+            std::mem::size_of::<ProtoDefChangedEvent>(),
+        ),
+        (
+            "PlayerDomination",
+            std::mem::size_of::<PlayerDominationEvent>(),
+        ),
+        (
+            "PlayerRocketPackPushed",
+            std::mem::size_of::<PlayerRocketPackPushedEvent>(),
+        ),
         ("QuestRequest", std::mem::size_of::<QuestRequestEvent>()),
         ("QuestResponse", std::mem::size_of::<QuestResponseEvent>()),
         ("QuestProgress", std::mem::size_of::<QuestProgressEvent>()),
-        ("ProjectileRemoved", std::mem::size_of::<ProjectileRemovedEvent>()),
-        ("QuestMapDataChanged", std::mem::size_of::<QuestMapDataChangedEvent>()),
-        ("GasDousedPlayerIgnited", std::mem::size_of::<GasDousedPlayerIgnitedEvent>()),
-        ("QuestTurnInState", std::mem::size_of::<QuestTurnInStateEvent>()),
-        ("ItemsAcknowledged", std::mem::size_of::<ItemsAcknowledgedEvent>()),
+        (
+            "ProjectileRemoved",
+            std::mem::size_of::<ProjectileRemovedEvent>(),
+        ),
+        (
+            "QuestMapDataChanged",
+            std::mem::size_of::<QuestMapDataChangedEvent>(),
+        ),
+        (
+            "GasDousedPlayerIgnited",
+            std::mem::size_of::<GasDousedPlayerIgnitedEvent>(),
+        ),
+        (
+            "QuestTurnInState",
+            std::mem::size_of::<QuestTurnInStateEvent>(),
+        ),
+        (
+            "ItemsAcknowledged",
+            std::mem::size_of::<ItemsAcknowledgedEvent>(),
+        ),
         ("CapperKilled", std::mem::size_of::<CapperKilledEvent>()),
-        ("MainMenuStabilized", std::mem::size_of::<MainMenuStabilizedEvent>()),
-        ("WorldStatusChanged", std::mem::size_of::<WorldStatusChangedEvent>()),
+        (
+            "MainMenuStabilized",
+            std::mem::size_of::<MainMenuStabilizedEvent>(),
+        ),
+        (
+            "WorldStatusChanged",
+            std::mem::size_of::<WorldStatusChangedEvent>(),
+        ),
         ("HLTVStatus", std::mem::size_of::<HLTVStatusEvent>()),
         ("HLTVCameraman", std::mem::size_of::<HLTVCameramanEvent>()),
         ("HLTVRankCamera", std::mem::size_of::<HLTVRankCameraEvent>()),
@@ -11301,14 +11113,28 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         ("HLTVMessage", std::mem::size_of::<HLTVMessageEvent>()),
         ("HLTVTitle", std::mem::size_of::<HLTVTitleEvent>()),
         ("HLTVChat", std::mem::size_of::<HLTVChatEvent>()),
-        ("ReplayStartRecord", std::mem::size_of::<ReplayStartRecordEvent>()),
-        ("ReplaySessionInfo", std::mem::size_of::<ReplaySessionInfoEvent>()),
-        ("ReplayEndRecord", std::mem::size_of::<ReplayEndRecordEvent>()),
-        ("ReplayReplaysAvailable", std::mem::size_of::<ReplayReplaysAvailableEvent>()),
-        ("ReplayServerError", std::mem::size_of::<ReplayServerErrorEvent>()),
+        (
+            "ReplayStartRecord",
+            std::mem::size_of::<ReplayStartRecordEvent>(),
+        ),
+        (
+            "ReplaySessionInfo",
+            std::mem::size_of::<ReplaySessionInfoEvent>(),
+        ),
+        (
+            "ReplayEndRecord",
+            std::mem::size_of::<ReplayEndRecordEvent>(),
+        ),
+        (
+            "ReplayReplaysAvailable",
+            std::mem::size_of::<ReplayReplaysAvailableEvent>(),
+        ),
+        (
+            "ReplayServerError",
+            std::mem::size_of::<ReplayServerErrorEvent>(),
+        ),
     ]
-        .iter()
-        .copied()
-        .collect()
+    .iter()
+    .copied()
+    .collect()
 }
-

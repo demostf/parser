@@ -1,7 +1,5 @@
 use crate::demo::sendprop::SendPropIdentifier;
-pub fn get_prop_names(
-    identifier: SendPropIdentifier,
-) -> Option<(&'static str, &'static str)> {
+pub fn get_prop_names(identifier: SendPropIdentifier) -> Option<(&'static str, &'static str)> {
     let identifier: u64 = identifier.into();
     match identifier {
         9977506119572073604u64 => Some(("DT_AI_BaseNPC", "baseclass")),
@@ -31,15 +29,11 @@ pub fn get_prop_names(
         1723297113128833070u64 => Some(("DT_AttributeContainer", "m_Item")),
         15461357476359745612u64 => Some(("DT_AttributeContainer", "m_ProviderType")),
         4818761618587156386u64 => Some(("DT_AttributeContainer", "m_hOuter")),
-        9482188740281234275u64 => {
-            Some(("DT_AttributeContainer", "m_iReapplyProvisionParity"))
-        }
+        9482188740281234275u64 => Some(("DT_AttributeContainer", "m_iReapplyProvisionParity")),
         207560818333740287u64 => Some(("DT_AttributeList", "m_Attributes")),
         13300933994033697204u64 => Some(("DT_AttributeManager", "m_ProviderType")),
         13264166953578569818u64 => Some(("DT_AttributeManager", "m_hOuter")),
-        5454263126140958731u64 => {
-            Some(("DT_AttributeManager", "m_iReapplyProvisionParity"))
-        }
+        5454263126140958731u64 => Some(("DT_AttributeManager", "m_iReapplyProvisionParity")),
         9538019610013457851u64 => Some(("DT_BCCLocalPlayerExclusive", "m_flNextAttack")),
         11056205009922495194u64 => Some(("DT_BaseAnimating", "baseclass")),
         1886226892341259827u64 => Some(("DT_BaseAnimating", "m_bClientSideAnimation")),
@@ -66,9 +60,7 @@ pub fn get_prop_names(
         14642833498726923104u64 => Some(("DT_BaseAnimatingOverlay", "baseclass")),
         8928965134547626576u64 => Some(("DT_BaseAnimatingOverlay", "overlay_vars")),
         18186019889468590738u64 => Some(("DT_BaseAttributableItem", "baseclass")),
-        15467066093856583754u64 => {
-            Some(("DT_BaseAttributableItem", "m_AttributeManager"))
-        }
+        15467066093856583754u64 => Some(("DT_BaseAttributableItem", "m_AttributeManager")),
         10861713627408158021u64 => Some(("DT_BaseBeam", "a")),
         10864528377175810506u64 => Some(("DT_BaseBeam", "b")),
         10867906076897107023u64 => Some(("DT_BaseBeam", "g")),
@@ -191,103 +183,46 @@ pub fn get_prop_names(
         8821060496542715329u64 => Some(("DT_BaseProjectile", "m_hOriginalLauncher")),
         1773461200810032239u64 => Some(("DT_BasePropDoor", "baseclass")),
         764401028470223805u64 => Some(("DT_BaseTeamObjectiveResource", "m_bBlocked")),
-        6260043898169180511u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_bCPCapRateScalesWithPlayers"))
-        }
+        6260043898169180511u64 => Some((
+            "DT_BaseTeamObjectiveResource",
+            "m_bCPCapRateScalesWithPlayers",
+        )),
         482099745178603580u64 => Some(("DT_BaseTeamObjectiveResource", "m_bCPIsVisible")),
         8070480527217658070u64 => Some(("DT_BaseTeamObjectiveResource", "m_bCPLocked")),
-        14589117526248252538u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_bControlPointsReset"))
-        }
-        2551313933655525189u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_bHillIsDownhill"))
-        }
-        6616839303315139821u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_bInMiniRound"))
-        }
-        14223007249754673569u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_bPlayingMiniRounds"))
-        }
-        13449055248664361296u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_bTeamCanCap"))
-        }
-        12406814205882245121u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_bTrackAlarm"))
-        }
-        15603776777687734539u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_flCPTimerTimes"))
-        }
-        10143517534621403237u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_flCustomPositionX"))
-        }
-        10144643434528502076u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_flCustomPositionY"))
-        }
-        12746417649697692707u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_flLazyCapPerc"))
-        }
-        2360248506913974640u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_flNodeHillData"))
-        }
-        17687213140186755045u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_flPathDistance"))
-        }
-        10188850048977635459u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_flTeamCapTime"))
-        }
-        3176918329628386471u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_flUnlockTimes"))
-        }
-        7220226147049147143u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iBaseControlPoints"))
-        }
+        14589117526248252538u64 => Some(("DT_BaseTeamObjectiveResource", "m_bControlPointsReset")),
+        2551313933655525189u64 => Some(("DT_BaseTeamObjectiveResource", "m_bHillIsDownhill")),
+        6616839303315139821u64 => Some(("DT_BaseTeamObjectiveResource", "m_bInMiniRound")),
+        14223007249754673569u64 => Some(("DT_BaseTeamObjectiveResource", "m_bPlayingMiniRounds")),
+        13449055248664361296u64 => Some(("DT_BaseTeamObjectiveResource", "m_bTeamCanCap")),
+        12406814205882245121u64 => Some(("DT_BaseTeamObjectiveResource", "m_bTrackAlarm")),
+        15603776777687734539u64 => Some(("DT_BaseTeamObjectiveResource", "m_flCPTimerTimes")),
+        10143517534621403237u64 => Some(("DT_BaseTeamObjectiveResource", "m_flCustomPositionX")),
+        10144643434528502076u64 => Some(("DT_BaseTeamObjectiveResource", "m_flCustomPositionY")),
+        12746417649697692707u64 => Some(("DT_BaseTeamObjectiveResource", "m_flLazyCapPerc")),
+        2360248506913974640u64 => Some(("DT_BaseTeamObjectiveResource", "m_flNodeHillData")),
+        17687213140186755045u64 => Some(("DT_BaseTeamObjectiveResource", "m_flPathDistance")),
+        10188850048977635459u64 => Some(("DT_BaseTeamObjectiveResource", "m_flTeamCapTime")),
+        3176918329628386471u64 => Some(("DT_BaseTeamObjectiveResource", "m_flUnlockTimes")),
+        7220226147049147143u64 => Some(("DT_BaseTeamObjectiveResource", "m_iBaseControlPoints")),
         10975425104909481510u64 => Some(("DT_BaseTeamObjectiveResource", "m_iCPGroup")),
-        9796709517129871815u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iCappingTeam"))
-        }
-        10134043929416589912u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iNumControlPoints"))
-        }
-        7006103335397878306u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iNumTeamMembers"))
-        }
+        9796709517129871815u64 => Some(("DT_BaseTeamObjectiveResource", "m_iCappingTeam")),
+        10134043929416589912u64 => Some(("DT_BaseTeamObjectiveResource", "m_iNumControlPoints")),
+        7006103335397878306u64 => Some(("DT_BaseTeamObjectiveResource", "m_iNumTeamMembers")),
         14581529935953675661u64 => Some(("DT_BaseTeamObjectiveResource", "m_iOwner")),
-        14057342925796101268u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iPreviousPoints"))
-        }
-        17664125710752348622u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iStopWatchTimer"))
-        }
-        12231279990623467274u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iTeamBaseIcons"))
-        }
+        14057342925796101268u64 => Some(("DT_BaseTeamObjectiveResource", "m_iPreviousPoints")),
+        17664125710752348622u64 => Some(("DT_BaseTeamObjectiveResource", "m_iStopWatchTimer")),
+        12231279990623467274u64 => Some(("DT_BaseTeamObjectiveResource", "m_iTeamBaseIcons")),
         98947748158193475u64 => Some(("DT_BaseTeamObjectiveResource", "m_iTeamIcons")),
         7632071981119974014u64 => Some(("DT_BaseTeamObjectiveResource", "m_iTeamInZone")),
-        7558004037016717466u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iTeamOverlays"))
-        }
-        11508737394756596273u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iTeamReqCappers"))
-        }
-        6991212709890471199u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iTimerToShowInHUD"))
-        }
-        18209914006898892797u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iUpdateCapHudParity"))
-        }
+        7558004037016717466u64 => Some(("DT_BaseTeamObjectiveResource", "m_iTeamOverlays")),
+        11508737394756596273u64 => Some(("DT_BaseTeamObjectiveResource", "m_iTeamReqCappers")),
+        6991212709890471199u64 => Some(("DT_BaseTeamObjectiveResource", "m_iTimerToShowInHUD")),
+        18209914006898892797u64 => Some(("DT_BaseTeamObjectiveResource", "m_iUpdateCapHudParity")),
         10891894484206485989u64 => Some(("DT_BaseTeamObjectiveResource", "m_iWarnOnCap")),
-        1498427985947912600u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_iszWarnSound"))
-        }
-        12414129916492154804u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_nNumNodeHillData"))
-        }
-        2468731353192921342u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_pszCapLayoutInHUD"))
-        }
-        18298578210195471990u64 => {
-            Some(("DT_BaseTeamObjectiveResource", "m_vCPPositions"))
-        }
+        1498427985947912600u64 => Some(("DT_BaseTeamObjectiveResource", "m_iszWarnSound")),
+        12414129916492154804u64 => Some(("DT_BaseTeamObjectiveResource", "m_nNumNodeHillData")),
+        2468731353192921342u64 => Some(("DT_BaseTeamObjectiveResource", "m_pszCapLayoutInHUD")),
+        18298578210195471990u64 => Some(("DT_BaseTeamObjectiveResource", "m_vCPPositions")),
         12048571054537650125u64 => Some(("DT_BaseViewModel", "m_fEffects")),
         16623028411847573074u64 => Some(("DT_BaseViewModel", "m_flPlaybackRate")),
         12151231029797149607u64 => Some(("DT_BaseViewModel", "m_flPoseParameter")),
@@ -346,9 +281,7 @@ pub fn get_prop_names(
         16550336263822600081u64 => Some(("DT_BreakableSurface", "m_nSurfaceType")),
         12912481925475249157u64 => Some(("DT_BreakableSurface", "m_vCorner")),
         4269713520286543487u64 => Some(("DT_BreakableSurface", "m_vNormal")),
-        12815830324051307265u64 => {
-            Some(("DT_BuilderLocalData", "m_aBuildableObjectTypes"))
-        }
+        12815830324051307265u64 => Some(("DT_BuilderLocalData", "m_aBuildableObjectTypes")),
         3752236378247177694u64 => Some(("DT_BuilderLocalData", "m_hObjectBeingBuilt")),
         5744885984835700960u64 => Some(("DT_BuilderLocalData", "m_iObjectType")),
         4498158956768532836u64 => Some(("DT_CBonusDuckPickup", "baseclass")),
@@ -366,9 +299,7 @@ pub fn get_prop_names(
         7993678590165848504u64 => Some(("DT_CHalloweenGiftPickup", "m_hTargetPlayer")),
         4548839884396345947u64 => Some(("DT_CHalloweenPickup", "baseclass")),
         7556464844809770469u64 => Some(("DT_CMannVsMachineWaveStats", "nBuyBacks")),
-        18102662244812005959u64 => {
-            Some(("DT_CMannVsMachineWaveStats", "nCreditsAcquired"))
-        }
+        18102662244812005959u64 => Some(("DT_CMannVsMachineWaveStats", "nCreditsAcquired")),
         6836609208288300926u64 => Some(("DT_CMannVsMachineWaveStats", "nCreditsBonus")),
         5022393733729822105u64 => Some(("DT_CMannVsMachineWaveStats", "nCreditsDropped")),
         11245235260759213247u64 => Some(("DT_CMannVsMachineWaveStats", "nPlayerDeaths")),
@@ -393,9 +324,7 @@ pub fn get_prop_names(
         5987216880222415474u64 => Some(("DT_CaptureFlagReturnIcon", "baseclass")),
         10305866285583773975u64 => Some(("DT_CaptureZone", "baseclass")),
         5377530078693075052u64 => Some(("DT_CaptureZone", "m_bDisabled")),
-        12941697488028443613u64 => {
-            Some(("DT_CollisionProperty", "m_bUniformTriggerBloat"))
-        }
+        12941697488028443613u64 => Some(("DT_CollisionProperty", "m_bUniformTriggerBloat")),
         14516902418280914306u64 => Some(("DT_CollisionProperty", "m_nSolidType")),
         1080149301244524881u64 => Some(("DT_CollisionProperty", "m_nSurroundType")),
         7175952075483709827u64 => Some(("DT_CollisionProperty", "m_triggerBloat")),
@@ -404,18 +333,16 @@ pub fn get_prop_names(
         269705891010771561u64 => Some(("DT_CollisionProperty", "m_vecMaxsPreScaled")),
         327157693896481356u64 => Some(("DT_CollisionProperty", "m_vecMins")),
         9638080833875299219u64 => Some(("DT_CollisionProperty", "m_vecMinsPreScaled")),
-        620553563392398378u64 => {
-            Some(("DT_CollisionProperty", "m_vecSpecifiedSurroundingMaxs"))
-        }
-        5716096160481233009u64 => {
-            Some(("DT_CollisionProperty", "m_vecSpecifiedSurroundingMaxsPreScaled"))
-        }
-        13386682110035354244u64 => {
-            Some(("DT_CollisionProperty", "m_vecSpecifiedSurroundingMins"))
-        }
-        10271950428381878635u64 => {
-            Some(("DT_CollisionProperty", "m_vecSpecifiedSurroundingMinsPreScaled"))
-        }
+        620553563392398378u64 => Some(("DT_CollisionProperty", "m_vecSpecifiedSurroundingMaxs")),
+        5716096160481233009u64 => Some((
+            "DT_CollisionProperty",
+            "m_vecSpecifiedSurroundingMaxsPreScaled",
+        )),
+        13386682110035354244u64 => Some(("DT_CollisionProperty", "m_vecSpecifiedSurroundingMins")),
+        10271950428381878635u64 => Some((
+            "DT_CollisionProperty",
+            "m_vecSpecifiedSurroundingMinsPreScaled",
+        )),
         5523418553214166751u64 => Some(("DT_ColorCorrection", "m_MaxFalloff")),
         12589122299567677885u64 => Some(("DT_ColorCorrection", "m_MinFalloff")),
         16380835174442541258u64 => Some(("DT_ColorCorrection", "m_bEnabled")),
@@ -459,18 +386,10 @@ pub fn get_prop_names(
         14568140209977249243u64 => Some(("DT_EconEntity", "m_AttributeManager")),
         17857878618611298375u64 => Some(("DT_EconEntity", "m_bValidatedAttachedEntity")),
         253092235430218488u64 => Some(("DT_EffectData", "entindex")),
-        18021520457381301207u64 => {
-            Some(("DT_EffectData", "m_ControlPoint1.m_eParticleAttachment"))
-        }
-        10824446178939881888u64 => {
-            Some(("DT_EffectData", "m_ControlPoint1.m_vecOffset[0]"))
-        }
-        11354508640126412967u64 => {
-            Some(("DT_EffectData", "m_ControlPoint1.m_vecOffset[1]"))
-        }
-        12064715086443459986u64 => {
-            Some(("DT_EffectData", "m_ControlPoint1.m_vecOffset[2]"))
-        }
+        18021520457381301207u64 => Some(("DT_EffectData", "m_ControlPoint1.m_eParticleAttachment")),
+        10824446178939881888u64 => Some(("DT_EffectData", "m_ControlPoint1.m_vecOffset[0]")),
+        11354508640126412967u64 => Some(("DT_EffectData", "m_ControlPoint1.m_vecOffset[1]")),
+        12064715086443459986u64 => Some(("DT_EffectData", "m_ControlPoint1.m_vecOffset[2]")),
         4437782535929851202u64 => Some(("DT_EffectData", "m_CustomColors.m_vecColor1")),
         4434967786162198717u64 => Some(("DT_EffectData", "m_CustomColors.m_vecColor2")),
         1599931262287302015u64 => Some(("DT_EffectData", "m_bControlPoint1")),
@@ -522,12 +441,8 @@ pub fn get_prop_names(
         9297058561166154273u64 => Some(("DT_EnvParticleScript", "baseclass")),
         13380319915338356541u64 => Some(("DT_EnvParticleScript", "m_flSequenceScale")),
         16060139991777335879u64 => Some(("DT_EnvProjectedTexture", "baseclass")),
-        2252813601417170088u64 => {
-            Some(("DT_EnvProjectedTexture", "m_LinearFloatLightColor"))
-        }
-        114155989813656232u64 => {
-            Some(("DT_EnvProjectedTexture", "m_SpotlightTextureName"))
-        }
+        2252813601417170088u64 => Some(("DT_EnvProjectedTexture", "m_LinearFloatLightColor")),
+        114155989813656232u64 => Some(("DT_EnvProjectedTexture", "m_SpotlightTextureName")),
         3898702540603033623u64 => Some(("DT_EnvProjectedTexture", "m_bCameraSpace")),
         10254310551605177570u64 => Some(("DT_EnvProjectedTexture", "m_bEnableShadows")),
         7787457648735581919u64 => Some(("DT_EnvProjectedTexture", "m_bLightOnlyTarget")),
@@ -539,9 +454,7 @@ pub fn get_prop_names(
         15426827728262009940u64 => Some(("DT_EnvProjectedTexture", "m_flNearZ")),
         4473675068488532456u64 => Some(("DT_EnvProjectedTexture", "m_hTargetEntity")),
         4905548031909626553u64 => Some(("DT_EnvProjectedTexture", "m_nShadowQuality")),
-        5620529469040513558u64 => {
-            Some(("DT_EnvProjectedTexture", "m_nSpotlightTextureFrame"))
-        }
+        5620529469040513558u64 => Some(("DT_EnvProjectedTexture", "m_nSpotlightTextureFrame")),
         14704521728978857169u64 => Some(("DT_EnvScreenEffect", "baseclass")),
         10262980981935134576u64 => Some(("DT_EnvScreenEffect", "m_flDuration")),
         3164074218753332286u64 => Some(("DT_EnvScreenEffect", "m_nType")),
@@ -552,27 +465,13 @@ pub fn get_prop_names(
         3604075530619262226u64 => Some(("DT_EnvScreenOverlay", "m_iDesiredOverlay")),
         14167371023432491515u64 => Some(("DT_EnvScreenOverlay", "m_iszOverlayNames")),
         15980388409707750886u64 => Some(("DT_EnvTonemapController", "baseclass")),
-        4707468205867891085u64 => {
-            Some(("DT_EnvTonemapController", "m_bUseCustomAutoExposureMax"))
-        }
-        18197077299237503183u64 => {
-            Some(("DT_EnvTonemapController", "m_bUseCustomAutoExposureMin"))
-        }
-        11120818610489230652u64 => {
-            Some(("DT_EnvTonemapController", "m_bUseCustomBloomScale"))
-        }
-        4084439432788915034u64 => {
-            Some(("DT_EnvTonemapController", "m_flCustomAutoExposureMax"))
-        }
-        9049455712478357200u64 => {
-            Some(("DT_EnvTonemapController", "m_flCustomAutoExposureMin"))
-        }
-        9290409691254814341u64 => {
-            Some(("DT_EnvTonemapController", "m_flCustomBloomScale"))
-        }
-        3564648561424872913u64 => {
-            Some(("DT_EnvTonemapController", "m_flCustomBloomScaleMinimum"))
-        }
+        4707468205867891085u64 => Some(("DT_EnvTonemapController", "m_bUseCustomAutoExposureMax")),
+        18197077299237503183u64 => Some(("DT_EnvTonemapController", "m_bUseCustomAutoExposureMin")),
+        11120818610489230652u64 => Some(("DT_EnvTonemapController", "m_bUseCustomBloomScale")),
+        4084439432788915034u64 => Some(("DT_EnvTonemapController", "m_flCustomAutoExposureMax")),
+        9049455712478357200u64 => Some(("DT_EnvTonemapController", "m_flCustomAutoExposureMin")),
+        9290409691254814341u64 => Some(("DT_EnvTonemapController", "m_flCustomBloomScale")),
+        3564648561424872913u64 => Some(("DT_EnvTonemapController", "m_flCustomBloomScaleMinimum")),
         7183986676565278417u64 => Some(("DT_EnvWind", "m_EnvWindShared")),
         17376263270174520011u64 => Some(("DT_EnvWindShared", "m_flGustDuration")),
         658004777675794009u64 => Some(("DT_EnvWindShared", "m_flInitialWindSpeed")),
@@ -619,21 +518,15 @@ pub fn get_prop_names(
         476665526328284112u64 => Some(("DT_FuncAreaPortalWindow", "baseclass")),
         11166258962236030081u64 => Some(("DT_FuncAreaPortalWindow", "m_flFadeDist")),
         2305319612642205701u64 => Some(("DT_FuncAreaPortalWindow", "m_flFadeStartDist")),
-        8441183468266600079u64 => {
-            Some(("DT_FuncAreaPortalWindow", "m_flTranslucencyLimit"))
-        }
-        6994402637133836533u64 => {
-            Some(("DT_FuncAreaPortalWindow", "m_iBackgroundModelIndex"))
-        }
+        8441183468266600079u64 => Some(("DT_FuncAreaPortalWindow", "m_flTranslucencyLimit")),
+        6994402637133836533u64 => Some(("DT_FuncAreaPortalWindow", "m_iBackgroundModelIndex")),
         1315228604564055678u64 => Some(("DT_FuncConveyor", "baseclass")),
         4643984630128196805u64 => Some(("DT_FuncConveyor", "m_flConveyorSpeed")),
         8025869603558831630u64 => Some(("DT_FuncForceField", "baseclass")),
         8842380166201025273u64 => Some(("DT_FuncLadder", "baseclass")),
         6727980321286440577u64 => Some(("DT_FuncLadder", "m_bFakeLadder")),
         5458287824259775681u64 => Some(("DT_FuncLadder", "m_vecLadderDir")),
-        1023914091052524494u64 => {
-            Some(("DT_FuncLadder", "m_vecPlayerMountPositionBottom"))
-        }
+        1023914091052524494u64 => Some(("DT_FuncLadder", "m_vecPlayerMountPositionBottom")),
         8352235157182942370u64 => Some(("DT_FuncLadder", "m_vecPlayerMountPositionTop")),
         10638318840676769491u64 => Some(("DT_FuncMonitor", "baseclass")),
         5544290497221565849u64 => Some(("DT_FuncOccluder", "m_bActive")),
@@ -659,9 +552,7 @@ pub fn get_prop_names(
         5198644182095249827u64 => Some(("DT_FuncSmokeVolume", "m_MaterialName")),
         8073165390338064865u64 => Some(("DT_FuncSmokeVolume", "m_MovementSpeed")),
         6058325364789012681u64 => Some(("DT_FuncSmokeVolume", "m_ParticleDrawWidth")),
-        2820636897937052641u64 => {
-            Some(("DT_FuncSmokeVolume", "m_ParticleSpacingDistance"))
-        }
+        2820636897937052641u64 => Some(("DT_FuncSmokeVolume", "m_ParticleSpacingDistance")),
         14909793249953353950u64 => Some(("DT_FuncSmokeVolume", "m_RotationSpeed")),
         126643466202097015u64 => Some(("DT_FuncSmokeVolume", "m_spawnflags")),
         521318901927839128u64 => Some(("DT_FuncTrackTrain", "baseclass")),
@@ -694,13 +585,9 @@ pub fn get_prop_names(
         16941498431952440553u64 => Some(("DT_Hightower_TeleportVortex", "m_iState")),
         7805507788390503572u64 => Some(("DT_InfoLadderDismount", "baseclass")),
         16102845418931591771u64 => Some(("DT_InfoLightingRelative", "baseclass")),
-        13334572272126897098u64 => {
-            Some(("DT_InfoLightingRelative", "m_hLightingLandmark"))
-        }
+        13334572272126897098u64 => Some(("DT_InfoLightingRelative", "m_hLightingLandmark")),
         17675349519424779959u64 => Some(("DT_InfoOverlayAccessor", "m_iOverlayID")),
-        5389305028453794524u64 => {
-            Some(("DT_InfoOverlayAccessor", "m_iTextureFrameIndex"))
-        }
+        5389305028453794524u64 => Some(("DT_InfoOverlayAccessor", "m_iTextureFrameIndex")),
         13281282658748765205u64 => Some(("DT_LaserDot", "baseclass")),
         1929285705522480730u64 => Some(("DT_LightGlow", "HDRColorScale")),
         13554970453270875203u64 => Some(("DT_LightGlow", "m_angRotation")),
@@ -756,15 +643,9 @@ pub fn get_prop_names(
         3261508312742118676u64 => Some(("DT_Local", "m_vecPunchAngle")),
         11553804228842255627u64 => Some(("DT_Local", "m_vecPunchAngleVel")),
         11420334401211568191u64 => Some(("DT_LocalActiveWeaponData", "m_flAnimTime")),
-        477854118027322048u64 => {
-            Some(("DT_LocalActiveWeaponData", "m_flNextPrimaryAttack"))
-        }
-        12439415646112255356u64 => {
-            Some(("DT_LocalActiveWeaponData", "m_flNextSecondaryAttack"))
-        }
-        1861344240023747706u64 => {
-            Some(("DT_LocalActiveWeaponData", "m_flTimeWeaponIdle"))
-        }
+        477854118027322048u64 => Some(("DT_LocalActiveWeaponData", "m_flNextPrimaryAttack")),
+        12439415646112255356u64 => Some(("DT_LocalActiveWeaponData", "m_flNextSecondaryAttack")),
+        1861344240023747706u64 => Some(("DT_LocalActiveWeaponData", "m_flTimeWeaponIdle")),
         5839428667296945333u64 => Some(("DT_LocalActiveWeaponData", "m_nNextThinkTick")),
         1180539520845420538u64 => Some(("DT_LocalFlameThrower", "m_bHasHalloweenSpell")),
         16942780462268800407u64 => Some(("DT_LocalFlameThrower", "m_hFlameManager")),
@@ -772,23 +653,13 @@ pub fn get_prop_names(
         4137327776866978322u64 => Some(("DT_LocalFlameThrower", "m_iDamagingFlames")),
         16100218482556174869u64 => Some(("DT_LocalPlayerExclusive", "m_Local")),
         8202977059591059350u64 => Some(("DT_LocalPlayerExclusive", "m_fOnTarget")),
-        10974073549222745823u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_flConstraintRadius"))
-        }
-        13133555867614237421u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_flConstraintSpeedFactor"))
-        }
-        1229789984536407245u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_flConstraintWidth"))
-        }
+        10974073549222745823u64 => Some(("DT_LocalPlayerExclusive", "m_flConstraintRadius")),
+        13133555867614237421u64 => Some(("DT_LocalPlayerExclusive", "m_flConstraintSpeedFactor")),
+        1229789984536407245u64 => Some(("DT_LocalPlayerExclusive", "m_flConstraintWidth")),
         8860886652698385967u64 => Some(("DT_LocalPlayerExclusive", "m_flDeathTime")),
         12105715086695370586u64 => Some(("DT_LocalPlayerExclusive", "m_flFriction")),
-        2807126374303972232u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_flLaggedMovementValue"))
-        }
-        1404386598948594904u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_hConstraintEntity"))
-        }
+        2807126374303972232u64 => Some(("DT_LocalPlayerExclusive", "m_flLaggedMovementValue")),
+        1404386598948594904u64 => Some(("DT_LocalPlayerExclusive", "m_hConstraintEntity")),
         5921750086149896356u64 => Some(("DT_LocalPlayerExclusive", "m_hGroundEntity")),
         6333791436486800744u64 => Some(("DT_LocalPlayerExclusive", "m_hLastWeapon")),
         3605366840570150767u64 => Some(("DT_LocalPlayerExclusive", "m_iAmmo")),
@@ -796,37 +667,19 @@ pub fn get_prop_names(
         189161373383926998u64 => Some(("DT_LocalPlayerExclusive", "m_nTickBase")),
         12573717345841996583u64 => Some(("DT_LocalPlayerExclusive", "m_nWaterLevel")),
         2375096518330819004u64 => Some(("DT_LocalPlayerExclusive", "m_vecBaseVelocity")),
-        16576666860475617872u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_vecConstraintCenter"))
-        }
+        16576666860475617872u64 => Some(("DT_LocalPlayerExclusive", "m_vecConstraintCenter")),
         9881246523974673073u64 => Some(("DT_LocalPlayerExclusive", "m_vecVelocity[0]")),
         9358502412184000610u64 => Some(("DT_LocalPlayerExclusive", "m_vecVelocity[1]")),
         8587497370885508535u64 => Some(("DT_LocalPlayerExclusive", "m_vecVelocity[2]")),
-        15482974702530522024u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_vecViewOffset[0]"))
-        }
-        16074398708652142191u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_vecViewOffset[1]"))
-        }
-        16845966699904278298u64 => {
-            Some(("DT_LocalPlayerExclusive", "m_vecViewOffset[2]"))
-        }
-        2815375858371118709u64 => {
-            Some(("DT_LocalTFWeaponData", "m_flEffectBarRegenTime"))
-        }
-        17066791518227279732u64 => {
-            Some(("DT_LocalTFWeaponData", "m_flLastCritCheckTime"))
-        }
+        15482974702530522024u64 => Some(("DT_LocalPlayerExclusive", "m_vecViewOffset[0]")),
+        16074398708652142191u64 => Some(("DT_LocalPlayerExclusive", "m_vecViewOffset[1]")),
+        16845966699904278298u64 => Some(("DT_LocalPlayerExclusive", "m_vecViewOffset[2]")),
+        2815375858371118709u64 => Some(("DT_LocalTFWeaponData", "m_flEffectBarRegenTime")),
+        17066791518227279732u64 => Some(("DT_LocalTFWeaponData", "m_flLastCritCheckTime")),
         13800211648261414116u64 => Some(("DT_LocalTFWeaponData", "m_flLastFireTime")),
-        13269430883070863959u64 => {
-            Some(("DT_LocalTFWeaponData", "m_flObservedCritChance"))
-        }
-        14488883780465208477u64 => {
-            Some(("DT_LocalTFWeaponData", "m_flReloadPriorNextFire"))
-        }
-        18358052789884689096u64 => {
-            Some(("DT_LocalTFWeaponMedigunData", "m_flChargeLevel"))
-        }
+        13269430883070863959u64 => Some(("DT_LocalTFWeaponData", "m_flObservedCritChance")),
+        14488883780465208477u64 => Some(("DT_LocalTFWeaponData", "m_flReloadPriorNextFire")),
+        18358052789884689096u64 => Some(("DT_LocalTFWeaponMedigunData", "m_flChargeLevel")),
         7111486683434906648u64 => Some(("DT_LocalWeaponData", "m_bFlipViewModel")),
         6228294830767023013u64 => Some(("DT_LocalWeaponData", "m_flAnimTime")),
         4912693753643193123u64 => Some(("DT_LocalWeaponData", "m_iClip1")),
@@ -836,29 +689,19 @@ pub fn get_prop_names(
         3443159739696860287u64 => Some(("DT_LocalWeaponData", "m_nViewModelIndex")),
         13496247640687739480u64 => Some(("DT_MannVsMachineStats", "baseclass")),
         6529470081877114896u64 => Some(("DT_MannVsMachineStats", "m_currentWaveStats")),
-        15168297600687373153u64 => {
-            Some(("DT_MannVsMachineStats", "m_iCurrencyCollectedForRespec"))
-        }
+        15168297600687373153u64 => Some(("DT_MannVsMachineStats", "m_iCurrencyCollectedForRespec")),
         16103636632603551389u64 => Some(("DT_MannVsMachineStats", "m_iCurrentWaveIdx")),
         9701442574508188345u64 => Some(("DT_MannVsMachineStats", "m_iServerWaveID")),
-        11314244726266369866u64 => {
-            Some(("DT_MannVsMachineStats", "m_nRespecsAwardedInWave"))
-        }
+        11314244726266369866u64 => Some(("DT_MannVsMachineStats", "m_nRespecsAwardedInWave")),
         17373004316049774992u64 => Some(("DT_MannVsMachineStats", "m_previousWaveStats")),
-        5830272437141758398u64 => {
-            Some(("DT_MannVsMachineStats", "m_runningTotalWaveStats"))
-        }
+        5830272437141758398u64 => Some(("DT_MannVsMachineStats", "m_runningTotalWaveStats")),
         12167682346375817311u64 => Some(("DT_MaterialModifyControl", "baseclass")),
         16529403431670571175u64 => {
             Some(("DT_MaterialModifyControl", "m_bNewAnimCommandsSemaphore"))
         }
         3988729169059346340u64 => Some(("DT_MaterialModifyControl", "m_bWrap")),
-        2959961758008791467u64 => {
-            Some(("DT_MaterialModifyControl", "m_flFloatLerpEndValue"))
-        }
-        14099373520653428866u64 => {
-            Some(("DT_MaterialModifyControl", "m_flFloatLerpStartValue"))
-        }
+        2959961758008791467u64 => Some(("DT_MaterialModifyControl", "m_flFloatLerpEndValue")),
+        14099373520653428866u64 => Some(("DT_MaterialModifyControl", "m_flFloatLerpStartValue")),
         11841915532873668659u64 => {
             Some(("DT_MaterialModifyControl", "m_flFloatLerpTransitionTime"))
         }
@@ -868,27 +711,17 @@ pub fn get_prop_names(
         17247889420939613503u64 => Some(("DT_MaterialModifyControl", "m_nModifyMode")),
         10162193495182433573u64 => Some(("DT_MaterialModifyControl", "m_szMaterialName")),
         14412596698207298757u64 => Some(("DT_MaterialModifyControl", "m_szMaterialVar")),
-        16196673206514172130u64 => {
-            Some(("DT_MaterialModifyControl", "m_szMaterialVarValue"))
-        }
+        16196673206514172130u64 => Some(("DT_MaterialModifyControl", "m_szMaterialVarValue")),
         11260232321092586078u64 => Some(("DT_Merasmus", "baseclass")),
         2656272158081578479u64 => Some(("DT_Merasmus", "m_bIsDoingAOEAttack")),
         3060622569221761593u64 => Some(("DT_Merasmus", "m_bRevealed")),
         1102613716367957140u64 => Some(("DT_Merasmus", "m_bStunned")),
         16763989558937175447u64 => Some(("DT_MerasmusDancer", "baseclass")),
-        17079253572737029753u64 => {
-            Some(("DT_MonsterResource", "m_fSkillShotComboEndTime"))
-        }
-        14975529807936865786u64 => {
-            Some(("DT_MonsterResource", "m_iBossHealthPercentageByte"))
-        }
+        17079253572737029753u64 => Some(("DT_MonsterResource", "m_fSkillShotComboEndTime")),
+        14975529807936865786u64 => Some(("DT_MonsterResource", "m_iBossHealthPercentageByte")),
         13974447841086780623u64 => Some(("DT_MonsterResource", "m_iBossState")),
-        6289858508798830248u64 => {
-            Some(("DT_MonsterResource", "m_iBossStunPercentageByte"))
-        }
-        12506623981565681650u64 => {
-            Some(("DT_MonsterResource", "m_iSkillShotCompleteCount"))
-        }
+        6289858508798830248u64 => Some(("DT_MonsterResource", "m_iBossStunPercentageByte")),
+        12506623981565681650u64 => Some(("DT_MonsterResource", "m_iSkillShotCompleteCount")),
         18012972414182119426u64 => Some(("DT_MovieExplosion", "baseclass")),
         1153362727985164101u64 => Some(("DT_NextBot", "baseclass")),
         14187459074404627427u64 => Some(("DT_ObjectCartDispenser", "baseclass")),
@@ -909,9 +742,7 @@ pub fn get_prop_names(
         1828951864594737735u64 => Some(("DT_ObjectSentrygun", "m_nShieldLevel")),
         6084707614294048386u64 => Some(("DT_ObjectTeleporter", "baseclass")),
         5086075074131250838u64 => Some(("DT_ObjectTeleporter", "m_bMatchBuilding")),
-        4538303084594989557u64 => {
-            Some(("DT_ObjectTeleporter", "m_flCurrentRechargeDuration"))
-        }
+        4538303084594989557u64 => Some(("DT_ObjectTeleporter", "m_flCurrentRechargeDuration")),
         1147701113607426749u64 => Some(("DT_ObjectTeleporter", "m_flRechargeTime")),
         4679122366883686175u64 => Some(("DT_ObjectTeleporter", "m_flYawToExit")),
         5775534354387621035u64 => Some(("DT_ObjectTeleporter", "m_iState")),
@@ -923,12 +754,8 @@ pub fn get_prop_names(
         3181140237843780895u64 => Some(("DT_ParticleFire", "m_vDirection")),
         8777203562431530304u64 => Some(("DT_ParticleFire", "m_vOrigin")),
         16787764780080791181u64 => Some(("DT_ParticlePerformanceMonitor", "baseclass")),
-        16577173687237993691u64 => {
-            Some(("DT_ParticlePerformanceMonitor", "m_bDisplayPerf"))
-        }
-        10551540368335591413u64 => {
-            Some(("DT_ParticlePerformanceMonitor", "m_bMeasurePerf"))
-        }
+        16577173687237993691u64 => Some(("DT_ParticlePerformanceMonitor", "m_bDisplayPerf")),
+        10551540368335591413u64 => Some(("DT_ParticlePerformanceMonitor", "m_bMeasurePerf")),
         14877792606716409394u64 => Some(("DT_ParticleSmokeGrenade", "baseclass")),
         9171368501719076612u64 => Some(("DT_ParticleSmokeGrenade", "m_CurrentStage")),
         15069148509288769225u64 => Some(("DT_ParticleSmokeGrenade", "m_FadeEndTime")),
@@ -965,12 +792,8 @@ pub fn get_prop_names(
         3908013512553602177u64 => Some(("DT_PhysicsPropMultiplayer", "m_collisionMins")),
         2695265235558131564u64 => Some(("DT_PhysicsPropMultiplayer", "m_fMass")),
         17976817548028924485u64 => Some(("DT_PhysicsPropMultiplayer", "m_iPhysicsMode")),
-        12788853276845127409u64 => {
-            Some(("DT_PipebombLauncherLocalData", "m_flChargeBeginTime"))
-        }
-        16725120178160151337u64 => {
-            Some(("DT_PipebombLauncherLocalData", "m_iPipebombCount"))
-        }
+        12788853276845127409u64 => Some(("DT_PipebombLauncherLocalData", "m_flChargeBeginTime")),
+        16725120178160151337u64 => Some(("DT_PipebombLauncherLocalData", "m_iPipebombCount")),
         8048792568294389757u64 => Some(("DT_Plasma", "baseclass")),
         13510524683563126928u64 => Some(("DT_Plasma", "m_flScale")),
         14400412803687279507u64 => Some(("DT_Plasma", "m_flScaleTime")),
@@ -1006,12 +829,8 @@ pub fn get_prop_names(
         17981693023432789045u64 => Some(("DT_PointCommentaryNode", "m_hViewPosition")),
         14944505961024026917u64 => Some(("DT_PointCommentaryNode", "m_iNodeNumber")),
         4965537765628559275u64 => Some(("DT_PointCommentaryNode", "m_iNodeNumberMax")),
-        13667693378448451720u64 => {
-            Some(("DT_PointCommentaryNode", "m_iszCommentaryFile"))
-        }
-        13719645572372795507u64 => {
-            Some(("DT_PointCommentaryNode", "m_iszCommentaryFileNoHDR"))
-        }
+        13667693378448451720u64 => Some(("DT_PointCommentaryNode", "m_iszCommentaryFile")),
+        13719645572372795507u64 => Some(("DT_PointCommentaryNode", "m_iszCommentaryFileNoHDR")),
         17623759576779101483u64 => Some(("DT_PointCommentaryNode", "m_iszSpeakers")),
         3999418953900660656u64 => Some(("DT_PoseController", "baseclass")),
         15850380745941941085u64 => Some(("DT_PoseController", "m_bInterpolationWrap")),
@@ -1039,16 +858,10 @@ pub fn get_prop_names(
         7874673952459470350u64 => Some(("DT_PropVehicleDriveable", "m_nBoostTimeLeft")),
         6761859165626473902u64 => Some(("DT_PropVehicleDriveable", "m_nHasBoost")),
         5969021796439874092u64 => Some(("DT_PropVehicleDriveable", "m_nRPM")),
-        3005830707751711881u64 => {
-            Some(("DT_PropVehicleDriveable", "m_nScannerDisabledVehicle"))
-        }
-        12828960798949964058u64 => {
-            Some(("DT_PropVehicleDriveable", "m_nScannerDisabledWeapons"))
-        }
+        3005830707751711881u64 => Some(("DT_PropVehicleDriveable", "m_nScannerDisabledVehicle")),
+        12828960798949964058u64 => Some(("DT_PropVehicleDriveable", "m_nScannerDisabledWeapons")),
         5285218742705793890u64 => Some(("DT_PropVehicleDriveable", "m_nSpeed")),
-        9641775883025781575u64 => {
-            Some(("DT_PropVehicleDriveable", "m_vecEyeExitEndpoint"))
-        }
+        9641775883025781575u64 => Some(("DT_PropVehicleDriveable", "m_vecEyeExitEndpoint")),
         17187880670544316069u64 => Some(("DT_PropVehicleDriveable", "m_vecGunCrosshair")),
         16128519728598722143u64 => Some(("DT_ProxyToggle", "baseclass")),
         9570761423526744925u64 => Some(("DT_ProxyToggle", "blah")),
@@ -1064,20 +877,12 @@ pub fn get_prop_names(
         6859363685445359174u64 => Some(("DT_Ragdoll", "m_nOverlaySequence")),
         8983018591918093749u64 => Some(("DT_Ragdoll", "m_ragAngles")),
         8678976162750786407u64 => Some(("DT_Ragdoll", "m_ragPos")),
-        10147147364061133792u64 => {
-            Some(("DT_RagdollManager", "m_iCurrentMaxRagdollCount"))
-        }
+        10147147364061133792u64 => Some(("DT_RagdollManager", "m_iCurrentMaxRagdollCount")),
         16940582236236543967u64 => Some(("DT_Ragdoll_Attached", "baseclass")),
-        13248670166458740693u64 => {
-            Some(("DT_Ragdoll_Attached", "m_attachmentPointBoneSpace"))
-        }
-        17289554333083603816u64 => {
-            Some(("DT_Ragdoll_Attached", "m_attachmentPointRagdollSpace"))
-        }
+        13248670166458740693u64 => Some(("DT_Ragdoll_Attached", "m_attachmentPointBoneSpace")),
+        17289554333083603816u64 => Some(("DT_Ragdoll_Attached", "m_attachmentPointRagdollSpace")),
         9970738773767813940u64 => Some(("DT_Ragdoll_Attached", "m_boneIndexAttached")),
-        11425772933165759084u64 => {
-            Some(("DT_Ragdoll_Attached", "m_ragdollAttachedObjectIndex"))
-        }
+        11425772933165759084u64 => Some(("DT_Ragdoll_Attached", "m_ragdollAttachedObjectIndex")),
         15936737141761764658u64 => Some(("DT_RobotDispenser", "baseclass")),
         10236659415076511103u64 => Some(("DT_RocketTrail", "baseclass")),
         8202951722512455160u64 => Some(("DT_RocketTrail", "m_EndColor")),
@@ -1101,9 +906,7 @@ pub fn get_prop_names(
         1969203741797316223u64 => Some(("DT_RopeKeyframe", "m_Subdiv")),
         13563203175411824845u64 => Some(("DT_RopeKeyframe", "m_TextureScale")),
         10587905665158945830u64 => Some(("DT_RopeKeyframe", "m_Width")),
-        2141537001863743767u64 => {
-            Some(("DT_RopeKeyframe", "m_bConstrainBetweenEndpoints"))
-        }
+        2141537001863743767u64 => Some(("DT_RopeKeyframe", "m_bConstrainBetweenEndpoints")),
         1049189979655627711u64 => Some(("DT_RopeKeyframe", "m_fLockedPoints")),
         6428197191463963676u64 => Some(("DT_RopeKeyframe", "m_flScrollSpeed")),
         9505712129081411725u64 => Some(("DT_RopeKeyframe", "m_hEndPoint")),
@@ -1125,13 +928,12 @@ pub fn get_prop_names(
             Some(("DT_ScriptCreatedAttribute", "m_iAttributeDefinitionIndex"))
         }
         6709383617686993832u64 => Some(("DT_ScriptCreatedAttribute", "m_iRawValue32")),
-        9857145824990589374u64 => {
-            Some(("DT_ScriptCreatedAttribute", "m_nRefundableCurrency"))
-        }
+        9857145824990589374u64 => Some(("DT_ScriptCreatedAttribute", "m_nRefundableCurrency")),
         10716608069952154964u64 => Some(("DT_ScriptCreatedItem", "m_AttributeList")),
-        570082728042388878u64 => {
-            Some(("DT_ScriptCreatedItem", "m_NetworkedDynamicAttributesForDemos"))
-        }
+        570082728042388878u64 => Some((
+            "DT_ScriptCreatedItem",
+            "m_NetworkedDynamicAttributesForDemos",
+        )),
         16173314348580045578u64 => Some(("DT_ScriptCreatedItem", "m_bInitialized")),
         8308089280484392185u64 => {
             Some(("DT_ScriptCreatedItem", "m_bOnlyIterateItemViewAttributes"))
@@ -1139,9 +941,7 @@ pub fn get_prop_names(
         1136494118791851951u64 => Some(("DT_ScriptCreatedItem", "m_iAccountID")),
         4931161556831243076u64 => Some(("DT_ScriptCreatedItem", "m_iEntityLevel")),
         6412909079676651973u64 => Some(("DT_ScriptCreatedItem", "m_iEntityQuality")),
-        13444166425656641027u64 => {
-            Some(("DT_ScriptCreatedItem", "m_iItemDefinitionIndex"))
-        }
+        13444166425656641027u64 => Some(("DT_ScriptCreatedItem", "m_iItemDefinitionIndex")),
         9835095664206099863u64 => Some(("DT_ScriptCreatedItem", "m_iItemIDHigh")),
         9667217002202509789u64 => Some(("DT_ScriptCreatedItem", "m_iItemIDLow")),
         2664458104193857833u64 => Some(("DT_ScriptCreatedItem", "m_iTeamNumber")),
@@ -1162,9 +962,7 @@ pub fn get_prop_names(
         5308385330272876970u64 => Some(("DT_SlideshowDisplay", "m_szDisplayText")),
         5691755573936915476u64 => Some(("DT_SlideshowDisplay", "m_szSlideshowDirectory")),
         16749144924608867882u64 => Some(("DT_SmokeStack", "baseclass")),
-        12460839418322149252u64 => {
-            Some(("DT_SmokeStack", "m_AmbientLight.m_flIntensity"))
-        }
+        12460839418322149252u64 => Some(("DT_SmokeStack", "m_AmbientLight.m_flIntensity")),
         6012515736489917478u64 => Some(("DT_SmokeStack", "m_AmbientLight.m_vColor")),
         15595266523751013805u64 => Some(("DT_SmokeStack", "m_AmbientLight.m_vPos")),
         6609717569919402999u64 => Some(("DT_SmokeStack", "m_DirLight.m_flIntensity")),
@@ -1501,31 +1299,20 @@ pub fn get_prop_names(
         10642027310653757124u64 => Some(("DT_TETFExplosion", "m_vecOrigin[2]")),
         6584802487867774737u64 => Some(("DT_TETFParticleEffect", "baseclass")),
         176025285012321247u64 => Some(("DT_TETFParticleEffect", "entindex")),
-        6542097112926352462u64 => {
-            Some(("DT_TETFParticleEffect", "m_ControlPoint1.m_eParticleAttachment"))
-        }
-        3932969823774159247u64 => {
-            Some(("DT_TETFParticleEffect", "m_ControlPoint1.m_vecOffset[0]"))
-        }
-        3463705957569073224u64 => {
-            Some(("DT_TETFParticleEffect", "m_ControlPoint1.m_vecOffset[1]"))
-        }
-        5288080521798412873u64 => {
-            Some(("DT_TETFParticleEffect", "m_ControlPoint1.m_vecOffset[2]"))
-        }
-        9320262432422183789u64 => {
-            Some(("DT_TETFParticleEffect", "m_CustomColors.m_vecColor1"))
-        }
-        9323077182189836274u64 => {
-            Some(("DT_TETFParticleEffect", "m_CustomColors.m_vecColor2"))
-        }
+        6542097112926352462u64 => Some((
+            "DT_TETFParticleEffect",
+            "m_ControlPoint1.m_eParticleAttachment",
+        )),
+        3932969823774159247u64 => Some(("DT_TETFParticleEffect", "m_ControlPoint1.m_vecOffset[0]")),
+        3463705957569073224u64 => Some(("DT_TETFParticleEffect", "m_ControlPoint1.m_vecOffset[1]")),
+        5288080521798412873u64 => Some(("DT_TETFParticleEffect", "m_ControlPoint1.m_vecOffset[2]")),
+        9320262432422183789u64 => Some(("DT_TETFParticleEffect", "m_CustomColors.m_vecColor1")),
+        9323077182189836274u64 => Some(("DT_TETFParticleEffect", "m_CustomColors.m_vecColor2")),
         13376960549802941744u64 => Some(("DT_TETFParticleEffect", "m_bControlPoint1")),
         6224861019298613607u64 => Some(("DT_TETFParticleEffect", "m_bCustomColors")),
         15886282426575032016u64 => Some(("DT_TETFParticleEffect", "m_bResetParticles")),
         3340605646083506174u64 => Some(("DT_TETFParticleEffect", "m_iAttachType")),
-        13426684681092049224u64 => {
-            Some(("DT_TETFParticleEffect", "m_iAttachmentPointIndex"))
-        }
+        13426684681092049224u64 => Some(("DT_TETFParticleEffect", "m_iAttachmentPointIndex")),
         36474605466937610u64 => Some(("DT_TETFParticleEffect", "m_iParticleSystemIndex")),
         15803149409074318078u64 => Some(("DT_TETFParticleEffect", "m_vecAngles")),
         12673370125834815576u64 => Some(("DT_TETFParticleEffect", "m_vecOrigin[0]")),
@@ -1549,9 +1336,7 @@ pub fn get_prop_names(
         3907057021428663692u64 => Some(("DT_TFBaseRocket", "m_vInitialVelocity")),
         16666368649603102391u64 => Some(("DT_TFBaseRocket", "m_vecOrigin")),
         10757498929721725308u64 => Some(("DT_TFBotHintEngineerNest", "baseclass")),
-        9694853923341582225u64 => {
-            Some(("DT_TFBotHintEngineerNest", "m_bHasActiveTeleporter"))
-        }
+        9694853923341582225u64 => Some(("DT_TFBotHintEngineerNest", "m_bHasActiveTeleporter")),
         1057117146229135166u64 => Some(("DT_TFCannon", "baseclass")),
         6908811666746669411u64 => Some(("DT_TFDroppedWeapon", "baseclass")),
         5577822078145368885u64 => Some(("DT_TFDroppedWeapon", "m_Item")),
@@ -1561,9 +1346,7 @@ pub fn get_prop_names(
         3136455976364110795u64 => Some(("DT_TFFlameManager", "m_flFlameDrag")),
         5563320511495781339u64 => Some(("DT_TFFlameManager", "m_flFlameEndSizeMult")),
         12563230953753191399u64 => Some(("DT_TFFlameManager", "m_flFlameGravity")),
-        16757173692405404021u64 => {
-            Some(("DT_TFFlameManager", "m_flFlameIgnorePlayerVelocity"))
-        }
+        16757173692405404021u64 => Some(("DT_TFFlameManager", "m_flFlameIgnorePlayerVelocity")),
         5304463784614196616u64 => Some(("DT_TFFlameManager", "m_flFlameLifeTime")),
         10535782174958962852u64 => {
             Some(("DT_TFFlameManager", "m_flFlameReflectionAdditionalLifeTime"))
@@ -1575,51 +1358,33 @@ pub fn get_prop_names(
         17389908919252614132u64 => Some(("DT_TFFlameManager", "m_flFlameStartSizeMult")),
         2701239937078247234u64 => Some(("DT_TFFlameManager", "m_flFlameUp")),
         9542601273415188279u64 => Some(("DT_TFFlameManager", "m_flRandomLifeTimeOffset")),
-        16289768184728776809u64 => {
-            Some(("DT_TFFlameManager", "m_flRedirectedFlameSizeMult"))
-        }
+        16289768184728776809u64 => Some(("DT_TFFlameManager", "m_flRedirectedFlameSizeMult")),
         1742440989253951239u64 => Some(("DT_TFFlameManager", "m_flSpreadDegree")),
         16454098667507787807u64 => Some(("DT_TFFlameManager", "m_hAttacker")),
         7883578044087259326u64 => Some(("DT_TFFlameManager", "m_hWeapon")),
-        1137322188742262934u64 => {
-            Some(("DT_TFFlameManager", "m_iMaxFlameReflectionCount"))
-        }
+        1137322188742262934u64 => Some(("DT_TFFlameManager", "m_iMaxFlameReflectionCount")),
         3938552470589463786u64 => Some(("DT_TFFlameManager", "m_nShouldReflect")),
         5843597919412475388u64 => Some(("DT_TFFlameRocket", "baseclass")),
-        1519437576535719208u64 => {
-            Some(("DT_TFGameRules", "m_bAllowTrainingAchievements"))
-        }
+        1519437576535719208u64 => Some(("DT_TFGameRules", "m_bAllowTrainingAchievements")),
         8078845543541044142u64 => Some(("DT_TFGameRules", "m_bBountyModeEnabled")),
         7865111346810721469u64 => Some(("DT_TFGameRules", "m_bCompetitiveMode")),
-        2009809779261873794u64 => {
-            Some(("DT_TFGameRules", "m_bHaveMinPlayersToEnableReady"))
-        }
+        2009809779261873794u64 => Some(("DT_TFGameRules", "m_bHaveMinPlayersToEnableReady")),
         11652225448812591895u64 => Some(("DT_TFGameRules", "m_bHelltowerPlayersInHell")),
         2186276668938128304u64 => Some(("DT_TFGameRules", "m_bIsInItemTestingMode")),
         11042492953028957530u64 => Some(("DT_TFGameRules", "m_bIsInTraining")),
         16682836678563923912u64 => Some(("DT_TFGameRules", "m_bIsTrainingHUDVisible")),
         10508832861176801672u64 => Some(("DT_TFGameRules", "m_bIsUsingSpells")),
-        6500432625847509978u64 => {
-            Some(("DT_TFGameRules", "m_bIsWaitingForTrainingContinue"))
-        }
-        13567631647616280722u64 => {
-            Some(("DT_TFGameRules", "m_bMannVsMachineAlarmStatus"))
-        }
+        6500432625847509978u64 => Some(("DT_TFGameRules", "m_bIsWaitingForTrainingContinue")),
+        13567631647616280722u64 => Some(("DT_TFGameRules", "m_bMannVsMachineAlarmStatus")),
         16105508676691426802u64 => Some(("DT_TFGameRules", "m_bMapHasMatchSummaryStage")),
         2220920686009069200u64 => Some(("DT_TFGameRules", "m_bMatchEnded")),
-        9593078190126985921u64 => {
-            Some(("DT_TFGameRules", "m_bPlayersAreOnMatchSummaryStage"))
-        }
+        9593078190126985921u64 => Some(("DT_TFGameRules", "m_bPlayersAreOnMatchSummaryStage")),
         10458824523513855227u64 => Some(("DT_TFGameRules", "m_bPlayingHybrid_CTF_CP")),
         448807795343741873u64 => Some(("DT_TFGameRules", "m_bPlayingKoth")),
         998398475513051441u64 => Some(("DT_TFGameRules", "m_bPlayingMannVsMachine")),
         17349486215842584714u64 => Some(("DT_TFGameRules", "m_bPlayingMedieval")),
-        2939098533427406702u64 => {
-            Some(("DT_TFGameRules", "m_bPlayingRobotDestructionMode"))
-        }
-        4586199180287230135u64 => {
-            Some(("DT_TFGameRules", "m_bPlayingSpecialDeliveryMode"))
-        }
+        2939098533427406702u64 => Some(("DT_TFGameRules", "m_bPlayingRobotDestructionMode")),
+        4586199180287230135u64 => Some(("DT_TFGameRules", "m_bPlayingSpecialDeliveryMode")),
         4315315735035020952u64 => Some(("DT_TFGameRules", "m_bPowerupMode")),
         6911024999663273931u64 => Some(("DT_TFGameRules", "m_bShowMatchSummary")),
         12421438954172708401u64 => Some(("DT_TFGameRules", "m_bStopWatchWinner")),
@@ -1627,9 +1392,7 @@ pub fn get_prop_names(
         2343526807179177200u64 => Some(("DT_TFGameRules", "m_bTruceActive")),
         1003842331011414072u64 => Some(("DT_TFGameRules", "m_ePlayerWantsRematch")),
         9052821624391218815u64 => Some(("DT_TFGameRules", "m_eRematchState")),
-        14934685673846116320u64 => {
-            Some(("DT_TFGameRules", "m_fBossNormalizedTravelDistance"))
-        }
+        14934685673846116320u64 => Some(("DT_TFGameRules", "m_fBossNormalizedTravelDistance")),
         13629499624731959983u64 => Some(("DT_TFGameRules", "m_fHalloweenEffectDuration")),
         3345151251675861024u64 => Some(("DT_TFGameRules", "m_fHalloweenEffectStartTime")),
         7500312199056929943u64 => Some(("DT_TFGameRules", "m_flCapturePointEnableTime")),
@@ -1661,34 +1424,20 @@ pub fn get_prop_names(
         7692815414064293452u64 => Some(("DT_TFGlow", "m_hTarget")),
         14113121779433971679u64 => Some(("DT_TFGlow", "m_iMode")),
         420507324454454151u64 => Some(("DT_TFHalloweenMinigame", "baseclass")),
-        14860990830486658803u64 => {
-            Some(("DT_TFHalloweenMinigame_FallingPlatforms", "baseclass"))
-        }
+        14860990830486658803u64 => Some(("DT_TFHalloweenMinigame_FallingPlatforms", "baseclass")),
         10387546850855081955u64 => Some(("DT_TFHellZap", "baseclass")),
         4595132133150625896u64 => Some(("DT_TFItem", "baseclass")),
         11455141167982501301u64 => Some(("DT_TFLaserPointer", "baseclass")),
-        2355899791785364457u64 => {
-            Some(("DT_TFLocalPlayerExclusive", "\"player_object_array\""))
-        }
-        2854777259191992101u64 => {
-            Some(("DT_TFLocalPlayerExclusive", "m_angEyeAngles[0]"))
-        }
-        2270671602466230550u64 => {
-            Some(("DT_TFLocalPlayerExclusive", "m_angEyeAngles[1]"))
-        }
+        2355899791785364457u64 => Some(("DT_TFLocalPlayerExclusive", "\"player_object_array\"")),
+        2854777259191992101u64 => Some(("DT_TFLocalPlayerExclusive", "m_angEyeAngles[0]")),
+        2270671602466230550u64 => Some(("DT_TFLocalPlayerExclusive", "m_angEyeAngles[1]")),
         15490410258299980966u64 => Some(("DT_TFLocalPlayerExclusive", "m_bIsCoaching")),
-        15600098204991556272u64 => {
-            Some(("DT_TFLocalPlayerExclusive", "m_bMatchSafeToLeave"))
-        }
+        15600098204991556272u64 => Some(("DT_TFLocalPlayerExclusive", "m_bMatchSafeToLeave")),
         15183661536505159926u64 => Some(("DT_TFLocalPlayerExclusive", "m_hCoach")),
         4446759084696780097u64 => Some(("DT_TFLocalPlayerExclusive", "m_hStudent")),
         7463087239777297769u64 => Some(("DT_TFLocalPlayerExclusive", "m_nCurrency")),
-        6802275605408829328u64 => {
-            Some(("DT_TFLocalPlayerExclusive", "m_nExperienceLevel"))
-        }
-        1038990937238887613u64 => {
-            Some(("DT_TFLocalPlayerExclusive", "m_nExperienceLevelProgress"))
-        }
+        6802275605408829328u64 => Some(("DT_TFLocalPlayerExclusive", "m_nExperienceLevel")),
+        1038990937238887613u64 => Some(("DT_TFLocalPlayerExclusive", "m_nExperienceLevelProgress")),
         3008076477471646514u64 => Some(("DT_TFLocalPlayerExclusive", "m_vecOrigin")),
         8637325494603745508u64 => Some(("DT_TFLocalPlayerExclusive", "m_vecOrigin[2]")),
         439464678884156141u64 => Some(("DT_TFLunchBox_Drink", "baseclass")),
@@ -1699,20 +1448,12 @@ pub fn get_prop_names(
         5135381610869586175u64 => Some(("DT_TFMinigame", "m_nMinigameTeamScore")),
         2188900221780572065u64 => Some(("DT_TFMinigame", "m_pszHudResFile")),
         15897538479185705410u64 => Some(("DT_TFMinigameLogic", "m_hActiveMinigame")),
-        15496889328616325576u64 => {
-            Some(("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[0]"))
-        }
-        15966153194821411599u64 => {
-            Some(("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[1]"))
-        }
+        15496889328616325576u64 => Some(("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[0]")),
+        15966153194821411599u64 => Some(("DT_TFNonLocalPlayerExclusive", "m_angEyeAngles[1]")),
         1431675682721348091u64 => Some(("DT_TFNonLocalPlayerExclusive", "m_vecOrigin")),
-        5446920940402922251u64 => {
-            Some(("DT_TFNonLocalPlayerExclusive", "m_vecOrigin[2]"))
-        }
+        5446920940402922251u64 => Some(("DT_TFNonLocalPlayerExclusive", "m_vecOrigin[2]")),
         18334659138702607112u64 => Some(("DT_TFObjectiveResource", "baseclass")),
-        4575154636832413047u64 => {
-            Some(("DT_TFObjectiveResource", "m_bMannVsMachineBetweenWaves"))
-        }
+        4575154636832413047u64 => Some(("DT_TFObjectiveResource", "m_bMannVsMachineBetweenWaves")),
         4797638343371263506u64 => {
             Some(("DT_TFObjectiveResource", "m_bMannVsMachineWaveClassActive"))
         }
@@ -1722,28 +1463,19 @@ pub fn get_prop_names(
         13288804666577293506u64 => {
             Some(("DT_TFObjectiveResource", "m_flMannVsMachineNextWaveTime"))
         }
-        11929927671945168139u64 => {
-            Some(("DT_TFObjectiveResource", "m_flMvMBaseBombUpgradeTime"))
-        }
-        13505806967720020855u64 => {
-            Some(("DT_TFObjectiveResource", "m_flMvMNextBombUpgradeTime"))
-        }
+        11929927671945168139u64 => Some(("DT_TFObjectiveResource", "m_flMvMBaseBombUpgradeTime")),
+        13505806967720020855u64 => Some(("DT_TFObjectiveResource", "m_flMvMNextBombUpgradeTime")),
         9478226788110647277u64 => Some(("DT_TFObjectiveResource", "m_iChallengeIndex")),
         13662811373935201870u64 => {
             Some(("DT_TFObjectiveResource", "m_iszMannVsMachineWaveClassNames"))
         }
-        14125941359358500862u64 => {
-            Some(("DT_TFObjectiveResource", "m_iszMannVsMachineWaveClassNames2"))
-        }
-        13283479491072032159u64 => {
-            Some(("DT_TFObjectiveResource", "m_iszMvMPopfileName"))
-        }
-        3141572634512091591u64 => {
-            Some(("DT_TFObjectiveResource", "m_nFlagCarrierUpgradeLevel"))
-        }
-        13702672100241298347u64 => {
-            Some(("DT_TFObjectiveResource", "m_nMannVsMachineMaxWaveCount"))
-        }
+        14125941359358500862u64 => Some((
+            "DT_TFObjectiveResource",
+            "m_iszMannVsMachineWaveClassNames2",
+        )),
+        13283479491072032159u64 => Some(("DT_TFObjectiveResource", "m_iszMvMPopfileName")),
+        3141572634512091591u64 => Some(("DT_TFObjectiveResource", "m_nFlagCarrierUpgradeLevel")),
+        13702672100241298347u64 => Some(("DT_TFObjectiveResource", "m_nMannVsMachineMaxWaveCount")),
         14479845184716420260u64 => {
             Some(("DT_TFObjectiveResource", "m_nMannVsMachineWaveClassCounts"))
         }
@@ -1756,15 +1488,11 @@ pub fn get_prop_names(
         11508700711658591349u64 => {
             Some(("DT_TFObjectiveResource", "m_nMannVsMachineWaveClassFlags2"))
         }
-        7227979331359746109u64 => {
-            Some(("DT_TFObjectiveResource", "m_nMannVsMachineWaveCount"))
-        }
+        7227979331359746109u64 => Some(("DT_TFObjectiveResource", "m_nMannVsMachineWaveCount")),
         1069285676895186995u64 => {
             Some(("DT_TFObjectiveResource", "m_nMannVsMachineWaveEnemyCount"))
         }
-        1466090976134144518u64 => {
-            Some(("DT_TFObjectiveResource", "m_nMvMEventPopfileType"))
-        }
+        1466090976134144518u64 => Some(("DT_TFObjectiveResource", "m_nMvMEventPopfileType")),
         4166591886263057385u64 => Some(("DT_TFObjectiveResource", "m_nMvMWorldMoney")),
         13299511838875128394u64 => Some(("DT_TFPEPBrawlerBlaster", "baseclass")),
         17108076728579629388u64 => Some(("DT_TFParachute", "baseclass")),
@@ -1837,47 +1565,23 @@ pub fn get_prop_names(
         9530282495848511690u64 => Some(("DT_TFPlayer", "overlay_vars")),
         12892934495131611572u64 => Some(("DT_TFPlayer", "tflocaldata")),
         5540499732856528391u64 => Some(("DT_TFPlayer", "tfnonlocaldata")),
-        7249864104174644610u64 => {
-            Some(("DT_TFPlayerClassShared", "m_angCustomModelRotation"))
-        }
-        7891561342236285696u64 => {
-            Some(("DT_TFPlayerClassShared", "m_bCustomModelRotates"))
-        }
-        5661877542053184554u64 => {
-            Some(("DT_TFPlayerClassShared", "m_bCustomModelRotationSet"))
-        }
-        12236343874382570979u64 => {
-            Some(("DT_TFPlayerClassShared", "m_bCustomModelVisibleToSelf"))
-        }
-        2214526246742245878u64 => {
-            Some(("DT_TFPlayerClassShared", "m_bUseClassAnimations"))
-        }
+        7249864104174644610u64 => Some(("DT_TFPlayerClassShared", "m_angCustomModelRotation")),
+        7891561342236285696u64 => Some(("DT_TFPlayerClassShared", "m_bCustomModelRotates")),
+        5661877542053184554u64 => Some(("DT_TFPlayerClassShared", "m_bCustomModelRotationSet")),
+        12236343874382570979u64 => Some(("DT_TFPlayerClassShared", "m_bCustomModelVisibleToSelf")),
+        2214526246742245878u64 => Some(("DT_TFPlayerClassShared", "m_bUseClassAnimations")),
         2825349581366125159u64 => Some(("DT_TFPlayerClassShared", "m_iClass")),
-        14929819972727047015u64 => {
-            Some(("DT_TFPlayerClassShared", "m_iClassModelParity"))
-        }
+        14929819972727047015u64 => Some(("DT_TFPlayerClassShared", "m_iClassModelParity")),
         8853562029396887365u64 => Some(("DT_TFPlayerClassShared", "m_iszClassIcon")),
         9299532423604932782u64 => Some(("DT_TFPlayerClassShared", "m_iszCustomModel")),
-        3605541538603075295u64 => {
-            Some(("DT_TFPlayerClassShared", "m_vecCustomModelOffset"))
-        }
-        8109358974358448859u64 => {
-            Some(("DT_TFPlayerConditionListExclusive", "_condition_bits"))
-        }
+        3605541538603075295u64 => Some(("DT_TFPlayerClassShared", "m_vecCustomModelOffset")),
+        8109358974358448859u64 => Some(("DT_TFPlayerConditionListExclusive", "_condition_bits")),
         17722716055336985602u64 => Some(("DT_TFPlayerConditionSource", "m_pProvider")),
         10248945773196542992u64 => Some(("DT_TFPlayerDestructionLogic", "baseclass")),
-        5156957243461434651u64 => {
-            Some(("DT_TFPlayerDestructionLogic", "m_bUsingCountdownImage"))
-        }
-        12491625350289392601u64 => {
-            Some(("DT_TFPlayerDestructionLogic", "m_hBlueTeamLeader"))
-        }
-        16909734097181653644u64 => {
-            Some(("DT_TFPlayerDestructionLogic", "m_hRedTeamLeader"))
-        }
-        10722194028370111079u64 => {
-            Some(("DT_TFPlayerDestructionLogic", "m_iszCountdownImage"))
-        }
+        5156957243461434651u64 => Some(("DT_TFPlayerDestructionLogic", "m_bUsingCountdownImage")),
+        12491625350289392601u64 => Some(("DT_TFPlayerDestructionLogic", "m_hBlueTeamLeader")),
+        16909734097181653644u64 => Some(("DT_TFPlayerDestructionLogic", "m_hRedTeamLeader")),
+        10722194028370111079u64 => Some(("DT_TFPlayerDestructionLogic", "m_iszCountdownImage")),
         7612658407222882550u64 => Some(("DT_TFPlayerResource", "baseclass")),
         17700542660589565789u64 => Some(("DT_TFPlayerResource", "m_bArenaSpectator")),
         4207975465077930456u64 => Some(("DT_TFPlayerResource", "m_flConnectTime")),
@@ -1897,70 +1601,36 @@ pub fn get_prop_names(
         18157388711444408095u64 => Some(("DT_TFPlayerResource", "m_iHealingAssist")),
         15085920427971391680u64 => Some(("DT_TFPlayerResource", "m_iMaxBuffedHealth")),
         5653953536196887992u64 => Some(("DT_TFPlayerResource", "m_iMaxHealth")),
-        11696566803975617270u64 => {
-            Some(("DT_TFPlayerResource", "m_iPartyLeaderBlueTeamIndex"))
-        }
-        2054940335926020477u64 => {
-            Some(("DT_TFPlayerResource", "m_iPartyLeaderRedTeamIndex"))
-        }
+        11696566803975617270u64 => Some(("DT_TFPlayerResource", "m_iPartyLeaderBlueTeamIndex")),
+        2054940335926020477u64 => Some(("DT_TFPlayerResource", "m_iPartyLeaderRedTeamIndex")),
         8699252127192966809u64 => Some(("DT_TFPlayerResource", "m_iPlayerClass")),
-        6704078495147373702u64 => {
-            Some(("DT_TFPlayerResource", "m_iPlayerClassWhenKilled"))
-        }
+        6704078495147373702u64 => Some(("DT_TFPlayerResource", "m_iPlayerClassWhenKilled")),
         12788727291211533199u64 => Some(("DT_TFPlayerResource", "m_iPlayerLevel")),
         10874692585148385673u64 => Some(("DT_TFPlayerResource", "m_iStreaks")),
         17428890270970208490u64 => Some(("DT_TFPlayerResource", "m_iTotalScore")),
-        16586024212263748746u64 => {
-            Some(("DT_TFPlayerResource", "m_iUpgradeRefundCredits"))
-        }
-        17680963770361692319u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iBackstabs"))
-        }
-        3224714055136190323u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iBonusPoints"))
-        }
-        16174441437982525942u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iBuildingsBuilt"))
-        }
+        16586024212263748746u64 => Some(("DT_TFPlayerResource", "m_iUpgradeRefundCredits")),
+        17680963770361692319u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iBackstabs")),
+        3224714055136190323u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iBonusPoints")),
+        16174441437982525942u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iBuildingsBuilt")),
         6671651359607407371u64 => {
             Some(("DT_TFPlayerScoringDataExclusive", "m_iBuildingsDestroyed"))
         }
-        4437120948640711658u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iCaptures"))
-        }
+        4437120948640711658u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iCaptures")),
         2310419630852119968u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iCrits")),
-        13850963706537747988u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iDamageDone"))
-        }
+        13850963706537747988u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iDamageDone")),
         10678164487375062394u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iDeaths")),
-        17356718221504493224u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iDefenses"))
-        }
-        3020202442825994948u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iDominations"))
-        }
-        6052806862059603118u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iHeadshots"))
-        }
-        13594920310935082852u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iHealPoints"))
-        }
+        17356718221504493224u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iDefenses")),
+        3020202442825994948u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iDominations")),
+        6052806862059603118u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iHeadshots")),
+        13594920310935082852u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iHealPoints")),
         6755946340314293828u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iInvulns")),
-        10176801774546911515u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iKillAssists"))
-        }
+        10176801774546911515u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iKillAssists")),
         11660639819126944296u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iKills")),
         2426254399929860246u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iPoints")),
-        9637589603182506964u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iResupplyPoints"))
-        }
+        9637589603182506964u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iResupplyPoints")),
         4455851378629347009u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iRevenge")),
-        18302889089109974372u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iSuicides"))
-        }
-        12833867606768280111u64 => {
-            Some(("DT_TFPlayerScoringDataExclusive", "m_iTeleports"))
-        }
+        18302889089109974372u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iSuicides")),
+        12833867606768280111u64 => Some(("DT_TFPlayerScoringDataExclusive", "m_iTeleports")),
         13640076862556929535u64 => Some(("DT_TFPlayerShared", "m_ConditionData")),
         15138242856073670715u64 => Some(("DT_TFPlayerShared", "m_ConditionList")),
         6198142612083178798u64 => Some(("DT_TFPlayerShared", "m_askForBallTime")),
@@ -1968,9 +1638,7 @@ pub fn get_prop_names(
         7347773854865773172u64 => Some(("DT_TFPlayerShared", "m_bCarryingObject")),
         14376035618414412444u64 => Some(("DT_TFPlayerShared", "m_bFeignDeathReady")),
         12259859103740215171u64 => Some(("DT_TFPlayerShared", "m_bHasPasstimeBall")),
-        4455350095516214322u64 => {
-            Some(("DT_TFPlayerShared", "m_bIsTargetedForPasstimePass"))
-        }
+        4455350095516214322u64 => Some(("DT_TFPlayerShared", "m_bIsTargetedForPasstimePass")),
         5838919372959573624u64 => Some(("DT_TFPlayerShared", "m_bJumping")),
         19340862012048690u64 => Some(("DT_TFPlayerShared", "m_bKingRuneBuffActive")),
         2168903779110072292u64 => Some(("DT_TFPlayerShared", "m_bLoadoutUnavailable")),
@@ -1983,9 +1651,7 @@ pub fn get_prop_names(
         10620109144072782656u64 => Some(("DT_TFPlayerShared", "m_flFirstPrimaryAttack")),
         14843775226164806883u64 => Some(("DT_TFPlayerShared", "m_flHolsterAnimTime")),
         10336504216876497537u64 => Some(("DT_TFPlayerShared", "m_flHypeMeter")),
-        218051690691615885u64 => {
-            Some(("DT_TFPlayerShared", "m_flInvisChangeCompleteTime"))
-        }
+        218051690691615885u64 => Some(("DT_TFPlayerShared", "m_flInvisChangeCompleteTime")),
         3150733167809423204u64 => Some(("DT_TFPlayerShared", "m_flMovementStunTime")),
         2406326727072302926u64 => Some(("DT_TFPlayerShared", "m_flNextNoiseMakerTime")),
         2833658322849843380u64 => Some(("DT_TFPlayerShared", "m_flRuneCharge")),
@@ -2003,9 +1669,7 @@ pub fn get_prop_names(
         14376191046083514006u64 => Some(("DT_TFPlayerShared", "m_iDisguiseHealth")),
         2071173860217244535u64 => Some(("DT_TFPlayerShared", "m_iDisguiseTargetIndex")),
         4386630627084353964u64 => Some(("DT_TFPlayerShared", "m_iItemFindBonus")),
-        13018720741200056505u64 => {
-            Some(("DT_TFPlayerShared", "m_iKillCountSinceLastDeploy"))
-        }
+        13018720741200056505u64 => Some(("DT_TFPlayerShared", "m_iKillCountSinceLastDeploy")),
         10849469538206417414u64 => Some(("DT_TFPlayerShared", "m_iMovementStunAmount")),
         11413856900318138181u64 => Some(("DT_TFPlayerShared", "m_iMovementStunParity")),
         1107376634035073720u64 => Some(("DT_TFPlayerShared", "m_iNextMeleeCrit")),
@@ -2021,9 +1685,7 @@ pub fn get_prop_names(
         3930609604368626551u64 => Some(("DT_TFPlayerShared", "m_nDisguiseClass")),
         9748785180780691560u64 => Some(("DT_TFPlayerShared", "m_nDisguiseSkinOverride")),
         7530743234452068868u64 => Some(("DT_TFPlayerShared", "m_nDisguiseTeam")),
-        18218083380655909929u64 => {
-            Some(("DT_TFPlayerShared", "m_nHalloweenBombHeadStage"))
-        }
+        18218083380655909929u64 => Some(("DT_TFPlayerShared", "m_nHalloweenBombHeadStage")),
         7927935797743283012u64 => Some(("DT_TFPlayerShared", "m_nMaskClass")),
         13919718662559767836u64 => Some(("DT_TFPlayerShared", "m_nNumHealers")),
         4711286069984596877u64 => Some(("DT_TFPlayerShared", "m_nPlayerCond")),
@@ -2034,43 +1696,23 @@ pub fn get_prop_names(
         6997136048966888830u64 => Some(("DT_TFPlayerShared", "m_nPlayerState")),
         2245046823419043341u64 => Some(("DT_TFPlayerShared", "m_nStreaks")),
         13227057019132638210u64 => Some(("DT_TFPlayerShared", "m_nTeamTeleporterUsed")),
-        6850962631760212227u64 => {
-            Some(("DT_TFPlayerShared", "m_unTauntSourceItemID_High"))
-        }
-        7956084466773733649u64 => {
-            Some(("DT_TFPlayerShared", "m_unTauntSourceItemID_Low"))
-        }
+        6850962631760212227u64 => Some(("DT_TFPlayerShared", "m_unTauntSourceItemID_High")),
+        7956084466773733649u64 => Some(("DT_TFPlayerShared", "m_unTauntSourceItemID_Low")),
         13319027686375000106u64 => Some(("DT_TFPlayerShared", "tfsharedlocaldata")),
         13515211804134568111u64 => Some(("DT_TFPlayerSharedLocal", "m_RoundScoreData")),
         11658671531568813399u64 => Some(("DT_TFPlayerSharedLocal", "m_ScoreData")),
         10573114432959501698u64 => Some(("DT_TFPlayerSharedLocal", "m_bInUpgradeZone")),
-        6235798292393519521u64 => {
-            Some(("DT_TFPlayerSharedLocal", "m_bLastDisguisedAsOwnTeam"))
-        }
+        6235798292393519521u64 => Some(("DT_TFPlayerSharedLocal", "m_bLastDisguisedAsOwnTeam")),
         6383445034036932063u64 => Some(("DT_TFPlayerSharedLocal", "m_bPlayerDominated")),
-        5106268198471469488u64 => {
-            Some(("DT_TFPlayerSharedLocal", "m_bPlayerDominatingMe"))
-        }
+        5106268198471469488u64 => Some(("DT_TFPlayerSharedLocal", "m_bPlayerDominatingMe")),
         8703332696775965354u64 => Some(("DT_TFPlayerSharedLocal", "m_bRageDraining")),
-        17815527772808308975u64 => {
-            Some(("DT_TFPlayerSharedLocal", "m_flItemChargeMeter"))
-        }
-        6190595888268647202u64 => {
-            Some(("DT_TFPlayerSharedLocal", "m_flNextRageEarnTime"))
-        }
+        17815527772808308975u64 => Some(("DT_TFPlayerSharedLocal", "m_flItemChargeMeter")),
+        6190595888268647202u64 => Some(("DT_TFPlayerSharedLocal", "m_flNextRageEarnTime")),
         9364048440766555013u64 => Some(("DT_TFPlayerSharedLocal", "m_flRageMeter")),
-        13248562547516894870u64 => {
-            Some(("DT_TFPlayerSharedLocal", "m_flStealthNextChangeTime"))
-        }
-        332842319886115406u64 => {
-            Some(("DT_TFPlayerSharedLocal", "m_flStealthNoAttackExpire"))
-        }
-        14396091422816444542u64 => {
-            Some(("DT_TFPlayerSharedLocal", "m_nDesiredDisguiseClass"))
-        }
-        13635661560440991919u64 => {
-            Some(("DT_TFPlayerSharedLocal", "m_nDesiredDisguiseTeam"))
-        }
+        13248562547516894870u64 => Some(("DT_TFPlayerSharedLocal", "m_flStealthNextChangeTime")),
+        332842319886115406u64 => Some(("DT_TFPlayerSharedLocal", "m_flStealthNoAttackExpire")),
+        14396091422816444542u64 => Some(("DT_TFPlayerSharedLocal", "m_nDesiredDisguiseClass")),
+        13635661560440991919u64 => Some(("DT_TFPlayerSharedLocal", "m_nDesiredDisguiseTeam")),
         16802735114717414726u64 => Some(("DT_TFPointManager", "baseclass")),
         11407323403926547683u64 => Some(("DT_TFPointManager", "m_nRandomSeed")),
         14592916104900028575u64 => Some(("DT_TFPointManager", "m_nSpawnTime")),
@@ -2084,12 +1726,8 @@ pub fn get_prop_names(
         4789184390952531014u64 => Some(("DT_TFProjectile_Arrow", "m_bCritical")),
         6860211990544602615u64 => Some(("DT_TFProjectile_Arrow", "m_iProjectileType")),
         16732170025238567113u64 => Some(("DT_TFProjectile_BallOfFire", "baseclass")),
-        3551886767247335557u64 => {
-            Some(("DT_TFProjectile_BallOfFire", "m_vecInitialVelocity"))
-        }
-        14013310836056119883u64 => {
-            Some(("DT_TFProjectile_BallOfFire", "m_vecSpawnOrigin"))
-        }
+        3551886767247335557u64 => Some(("DT_TFProjectile_BallOfFire", "m_vecInitialVelocity")),
+        14013310836056119883u64 => Some(("DT_TFProjectile_BallOfFire", "m_vecSpawnOrigin")),
         1694264126009137687u64 => Some(("DT_TFProjectile_Cleaver", "baseclass")),
         11742405590819450090u64 => Some(("DT_TFProjectile_EnergyBall", "baseclass")),
         2241173520409474385u64 => Some(("DT_TFProjectile_EnergyBall", "m_bChargedShot")),
@@ -2116,12 +1754,8 @@ pub fn get_prop_names(
         15010647634537197984u64 => Some(("DT_TFProjectile_SpellFireball", "baseclass")),
         4807593640550589405u64 => Some(("DT_TFProjectile_SpellKartBats", "baseclass")),
         16949553242176008798u64 => Some(("DT_TFProjectile_SpellKartOrb", "baseclass")),
-        10842204632356957470u64 => {
-            Some(("DT_TFProjectile_SpellLightningOrb", "baseclass"))
-        }
-        14182772427390563713u64 => {
-            Some(("DT_TFProjectile_SpellMeteorShower", "baseclass"))
-        }
+        10842204632356957470u64 => Some(("DT_TFProjectile_SpellLightningOrb", "baseclass")),
+        14182772427390563713u64 => Some(("DT_TFProjectile_SpellMeteorShower", "baseclass")),
         17703005378366755113u64 => Some(("DT_TFProjectile_SpellMirv", "baseclass")),
         14914850774318660739u64 => Some(("DT_TFProjectile_SpellPumpkin", "baseclass")),
         5479354589192301957u64 => Some(("DT_TFProjectile_SpellSpawnBoss", "baseclass")),
@@ -2129,9 +1763,7 @@ pub fn get_prop_names(
         4908690425231541948u64 => Some(("DT_TFProjectile_SpellSpawnZombie", "baseclass")),
         12128142407924414902u64 => Some(("DT_TFProjectile_StunBall", "baseclass")),
         17709749369402976757u64 => Some(("DT_TFProjectile_Throwable", "baseclass")),
-        16511027951888279189u64 => {
-            Some(("DT_TFProjectile_ThrowableBreadMonster", "baseclass"))
-        }
+        16511027951888279189u64 => Some(("DT_TFProjectile_ThrowableBreadMonster", "baseclass")),
         10478321330033024438u64 => Some(("DT_TFProjectile_ThrowableBrick", "baseclass")),
         4302692227327169871u64 => Some(("DT_TFProjectile_ThrowableRepel", "baseclass")),
         538080235901856197u64 => Some(("DT_TFPumpkinBomb", "baseclass")),
@@ -2163,36 +1795,18 @@ pub fn get_prop_names(
         17731752119435714618u64 => Some(("DT_TFReviveMarker", "m_iHealth")),
         14390269941393668274u64 => Some(("DT_TFReviveMarker", "m_iMaxHealth")),
         16453247229432364389u64 => Some(("DT_TFReviveMarker", "m_nRevives")),
-        2488259357860265392u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_eWinningMethod"))
-        }
-        506528478121562763u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_flBlueFinaleEndTime"))
-        }
-        8630855110816100811u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_flBlueTeamRespawnScale"))
-        }
-        5631486662947798357u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_flCountdownEndTime"))
-        }
-        10170855019148588755u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_flFinaleLength"))
-        }
-        11511520958397168054u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_flRedFinaleEndTime"))
-        }
-        14657347363419301188u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_flRedTeamRespawnScale"))
-        }
+        2488259357860265392u64 => Some(("DT_TFRobotDestructionLogic", "m_eWinningMethod")),
+        506528478121562763u64 => Some(("DT_TFRobotDestructionLogic", "m_flBlueFinaleEndTime")),
+        8630855110816100811u64 => Some(("DT_TFRobotDestructionLogic", "m_flBlueTeamRespawnScale")),
+        5631486662947798357u64 => Some(("DT_TFRobotDestructionLogic", "m_flCountdownEndTime")),
+        10170855019148588755u64 => Some(("DT_TFRobotDestructionLogic", "m_flFinaleLength")),
+        11511520958397168054u64 => Some(("DT_TFRobotDestructionLogic", "m_flRedFinaleEndTime")),
+        14657347363419301188u64 => Some(("DT_TFRobotDestructionLogic", "m_flRedTeamRespawnScale")),
         3565292228082004016u64 => Some(("DT_TFRobotDestructionLogic", "m_nBlueScore")),
-        1395860945333357306u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_nBlueTargetPoints"))
-        }
+        1395860945333357306u64 => Some(("DT_TFRobotDestructionLogic", "m_nBlueTargetPoints")),
         13389409819629425385u64 => Some(("DT_TFRobotDestructionLogic", "m_nMaxPoints")),
         869770776688375497u64 => Some(("DT_TFRobotDestructionLogic", "m_nRedScore")),
-        15904034070044032921u64 => {
-            Some(("DT_TFRobotDestructionLogic", "m_nRedTargetPoints"))
-        }
+        15904034070044032921u64 => Some(("DT_TFRobotDestructionLogic", "m_nRedTargetPoints")),
         2755343747665576427u64 => Some(("DT_TFRobotDestructionLogic", "m_szResFile")),
         2201527720632819052u64 => Some(("DT_TFRobotDestruction_Robot", "baseclass")),
         7705455076013337908u64 => Some(("DT_TFRobotDestruction_Robot", "m_eType")),
@@ -2201,20 +1815,14 @@ pub fn get_prop_names(
         9802884593882878670u64 => {
             Some(("DT_TFRobotDestruction_RobotGroup", "m_flLastAttackedTime"))
         }
-        9281803239523811882u64 => {
-            Some(("DT_TFRobotDestruction_RobotGroup", "m_flRespawnEndTime"))
-        }
+        9281803239523811882u64 => Some(("DT_TFRobotDestruction_RobotGroup", "m_flRespawnEndTime")),
         13465781202845365165u64 => {
             Some(("DT_TFRobotDestruction_RobotGroup", "m_flRespawnStartTime"))
         }
         829484812022296518u64 => Some(("DT_TFRobotDestruction_RobotGroup", "m_iTeamNum")),
-        1145437368572679092u64 => {
-            Some(("DT_TFRobotDestruction_RobotGroup", "m_nGroupNumber"))
-        }
+        1145437368572679092u64 => Some(("DT_TFRobotDestruction_RobotGroup", "m_nGroupNumber")),
         13178000760587000109u64 => Some(("DT_TFRobotDestruction_RobotGroup", "m_nState")),
-        11557301641532402157u64 => {
-            Some(("DT_TFRobotDestruction_RobotGroup", "m_pszHudIcon"))
-        }
+        11557301641532402157u64 => Some(("DT_TFRobotDestruction_RobotGroup", "m_pszHudIcon")),
         13871980323154206106u64 => Some(("DT_TFSMG", "baseclass")),
         1978713319633702385u64 => Some(("DT_TFScatterGun", "baseclass")),
         793901454180408765u64 => Some(("DT_TFSendHealersDataTable", "m_nActiveWpnClip")),
@@ -2244,9 +1852,7 @@ pub fn get_prop_names(
         238952999266517002u64 => Some(("DT_TFWeaponBase", "m_bBeingRepurposedForTaunt")),
         7341739013090182216u64 => Some(("DT_TFWeaponBase", "m_bDisguiseWeapon")),
         12299830798386868253u64 => Some(("DT_TFWeaponBase", "m_bLowered")),
-        10393353798185679505u64 => {
-            Some(("DT_TFWeaponBase", "m_bReloadedThroughAnimEvent"))
-        }
+        10393353798185679505u64 => Some(("DT_TFWeaponBase", "m_bReloadedThroughAnimEvent")),
         9746418183918285979u64 => Some(("DT_TFWeaponBase", "m_bResetParity")),
         7703029780449879205u64 => Some(("DT_TFWeaponBase", "m_flEnergy")),
         2524252340529910052u64 => Some(("DT_TFWeaponBase", "m_flInspectAnimEndTime")),
@@ -2260,13 +1866,9 @@ pub fn get_prop_names(
         1877908459972235479u64 => Some(("DT_TFWeaponBaseGrenadeProj", "baseclass")),
         2466846292560825136u64 => Some(("DT_TFWeaponBaseGrenadeProj", "m_angRotation")),
         18129208258165246287u64 => Some(("DT_TFWeaponBaseGrenadeProj", "m_bCritical")),
-        14816665825169615596u64 => {
-            Some(("DT_TFWeaponBaseGrenadeProj", "m_hDeflectOwner"))
-        }
+        14816665825169615596u64 => Some(("DT_TFWeaponBaseGrenadeProj", "m_hDeflectOwner")),
         15910156225133181161u64 => Some(("DT_TFWeaponBaseGrenadeProj", "m_iDeflected")),
-        16030785045297919863u64 => {
-            Some(("DT_TFWeaponBaseGrenadeProj", "m_vInitialVelocity"))
-        }
+        16030785045297919863u64 => Some(("DT_TFWeaponBaseGrenadeProj", "m_vInitialVelocity")),
         7201706417639549802u64 => Some(("DT_TFWeaponBaseGrenadeProj", "m_vecOrigin")),
         15153146917426415418u64 => Some(("DT_TFWeaponBaseGun", "baseclass")),
         4284095325278254512u64 => Some(("DT_TFWeaponBaseMelee", "baseclass")),
@@ -2283,9 +1885,7 @@ pub fn get_prop_names(
         6911360958986844267u64 => Some(("DT_TFWeaponBuffItem", "baseclass")),
         5916096045553985727u64 => Some(("DT_TFWeaponBuilder", "BuilderLocalData")),
         8840995701055450580u64 => Some(("DT_TFWeaponBuilder", "baseclass")),
-        16018273266360131492u64 => {
-            Some(("DT_TFWeaponBuilder", "m_flWheatleyTalkingUntil"))
-        }
+        16018273266360131492u64 => Some(("DT_TFWeaponBuilder", "m_flWheatleyTalkingUntil")),
         18297629592260019187u64 => Some(("DT_TFWeaponBuilder", "m_iBuildState")),
         13703834646564863544u64 => Some(("DT_TFWeaponBuilder", "m_iObjectMode")),
         11272366756849564851u64 => Some(("DT_TFWeaponCleaver", "baseclass")),
@@ -2302,17 +1902,11 @@ pub fn get_prop_names(
         15248262520233306394u64 => Some(("DT_TFWeaponKnife", "m_bKnifeExists")),
         1290621820141012070u64 => Some(("DT_TFWeaponKnife", "m_bReadyToBackstab")),
         261816387391465162u64 => Some(("DT_TFWeaponKnife", "m_flKnifeMeltTimestamp")),
-        8348412092415632560u64 => {
-            Some(("DT_TFWeaponKnife", "m_flKnifeRegenerateDuration"))
-        }
-        10680082844746950705u64 => {
-            Some(("DT_TFWeaponMedigunDataNonLocal", "m_flChargeLevel"))
-        }
+        8348412092415632560u64 => Some(("DT_TFWeaponKnife", "m_flKnifeRegenerateDuration")),
+        10680082844746950705u64 => Some(("DT_TFWeaponMedigunDataNonLocal", "m_flChargeLevel")),
         14322443331861418940u64 => Some(("DT_TFWeaponPDA", "baseclass")),
         866198076290749321u64 => Some(("DT_TFWeaponPDAExpansion_Dispenser", "baseclass")),
-        10550287788295773126u64 => {
-            Some(("DT_TFWeaponPDAExpansion_Teleporter", "baseclass"))
-        }
+        10550287788295773126u64 => Some(("DT_TFWeaponPDAExpansion_Teleporter", "baseclass")),
         14912089340891657015u64 => Some(("DT_TFWeaponPDA_Engineer_Build", "baseclass")),
         15192163711255752217u64 => Some(("DT_TFWeaponPDA_Engineer_Destroy", "baseclass")),
         155424477105195551u64 => Some(("DT_TFWeaponPDA_Spy", "baseclass")),
@@ -2332,9 +1926,7 @@ pub fn get_prop_names(
         8247423999282715316u64 => Some(("DT_TFWeaponSpellBook", "baseclass")),
         1355120005829625559u64 => Some(("DT_TFWeaponSpellBook", "m_bFiredAttack")),
         11938777711593683949u64 => Some(("DT_TFWeaponSpellBook", "m_flTimeNextSpell")),
-        15739619913096587929u64 => {
-            Some(("DT_TFWeaponSpellBook", "m_iSelectedSpellIndex"))
-        }
+        15739619913096587929u64 => Some(("DT_TFWeaponSpellBook", "m_iSelectedSpellIndex")),
         6228803539782541901u64 => Some(("DT_TFWeaponSpellBook", "m_iSpellCharges")),
         7042779919315246121u64 => Some(("DT_TFWeaponStickBomb", "baseclass")),
         16682550675401826609u64 => Some(("DT_TFWeaponStickBomb", "m_iDetonated")),
@@ -2381,53 +1973,34 @@ pub fn get_prop_names(
         1183813146715819129u64 => Some(("DT_TeamTrainWatcher", "m_hGlowEnt")),
         18065443311897023007u64 => Some(("DT_TeamTrainWatcher", "m_iTrainSpeedLevel")),
         17337167978138758609u64 => Some(("DT_TeamTrainWatcher", "m_nNumCappers")),
-        3769044050020656199u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_TeamRespawnWaveTimes"))
-        }
-        1840601812648433533u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_bAwaitingReadyRestart"))
-        }
+        3769044050020656199u64 => Some(("DT_TeamplayRoundBasedRules", "m_TeamRespawnWaveTimes")),
+        1840601812648433533u64 => Some(("DT_TeamplayRoundBasedRules", "m_bAwaitingReadyRestart")),
         17472021955271892919u64 => {
             Some(("DT_TeamplayRoundBasedRules", "m_bCheatsEnabledDuringLevel"))
         }
         7697033308867870453u64 => Some(("DT_TeamplayRoundBasedRules", "m_bInOvertime")),
         8951057560776888337u64 => Some(("DT_TeamplayRoundBasedRules", "m_bInSetup")),
-        3634063335773859450u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_bInWaitingForPlayers"))
-        }
-        568390723081368564u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_bMultipleTrains"))
-        }
+        3634063335773859450u64 => Some(("DT_TeamplayRoundBasedRules", "m_bInWaitingForPlayers")),
+        568390723081368564u64 => Some(("DT_TeamplayRoundBasedRules", "m_bMultipleTrains")),
         9158469900010144837u64 => Some(("DT_TeamplayRoundBasedRules", "m_bPlayerReady")),
         9126896830518175752u64 => Some(("DT_TeamplayRoundBasedRules", "m_bStopWatch")),
         17505861364436260012u64 => {
             Some(("DT_TeamplayRoundBasedRules", "m_bSwitchedTeamsThisRound"))
         }
         13102233919763610425u64 => Some(("DT_TeamplayRoundBasedRules", "m_bTeamReady")),
-        11520242942379493867u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_flCountdownTime"))
-        }
-        12551706823833948281u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_flMapResetTime"))
-        }
-        8834130812020299059u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_flNextRespawnWave"))
-        }
-        3638667356767018345u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_flRestartRoundTime"))
-        }
-        12570022626856076296u64 => {
-            Some(("DT_TeamplayRoundBasedRules", "m_flStateTransitionTime"))
-        }
+        11520242942379493867u64 => Some(("DT_TeamplayRoundBasedRules", "m_flCountdownTime")),
+        12551706823833948281u64 => Some(("DT_TeamplayRoundBasedRules", "m_flMapResetTime")),
+        8834130812020299059u64 => Some(("DT_TeamplayRoundBasedRules", "m_flNextRespawnWave")),
+        3638667356767018345u64 => Some(("DT_TeamplayRoundBasedRules", "m_flRestartRoundTime")),
+        12570022626856076296u64 => Some(("DT_TeamplayRoundBasedRules", "m_flStateTransitionTime")),
         14894834847121989153u64 => Some(("DT_TeamplayRoundBasedRules", "m_iRoundState")),
         12323048553518703167u64 => Some(("DT_TeamplayRoundBasedRules", "m_iWinningTeam")),
         7688690215610714435u64 => Some(("DT_TeamplayRoundBasedRules", "m_nRoundsPlayed")),
         3909918602834404432u64 => Some(("DT_TeamplayRoundBasedRulesProxy", "baseclass")),
-        12675478000229394536u64 => {
-            Some(
-                ("DT_TeamplayRoundBasedRulesProxy", "teamplayroundbased_gamerules_data"),
-            )
-        }
+        12675478000229394536u64 => Some((
+            "DT_TeamplayRoundBasedRulesProxy",
+            "teamplayroundbased_gamerules_data",
+        )),
         16789549748701517246u64 => Some(("DT_TeleportVortex", "baseclass")),
         1585779299108791655u64 => Some(("DT_TeleportVortex", "m_iState")),
         10414639220533856150u64 => Some(("DT_Tesla", "baseclass")),
@@ -2465,12 +2038,8 @@ pub fn get_prop_names(
         12734808021541887372u64 => Some(("DT_WORLD", "m_flWaveHeight")),
         171538238674988579u64 => Some(("DT_WORLD", "m_iszDetailSpriteMaterial")),
         17280899839930290558u64 => Some(("DT_WaterBullet", "baseclass")),
-        9589936884534067881u64 => {
-            Some(("DT_WaterLODControl", "m_flCheapWaterEndDistance"))
-        }
-        9947121641112050854u64 => {
-            Some(("DT_WaterLODControl", "m_flCheapWaterStartDistance"))
-        }
+        9589936884534067881u64 => Some(("DT_WaterLODControl", "m_flCheapWaterEndDistance")),
+        9947121641112050854u64 => Some(("DT_WaterLODControl", "m_flCheapWaterStartDistance")),
         5249608886909110228u64 => Some(("DT_WeaponChargedSMG", "baseclass")),
         1743123092148919758u64 => Some(("DT_WeaponChargedSMG", "m_flMinicritCharge")),
         2197198122745307194u64 => Some(("DT_WeaponCompoundBow", "baseclass")),
@@ -2479,9 +2048,7 @@ pub fn get_prop_names(
         4861873545713552938u64 => Some(("DT_WeaponDRGPomson", "baseclass")),
         9630823746847383925u64 => Some(("DT_WeaponFlameBall", "baseclass")),
         8369367647103916745u64 => Some(("DT_WeaponFlameBall", "m_flRechargeScale")),
-        17352185945850447107u64 => {
-            Some(("DT_WeaponFlameThrower", "LocalFlameThrowerData"))
-        }
+        17352185945850447107u64 => Some(("DT_WeaponFlameThrower", "LocalFlameThrowerData")),
         18383866324137430829u64 => Some(("DT_WeaponFlameThrower", "baseclass")),
         3776490372795891802u64 => Some(("DT_WeaponFlameThrower", "m_bCritFire")),
         6261685785015862540u64 => Some(("DT_WeaponFlameThrower", "m_bHitTarget")),
@@ -2490,9 +2057,7 @@ pub fn get_prop_names(
         10564768266751156041u64 => Some(("DT_WeaponFlareGun", "baseclass")),
         17877192080530687310u64 => Some(("DT_WeaponFlareGun", "m_flChargeBeginTime")),
         12115275093436982466u64 => Some(("DT_WeaponFlareGun_Revenge", "baseclass")),
-        14016443750437486906u64 => {
-            Some(("DT_WeaponFlareGun_Revenge", "m_fLastExtinguishTime"))
-        }
+        14016443750437486906u64 => Some(("DT_WeaponFlareGun_Revenge", "m_fLastExtinguishTime")),
         15016924890826864049u64 => Some(("DT_WeaponGrenadeLauncher", "baseclass")),
         1700651623293842179u64 => Some(("DT_WeaponGrenadeLauncher", "m_flDetonateTime")),
         4570970399831902168u64 => Some(("DT_WeaponGrenadeLauncher", "m_iCurrentTube")),
@@ -2501,18 +2066,14 @@ pub fn get_prop_names(
         13014581304645777871u64 => Some(("DT_WeaponIFMBaseCamera", "baseclass")),
         9069779483228148426u64 => Some(("DT_WeaponIFMBaseCamera", "m_angRenderAngles")),
         2439309287405946914u64 => Some(("DT_WeaponIFMBaseCamera", "m_flRenderArmLength")),
-        5258692580598323193u64 => {
-            Some(("DT_WeaponIFMBaseCamera", "m_flRenderAspectRatio"))
-        }
+        5258692580598323193u64 => Some(("DT_WeaponIFMBaseCamera", "m_flRenderAspectRatio")),
         10124480453973277717u64 => Some(("DT_WeaponIFMBaseCamera", "m_flRenderFOV")),
         9154514883778471157u64 => Some(("DT_WeaponIFMBaseCamera", "m_vecRenderPosition")),
         17315982218331265186u64 => Some(("DT_WeaponIFMSteadyCam", "baseclass")),
         17557645954865645428u64 => Some(("DT_WeaponLunchBox", "baseclass")),
         1836879092463416116u64 => Some(("DT_WeaponLunchBox", "m_bBroken")),
         18050229696589327727u64 => Some(("DT_WeaponMedigun", "LocalTFWeaponMedigunData")),
-        17905087994580451662u64 => {
-            Some(("DT_WeaponMedigun", "NonLocalTFWeaponMedigunData"))
-        }
+        17905087994580451662u64 => Some(("DT_WeaponMedigun", "NonLocalTFWeaponMedigunData")),
         7839557282419475896u64 => Some(("DT_WeaponMedigun", "baseclass")),
         10597824636109764371u64 => Some(("DT_WeaponMedigun", "m_bAttacking")),
         5079259778519160016u64 => Some(("DT_WeaponMedigun", "m_bChargeRelease")),
@@ -2524,9 +2085,7 @@ pub fn get_prop_names(
         8469331909856512570u64 => Some(("DT_WeaponMinigun", "baseclass")),
         16228268275425358053u64 => Some(("DT_WeaponMinigun", "m_bCritShot")),
         3814692596291380319u64 => Some(("DT_WeaponMinigun", "m_iWeaponState")),
-        2751213190836236879u64 => {
-            Some(("DT_WeaponPipebombLauncher", "PipebombLauncherLocalData"))
-        }
+        2751213190836236879u64 => Some(("DT_WeaponPipebombLauncher", "PipebombLauncherLocalData")),
         17384155663803683951u64 => Some(("DT_WeaponPipebombLauncher", "baseclass")),
         1667950891985876038u64 => Some(("DT_WeaponPistol", "baseclass")),
         6104910371144863853u64 => Some(("DT_WeaponPistol_Scout", "baseclass")),
@@ -2536,12 +2095,8 @@ pub fn get_prop_names(
         12777409271429993909u64 => Some(("DT_WeaponRaygun", "m_bUseNewProjectileCode")),
         8290738880515933250u64 => Some(("DT_WeaponRevolver", "baseclass")),
         2350834459646160183u64 => Some(("DT_WeaponRocketLauncher", "baseclass")),
-        6500154596923033956u64 => {
-            Some(("DT_WeaponRocketLauncher_AirStrike", "baseclass"))
-        }
-        12312353368644989384u64 => {
-            Some(("DT_WeaponRocketLauncher_DirectHit", "baseclass"))
-        }
+        6500154596923033956u64 => Some(("DT_WeaponRocketLauncher_AirStrike", "baseclass")),
+        12312353368644989384u64 => Some(("DT_WeaponRocketLauncher_DirectHit", "baseclass")),
         1487046910738861119u64 => Some(("DT_WeaponRocketLauncher_Mortar", "baseclass")),
         15134921543580708068u64 => Some(("DT_WeaponSyringeGun", "baseclass")),
         16527650451819869423u64 => Some(("DT_WearableItem", "baseclass")),
@@ -7203,4 +6758,3 @@ pub fn get_prop_names(
         _ => None,
     }
 }
-
