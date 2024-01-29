@@ -42,7 +42,17 @@ impl ChatMessage {
 }
 
 #[derive(
-    Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, TryFromPrimitive, Default,
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    TryFromPrimitive,
+    Default,
+    Display,
 )]
 #[serde(rename_all = "lowercase")]
 #[repr(u8)]
@@ -206,7 +216,18 @@ impl From<HashMap<Class, u8>> for ClassList {
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
-    Debug, Clone, Serialize, Deserialize, Copy, PartialEq, Eq, Hash, Ord, PartialOrd, Default,
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    Ord,
+    PartialOrd,
+    Default,
+    Display,
 )]
 pub struct UserId(u16);
 
