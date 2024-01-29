@@ -13,6 +13,7 @@ use crate::{GameEventError, Parse, ParseError, ParserState, ReadResult, Result, 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone)]
 pub struct GameEventMessage {
     pub event_type_id: GameEventTypeId,
+    pub event_type: GameEventType,
     pub event: GameEvent,
 }
 
@@ -26,6 +27,7 @@ impl Parse<'_> for GameEventMessage {
         if state.event_definitions.is_empty() {
             return Ok(GameEventMessage {
                 event_type_id,
+                event_type: GameEventType::Unknown(String::new()),
                 event: GameEvent::Unknown(RawGameEvent {
                     event_type: GameEventType::Unknown(String::new()),
                     values: Vec::new(),
@@ -43,6 +45,7 @@ impl Parse<'_> for GameEventMessage {
         };
         Ok(GameEventMessage {
             event_type_id,
+            event_type: event.event_type(),
             event,
         })
     }
@@ -94,6 +97,7 @@ fn test_game_event_roundtrip() {
     crate::test_roundtrip_encode(
         GameEventMessage {
             event_type_id: GameEventTypeId(0),
+            event_type: GameEventType::ServerShutdown,
             event: GameEvent::ServerShutdown(ServerShutdownEvent {
                 reason: "asd".into(),
             }),
@@ -103,6 +107,7 @@ fn test_game_event_roundtrip() {
     crate::test_roundtrip_encode(
         GameEventMessage {
             event_type_id: GameEventTypeId(2),
+            event_type: GameEventType::GameInit,
             event: GameEvent::GameInit(GameInitEvent {}),
         },
         &state,
