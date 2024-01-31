@@ -1,14 +1,11 @@
-use crate::gameevent::generate_game_events;
-use crate::propnames::generate_prop_names;
 use main_error::MainError;
 use prettyplease::unparse;
 use std::env;
 use std::fs;
 use syn::{parse2, File};
+use tf_demo_parser::codegen::gameevent::generate_game_events;
+use tf_demo_parser::codegen::propnames::generate_prop_names;
 use tf_demo_parser::Demo;
-
-mod gameevent;
-mod propnames;
 
 fn main() -> std::result::Result<(), MainError> {
     better_panic::install();

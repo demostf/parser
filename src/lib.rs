@@ -9,6 +9,8 @@ pub use crate::demo::{
     Demo, Stream,
 };
 
+#[cfg(feature = "codegen")]
+pub mod codegen;
 pub(crate) mod consthash;
 pub mod demo;
 pub(crate) mod nullhasher;

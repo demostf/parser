@@ -20,10 +20,12 @@
     rust-overlay,
     ...
   }: let
-      inherit (flake-utils.lib) eachDefaultSystem eachSystem;
-    in
-    (eachDefaultSystem (system: let
-      overlays = [(import rust-overlay)];
+    inherit (flake-utils.lib) eachDefaultSystem eachSystem;
+  in (eachDefaultSystem (system: let
+      overlays = [
+        (import rust-overlay)
+        (import ./overlay.nix)
+      ];
       pkgs = (import nixpkgs) {
         inherit system overlays;
       };
@@ -45,10 +47,8 @@
       assetNameForTarget = target: "parser-${builtins.replaceStrings ["-unknown" "-gnu" "-musl" "eabihf" "-pc"] ["" "" "" "" ""] target}${cross-naersk'.execSufficForTarget target}";
 
       cross-naersk' = pkgs.callPackage cross-naersk {inherit naersk;};
-      src = lib.sources.sourceByRegex (lib.cleanSource ./.) ["Cargo.*" "(src|benches|tests|test_data)(/.*)?"];
       nearskOpt = {
-        pname = "dispenser";
-        root = src;
+        inherit (pkgs.demostf-parser) pname root;
       };
 
       buildMatrix = targets: {
@@ -90,7 +90,7 @@
                 };
             }))
         // rec {
-          tf-demo-parser = packages.${hostTarget};
+          inherit (pkgs) demostf-parser demostf-parser-codegen demostf-parser-codegen-events demostf-parser-codegen-props;
           check = hostNaersk.buildPackage (nearskOpt
             // {
               mode = "check";
@@ -104,7 +104,7 @@
               release = false;
               mode = "test";
             });
-          default = tf-demo-parser;
+          default = demostf-parser;
         };
 
       inherit targets;
@@ -141,6 +141,7 @@
       };
     })
     // {
+      overlays.default = import ./overlay.nix;
       hydraJobs = eachSystem ["x86_64-linux" "aarch64-linux"] (system: {
         parser = self.packages.${system}.tf-demo-parser;
       });
