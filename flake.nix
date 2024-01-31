@@ -48,7 +48,7 @@
 
       cross-naersk' = pkgs.callPackage cross-naersk {inherit naersk;};
       nearskOpt = {
-        inherit (pkgs.demostf-parser) pname root;
+        inherit (pkgs.demostf-parser) pname src;
       };
 
       buildMatrix = targets: {
