@@ -395,6 +395,7 @@ pub struct TeamPlayBroadcastAudioEvent {
     pub team: u8,
     pub sound: MaybeUtf8String,
     pub additional_flags: u16,
+    pub player: u16,
 }
 impl TeamPlayBroadcastAudioEvent {
     #[allow(unused_variables)]
@@ -404,6 +405,7 @@ impl TeamPlayBroadcastAudioEvent {
             team: read_value::<u8>(stream, iter.next(), "team")?,
             sound: read_value::<MaybeUtf8String>(stream, iter.next(), "sound")?,
             additional_flags: read_value::<u16>(stream, iter.next(), "additional_flags")?,
+            player: read_value::<u16>(stream, iter.next(), "player")?,
         })
     }
 }
@@ -1030,6 +1032,7 @@ pub struct VoteStartedEvent {
     pub param_1: MaybeUtf8String,
     pub team: u8,
     pub initiator: u32,
+    pub voteidx: u32,
 }
 impl VoteStartedEvent {
     #[allow(unused_variables)]
@@ -1040,6 +1043,7 @@ impl VoteStartedEvent {
             param_1: read_value::<MaybeUtf8String>(stream, iter.next(), "param_1")?,
             team: read_value::<u8>(stream, iter.next(), "team")?,
             initiator: read_value::<u32>(stream, iter.next(), "initiator")?,
+            voteidx: read_value::<u32>(stream, iter.next(), "voteidx")?,
         })
     }
 }
@@ -1052,6 +1056,7 @@ pub struct VoteChangedEvent {
     pub vote_option_4: u8,
     pub vote_option_5: u8,
     pub potential_votes: u8,
+    pub voteidx: u32,
 }
 impl VoteChangedEvent {
     #[allow(unused_variables)]
@@ -1064,6 +1069,7 @@ impl VoteChangedEvent {
             vote_option_4: read_value::<u8>(stream, iter.next(), "vote_option_4")?,
             vote_option_5: read_value::<u8>(stream, iter.next(), "vote_option_5")?,
             potential_votes: read_value::<u8>(stream, iter.next(), "potential_votes")?,
+            voteidx: read_value::<u32>(stream, iter.next(), "voteidx")?,
         })
     }
 }
@@ -1073,6 +1079,7 @@ pub struct VotePassedEvent {
     pub details: MaybeUtf8String,
     pub param_1: MaybeUtf8String,
     pub team: u8,
+    pub voteidx: u32,
 }
 impl VotePassedEvent {
     #[allow(unused_variables)]
@@ -1082,6 +1089,7 @@ impl VotePassedEvent {
             details: read_value::<MaybeUtf8String>(stream, iter.next(), "details")?,
             param_1: read_value::<MaybeUtf8String>(stream, iter.next(), "param_1")?,
             team: read_value::<u8>(stream, iter.next(), "team")?,
+            voteidx: read_value::<u32>(stream, iter.next(), "voteidx")?,
         })
     }
 }
@@ -1089,6 +1097,7 @@ impl VotePassedEvent {
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct VoteFailedEvent {
     pub team: u8,
+    pub voteidx: u32,
 }
 impl VoteFailedEvent {
     #[allow(unused_variables)]
@@ -1096,6 +1105,7 @@ impl VoteFailedEvent {
         let mut iter = definition.entries.iter();
         Ok(VoteFailedEvent {
             team: read_value::<u8>(stream, iter.next(), "team")?,
+            voteidx: read_value::<u32>(stream, iter.next(), "voteidx")?,
         })
     }
 }
@@ -1105,6 +1115,7 @@ pub struct VoteCastEvent {
     pub vote_option: u8,
     pub team: u16,
     pub entity_id: u32,
+    pub voteidx: u32,
 }
 impl VoteCastEvent {
     #[allow(unused_variables)]
@@ -1114,6 +1125,7 @@ impl VoteCastEvent {
             vote_option: read_value::<u8>(stream, iter.next(), "vote_option")?,
             team: read_value::<u16>(stream, iter.next(), "team")?,
             entity_id: read_value::<u32>(stream, iter.next(), "entity_id")?,
+            voteidx: read_value::<u32>(stream, iter.next(), "voteidx")?,
         })
     }
 }
@@ -1126,6 +1138,7 @@ pub struct VoteOptionsEvent {
     pub option_3: MaybeUtf8String,
     pub option_4: MaybeUtf8String,
     pub option_5: MaybeUtf8String,
+    pub voteidx: u32,
 }
 impl VoteOptionsEvent {
     #[allow(unused_variables)]
@@ -1138,6 +1151,7 @@ impl VoteOptionsEvent {
             option_3: read_value::<MaybeUtf8String>(stream, iter.next(), "option_3")?,
             option_4: read_value::<MaybeUtf8String>(stream, iter.next(), "option_4")?,
             option_5: read_value::<MaybeUtf8String>(stream, iter.next(), "option_5")?,
+            voteidx: read_value::<u32>(stream, iter.next(), "voteidx")?,
         })
     }
 }
@@ -5404,6 +5418,34 @@ impl HalloweenSkeletonKilledEvent {
 }
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
+pub struct SkeletonKilledQuestEvent {
+    pub player: u16,
+}
+impl SkeletonKilledQuestEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
+        Ok(SkeletonKilledQuestEvent {
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+        })
+    }
+}
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
+pub struct SkeletonKingKilledQuestEvent {
+    pub player: u16,
+}
+impl SkeletonKingKilledQuestEvent {
+    #[allow(unused_variables)]
+    fn read(stream: &mut Stream, definition: &GameEventDefinition) -> Result<Self> {
+        let mut iter = definition.entries.iter();
+        Ok(SkeletonKingKilledQuestEvent {
+            player: read_value::<u16>(stream, iter.next(), "player")?,
+        })
+    }
+}
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(Debug, BitWrite, PartialEq, Serialize, Deserialize, Clone)]
 pub struct EscapeHellEvent {
     pub player: u16,
 }
@@ -6645,6 +6687,8 @@ pub enum GameEvent {
     MerasmusStunned(MerasmusStunnedEvent),
     MerasmusPropFound(MerasmusPropFoundEvent),
     HalloweenSkeletonKilled(HalloweenSkeletonKilledEvent),
+    SkeletonKilledQuest(SkeletonKilledQuestEvent),
+    SkeletonKingKilledQuest(SkeletonKingKilledQuestEvent),
     EscapeHell(EscapeHellEvent),
     CrossSpectralBridge(CrossSpectralBridgeEvent),
     MiniGameWon(MiniGameWonEvent),
@@ -7051,6 +7095,8 @@ pub enum GameEventType {
     MerasmusStunned,
     MerasmusPropFound,
     HalloweenSkeletonKilled,
+    SkeletonKilledQuest,
+    SkeletonKingKilledQuest,
     EscapeHell,
     CrossSpectralBridge,
     MiniGameWon,
@@ -7474,6 +7520,8 @@ impl GameEventType {
             "merasmus_stunned" => GameEventType::MerasmusStunned,
             "merasmus_prop_found" => GameEventType::MerasmusPropFound,
             "halloween_skeleton_killed" => GameEventType::HalloweenSkeletonKilled,
+            "skeleton_killed_quest" => GameEventType::SkeletonKilledQuest,
+            "skeleton_king_killed_quest" => GameEventType::SkeletonKingKilledQuest,
             "escape_hell" => GameEventType::EscapeHell,
             "cross_spectral_bridge" => GameEventType::CrossSpectralBridge,
             "minigame_won" => GameEventType::MiniGameWon,
@@ -7880,6 +7928,8 @@ impl GameEventType {
             GameEventType::MerasmusStunned => "merasmus_stunned",
             GameEventType::MerasmusPropFound => "merasmus_prop_found",
             GameEventType::HalloweenSkeletonKilled => "halloween_skeleton_killed",
+            GameEventType::SkeletonKilledQuest => "skeleton_killed_quest",
+            GameEventType::SkeletonKingKilledQuest => "skeleton_king_killed_quest",
             GameEventType::EscapeHell => "escape_hell",
             GameEventType::CrossSpectralBridge => "cross_spectral_bridge",
             GameEventType::MiniGameWon => "minigame_won",
@@ -8954,6 +9004,12 @@ impl GameEvent {
             GameEventType::HalloweenSkeletonKilled => GameEvent::HalloweenSkeletonKilled(
                 HalloweenSkeletonKilledEvent::read(stream, definition)?,
             ),
+            GameEventType::SkeletonKilledQuest => {
+                GameEvent::SkeletonKilledQuest(SkeletonKilledQuestEvent::read(stream, definition)?)
+            }
+            GameEventType::SkeletonKingKilledQuest => GameEvent::SkeletonKingKilledQuest(
+                SkeletonKingKilledQuestEvent::read(stream, definition)?,
+            ),
             GameEventType::EscapeHell => {
                 GameEvent::EscapeHell(EscapeHellEvent::read(stream, definition)?)
             }
@@ -9488,6 +9544,8 @@ impl GameEvent {
             GameEvent::MerasmusStunned(event) => event.write(stream),
             GameEvent::MerasmusPropFound(event) => event.write(stream),
             GameEvent::HalloweenSkeletonKilled(event) => event.write(stream),
+            GameEvent::SkeletonKilledQuest(event) => event.write(stream),
+            GameEvent::SkeletonKingKilledQuest(event) => event.write(stream),
             GameEvent::EscapeHell(event) => event.write(stream),
             GameEvent::CrossSpectralBridge(event) => event.write(stream),
             GameEvent::MiniGameWon(event) => event.write(stream),
@@ -9896,6 +9954,8 @@ impl GameEvent {
             GameEvent::MerasmusStunned(_) => GameEventType::MerasmusStunned,
             GameEvent::MerasmusPropFound(_) => GameEventType::MerasmusPropFound,
             GameEvent::HalloweenSkeletonKilled(_) => GameEventType::HalloweenSkeletonKilled,
+            GameEvent::SkeletonKilledQuest(_) => GameEventType::SkeletonKilledQuest,
+            GameEvent::SkeletonKingKilledQuest(_) => GameEventType::SkeletonKingKilledQuest,
             GameEvent::EscapeHell(_) => GameEventType::EscapeHell,
             GameEvent::CrossSpectralBridge(_) => GameEventType::CrossSpectralBridge,
             GameEvent::MiniGameWon(_) => GameEventType::MiniGameWon,
@@ -10971,6 +11031,14 @@ pub fn get_sizes() -> fnv::FnvHashMap<&'static str, usize> {
         (
             "HalloweenSkeletonKilled",
             std::mem::size_of::<HalloweenSkeletonKilledEvent>(),
+        ),
+        (
+            "SkeletonKilledQuest",
+            std::mem::size_of::<SkeletonKilledQuestEvent>(),
+        ),
+        (
+            "SkeletonKingKilledQuest",
+            std::mem::size_of::<SkeletonKingKilledQuestEvent>(),
         ),
         ("EscapeHell", std::mem::size_of::<EscapeHellEvent>()),
         (
