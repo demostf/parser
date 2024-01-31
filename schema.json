@@ -946,12 +946,18 @@
           "type": "object",
           "required": [
             "additional_flags",
+            "player",
             "sound",
             "team",
             "type"
           ],
           "properties": {
             "additional_flags": {
+              "type": "integer",
+              "format": "uint16",
+              "minimum": 0.0
+            },
+            "player": {
               "type": "integer",
               "format": "uint16",
               "minimum": 0.0
@@ -2039,7 +2045,8 @@
             "issue",
             "param_1",
             "team",
-            "type"
+            "type",
+            "voteidx"
           ],
           "properties": {
             "initiator": {
@@ -2063,6 +2070,11 @@
               "enum": [
                 "VoteStarted"
               ]
+            },
+            "voteidx": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
             }
           }
         },
@@ -2075,7 +2087,8 @@
             "vote_option_2",
             "vote_option_3",
             "vote_option_4",
-            "vote_option_5"
+            "vote_option_5",
+            "voteidx"
           ],
           "properties": {
             "potential_votes": {
@@ -2113,6 +2126,11 @@
               "type": "integer",
               "format": "uint8",
               "minimum": 0.0
+            },
+            "voteidx": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
             }
           }
         },
@@ -2122,7 +2140,8 @@
             "details",
             "param_1",
             "team",
-            "type"
+            "type",
+            "voteidx"
           ],
           "properties": {
             "details": {
@@ -2141,6 +2160,11 @@
               "enum": [
                 "VotePassed"
               ]
+            },
+            "voteidx": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
             }
           }
         },
@@ -2148,7 +2172,8 @@
           "type": "object",
           "required": [
             "team",
-            "type"
+            "type",
+            "voteidx"
           ],
           "properties": {
             "team": {
@@ -2161,6 +2186,11 @@
               "enum": [
                 "VoteFailed"
               ]
+            },
+            "voteidx": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
             }
           }
         },
@@ -2170,7 +2200,8 @@
             "entity_id",
             "team",
             "type",
-            "vote_option"
+            "vote_option",
+            "voteidx"
           ],
           "properties": {
             "entity_id": {
@@ -2193,6 +2224,11 @@
               "type": "integer",
               "format": "uint8",
               "minimum": 0.0
+            },
+            "voteidx": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
             }
           }
         },
@@ -2205,7 +2241,8 @@
             "option_3",
             "option_4",
             "option_5",
-            "type"
+            "type",
+            "voteidx"
           ],
           "properties": {
             "count": {
@@ -2233,6 +2270,11 @@
               "enum": [
                 "VoteOptions"
               ]
+            },
+            "voteidx": {
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 0.0
             }
           }
         },
@@ -9292,6 +9334,46 @@
             "type": {
               "type": "string",
               "enum": [
+                "SkeletonKilledQuest"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "player",
+            "type"
+          ],
+          "properties": {
+            "player": {
+              "type": "integer",
+              "format": "uint16",
+              "minimum": 0.0
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "SkeletonKingKilledQuest"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "player",
+            "type"
+          ],
+          "properties": {
+            "player": {
+              "type": "integer",
+              "format": "uint16",
+              "minimum": 0.0
+            },
+            "type": {
+              "type": "string",
+              "enum": [
                 "EscapeHell"
               ]
             }
@@ -11149,6 +11231,8 @@
             "MerasmusStunned",
             "MerasmusPropFound",
             "HalloweenSkeletonKilled",
+            "SkeletonKilledQuest",
+            "SkeletonKingKilledQuest",
             "EscapeHell",
             "CrossSpectralBridge",
             "MiniGameWon",
@@ -11920,7 +12004,7 @@
               ],
               "properties": {
                 "client": {
-                  "$ref": "#/definitions/UserId"
+                  "$ref": "#/definitions/EntityId"
                 },
                 "from": {
                   "anyOf": [
@@ -12292,12 +12376,16 @@
           "type": "object",
           "required": [
             "event",
+            "event_type",
             "event_type_id",
             "type"
           ],
           "properties": {
             "event": {
               "$ref": "#/definitions/GameEvent"
+            },
+            "event_type": {
+              "$ref": "#/definitions/GameEventType"
             },
             "event_type_id": {
               "$ref": "#/definitions/GameEventTypeId"
@@ -12327,12 +12415,14 @@
               "minimum": 0.0
             },
             "delta": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "format": "uint32",
-              "minimum": 1.0
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ServerTick"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "entities": {
               "type": "array",
@@ -12563,12 +12653,14 @@
           "format": "float"
         },
         "delta": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "format": "uint32",
-          "minimum": 0.0
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ServerTick"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "entity_index": {
           "$ref": "#/definitions/EntityId"
@@ -12998,11 +13090,6 @@
           ]
         }
       }
-    },
-    "UserId": {
-      "type": "integer",
-      "format": "uint8",
-      "minimum": 0.0
     },
     "VGuiMenuMessageData": {
       "type": "object",
