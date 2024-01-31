@@ -1,6 +1,7 @@
 /target
 **/*.rs.bk
 *.dem
+!/test_data/*.dem
 *.svg
 *.data*
 *.iml

@@ -4,7 +4,7 @@
   lib,
 }: let
   inherit (lib.sources) sourceByRegex;
-  src = sourceByRegex ./. ["Cargo.*" "(src|benches|tests|test_data)(/.*)?"];
+  src = sourceByRegex ./. ["Cargo.*" "(src|benches)(/.*)?"];
 in
   rustPlatform.buildRustPackage {
     pname = "demostf-parser-codegen";
