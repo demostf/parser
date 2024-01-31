@@ -1,11 +1,11 @@
+use crate::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass};
+use crate::demo::parser::MessageHandler;
+use crate::demo::sendprop::{SendPropIdentifier, SendPropName};
+use crate::{Demo, DemoParser, MessageType, ParserState};
 use fnv::FnvHashMap;
 use proc_macro2::TokenStream;
 use quote::quote;
 use std::collections::HashMap;
-use tf_demo_parser::demo::packet::datatable::{ParseSendTable, SendTableName, ServerClass};
-use tf_demo_parser::demo::parser::MessageHandler;
-use tf_demo_parser::demo::sendprop::{SendPropIdentifier, SendPropName};
-use tf_demo_parser::{Demo, DemoParser, MessageType, ParserState};
 
 struct PropInfo {
     identifier: SendPropIdentifier,

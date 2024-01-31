@@ -1,15 +1,15 @@
 extern crate proc_macro;
 
+use crate::demo::gameevent_gen::get_sizes;
+use crate::demo::gamevent::{GameEventDefinition, GameEventValueType};
+use crate::demo::parser::MessageHandler;
+use crate::{Demo, ParserState};
+use crate::{DemoParser, MessageType};
 use fnv::FnvHashMap;
 use inflector::Inflector;
 use lazy_static::lazy_static;
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use tf_demo_parser::demo::gameevent_gen::get_sizes;
-use tf_demo_parser::demo::gamevent::{GameEventDefinition, GameEventValueType};
-use tf_demo_parser::demo::parser::MessageHandler;
-use tf_demo_parser::{Demo, ParserState};
-use tf_demo_parser::{DemoParser, MessageType};
 
 struct GameEventAnalyser;
 
