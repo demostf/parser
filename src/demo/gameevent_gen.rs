@@ -3,7 +3,7 @@ use crate::demo::data::MaybeUtf8String;
 use crate::demo::Stream;
 use crate::{ParseError, Result};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 fn read_value<'a, T: EventValue + BitRead<'a, LittleEndian> + Default>(
     stream: &mut Stream<'a>,
     entry: Option<&GameEventEntry>,
@@ -6756,429 +6756,815 @@ pub enum GameEvent {
     Unknown(RawGameEvent),
 }
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GameEventType {
+    #[serde(rename = "server_spawn")]
     ServerSpawn,
+    #[serde(rename = "server_changelevel_failed")]
     ServerChangeLevelFailed,
+    #[serde(rename = "server_shutdown")]
     ServerShutdown,
+    #[serde(rename = "server_cvar")]
     ServerCvar,
+    #[serde(rename = "server_message")]
     ServerMessage,
+    #[serde(rename = "server_addban")]
     ServerAddBan,
+    #[serde(rename = "server_removeban")]
     ServerRemoveBan,
+    #[serde(rename = "player_connect")]
     PlayerConnect,
+    #[serde(rename = "player_connect_client")]
     PlayerConnectClient,
+    #[serde(rename = "player_info")]
     PlayerInfo,
+    #[serde(rename = "player_disconnect")]
     PlayerDisconnect,
+    #[serde(rename = "player_activate")]
     PlayerActivate,
+    #[serde(rename = "player_say")]
     PlayerSay,
+    #[serde(rename = "client_disconnect")]
     ClientDisconnect,
+    #[serde(rename = "client_beginconnect")]
     ClientBeginConnect,
+    #[serde(rename = "client_connected")]
     ClientConnected,
+    #[serde(rename = "client_fullconnect")]
     ClientFullConnect,
+    #[serde(rename = "host_quit")]
     HostQuit,
+    #[serde(rename = "team_info")]
     TeamInfo,
+    #[serde(rename = "team_score")]
     TeamScore,
+    #[serde(rename = "teamplay_broadcast_audio")]
     TeamPlayBroadcastAudio,
+    #[serde(rename = "player_team")]
     PlayerTeam,
+    #[serde(rename = "player_class")]
     PlayerClass,
+    #[serde(rename = "player_death")]
     PlayerDeath,
+    #[serde(rename = "player_hurt")]
     PlayerHurt,
+    #[serde(rename = "player_chat")]
     PlayerChat,
+    #[serde(rename = "player_score")]
     PlayerScore,
+    #[serde(rename = "player_spawn")]
     PlayerSpawn,
+    #[serde(rename = "player_shoot")]
     PlayerShoot,
+    #[serde(rename = "player_use")]
     PlayerUse,
+    #[serde(rename = "player_changename")]
     PlayerChangeName,
+    #[serde(rename = "player_hintmessage")]
     PlayerHintMessage,
+    #[serde(rename = "base_player_teleported")]
     BasePlayerTeleported,
+    #[serde(rename = "game_init")]
     GameInit,
+    #[serde(rename = "game_newmap")]
     GameNewMap,
+    #[serde(rename = "game_start")]
     GameStart,
+    #[serde(rename = "game_end")]
     GameEnd,
+    #[serde(rename = "round_start")]
     RoundStart,
+    #[serde(rename = "round_end")]
     RoundEnd,
+    #[serde(rename = "game_message")]
     GameMessage,
+    #[serde(rename = "break_breakable")]
     BreakBreakable,
+    #[serde(rename = "break_prop")]
     BreakProp,
+    #[serde(rename = "entity_killed")]
     EntityKilled,
+    #[serde(rename = "bonus_updated")]
     BonusUpdated,
+    #[serde(rename = "achievement_event")]
     AchievementEvent,
+    #[serde(rename = "achievement_increment")]
     AchievementIncrement,
+    #[serde(rename = "physgun_pickup")]
     PhysgunPickup,
+    #[serde(rename = "flare_ignite_npc")]
     FlareIgniteNpc,
+    #[serde(rename = "helicopter_grenade_punt_miss")]
     HelicopterGrenadePuntMiss,
+    #[serde(rename = "user_data_downloaded")]
     UserDataDownloaded,
+    #[serde(rename = "ragdoll_dissolved")]
     RagdollDissolved,
+    #[serde(rename = "hltv_changed_mode")]
     HLTVChangedMode,
+    #[serde(rename = "hltv_changed_target")]
     HLTVChangedTarget,
+    #[serde(rename = "vote_ended")]
     VoteEnded,
+    #[serde(rename = "vote_started")]
     VoteStarted,
+    #[serde(rename = "vote_changed")]
     VoteChanged,
+    #[serde(rename = "vote_passed")]
     VotePassed,
+    #[serde(rename = "vote_failed")]
     VoteFailed,
+    #[serde(rename = "vote_cast")]
     VoteCast,
+    #[serde(rename = "vote_options")]
     VoteOptions,
+    #[serde(rename = "replay_saved")]
     ReplaySaved,
+    #[serde(rename = "entered_performance_mode")]
     EnteredPerformanceMode,
+    #[serde(rename = "browse_replays")]
     BrowseReplays,
+    #[serde(rename = "replay_youtube_stats")]
     ReplayYoutubeStats,
+    #[serde(rename = "inventory_updated")]
     InventoryUpdated,
+    #[serde(rename = "cart_updated")]
     CartUpdated,
+    #[serde(rename = "store_pricesheet_updated")]
     StorePriceSheetUpdated,
+    #[serde(rename = "econ_inventory_connected")]
     EconInventoryConnected,
+    #[serde(rename = "item_schema_initialized")]
     ItemSchemaInitialized,
+    #[serde(rename = "gc_new_session")]
     GcNewSession,
+    #[serde(rename = "gc_lost_session")]
     GcLostSession,
+    #[serde(rename = "intro_finish")]
     IntroFinish,
+    #[serde(rename = "intro_nextcamera")]
     IntroNextCamera,
+    #[serde(rename = "player_changeclass")]
     PlayerChangeClass,
+    #[serde(rename = "tf_map_time_remaining")]
     TfMapTimeRemaining,
+    #[serde(rename = "tf_game_over")]
     TfGameOver,
+    #[serde(rename = "ctf_flag_captured")]
     CtfFlagCaptured,
+    #[serde(rename = "controlpoint_initialized")]
     ControlPointInitialized,
+    #[serde(rename = "controlpoint_updateimages")]
     ControlPointUpdateImages,
+    #[serde(rename = "controlpoint_updatelayout")]
     ControlPointUpdateLayout,
+    #[serde(rename = "controlpoint_updatecapping")]
     ControlPointUpdateCapping,
+    #[serde(rename = "controlpoint_updateowner")]
     ControlPointUpdateOwner,
+    #[serde(rename = "controlpoint_starttouch")]
     ControlPointStartTouch,
+    #[serde(rename = "controlpoint_endtouch")]
     ControlPointEndTouch,
+    #[serde(rename = "controlpoint_pulse_element")]
     ControlPointPulseElement,
+    #[serde(rename = "controlpoint_fake_capture")]
     ControlPointFakeCapture,
+    #[serde(rename = "controlpoint_fake_capture_mult")]
     ControlPointFakeCaptureMultiplier,
+    #[serde(rename = "teamplay_round_selected")]
     TeamPlayRoundSelected,
+    #[serde(rename = "teamplay_round_start")]
     TeamPlayRoundStart,
+    #[serde(rename = "teamplay_round_active")]
     TeamPlayRoundActive,
+    #[serde(rename = "teamplay_waiting_begins")]
     TeamPlayWaitingBegins,
+    #[serde(rename = "teamplay_waiting_ends")]
     TeamPlayWaitingEnds,
+    #[serde(rename = "teamplay_waiting_abouttoend")]
     TeamPlayWaitingAboutToEnd,
+    #[serde(rename = "teamplay_restart_round")]
     TeamPlayRestartRound,
+    #[serde(rename = "teamplay_ready_restart")]
     TeamPlayReadyRestart,
+    #[serde(rename = "teamplay_round_restart_seconds")]
     TeamPlayRoundRestartSeconds,
+    #[serde(rename = "teamplay_team_ready")]
     TeamPlayTeamReady,
+    #[serde(rename = "teamplay_round_win")]
     TeamPlayRoundWin,
+    #[serde(rename = "teamplay_update_timer")]
     TeamPlayUpdateTimer,
+    #[serde(rename = "teamplay_round_stalemate")]
     TeamPlayRoundStalemate,
+    #[serde(rename = "teamplay_overtime_begin")]
     TeamPlayOvertimeBegin,
+    #[serde(rename = "teamplay_overtime_end")]
     TeamPlayOvertimeEnd,
+    #[serde(rename = "teamplay_suddendeath_begin")]
     TeamPlaySuddenDeathBegin,
+    #[serde(rename = "teamplay_suddendeath_end")]
     TeamPlaySuddenDeathEnd,
+    #[serde(rename = "teamplay_game_over")]
     TeamPlayGameOver,
+    #[serde(rename = "teamplay_map_time_remaining")]
     TeamPlayMapTimeRemaining,
+    #[serde(rename = "teamplay_timer_flash")]
     TeamPlayTimerFlash,
+    #[serde(rename = "teamplay_timer_time_added")]
     TeamPlayTimerTimeAdded,
+    #[serde(rename = "teamplay_point_startcapture")]
     TeamPlayPointStartCapture,
+    #[serde(rename = "teamplay_point_captured")]
     TeamPlayPointCaptured,
+    #[serde(rename = "teamplay_point_locked")]
     TeamPlayPointLocked,
+    #[serde(rename = "teamplay_point_unlocked")]
     TeamPlayPointUnlocked,
+    #[serde(rename = "teamplay_capture_broken")]
     TeamPlayCaptureBroken,
+    #[serde(rename = "teamplay_capture_blocked")]
     TeamPlayCaptureBlocked,
+    #[serde(rename = "teamplay_flag_event")]
     TeamPlayFlagEvent,
+    #[serde(rename = "teamplay_win_panel")]
     TeamPlayWinPanel,
+    #[serde(rename = "teamplay_teambalanced_player")]
     TeamPlayTeamBalancedPlayer,
+    #[serde(rename = "teamplay_setup_finished")]
     TeamPlaySetupFinished,
+    #[serde(rename = "teamplay_alert")]
     TeamPlayAlert,
+    #[serde(rename = "training_complete")]
     TrainingComplete,
+    #[serde(rename = "show_freezepanel")]
     ShowFreezePanel,
+    #[serde(rename = "hide_freezepanel")]
     HideFreezePanel,
+    #[serde(rename = "freezecam_started")]
     FreezeCamStarted,
+    #[serde(rename = "localplayer_changeteam")]
     LocalPlayerChangeTeam,
+    #[serde(rename = "localplayer_score_changed")]
     LocalPlayerScoreChanged,
+    #[serde(rename = "localplayer_changeclass")]
     LocalPlayerChangeClass,
+    #[serde(rename = "localplayer_respawn")]
     LocalPlayerRespawn,
+    #[serde(rename = "building_info_changed")]
     BuildingInfoChanged,
+    #[serde(rename = "localplayer_changedisguise")]
     LocalPlayerChangeDisguise,
+    #[serde(rename = "player_account_changed")]
     PlayerAccountChanged,
+    #[serde(rename = "spy_pda_reset")]
     SpyPdaReset,
+    #[serde(rename = "flagstatus_update")]
     FlagStatusUpdate,
+    #[serde(rename = "player_stats_updated")]
     PlayerStatsUpdated,
+    #[serde(rename = "playing_commentary")]
     PlayingCommentary,
+    #[serde(rename = "player_chargedeployed")]
     PlayerChargeDeployed,
+    #[serde(rename = "player_builtobject")]
     PlayerBuiltObject,
+    #[serde(rename = "player_upgradedobject")]
     PlayerUpgradedObject,
+    #[serde(rename = "player_carryobject")]
     PlayerCarryObject,
+    #[serde(rename = "player_dropobject")]
     PlayerDropObject,
+    #[serde(rename = "object_removed")]
     ObjectRemoved,
+    #[serde(rename = "object_destroyed")]
     ObjectDestroyed,
+    #[serde(rename = "object_detonated")]
     ObjectDetonated,
+    #[serde(rename = "achievement_earned")]
     AchievementEarned,
+    #[serde(rename = "spec_target_updated")]
     SpecTargetUpdated,
+    #[serde(rename = "tournament_stateupdate")]
     TournamentStateUpdate,
+    #[serde(rename = "tournament_enablecountdown")]
     TournamentEnableCountdown,
+    #[serde(rename = "player_calledformedic")]
     PlayerCalledForMedic,
+    #[serde(rename = "player_askedforball")]
     PlayerAskedForBall,
+    #[serde(rename = "localplayer_becameobserver")]
     LocalPlayerBecameObserver,
+    #[serde(rename = "player_ignited_inv")]
     PlayerIgnitedInv,
+    #[serde(rename = "player_ignited")]
     PlayerIgnited,
+    #[serde(rename = "player_extinguished")]
     PlayerExtinguished,
+    #[serde(rename = "player_teleported")]
     PlayerTeleported,
+    #[serde(rename = "player_healedmediccall")]
     PlayerHealedMedicCall,
+    #[serde(rename = "localplayer_chargeready")]
     LocalPlayerChargeReady,
+    #[serde(rename = "localplayer_winddown")]
     LocalPlayerWindDown,
+    #[serde(rename = "player_invulned")]
     PlayerInvulned,
+    #[serde(rename = "escort_speed")]
     EscortSpeed,
+    #[serde(rename = "escort_progress")]
     EscortProgress,
+    #[serde(rename = "escort_recede")]
     EscortRecede,
+    #[serde(rename = "gameui_activated")]
     GameUIActivated,
+    #[serde(rename = "gameui_hidden")]
     GameUIHidden,
+    #[serde(rename = "player_escort_score")]
     PlayerEscortScore,
+    #[serde(rename = "player_healonhit")]
     PlayerHealOnHit,
+    #[serde(rename = "player_stealsandvich")]
     PlayerStealSandvich,
+    #[serde(rename = "show_class_layout")]
     ShowClassLayout,
+    #[serde(rename = "show_vs_panel")]
     ShowVsPanel,
+    #[serde(rename = "player_damaged")]
     PlayerDamaged,
+    #[serde(rename = "arena_player_notification")]
     ArenaPlayerNotification,
+    #[serde(rename = "arena_match_maxstreak")]
     ArenaMatchMaxStreak,
+    #[serde(rename = "arena_round_start")]
     ArenaRoundStart,
+    #[serde(rename = "arena_win_panel")]
     ArenaWinPanel,
+    #[serde(rename = "pve_win_panel")]
     PveWinPanel,
+    #[serde(rename = "air_dash")]
     AirDash,
+    #[serde(rename = "landed")]
     Landed,
+    #[serde(rename = "player_damage_dodged")]
     PlayerDamageDodged,
+    #[serde(rename = "player_stunned")]
     PlayerStunned,
+    #[serde(rename = "scout_grand_slam")]
     ScoutGrandSlam,
+    #[serde(rename = "scout_slamdoll_landed")]
     ScoutSlamdollLanded,
+    #[serde(rename = "arrow_impact")]
     ArrowImpact,
+    #[serde(rename = "player_jarated")]
     PlayerJarated,
+    #[serde(rename = "player_jarated_fade")]
     PlayerJaratedFade,
+    #[serde(rename = "player_shield_blocked")]
     PlayerShieldBlocked,
+    #[serde(rename = "player_pinned")]
     PlayerPinned,
+    #[serde(rename = "player_healedbymedic")]
     PlayerHealedByMedic,
+    #[serde(rename = "player_sapped_object")]
     PlayerSappedObject,
+    #[serde(rename = "item_found")]
     ItemFound,
+    #[serde(rename = "show_annotation")]
     ShowAnnotation,
+    #[serde(rename = "hide_annotation")]
     HideAnnotation,
+    #[serde(rename = "post_inventory_application")]
     PostInventoryApplication,
+    #[serde(rename = "controlpoint_unlock_updated")]
     ControlPointUnlockUpdated,
+    #[serde(rename = "deploy_buff_banner")]
     DeployBuffBanner,
+    #[serde(rename = "player_buff")]
     PlayerBuff,
+    #[serde(rename = "medic_death")]
     MedicDeath,
+    #[serde(rename = "overtime_nag")]
     OvertimeNag,
+    #[serde(rename = "teams_changed")]
     TeamsChanged,
+    #[serde(rename = "halloween_pumpkin_grab")]
     HalloweenPumpkinGrab,
+    #[serde(rename = "rocket_jump")]
     RocketJump,
+    #[serde(rename = "rocket_jump_landed")]
     RocketJumpLanded,
+    #[serde(rename = "sticky_jump")]
     StickyJump,
+    #[serde(rename = "sticky_jump_landed")]
     StickyJumpLanded,
+    #[serde(rename = "rocketpack_launch")]
     RocketPackLaunch,
+    #[serde(rename = "rocketpack_landed")]
     RocketPackLanded,
+    #[serde(rename = "medic_defended")]
     MedicDefended,
+    #[serde(rename = "localplayer_healed")]
     LocalPlayerHealed,
+    #[serde(rename = "player_destroyed_pipebomb")]
     PlayerDestroyedPipeBomb,
+    #[serde(rename = "object_deflected")]
     ObjectDeflected,
+    #[serde(rename = "player_mvp")]
     PlayerMvp,
+    #[serde(rename = "raid_spawn_mob")]
     RaidSpawnMob,
+    #[serde(rename = "raid_spawn_squad")]
     RaidSpawnSquad,
+    #[serde(rename = "nav_blocked")]
     NavBlocked,
+    #[serde(rename = "path_track_passed")]
     PathTrackPassed,
+    #[serde(rename = "num_cappers_changed")]
     NumCappersChanged,
+    #[serde(rename = "player_regenerate")]
     PlayerRegenerate,
+    #[serde(rename = "update_status_item")]
     UpdateStatusItem,
+    #[serde(rename = "stats_resetround")]
     StatsResetRound,
+    #[serde(rename = "scorestats_accumulated_update")]
     ScoreStatsAccumulatedUpdate,
+    #[serde(rename = "scorestats_accumulated_reset")]
     ScoreStatsAccumulatedReset,
+    #[serde(rename = "achievement_earned_local")]
     AchievementEarnedLocal,
+    #[serde(rename = "player_healed")]
     PlayerHealed,
+    #[serde(rename = "building_healed")]
     BuildingHealed,
+    #[serde(rename = "item_pickup")]
     ItemPickup,
+    #[serde(rename = "duel_status")]
     DuelStatus,
+    #[serde(rename = "fish_notice")]
     FishNotice,
+    #[serde(rename = "fish_notice__arm")]
     FishNoticeArm,
+    #[serde(rename = "slap_notice")]
     SlapNotice,
+    #[serde(rename = "throwable_hit")]
     ThrowableHit,
+    #[serde(rename = "pumpkin_lord_summoned")]
     PumpkinLordSummoned,
+    #[serde(rename = "pumpkin_lord_killed")]
     PumpkinLordKilled,
+    #[serde(rename = "merasmus_summoned")]
     MerasmusSummoned,
+    #[serde(rename = "merasmus_killed")]
     MerasmusKilled,
+    #[serde(rename = "merasmus_escape_warning")]
     MerasmusEscapeWarning,
+    #[serde(rename = "merasmus_escaped")]
     MerasmusEscaped,
+    #[serde(rename = "eyeball_boss_summoned")]
     EyeballBossSummoned,
+    #[serde(rename = "eyeball_boss_stunned")]
     EyeballBossStunned,
+    #[serde(rename = "eyeball_boss_killed")]
     EyeballBossKilled,
+    #[serde(rename = "eyeball_boss_killer")]
     EyeballBossKiller,
+    #[serde(rename = "eyeball_boss_escape_imminent")]
     EyeballBossEscapeImminent,
+    #[serde(rename = "eyeball_boss_escaped")]
     EyeballBossEscaped,
+    #[serde(rename = "npc_hurt")]
     NpcHurt,
+    #[serde(rename = "controlpoint_timer_updated")]
     ControlPointTimerUpdated,
+    #[serde(rename = "player_highfive_start")]
     PlayerHighFiveStart,
+    #[serde(rename = "player_highfive_cancel")]
     PlayerHighFiveCancel,
+    #[serde(rename = "player_highfive_success")]
     PlayerHighFiveSuccess,
+    #[serde(rename = "player_bonuspoints")]
     PlayerBonusPoints,
+    #[serde(rename = "player_upgraded")]
     PlayerUpgraded,
+    #[serde(rename = "player_buyback")]
     PlayerBuyback,
+    #[serde(rename = "player_used_powerup_bottle")]
     PlayerUsedPowerUpBottle,
+    #[serde(rename = "christmas_gift_grab")]
     ChristmasGiftGrab,
+    #[serde(rename = "player_killed_achievement_zone")]
     PlayerKilledAchievementZone,
+    #[serde(rename = "party_updated")]
     PartyUpdated,
+    #[serde(rename = "party_pref_changed")]
     PartyPrefChanged,
+    #[serde(rename = "party_criteria_changed")]
     PartyCriteriaChanged,
+    #[serde(rename = "party_invites_changed")]
     PartyInvitesChanged,
+    #[serde(rename = "party_queue_state_changed")]
     PartyQueueStateChanged,
+    #[serde(rename = "party_chat")]
     PartyChat,
+    #[serde(rename = "party_member_join")]
     PartyMemberJoin,
+    #[serde(rename = "party_member_leave")]
     PartyMemberLeave,
+    #[serde(rename = "match_invites_updated")]
     MatchInvitesUpdated,
+    #[serde(rename = "lobby_updated")]
     LobbyUpdated,
+    #[serde(rename = "mvm_mission_update")]
     MvmMissionUpdate,
+    #[serde(rename = "recalculate_holidays")]
     RecalculateHolidays,
+    #[serde(rename = "player_currency_changed")]
     PlayerCurrencyChanged,
+    #[serde(rename = "doomsday_rocket_open")]
     DoomsdayRocketOpen,
+    #[serde(rename = "remove_nemesis_relationships")]
     RemoveNemesisRelationships,
+    #[serde(rename = "mvm_creditbonus_wave")]
     MvmCreditBonusWave,
+    #[serde(rename = "mvm_creditbonus_all")]
     MvmCreditBonusAll,
+    #[serde(rename = "mvm_creditbonus_all_advanced")]
     MvmCreditBonusAllAdvanced,
+    #[serde(rename = "mvm_quick_sentry_upgrade")]
     MvmQuickSentryUpgrade,
+    #[serde(rename = "mvm_tank_destroyed_by_players")]
     MvmTankDestroyedByPlayers,
+    #[serde(rename = "mvm_kill_robot_delivering_bomb")]
     MvmKillRobotDeliveringBomb,
+    #[serde(rename = "mvm_pickup_currency")]
     MvmPickupCurrency,
+    #[serde(rename = "mvm_bomb_carrier_killed")]
     MvmBombCarrierKilled,
+    #[serde(rename = "mvm_sentrybuster_detonate")]
     MvmSentryBusterDetonate,
+    #[serde(rename = "mvm_scout_marked_for_death")]
     MvmScoutMarkedForDeath,
+    #[serde(rename = "mvm_medic_powerup_shared")]
     MvmMedicPowerUpShared,
+    #[serde(rename = "mvm_begin_wave")]
     MvmBeginWave,
+    #[serde(rename = "mvm_wave_complete")]
     MvmWaveComplete,
+    #[serde(rename = "mvm_mission_complete")]
     MvmMissionComplete,
+    #[serde(rename = "mvm_bomb_reset_by_player")]
     MvmBombResetByPlayer,
+    #[serde(rename = "mvm_bomb_alarm_triggered")]
     MvmBombAlarmTriggered,
+    #[serde(rename = "mvm_bomb_deploy_reset_by_player")]
     MvmBombDeployResetByPlayer,
+    #[serde(rename = "mvm_wave_failed")]
     MvmWaveFailed,
+    #[serde(rename = "mvm_reset_stats")]
     MvmResetStats,
+    #[serde(rename = "damage_resisted")]
     DamageResisted,
+    #[serde(rename = "revive_player_notify")]
     RevivePlayerNotify,
+    #[serde(rename = "revive_player_stopped")]
     RevivePlayerStopped,
+    #[serde(rename = "revive_player_complete")]
     RevivePlayerComplete,
+    #[serde(rename = "player_turned_to_ghost")]
     PlayerTurnedToGhost,
+    #[serde(rename = "medigun_shield_blocked_damage")]
     MedigunShieldBlockedDamage,
+    #[serde(rename = "mvm_adv_wave_complete_no_gates")]
     MvmAdvWaveCompleteNoGates,
+    #[serde(rename = "mvm_sniper_headshot_currency")]
     MvmSniperHeadshotCurrency,
+    #[serde(rename = "mvm_mannhattan_pit")]
     MvmMannhattanPit,
+    #[serde(rename = "flag_carried_in_detection_zone")]
     FlagCarriedInDetectionZone,
+    #[serde(rename = "mvm_adv_wave_killed_stun_radio")]
     MvmAdvWaveKilledStunRadio,
+    #[serde(rename = "player_directhit_stun")]
     PlayerDirectHitStun,
+    #[serde(rename = "mvm_sentrybuster_killed")]
     MvmSentryBusterKilled,
+    #[serde(rename = "upgrades_file_changed")]
     UpgradesFileChanged,
+    #[serde(rename = "rd_team_points_changed")]
     RdTeamPointsChanged,
+    #[serde(rename = "rd_rules_state_changed")]
     RdRulesStateChanged,
+    #[serde(rename = "rd_robot_killed")]
     RdRobotKilled,
+    #[serde(rename = "rd_robot_impact")]
     RdRobotImpact,
+    #[serde(rename = "teamplay_pre_round_time_left")]
     TeamPlayPreRoundTimeLeft,
+    #[serde(rename = "parachute_deploy")]
     ParachuteDeploy,
+    #[serde(rename = "parachute_holster")]
     ParachuteHolster,
+    #[serde(rename = "kill_refills_meter")]
     KillRefillsMeter,
+    #[serde(rename = "rps_taunt_event")]
     RpsTauntEvent,
+    #[serde(rename = "conga_kill")]
     CongaKill,
+    #[serde(rename = "player_initial_spawn")]
     PlayerInitialSpawn,
+    #[serde(rename = "competitive_victory")]
     CompetitiveVictory,
+    #[serde(rename = "competitive_stats_update")]
     CompetitiveStatsUpdate,
+    #[serde(rename = "minigame_win")]
     MiniGameWin,
+    #[serde(rename = "sentry_on_go_active")]
     SentryOnGoActive,
+    #[serde(rename = "duck_xp_level_up")]
     DuckXpLevelUp,
+    #[serde(rename = "questlog_opened")]
     QuestLogOpened,
+    #[serde(rename = "schema_updated")]
     SchemaUpdated,
+    #[serde(rename = "localplayer_pickup_weapon")]
     LocalPlayerPickupWeapon,
+    #[serde(rename = "rd_player_score_points")]
     RdPlayerScorePoints,
+    #[serde(rename = "demoman_det_stickies")]
     DemomanDetStickies,
+    #[serde(rename = "quest_objective_completed")]
     QuestObjectiveCompleted,
+    #[serde(rename = "player_score_changed")]
     PlayerScoreChanged,
+    #[serde(rename = "killed_capping_player")]
     KilledCappingPlayer,
+    #[serde(rename = "environmental_death")]
     EnvironmentalDeath,
+    #[serde(rename = "projectile_direct_hit")]
     ProjectileDirectHit,
+    #[serde(rename = "pass_get")]
     PassGet,
+    #[serde(rename = "pass_score")]
     PassScore,
+    #[serde(rename = "pass_free")]
     PassFree,
+    #[serde(rename = "pass_pass_caught")]
     PassPassCaught,
+    #[serde(rename = "pass_ball_stolen")]
     PassBallStolen,
+    #[serde(rename = "pass_ball_blocked")]
     PassBallBlocked,
+    #[serde(rename = "damage_prevented")]
     DamagePrevented,
+    #[serde(rename = "halloween_boss_killed")]
     HalloweenBossKilled,
+    #[serde(rename = "escaped_loot_island")]
     EscapedLootIsland,
+    #[serde(rename = "tagged_player_as_it")]
     TaggedPlayerAsIt,
+    #[serde(rename = "merasmus_stunned")]
     MerasmusStunned,
+    #[serde(rename = "merasmus_prop_found")]
     MerasmusPropFound,
+    #[serde(rename = "halloween_skeleton_killed")]
     HalloweenSkeletonKilled,
+    #[serde(rename = "skeleton_killed_quest")]
     SkeletonKilledQuest,
+    #[serde(rename = "skeleton_king_killed_quest")]
     SkeletonKingKilledQuest,
+    #[serde(rename = "escape_hell")]
     EscapeHell,
+    #[serde(rename = "cross_spectral_bridge")]
     CrossSpectralBridge,
+    #[serde(rename = "minigame_won")]
     MiniGameWon,
+    #[serde(rename = "respawn_ghost")]
     RespawnGhost,
+    #[serde(rename = "kill_in_hell")]
     KillInHell,
+    #[serde(rename = "halloween_duck_collected")]
     HalloweenDuckCollected,
+    #[serde(rename = "special_score")]
     SpecialScore,
+    #[serde(rename = "team_leader_killed")]
     TeamLeaderKilled,
+    #[serde(rename = "halloween_soul_collected")]
     HalloweenSoulCollected,
+    #[serde(rename = "recalculate_truce")]
     RecalculateTruce,
+    #[serde(rename = "deadringer_cheat_death")]
     DeadRingerCheatDeath,
+    #[serde(rename = "crossbow_heal")]
     CrossbowHeal,
+    #[serde(rename = "damage_mitigated")]
     DamageMitigated,
+    #[serde(rename = "payload_pushed")]
     PayloadPushed,
+    #[serde(rename = "player_abandoned_match")]
     PlayerAbandonedMatch,
+    #[serde(rename = "cl_drawline")]
     ClDrawline,
+    #[serde(rename = "restart_timer_time")]
     RestartTimerTime,
+    #[serde(rename = "winlimit_changed")]
     WinLimitChanged,
+    #[serde(rename = "winpanel_show_scores")]
     WinPanelShowScores,
+    #[serde(rename = "top_streams_request_finished")]
     TopStreamsRequestFinished,
+    #[serde(rename = "competitive_state_changed")]
     CompetitiveStateChanged,
+    #[serde(rename = "global_war_data_updated")]
     GlobalWarDataUpdated,
+    #[serde(rename = "stop_watch_changed")]
     StopWatchChanged,
+    #[serde(rename = "ds_stop")]
     DsStop,
+    #[serde(rename = "ds_screenshot")]
     DsScreenshot,
+    #[serde(rename = "show_match_summary")]
     ShowMatchSummary,
+    #[serde(rename = "experience_changed")]
     ExperienceChanged,
+    #[serde(rename = "begin_xp_lerp")]
     BeginXpLerp,
+    #[serde(rename = "matchmaker_stats_updated")]
     MatchmakerStatsUpdated,
+    #[serde(rename = "rematch_vote_period_over")]
     RematchVotePeriodOver,
+    #[serde(rename = "rematch_failed_to_create")]
     RematchFailedToCreate,
+    #[serde(rename = "player_rematch_change")]
     PlayerRematchChange,
+    #[serde(rename = "ping_updated")]
     PingUpdated,
+    #[serde(rename = "mmstats_updated")]
     MMStatsUpdated,
+    #[serde(rename = "player_next_map_vote_change")]
     PlayerNextMapVoteChange,
+    #[serde(rename = "vote_maps_changed")]
     VoteMapsChanged,
+    #[serde(rename = "proto_def_changed")]
     ProtoDefChanged,
+    #[serde(rename = "player_domination")]
     PlayerDomination,
+    #[serde(rename = "player_rocketpack_pushed")]
     PlayerRocketPackPushed,
+    #[serde(rename = "quest_request")]
     QuestRequest,
+    #[serde(rename = "quest_response")]
     QuestResponse,
+    #[serde(rename = "quest_progress")]
     QuestProgress,
+    #[serde(rename = "projectile_removed")]
     ProjectileRemoved,
+    #[serde(rename = "quest_map_data_changed")]
     QuestMapDataChanged,
+    #[serde(rename = "gas_doused_player_ignited")]
     GasDousedPlayerIgnited,
+    #[serde(rename = "quest_turn_in_state")]
     QuestTurnInState,
+    #[serde(rename = "items_acknowledged")]
     ItemsAcknowledged,
+    #[serde(rename = "capper_killed")]
     CapperKilled,
+    #[serde(rename = "mainmenu_stabilized")]
     MainMenuStabilized,
+    #[serde(rename = "world_status_changed")]
     WorldStatusChanged,
+    #[serde(rename = "hltv_status")]
     HLTVStatus,
+    #[serde(rename = "hltv_cameraman")]
     HLTVCameraman,
+    #[serde(rename = "hltv_rank_camera")]
     HLTVRankCamera,
+    #[serde(rename = "hltv_rank_entity")]
     HLTVRankEntity,
+    #[serde(rename = "hltv_fixed")]
     HLTVFixed,
+    #[serde(rename = "hltv_chase")]
     HLTVChase,
+    #[serde(rename = "hltv_message")]
     HLTVMessage,
+    #[serde(rename = "hltv_title")]
     HLTVTitle,
+    #[serde(rename = "hltv_chat")]
     HLTVChat,
+    #[serde(rename = "replay_startrecord")]
     ReplayStartRecord,
+    #[serde(rename = "replay_sessioninfo")]
     ReplaySessionInfo,
+    #[serde(rename = "replay_endrecord")]
     ReplayEndRecord,
+    #[serde(rename = "replay_replaysavailable")]
     ReplayReplaysAvailable,
+    #[serde(rename = "replay_servererror")]
     ReplayServerError,
     Unknown(String),
-}
-impl Serialize for GameEventType {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-impl<'de> Deserialize<'de> for GameEventType {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let str = <&str>::deserialize(deserializer)?;
-        Ok(GameEventType::from_type_name(str))
-    }
 }
 impl GameEventType {
     pub fn from_type_name(name: &str) -> Self {
