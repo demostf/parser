@@ -229,7 +229,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         use crate::demo::Stream;
         use crate::{ParseError, Result};
         use bitbuffer::{BitRead, LittleEndian, BitWrite, BitWriteStream};
-        use serde::{Deserialize, Deserializer, Serialize, Serializer};
+        use serde::{Deserialize, Serialize};
         use crate::demo::data::MaybeUtf8String;
     );
 
@@ -297,10 +297,14 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
     });
 
     let event_types = events.iter().map(|event| {
-        let name_str = get_event_name(event.event_type.as_str());
+        let type_name = event.event_type.as_str();
+        let name_str = get_event_name(type_name);
         let name = Ident::new(&name_str, span);
 
-        quote!(#name,)
+        quote!(
+            #[serde(rename = #type_name)]
+            #name,
+        )
     });
 
     let type_from_names = events.iter().map(|event| {
@@ -398,31 +402,11 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
         }
 
         #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-        #[derive(Clone, Debug, PartialEq, Eq, Hash)]
+        #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
         pub enum GameEventType {
             #(#event_types)*
             Unknown(String),
         }
-
-        impl Serialize for GameEventType {
-            fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-            where
-                S: Serializer,
-            {
-                serializer.serialize_str(self.as_str())
-            }
-        }
-
-        impl<'de> Deserialize<'de> for GameEventType {
-            fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-            where
-                D: Deserializer<'de>,
-            {
-                let str = <&str>::deserialize(deserializer)?;
-                Ok(GameEventType::from_type_name(str))
-            }
-        }
-
 
         impl GameEventType {
             pub fn from_type_name(name: &str) -> Self {
