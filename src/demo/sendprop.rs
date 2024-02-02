@@ -1114,7 +1114,6 @@ impl<'a> TryFrom<&'a SendPropValue> for &'a [SendPropValue] {
     }
 }
 
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub struct SendPropIdentifier(u64);
 
@@ -1196,6 +1195,17 @@ impl Serialize for SendPropIdentifier {
         S: Serializer,
     {
         self.0.to_string().serialize(serializer)
+    }
+}
+
+#[cfg(feature = "schema")]
+impl schemars::JsonSchema for SendPropIdentifier {
+    fn schema_name() -> String {
+        "SendPropIdentifier".into()
+    }
+
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        <String as schemars::JsonSchema>::json_schema(gen)
     }
 }
 
