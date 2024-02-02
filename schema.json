@@ -12817,9 +12817,7 @@
       "minimum": 0.0
     },
     "SendPropIdentifier": {
-      "type": "integer",
-      "format": "uint64",
-      "minimum": 0.0
+      "type": "string"
     },
     "SendPropName": {
       "type": "string"
