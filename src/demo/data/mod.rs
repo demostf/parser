@@ -241,7 +241,7 @@ impl Sub<ServerTick> for ServerTick {
     Default,
     Display,
 )]
-pub struct DemoTick(u32);
+pub struct DemoTick(pub u32);
 
 impl DemoTick {
     pub fn range_inclusive(&self, till: Self) -> impl Iterator<Item = Self> {
