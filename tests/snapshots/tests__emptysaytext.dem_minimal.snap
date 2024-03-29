@@ -5,10 +5,46 @@ expression: state
 {
   "chat": [
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: Demo recording completed",
+      "tick": 1
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: Uploading demo auto-20210602-2316-cp_sunshine.dem",
+      "tick": 200
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: json_decode error: Syntax error",
+      "tick": 1046
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "",
       "text": "",
       "tick": 4280
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU lost their uber advantage (19 seconds)",
+      "tick": 8693
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU had uber for 33 seconds before using it",
+      "tick": 9663
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED had uber for 33 seconds before using it",
+      "tick": 10892
     },
     {
       "kind": "TF_Chat_All",
@@ -38,6 +74,12 @@ expression: state
       "kind": "TF_Chat_All",
       "from": "",
       "text": "se me parte la cabeza :  tengo a v1lshock clavandome su ojo en la cara",
+      "tick": 16714
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED lost their uber advantage (11 seconds)",
       "tick": 16714
     },
     {
@@ -119,16 +161,46 @@ expression: state
       "tick": 36280
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU had uber for 33 seconds before using it",
+      "tick": 38818
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED had uber for 31 seconds before using it",
+      "tick": 39002
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "",
       "text": "[PH] Únete a nuestro Discord para conocer más sobre el servidor: https://discord.gg/bfWRBKGZDQ",
       "tick": 44280
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU had uber for 70 seconds before using it",
+      "tick": 48889
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED had uber for 102 seconds before using it",
+      "tick": 50247
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "",
       "text": "[PH] ¿Beneficios? Toda información sobre el servidor en nuestro Discord.",
       "tick": 52280
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED lost their uber advantage (18 seconds)",
+      "tick": 59620
     },
     {
       "kind": "TF_Chat_All",
@@ -143,10 +215,22 @@ expression: state
       "tick": 68280
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU had uber for 37 seconds before using it",
+      "tick": 69421
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "",
       "text": "",
       "tick": 76280
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED lost their uber advantage (12 seconds)",
+      "tick": 76513
     },
     {
       "kind": "TF_Chat_All",

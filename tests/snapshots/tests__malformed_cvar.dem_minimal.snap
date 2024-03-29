@@ -17,6 +17,78 @@ expression: state
       "tick": 5000
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU's medic died with 100% uber",
+      "tick": 5328
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU spent 7.4 seconds after spawning before healing",
+      "tick": 6926
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU's medic died with 99% uber",
+      "tick": 10588
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU spent 9.0 seconds after spawning before healing",
+      "tick": 28546
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED spent 11.4 seconds after spawning before healing",
+      "tick": 28786
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED's medic died with 100% uber",
+      "tick": 33083
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED spent 17.0 seconds after spawning before healing",
+      "tick": 35446
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED's medic died with 100% uber",
+      "tick": 40339
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED spent 11.3 seconds after spawning before healing",
+      "tick": 42406
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU spent 19.4 seconds after spawning before healing",
+      "tick": 44226
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU's medic died with 100% uber",
+      "tick": 47735
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED had uber for 35 seconds before using it",
+      "tick": 61463
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "master race",
       "text": "gr",
@@ -27,6 +99,12 @@ expression: state
       "from": "dumpster_fire",
       "text": "gr",
       "tick": 62805
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED spent 8.5 seconds after spawning before healing",
+      "tick": 66293
     },
     {
       "kind": "TF_Chat_AllDead",
@@ -104,6 +182,12 @@ expression: state
       "kind": "TF_Chat_All",
       "from": "",
       "text": "[LogsTF] Uploading logs...",
+      "tick": 80333
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[SOAP] Plugins reloaded.",
       "tick": 80333
     }
   ],

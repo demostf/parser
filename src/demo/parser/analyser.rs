@@ -3,7 +3,9 @@ use crate::demo::gameevent_gen::{
     GameEvent, PlayerDeathEvent, PlayerSpawnEvent, TeamPlayRoundWinEvent,
 };
 use crate::demo::message::packetentities::EntityId;
-use crate::demo::message::usermessage::{ChatMessageKind, SayText2Message, UserMessage};
+use crate::demo::message::usermessage::{
+    ChatMessageKind, HudTextLocation, SayText2Message, TextMessage, UserMessage,
+};
 use crate::demo::message::{Message, MessageType};
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::handler::{BorrowMessageHandler, MessageHandler};
@@ -35,6 +37,15 @@ impl ChatMessage {
                 .as_ref()
                 .map(|s| s.to_string())
                 .unwrap_or_default(),
+            text: message.plain_text(),
+            tick,
+        }
+    }
+
+    pub fn from_text(message: &TextMessage, tick: DemoTick) -> Self {
+        ChatMessage {
+            kind: ChatMessageKind::Empty,
+            from: String::new(),
             text: message.plain_text(),
             tick,
         }
@@ -457,16 +468,26 @@ impl Analyser {
     }
 
     fn handle_user_message(&mut self, message: &UserMessage, tick: DemoTick) {
-        if let UserMessage::SayText2(text_message) = message {
-            if text_message.kind == ChatMessageKind::NameChange {
-                if let Some(from) = text_message.from.clone() {
-                    self.change_name(from.into(), text_message.plain_text());
+        match message {
+            UserMessage::SayText2(text_message) => {
+                if text_message.kind == ChatMessageKind::NameChange {
+                    if let Some(from) = text_message.from.clone() {
+                        self.change_name(from.into(), text_message.plain_text());
+                    }
+                } else {
+                    self.state
+                        .chat
+                        .push(ChatMessage::from_message(text_message, tick));
                 }
-            } else {
-                self.state
-                    .chat
-                    .push(ChatMessage::from_message(text_message, tick));
             }
+            UserMessage::Text(text_message) => {
+                if text_message.location == HudTextLocation::PrintTalk {
+                    self.state
+                        .chat
+                        .push(ChatMessage::from_text(text_message, tick));
+                }
+            }
+            _ => {}
         }
     }
 

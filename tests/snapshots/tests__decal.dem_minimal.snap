@@ -35,6 +35,12 @@ expression: state
       "tick": 47043
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#TF_TeamsSwitched",
+      "tick": 47283
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "",
       "text": "[LogsTF] To see the stats from the previous rounds, type: !log",
@@ -395,6 +401,12 @@ expression: state
       "tick": 85836
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: Demo recording completed",
+      "tick": 85843
+    },
+    {
       "kind": "TF_Chat_Team_Dead",
       "from": "huge obese guy",
       "text": "[P-REC] Stop record.",
@@ -404,6 +416,12 @@ expression: state
       "kind": "TF_Chat_All",
       "from": "grrm",
       "text": "!log",
+      "tick": 86033
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: Uploading demo 20190819-2009-pl_upward.dem",
       "tick": 86033
     },
     {
@@ -417,6 +435,12 @@ expression: state
       "from": "",
       "text": "[LogsTF] To see the stats, type: !log",
       "tick": 86133
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: json_decode error: Syntax error",
+      "tick": 86218
     },
     {
       "kind": "TF_Chat_All",

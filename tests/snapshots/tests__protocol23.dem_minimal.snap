@@ -11,6 +11,12 @@ expression: state
       "tick": 110
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#TF_TeamsSwitched",
+      "tick": 110
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "[GC]Kimo [DK]",
       "text": "8v8",
@@ -351,6 +357,12 @@ expression: state
       "from": "[GC] [EGT] Omni",
       "text": "gj",
       "tick": 39077
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "#TF_TeamsSwitched",
+      "tick": 39153
     },
     {
       "kind": "TF_Chat_All",

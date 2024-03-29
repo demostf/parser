@@ -137,6 +137,12 @@ expression: state
       "tick": 36278
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#TF_TeamsSwitched",
+      "tick": 36300
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "Pride | Mafia Boss",
       "text": "gr",

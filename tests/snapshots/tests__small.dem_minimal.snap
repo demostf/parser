@@ -3,7 +3,14 @@ source: tests/tests.rs
 expression: state
 ---
 {
-  "chat": [],
+  "chat": [
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "#TF_timeleft",
+      "tick": 4
+    }
+  ],
   "users": {
     "2": {
       "classes": {},

@@ -5,10 +5,28 @@ expression: state
 {
   "chat": [
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: Demo recording completed",
+      "tick": 0
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "frying pan",
       "text": "gamers assembly",
       "tick": 16
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: Uploading demo auto-20181103-2046-pl_upward.dem",
+      "tick": 204
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[demos.tf]: Demos must be at least 5 minutes long",
+      "tick": 2638
     },
     {
       "kind": "TF_Chat_All",
@@ -17,16 +35,58 @@ expression: state
       "tick": 3284
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED lost their uber advantage (39 seconds)",
+      "tick": 4376
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU had uber for 48 seconds before using it",
+      "tick": 12508
+    },
+    {
       "kind": "TF_Chat_AllDead",
       "from": "frying pan",
       "text": ":(",
       "tick": 20640
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU spent 16.6 seconds after spawning before healing",
+      "tick": 23676
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED lost their uber advantage (11 seconds)",
+      "tick": 27124
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED's medic died with 100% uber",
+      "tick": 27540
+    },
+    {
       "kind": "TF_Chat_AllDead",
       "from": "Chochy",
       "text": "epic map",
       "tick": 29596
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU had uber for 80 seconds before using it",
+      "tick": 32424
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] RED's medic died with 100% uber",
+      "tick": 38084
     },
     {
       "kind": "TF_Chat_AllDead",
@@ -47,6 +107,12 @@ expression: state
       "tick": 46256
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#TF_TeamsSwitched",
+      "tick": 48464
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "frying pan",
       "text": "!log",
@@ -59,6 +125,18 @@ expression: state
       "tick": 49060
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU lost their uber advantage (11 seconds)",
+      "tick": 52764
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU had uber for 72 seconds before using it",
+      "tick": 57374
+    },
+    {
       "kind": "TF_Chat_AllDead",
       "from": "Chochy",
       "text": "'D?",
@@ -69,6 +147,24 @@ expression: state
       "from": "Chochy",
       "text": "t",
       "tick": 60618
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU lost their uber advantage (19 seconds)",
+      "tick": 81376
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU's medic died with 100% uber",
+      "tick": 82206
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[STV Stats] BLU spent 9.1 seconds after spawning before healing",
+      "tick": 83404
     },
     {
       "kind": "TF_Chat_AllDead",
@@ -87,6 +183,12 @@ expression: state
       "from": "Kireek",
       "text": "gg",
       "tick": 85732
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[SOAP] Plugins reloaded.",
+      "tick": 85900
     },
     {
       "kind": "TF_Chat_All",

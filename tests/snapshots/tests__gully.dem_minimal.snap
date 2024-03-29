@@ -23,6 +23,12 @@ expression: state
       "tick": 8
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "Recording started",
+      "tick": 47
+    },
+    {
       "kind": "TF_Chat_Team",
       "from": "Trademark",
       "text": ">> FAKE <<  ",
@@ -33,6 +39,18 @@ expression: state
       "from": "Trademark",
       "text": "u b e r e d u b e r e d u b e r e d ",
       "tick": 4378
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.10\n",
+      "tick": 4700
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.10\n",
+      "tick": 4700
     },
     {
       "kind": "TF_Chat_All",
@@ -47,10 +65,46 @@ expression: state
       "tick": 7479
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 8057
+    },
+    {
       "kind": "TF_Chat_Team",
       "from": "Trademark",
       "text": "u b e r e d u b e r e d u b e r e d ",
       "tick": 12561
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 12777
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 2.76\n",
+      "tick": 13168
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 2.76\n",
+      "tick": 13168
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.34\n",
+      "tick": 18133
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.34\n",
+      "tick": 18133
     },
     {
       "kind": "TF_Chat_Team",
@@ -107,6 +161,30 @@ expression: state
       "tick": 22725
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 3.27\n",
+      "tick": 23110
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 3.27\n",
+      "tick": 23110
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.40\n",
+      "tick": 24368
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.40\n",
+      "tick": 24368
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "schy",
       "text": "lol",
@@ -125,16 +203,76 @@ expression: state
       "tick": 30781
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.03\n",
+      "tick": 31867
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.03\n",
+      "tick": 31867
+    },
+    {
       "kind": "TF_Chat_Team_Dead",
       "from": "Trademark",
       "text": "u b e r e d u b e r e d u b e r e d ",
       "tick": 32301
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.97\n",
+      "tick": 36008
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.97\n",
+      "tick": 36008
+    },
+    {
       "kind": "TF_Chat_Team",
       "from": "Trademark",
       "text": ">> FAKE <<  ",
       "tick": 36538
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 6.26\n",
+      "tick": 40189
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 6.26\n",
+      "tick": 40189
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.06\n",
+      "tick": 42138
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.06\n",
+      "tick": 42138
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.06\n",
+      "tick": 46341
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.06\n",
+      "tick": 46341
     },
     {
       "kind": "TF_Chat_All",
@@ -147,6 +285,18 @@ expression: state
       "from": "Trademark",
       "text": "u b e r e d u b e r e d u b e r e d ",
       "tick": 47044
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 3.80\n",
+      "tick": 47830
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 3.80\n",
+      "tick": 47830
     },
     {
       "kind": "TF_Chat_AllDead",
@@ -185,10 +335,22 @@ expression: state
       "tick": 51384
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 51849
+    },
+    {
       "kind": "TF_Chat_Team",
       "from": "Trademark",
       "text": "u b e r e d u b e r e d u b e r e d ",
       "tick": 53540
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 55747
     },
     {
       "kind": "TF_Chat_All",
@@ -215,6 +377,12 @@ expression: state
       "tick": 61843
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 62024
+    },
+    {
       "kind": "TF_Chat_AllDead",
       "from": "jinta",
       "text": "ez",
@@ -237,6 +405,12 @@ expression: state
       "from": "purple_dildo420",
       "text": "engi dm",
       "tick": 63679
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 63704
     },
     {
       "kind": "TF_Chat_All",
@@ -267,6 +441,30 @@ expression: state
       "from": "anytime will do my love",
       "text": "u lived i hate u",
       "tick": 67728
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 0.84\n",
+      "tick": 68298
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 0.84\n",
+      "tick": 68298
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 2.49\n",
+      "tick": 70522
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 2.49\n",
+      "tick": 70522
     },
     {
       "kind": "TF_Chat_AllDead",
@@ -341,10 +539,28 @@ expression: state
       "tick": 76283
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 76353
+    },
+    {
       "kind": "TF_Chat_Team_Dead",
       "from": "Trademark",
       "text": "u b e r e d u b e r e d u b e r e d ",
       "tick": 76854
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 6.30\n",
+      "tick": 77024
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 6.30\n",
+      "tick": 77024
     },
     {
       "kind": "TF_Chat_All",
@@ -363,6 +579,18 @@ expression: state
       "from": "schy",
       "text": "oh",
       "tick": 80225
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.33\n",
+      "tick": 80357
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.33\n",
+      "tick": 80357
     },
     {
       "kind": "TF_Chat_All",
@@ -443,6 +671,18 @@ expression: state
       "tick": 82584
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 2.55\n",
+      "tick": 83344
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 2.55\n",
+      "tick": 83344
+    },
+    {
       "kind": "TF_Chat_Team",
       "from": "Trademark",
       "text": ">> FAKE <<  ",
@@ -471,6 +711,66 @@ expression: state
       "from": "anytime will do my love",
       "text": "schys gay",
       "tick": 85718
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 3.44\n",
+      "tick": 86149
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 3.44\n",
+      "tick": 86149
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 1.46\n",
+      "tick": 86281
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 1.46\n",
+      "tick": 86281
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 1.13\n",
+      "tick": 86305
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 1.13\n",
+      "tick": 86305
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 0.06\n",
+      "tick": 86841
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 0.06\n",
+      "tick": 86841
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.76\n",
+      "tick": 86928
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.76\n",
+      "tick": 86928
     },
     {
       "kind": "TF_Chat_All",
@@ -513,6 +813,12 @@ expression: state
       "from": "distraughtduck4",
       "text": "meatshot die die DIE",
       "tick": 88336
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "[SM] You are flooding the server!",
+      "tick": 88420
     },
     {
       "kind": "TF_Chat_All",
@@ -599,6 +905,30 @@ expression: state
       "tick": 89444
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.07\n",
+      "tick": 90243
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 5.07\n",
+      "tick": 90243
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 1.98\n",
+      "tick": 90449
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 1.98\n",
+      "tick": 90449
+    },
+    {
       "kind": "TF_Chat_All",
       "from": "distraughtduck4",
       "text": "die die die MEATSHOT",
@@ -615,6 +945,18 @@ expression: state
       "from": "distraughtduck4",
       "text": "meatshot die die DIE",
       "tick": 91124
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 6.87\n",
+      "tick": 91525
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 6.87\n",
+      "tick": 91525
     },
     {
       "kind": "TF_Chat_All",
@@ -645,6 +987,18 @@ expression: state
       "from": "distraughtduck4",
       "text": "meatshot meatshot meatshot DIE",
       "tick": 95070
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 3.29\n",
+      "tick": 95499
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 3.29\n",
+      "tick": 95499
     },
     {
       "kind": "TF_Chat_AllDead",
@@ -689,6 +1043,12 @@ expression: state
       "tick": 99674
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 99811
+    },
+    {
       "kind": "TF_Chat_AllDead",
       "from": "jinta",
       "text": "guv",
@@ -719,6 +1079,18 @@ expression: state
       "tick": 101398
     },
     {
+      "kind": "Empty",
+      "from": "",
+      "text": "Red:  Min Spawn 8.90, Scalar 0.79, Next Spawn In: 4.43\n",
+      "tick": 101811
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Blue: Min Spawn 8.90, Scalar 0.79, Next Spawn In: 4.43\n",
+      "tick": 101811
+    },
+    {
       "kind": "TF_Chat_Team",
       "from": "Trademark",
       "text": "u b e r e d u b e r e d u b e r e d ",
@@ -735,6 +1107,12 @@ expression: state
       "from": "schy",
       "text": "jinta ive seen you win these before",
       "tick": 104434
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "#game_spawn_as",
+      "tick": 104764
     },
     {
       "kind": "TF_Chat_AllDead",
@@ -800,6 +1178,18 @@ expression: state
       "kind": "TF_Chat_All",
       "from": "",
       "text": "[LogsTF] Uploading logs...",
+      "tick": 105351
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "Recording stopped",
+      "tick": 105351
+    },
+    {
+      "kind": "Empty",
+      "from": "",
+      "text": "PUG ends with the score 3 to 5.",
       "tick": 105351
     },
     {

@@ -247,39 +247,43 @@ pub struct SayText2Message {
     pub text: MaybeUtf8String,
 }
 
+fn to_plain_text(text: &str) -> String {
+    // 1: normal, 2: old colors, 3: team, 4: location, 5 achievement, 6 custom
+    let mut text = text.replace(|c| c <= char::from(6), "");
+    // 7: 6-char hex
+    while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
+        if c == char::from(7) {
+            Some(index)
+        } else {
+            None
+        }
+    }) {
+        text = text
+            .chars()
+            .take(pos)
+            .chain(text.chars().skip(pos + 7))
+            .collect();
+    }
+    // 9: 8-char hex
+    while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
+        if c == char::from(9) {
+            Some(index)
+        } else {
+            None
+        }
+    }) {
+        text = text
+            .chars()
+            .take(pos)
+            .chain(text.chars().skip(pos + 9))
+            .collect();
+    }
+    text
+}
+
 impl SayText2Message {
     pub fn plain_text(&self) -> String {
-        // 1: normal, 2: old colors, 3: team, 4: location, 5 achievement, 6 custom
-        let mut text = self.text.to_string().replace(|c| c <= char::from(6), "");
-        // 7: 6-char hex
-        while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
-            if c == char::from(7) {
-                Some(index)
-            } else {
-                None
-            }
-        }) {
-            text = text
-                .chars()
-                .take(pos)
-                .chain(text.chars().skip(pos + 7))
-                .collect();
-        }
-        // 9: 8-char hex
-        while let Some(pos) = text.chars().enumerate().find_map(|(index, c)| {
-            if c == char::from(9) {
-                Some(index)
-            } else {
-                None
-            }
-        }) {
-            text = text
-                .chars()
-                .take(pos)
-                .chain(text.chars().skip(pos + 9))
-                .collect();
-        }
-        text
+        to_plain_text(self.text.as_ref())
     }
 }
 
@@ -362,6 +366,12 @@ pub struct TextMessage {
     pub location: HudTextLocation,
     pub text: MaybeUtf8String,
     pub substitute: [MaybeUtf8String; 4],
+}
+
+impl TextMessage {
+    pub fn plain_text(&self) -> String {
+        to_plain_text(self.text.as_ref())
+    }
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
