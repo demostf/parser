@@ -14,5 +14,8 @@ in
 
     cargoLock = {
       lockFile = ./Cargo.lock;
+      outputHashes = {
+        "schemars-0.8.16" = "sha256-mQR56Ym76gSRulZrThmZHHw2JfhEgYhWXabwaYmyMYs=";
+      };
     };
   }

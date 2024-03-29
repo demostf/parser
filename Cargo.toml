@@ -85,7 +85,7 @@ criterion = "0.4.0"
 insta = { version = "1.34.0", features = ["json"] }
 
 [profile.release]
-lto = true
+lto = "thin"
 
 [profile.dev]
 opt-level = 2
