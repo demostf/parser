@@ -69,8 +69,8 @@ lazy_static = { version = "1", optional = true }
 prettyplease = { version = "0.1", optional = true }
 
 [patch.crates-io]
-schemars = { path = '../../rust/schemars/schemars' }
-schemars_derive = { path = '../../rust/schemars/schemars_derive' }
+schemars = { git = 'https://github.com/icewind1991/schemars', branch = "simplify-generated-enum-code" }
+schemars_derive = { git = 'https://github.com/icewind1991/schemars', branch = "simplify-generated-enum-code" }
 
 [features]
 schema = ["schemars", "bitbuffer/schemars"]

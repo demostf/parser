@@ -959,6 +959,7 @@ dependencies = [
 [[package]]
 name = "schemars"
 version = "0.8.16"
+source = "git+https://github.com/icewind1991/schemars?branch=simplify-generated-enum-code#1a82a9f045bc0b1ebd7e9466877ffbb7d45a6eef"
 dependencies = [
  "dyn-clone",
  "schemars_derive",
@@ -969,6 +970,7 @@ dependencies = [
 [[package]]
 name = "schemars_derive"
 version = "0.8.16"
+source = "git+https://github.com/icewind1991/schemars?branch=simplify-generated-enum-code#1a82a9f045bc0b1ebd7e9466877ffbb7d45a6eef"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1182,7 +1184,7 @@ checksum = "222a222a5bfe1bba4a77b45ec488a741b3cb8872e5e499451fd7d0129c9c7c3d"
 
 [[package]]
 name = "tf-demo-parser"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "Inflector",
  "better-panic",
