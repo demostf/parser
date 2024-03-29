@@ -10,6 +10,10 @@ in
     pname = "demostf-parser";
     version = "0.1.0";
 
+    cargoBuildFlags = ''
+      --bin parse_demo
+    '';
+
     inherit src;
 
     cargoLock = {
