@@ -16,6 +16,8 @@ in
 
     inherit src;
 
+    doCheck = stdenv.system == "x86_64-linux"; # building the tests takes +- forever on aarch64 for some reason
+
     cargoLock = {
       lockFile = ./Cargo.lock;
       outputHashes = {
