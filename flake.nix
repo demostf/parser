@@ -143,7 +143,7 @@
     // {
       overlays.default = import ./overlay.nix;
       hydraJobs = eachSystem ["x86_64-linux" "aarch64-linux"] (system: {
-        parser = self.packages.${system}.tf-demo-parser;
+        parser = self.packages.${system}.demostf-parser;
       });
     });
 }
