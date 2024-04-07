@@ -30,6 +30,7 @@
         inherit system overlays;
       };
       lib = pkgs.lib;
+      inherit (builtins) listToAttrs fromTOML readFile;
 
       hostTarget = pkgs.hostPlatform.config;
       targets = [
@@ -61,6 +62,16 @@
           targets;
       };
       hostNaersk = cross-naersk'.hostNaersk;
+
+      msrv = (fromTOML (readFile ./Cargo.toml)).package.rust-version;
+      msrvToolchain = pkgs.rust-bin.stable."${msrv}".default;
+      naerskMsrv = let
+        toolchain = msrvToolchain;
+      in
+        pkgs.callPackage naersk {
+          cargo = toolchain;
+          rustc = toolchain;
+        };
 
       mkHydraJobs = system: {
         parser = derivation {
@@ -103,6 +114,10 @@
             // {
               release = false;
               mode = "test";
+            });
+          msrv = naerskMsrv.buildPackage (nearskOpt
+            // {
+              mode = "check";
             });
           default = demostf-parser;
         };
