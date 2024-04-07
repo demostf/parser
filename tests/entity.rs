@@ -88,21 +88,17 @@ impl MessageHandler for EntityDumper {
     type Output = Vec<EntityDump>;
 
     fn does_handle(message_type: MessageType) -> bool {
-        match message_type {
-            MessageType::PacketEntities => true,
-            _ => false,
-        }
+        matches!(message_type, MessageType::PacketEntities)
     }
 
     fn handle_message(&mut self, message: &Message, tick: DemoTick, _parser_state: &ParserState) {
-        match message {
-            Message::PacketEntities(entity_message) => self.entities.extend(
+        if let Message::PacketEntities(entity_message) = message {
+            self.entities.extend(
                 entity_message
                     .entities
                     .iter()
                     .map(|entity| (tick, entity.clone())),
-            ),
-            _ => {}
+            )
         }
     }
 

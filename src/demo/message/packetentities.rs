@@ -231,9 +231,9 @@ fn test_bit_var_roundtrip() {
     bit_var_normal(u32::MAX);
 
     for i in 0..31 {
-        bit_var_normal(2u32.pow(i) as u32);
-        bit_var_normal(2u32.pow(i) as u32 - 1);
-        bit_var_normal(2u32.pow(i) as u32 + 1);
+        bit_var_normal(2u32.pow(i));
+        bit_var_normal(2u32.pow(i) - 1);
+        bit_var_normal(2u32.pow(i) + 1);
     }
 }
 
