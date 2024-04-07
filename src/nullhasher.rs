@@ -1,9 +1,10 @@
+use fnv::FnvHasher;
 use serde::{Deserialize, Serialize};
 use std::hash::{BuildHasher, Hasher};
 
 /// A dummy hasher that maps simply returns the hashed u64
 ///
-/// trying to hash anything but a u64 will result in a panic
+/// trying to hash anything but a u64 will result in using fnvhash
 pub struct NullHasher {
     data: u64,
 }
@@ -15,8 +16,14 @@ impl Hasher for NullHasher {
     }
 
     #[inline]
-    fn write(&mut self, _msg: &[u8]) {
-        panic!("can only hash u64,u32,u16");
+    fn write(&mut self, msg: &[u8]) {
+        let mut hasher = FnvHasher::default();
+        hasher.write(msg);
+        self.data = hasher.finish();
+    }
+    #[inline]
+    fn write_u8(&mut self, data: u8) {
+        self.data = data as u64
     }
 
     #[inline]
