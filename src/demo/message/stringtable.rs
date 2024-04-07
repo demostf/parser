@@ -1,5 +1,5 @@
 use bitbuffer::{
-    BitReadBuffer, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, LittleEndian,
+    BitError, BitReadBuffer, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, LittleEndian,
 };
 use num_traits::{PrimInt, Unsigned};
 use serde::{Deserialize, Serialize};

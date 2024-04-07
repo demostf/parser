@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use crate::demo::gamevent::GameEventDefinition;
 
 use crate::demo::message::packetentities::{
-    EntityId, PacketEntitiesMessage, PacketEntity, UpdateType,
+    BaselineIndex, EntityId, PacketEntitiesMessage, PacketEntity, UpdateType,
 };
 use crate::demo::message::stringtable::StringTableMeta;
 use crate::demo::message::{Message, MessageType};
@@ -130,15 +130,29 @@ impl<'a> ParserState {
         // })
     }
 
+    fn get_instance_baseline(&self, index: BaselineIndex) -> &Baseline {
+        match index {
+            BaselineIndex::First => &self.instance_baselines[0],
+            BaselineIndex::Second => &self.instance_baselines[1],
+        }
+    }
+
+    fn get_instance_baseline_mut(&mut self, index: BaselineIndex) -> &mut Baseline {
+        match index {
+            BaselineIndex::First => &mut self.instance_baselines[0],
+            BaselineIndex::Second => &mut self.instance_baselines[1],
+        }
+    }
+
     pub fn get_baseline(
         &self,
-        baseline_index: usize,
+        baseline_index: BaselineIndex,
         entity_index: EntityId,
         class_id: ClassId,
         send_table: &SendTable,
         is_delta: bool,
     ) -> Result<Cow<[SendProp]>> {
-        match self.instance_baselines[baseline_index].get(entity_index) {
+        match self.get_instance_baseline(baseline_index).get(entity_index) {
             Some(baseline) if baseline.server_class == class_id && is_delta => {
                 Ok(Cow::Borrowed(&baseline.props))
             }
@@ -245,10 +259,10 @@ impl<'a> ParserState {
                 }
 
                 if ent_message.updated_base_line {
-                    let old_index = ent_message.base_line as usize;
-                    let new_index = 1 - old_index;
+                    let old_index = ent_message.base_line;
+                    let new_index = old_index.other();
                     let [baseline1, baseline2] = &mut self.instance_baselines;
-                    if old_index == 0 {
+                    if old_index == BaselineIndex::First {
                         baseline2.copy_from(baseline1);
                     } else {
                         baseline1.copy_from(baseline2);
@@ -256,19 +270,22 @@ impl<'a> ParserState {
 
                     for entity in ent_message.entities {
                         if entity.update_type == UpdateType::Enter {
-                            let updated_baseline =
-                                match self.instance_baselines[old_index].get(entity.entity_index) {
-                                    Some(baseline_entity)
-                                        if baseline_entity.server_class == entity.server_class
-                                            && ent_message.delta.is_some() =>
-                                    {
-                                        let mut updated_baseline = baseline_entity.clone();
-                                        updated_baseline.apply_update(&entity.props);
-                                        updated_baseline
-                                    }
-                                    _ => entity.into(),
-                                };
-                            self.instance_baselines[new_index].set(updated_baseline);
+                            let updated_baseline = match self
+                                .get_instance_baseline(old_index)
+                                .get(entity.entity_index)
+                            {
+                                Some(baseline_entity)
+                                    if baseline_entity.server_class == entity.server_class
+                                        && ent_message.delta.is_some() =>
+                                {
+                                    let mut updated_baseline = baseline_entity.clone();
+                                    updated_baseline.apply_update(&entity.props);
+                                    updated_baseline
+                                }
+                                _ => entity.into(),
+                            };
+                            self.get_instance_baseline_mut(new_index)
+                                .set(updated_baseline);
                         }
                     }
                 }
@@ -324,8 +341,9 @@ impl Baseline {
     }
 
     fn set(&mut self, entity: BaselineEntity) {
-        let index = entity.entity_id;
-        self.instances[usize::from(index)] = Some(entity);
+        if let Some(instance) = self.instances.get_mut(usize::from(entity.entity_id)) {
+            *instance = Some(entity);
+        }
     }
 
     pub fn keys(&self) -> impl Iterator<Item = EntityId> + '_ {
@@ -401,7 +419,7 @@ impl From<BaselineEntity> for PacketEntity {
             serial_number: baseline.serial,
             delay: None,
             delta: None,
-            baseline_index: 0,
+            baseline_index: BaselineIndex::First,
         }
     }
 }

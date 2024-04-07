@@ -1,4 +1,7 @@
-use bitbuffer::{BitRead, BitReadSized, BitWrite, BitWriteSized, BitWriteStream, LittleEndian};
+use bitbuffer::{
+    BitRead, BitReadSized, BitReadStream, BitWrite, BitWriteSized, BitWriteStream, Endianness,
+    LittleEndian,
+};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::borrow::Cow;
@@ -86,6 +89,57 @@ pub enum UpdateType {
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr, Default)]
+#[repr(u8)]
+pub enum BaselineIndex {
+    #[default]
+    First = 0,
+    Second = 1,
+}
+
+impl BaselineIndex {
+    pub fn other(self) -> Self {
+        match self {
+            BaselineIndex::First => BaselineIndex::Second,
+            BaselineIndex::Second => BaselineIndex::First,
+        }
+    }
+}
+
+impl From<bool> for BaselineIndex {
+    fn from(value: bool) -> Self {
+        match value {
+            false => BaselineIndex::First,
+            true => BaselineIndex::Second,
+        }
+    }
+}
+
+impl<E: Endianness> BitRead<'_, E> for BaselineIndex {
+    fn read(stream: &mut BitReadStream<'_, E>) -> ReadResult<Self> {
+        bool::read(stream).map(BaselineIndex::from)
+    }
+
+    unsafe fn read_unchecked(stream: &mut BitReadStream<'_, E>, end: bool) -> ReadResult<Self> {
+        bool::read_unchecked(stream, end).map(BaselineIndex::from)
+    }
+
+    fn bit_size() -> Option<usize> {
+        Some(1)
+    }
+}
+
+impl<E: Endianness> BitWrite<E> for BaselineIndex {
+    fn write(&self, stream: &mut BitWriteStream<E>) -> ReadResult<()> {
+        let val = match self {
+            BaselineIndex::First => false,
+            BaselineIndex::Second => true,
+        };
+        bool::write(&val, stream)
+    }
+}
+
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct PacketEntity {
     pub server_class: ClassId,
@@ -96,7 +150,7 @@ pub struct PacketEntity {
     pub serial_number: u32,
     pub delay: Option<f32>,
     pub delta: Option<ServerTick>,
-    pub baseline_index: usize,
+    pub baseline_index: BaselineIndex,
 }
 
 impl fmt::Display for PacketEntity {
@@ -244,7 +298,7 @@ pub struct PacketEntitiesMessage {
     pub removed_entities: Vec<EntityId>,
     pub max_entries: u16,
     pub delta: Option<ServerTick>,
-    pub base_line: u8,
+    pub base_line: BaselineIndex,
     pub updated_base_line: bool,
 }
 
@@ -275,7 +329,7 @@ fn get_entity_for_update(
         serial_number: 0,
         delay: None,
         delta,
-        baseline_index: 0,
+        baseline_index: BaselineIndex::First,
     })
 }
 
@@ -283,7 +337,7 @@ impl Parse<'_> for PacketEntitiesMessage {
     fn parse(stream: &mut Stream, state: &ParserState) -> Result<Self> {
         let max_entries = stream.read_sized(11)?;
         let delta: Option<ServerTick> = stream.read()?;
-        let base_line = stream.read_sized(1)?;
+        let base_line = stream.read()?;
         let updated_entries: u16 = stream.read_sized(11)?;
         let length: u32 = stream.read_sized(20)?;
         let updated_base_line = stream.read()?;
@@ -306,7 +360,7 @@ impl Parse<'_> for PacketEntitiesMessage {
             let update_type = data.read()?;
             if update_type == UpdateType::Enter {
                 let mut entity =
-                    Self::read_enter(&mut data, entity_index, state, base_line as usize, delta)?;
+                    Self::read_enter(&mut data, entity_index, state, base_line, delta)?;
                 let send_table = get_send_table(state, entity.server_class)?;
                 Self::read_update(&mut data, send_table, &mut entity.props, entity_index)?;
 
@@ -332,7 +386,7 @@ impl Parse<'_> for PacketEntitiesMessage {
                     serial_number: 0,
                     delay: None,
                     delta,
-                    baseline_index: 0,
+                    baseline_index: BaselineIndex::First,
                 });
             }
         }
@@ -361,7 +415,7 @@ impl Encode for PacketEntitiesMessage {
         if let Some(delta) = self.delta {
             delta.write(stream)?;
         }
-        self.base_line.write_sized(stream, 1)?;
+        self.base_line.write(stream)?;
         self.entities.len().write_sized(stream, 11)?;
 
         stream.reserve_int(20, |stream| {
@@ -411,7 +465,7 @@ impl PacketEntitiesMessage {
         stream: &mut Stream,
         entity_index: EntityId,
         state: &ParserState,
-        baseline_index: usize,
+        baseline_index: BaselineIndex,
         delta: Option<ServerTick>,
     ) -> Result<PacketEntity> {
         let bits = log_base2(state.server_classes.len()) + 1;
@@ -600,7 +654,7 @@ fn test_packet_entitier_message_roundtrip() {
             removed_entities: vec![],
             max_entries: 0,
             delta: None,
-            base_line: 0,
+            base_line: BaselineIndex::First,
             updated_base_line: false,
         },
         &state,
@@ -616,12 +670,12 @@ fn test_packet_entitier_message_roundtrip() {
                 serial_number: 0,
                 delay: None,
                 delta: None,
-                baseline_index: 0,
+                baseline_index: BaselineIndex::First,
             }],
             removed_entities: vec![],
             max_entries: 4,
             delta: None,
-            base_line: 0,
+            base_line: BaselineIndex::First,
             updated_base_line: false,
         },
         &state,
@@ -638,7 +692,7 @@ fn test_packet_entitier_message_roundtrip() {
                     serial_number: 0,
                     delay: None,
                     delta: None,
-                    baseline_index: 0,
+                    baseline_index: BaselineIndex::First,
                 },
                 PacketEntity {
                     server_class: ClassId::from(1),
@@ -660,13 +714,13 @@ fn test_packet_entitier_message_roundtrip() {
                     serial_number: 0,
                     delay: None,
                     delta: None,
-                    baseline_index: 0,
+                    baseline_index: BaselineIndex::First,
                 },
                 PacketEntity {
                     server_class: ClassId::from(1),
                     entity_index: EntityId::from(5u32),
                     delta: None,
-                    baseline_index: 0,
+                    baseline_index: BaselineIndex::First,
                     props: vec![
                         SendProp {
                             index: 0,
@@ -688,7 +742,7 @@ fn test_packet_entitier_message_roundtrip() {
             removed_entities: vec![],
             max_entries: 4,
             delta: None,
-            base_line: 0,
+            base_line: BaselineIndex::First,
             updated_base_line: false,
         },
         &state,
