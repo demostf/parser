@@ -604,27 +604,17 @@ impl PartialEq for SendPropValue {
             (SendPropValue::VectorXY(value1), SendPropValue::Vector(value2)) => {
                 value1.x == value2.x && value1.y == value2.y && value2.z == 0.0
             }
-            (SendPropValue::Vector(value1), SendPropValue::Array(value2)) if value2.len() == 3 => {
-                SendPropValue::Float(value1.x) == value2[0]
-                    && SendPropValue::Float(value1.y) == value2[1]
-                    && SendPropValue::Float(value1.z) == value2[2]
+            (SendPropValue::Vector(value1), SendPropValue::Array(value2)) => {
+                value1 == value2.as_slice()
             }
-            (SendPropValue::Array(value1), SendPropValue::Vector(value2)) if value1.len() == 3 => {
-                SendPropValue::Float(value2.x) == value1[0]
-                    && SendPropValue::Float(value2.y) == value1[1]
-                    && SendPropValue::Float(value2.z) == value1[2]
+            (SendPropValue::Array(value1), SendPropValue::Vector(value2)) => {
+                value2 == value1.as_slice()
             }
-            (SendPropValue::VectorXY(value1), SendPropValue::Array(value2))
-                if value2.len() == 2 =>
-            {
-                SendPropValue::Float(value1.x) == value2[0]
-                    && SendPropValue::Float(value1.y) == value2[1]
+            (SendPropValue::VectorXY(value1), SendPropValue::Array(value2)) => {
+                value1 == value2.as_slice()
             }
-            (SendPropValue::Array(value1), SendPropValue::VectorXY(value2))
-                if value1.len() == 2 =>
-            {
-                SendPropValue::Float(value2.x) == value1[0]
-                    && SendPropValue::Float(value2.y) == value1[1]
+            (SendPropValue::Array(value1), SendPropValue::VectorXY(value2)) => {
+                value2 == value1.as_slice()
             }
             _ => false,
         }
