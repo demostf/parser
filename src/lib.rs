@@ -1,3 +1,8 @@
+#![cfg_attr(not(test), deny(clippy::unwrap_used))]
+#![cfg_attr(not(test), deny(clippy::expect_used))]
+#![cfg_attr(not(test), deny(clippy::indexing_slicing))]
+#![cfg_attr(not(test), deny(clippy::panic))]
+
 pub use bitbuffer::Result as ReadResult;
 
 pub use crate::demo::{

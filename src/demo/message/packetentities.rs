@@ -197,12 +197,15 @@ impl PacketEntity {
     }
 
     pub fn get_baseline_props<'a>(&self, parser_state: &'a ParserState) -> Cow<'a, [SendProp]> {
+        let Some(send_table) = parser_state.send_tables.get(usize::from(self.server_class)) else {
+            return Cow::default();
+        };
         parser_state
             .get_baseline(
                 self.baseline_index,
                 self.entity_index,
                 self.server_class,
-                &parser_state.send_tables[usize::from(self.server_class)],
+                send_table,
                 self.delta.is_some(),
             )
             .unwrap_or_default()

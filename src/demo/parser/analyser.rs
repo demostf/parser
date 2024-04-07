@@ -18,7 +18,6 @@ use serde::de::Error;
 use serde::{ser::SerializeMap, Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::{BTreeMap, HashMap};
 use std::convert::TryFrom;
-use std::ops::{Index, IndexMut};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ChatMessage {
@@ -169,6 +168,18 @@ impl ClassList {
         classes.sort_by(|a, b| a.1.cmp(&b.1).reverse());
         classes.into_iter()
     }
+
+    pub fn get(&self, class: Class) -> u8 {
+        // class number is always in bounds
+        #[allow(clippy::indexing_slicing)]
+        self.0[class as u8 as usize]
+    }
+
+    pub fn get_mut(&mut self, class: Class) -> &mut u8 {
+        // class number is always in bounds
+        #[allow(clippy::indexing_slicing)]
+        &mut self.0[class as u8 as usize]
+    }
 }
 
 #[test]
@@ -178,22 +189,6 @@ fn test_classlist_sorted() {
         list.sorted().collect::<Vec<_>>(),
         &[(Class::Sniper, 5), (Class::Medic, 3), (Class::Scout, 1)]
     )
-}
-
-impl Index<Class> for ClassList {
-    type Output = u8;
-
-    #[cfg_attr(feature = "no-panic", no_panic::no_panic)]
-    fn index(&self, class: Class) -> &Self::Output {
-        &self.0[class as u8 as usize]
-    }
-}
-
-impl IndexMut<Class> for ClassList {
-    #[cfg_attr(feature = "no-panic", no_panic::no_panic)]
-    fn index_mut(&mut self, class: Class) -> &mut Self::Output {
-        &mut self.0[class as u8 as usize]
-    }
 }
 
 impl Serialize for ClassList {
@@ -218,7 +213,7 @@ impl From<HashMap<Class, u8>> for ClassList {
         let mut classes = ClassList::default();
 
         for (class, count) in map.into_iter() {
-            classes[class] = count;
+            *classes.get_mut(class) = count;
         }
 
         classes
@@ -505,7 +500,7 @@ impl Analyser {
             GameEvent::PlayerSpawn(event) => {
                 let spawn = Spawn::from_event(event, tick);
                 if let Some(user_state) = self.state.users.get_mut(&spawn.user) {
-                    user_state.classes[spawn.class] += 1;
+                    *user_state.classes.get_mut(spawn.class) += 1;
                     user_state.team = spawn.team;
                 }
             }

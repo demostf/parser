@@ -282,6 +282,7 @@ impl GameState {
             }
         };
 
+        #[allow(clippy::indexing_slicing)]
         &mut self.players[index]
     }
     pub fn get_or_create_building(

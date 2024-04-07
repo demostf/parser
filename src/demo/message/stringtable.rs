@@ -613,7 +613,13 @@ fn write_table_entry(
         if let Some((history_index, history_count)) = history_item {
             history_index.write_sized(stream, 5)?;
             history_count.write_sized(stream, 5)?;
-            let diff_bytes = &text.as_bytes()[history_count..];
+            let diff_bytes =
+                text.as_bytes()
+                    .get(history_count..)
+                    .ok_or(BitError::IndexOutOfBounds {
+                        pos: history_count,
+                        size: text.len(),
+                    })?;
             stream.write_bytes(diff_bytes)?;
             0u8.write(stream)?; // writing the string as bytes doesn't add the null terminator
         } else {

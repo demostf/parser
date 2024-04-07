@@ -97,14 +97,10 @@ impl ParseBitSkip<'_> for TempEntitiesMessage {
 
 impl Encode for TempEntitiesMessage {
     fn encode(&self, stream: &mut BitWriteStream<LittleEndian>, state: &ParserState) -> Result<()> {
-        let count = if self.events.len() == 1 {
-            if self.events[0].reliable {
-                0
-            } else {
-                1
-            }
-        } else {
-            self.events.len() as u8
+        let count = match (self.events.len(), self.events.first()) {
+            (1, Some(event)) if event.reliable => 0,
+            (1, _) => 1,
+            (len, _) => len as u8,
         };
         count.write(stream)?;
 
