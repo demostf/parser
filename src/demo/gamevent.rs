@@ -15,6 +15,12 @@ pub struct GameEventDefinition {
     pub entries: Vec<GameEventEntry>,
 }
 
+impl GameEventDefinition {
+    pub fn get_entry(&self, name: &str) -> Option<&GameEventEntry> {
+        self.entries.iter().find(|entry| entry.name == name)
+    }
+}
+
 impl PartialEq<GameEventDefinition> for GameEventDefinition {
     fn eq(&self, other: &Self) -> bool {
         self.id.eq(&other.id)
@@ -56,6 +62,21 @@ pub enum GameEventValueType {
     Local = 7,
 }
 
+impl GameEventValueType {
+    pub fn default_value(&self) -> GameEventValue {
+        match self {
+            GameEventValueType::None => GameEventValue::Local,
+            GameEventValueType::String => GameEventValue::String(Default::default()),
+            GameEventValueType::Float => GameEventValue::Float(Default::default()),
+            GameEventValueType::Long => GameEventValue::Long(Default::default()),
+            GameEventValueType::Short => GameEventValue::Short(Default::default()),
+            GameEventValueType::Byte => GameEventValue::Byte(Default::default()),
+            GameEventValueType::Boolean => GameEventValue::Boolean(Default::default()),
+            GameEventValueType::Local => GameEventValue::Local,
+        }
+    }
+}
+
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GameEventValue {
@@ -66,6 +87,42 @@ pub enum GameEventValue {
     Byte(u8),
     Boolean(bool),
     Local,
+}
+
+impl From<MaybeUtf8String> for GameEventValue {
+    fn from(value: MaybeUtf8String) -> Self {
+        GameEventValue::String(value)
+    }
+}
+
+impl From<f32> for GameEventValue {
+    fn from(value: f32) -> Self {
+        GameEventValue::Float(value)
+    }
+}
+
+impl From<u32> for GameEventValue {
+    fn from(value: u32) -> Self {
+        GameEventValue::Long(value)
+    }
+}
+
+impl From<u16> for GameEventValue {
+    fn from(value: u16) -> Self {
+        GameEventValue::Short(value)
+    }
+}
+
+impl From<u8> for GameEventValue {
+    fn from(value: u8) -> Self {
+        GameEventValue::Byte(value)
+    }
+}
+
+impl From<bool> for GameEventValue {
+    fn from(value: bool) -> Self {
+        GameEventValue::Boolean(value)
+    }
 }
 
 fn read_event_value(stream: &mut Stream, definition: &GameEventEntry) -> Result<GameEventValue> {

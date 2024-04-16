@@ -63,6 +63,12 @@ pub enum ParseError {
         name: &'static str,
         found_type: GameEventValueType,
     },
+    #[error(
+        display = "Game event of type {} does not contain a {} value",
+        ty,
+        field
+    )]
+    MissingGameEventValue { ty: &'static str, field: String },
     #[error(display = "An entity with an unknown server class({}) was read", _0)]
     UnknownServerClass(ClassId),
     #[error(display = "Unknown send table: {}", _0)]
