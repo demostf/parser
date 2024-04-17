@@ -13,6 +13,7 @@ rust-version = "1.70.0"
 [lib]
 name = "tf_demo_parser"
 path = "src/lib.rs"
+crate-type = ["lib", "cdylib"]
 
 [[bin]]
 name = "parse_demo"
