@@ -148,12 +148,12 @@ impl Class {
 }
 
 #[derive(Default, Debug, Eq, PartialEq, Deserialize, Clone)]
-#[serde(from = "HashMap<Class, u8>")]
-pub struct ClassList([u8; 10]);
+#[serde(from = "HashMap<Class, u16>")]
+pub struct ClassList([u16; 10]);
 
 impl ClassList {
     /// Get an iterator for all classes played and the number of spawn on the class
-    pub fn iter(&self) -> impl Iterator<Item = (Class, u8)> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (Class, u16)> + '_ {
         self.0
             .iter()
             .copied()
@@ -163,19 +163,19 @@ impl ClassList {
     }
 
     /// Get an iterator for all classes played and the number of spawn on the class, sorted by the number of spawns
-    pub fn sorted(&self) -> impl Iterator<Item = (Class, u8)> {
-        let mut classes = self.iter().collect::<Vec<(Class, u8)>>();
+    pub fn sorted(&self) -> impl Iterator<Item = (Class, u16)> {
+        let mut classes = self.iter().collect::<Vec<(Class, u16)>>();
         classes.sort_by(|a, b| a.1.cmp(&b.1).reverse());
         classes.into_iter()
     }
 
-    pub fn get(&self, class: Class) -> u8 {
+    pub fn get(&self, class: Class) -> u16 {
         // class number is always in bounds
         #[allow(clippy::indexing_slicing)]
         self.0[class as u8 as usize]
     }
 
-    pub fn get_mut(&mut self, class: Class) -> &mut u8 {
+    pub fn get_mut(&mut self, class: Class) -> &mut u16 {
         // class number is always in bounds
         #[allow(clippy::indexing_slicing)]
         &mut self.0[class as u8 as usize]
@@ -208,8 +208,8 @@ impl Serialize for ClassList {
     }
 }
 
-impl From<HashMap<Class, u8>> for ClassList {
-    fn from(map: HashMap<Class, u8>) -> Self {
+impl From<HashMap<Class, u16>> for ClassList {
+    fn from(map: HashMap<Class, u16>) -> Self {
         let mut classes = ClassList::default();
 
         for (class, count) in map.into_iter() {
