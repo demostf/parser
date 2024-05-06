@@ -91,3 +91,19 @@ jobs:
           instance: https://cache.icewind.me
           authToken: '${{ secrets.ATTIC_TOKEN }}'
       - run: nix build .#test
+
+  check-schema:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v25
+      - uses: icewind1991/attic-action@v1
+        with:
+          name: ci
+          instance: https://cache.icewind.me
+          authToken: '${{ secrets.ATTIC_TOKEN }}'
+      - run: nix run .#demostf-parser-schema > schema.json
+      - run: |
+          git diff
+          git diff-index --quiet HEAD --

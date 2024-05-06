@@ -9,4 +9,6 @@ final: prev: {
     ${final.demostf-parser-codegen}/bin/codegen ${../test_data/short-2024.dem} props > $out
     ${final.rustfmt}/bin/rustfmt $out
   '';
+  demostf-parser-schema = final.callPackage ./schema.nix {};
+
 }

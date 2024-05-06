@@ -4,7 +4,6 @@
   lib,
 }: let
   inherit (lib.sources) sourceByRegex;
-  src = sourceByRegex ../. ["Cargo.*" "(src|benches)(/.*)?"];
 in
   rustPlatform.buildRustPackage {
     pname = "demostf-parser-codegen";
@@ -14,7 +13,7 @@ in
       --bin codegen
     '';
 
-    src = lib.traceVal src;
+    src = sourceByRegex ../. ["Cargo.*" "(src|benches)(/.*)?"];
 
     buildType = "debug";
     buildFeatures = ["codegen"];
@@ -24,4 +23,6 @@ in
     cargoLock = {
       lockFile = ../Cargo.lock;
     };
+
+    meta.mainProgram = "codegen";
   }

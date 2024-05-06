@@ -87,6 +87,7 @@
           };
         };
       };
+      overlayPackages = builtins.attrNames ((import ./nix/overlay.nix) {} {});
     in rec {
       packages =
         lib.attrsets.genAttrs targets (target:
@@ -101,7 +102,7 @@
                 };
             }))
         // rec {
-          inherit (pkgs) demostf-parser demostf-parser-codegen demostf-parser-codegen-events demostf-parser-codegen-props;
+          inherit (pkgs) demostf-parser demostf-parser-codegen demostf-parser-codegen-events demostf-parser-codegen-props demostf-parser-schema;
           check = hostNaersk.buildPackage (nearskOpt
             // {
               mode = "check";
