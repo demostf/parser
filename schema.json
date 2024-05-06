@@ -206,10 +206,10 @@
   ],
   "definitions": {
     "BaselineIndex": {
-      "type": "string",
+      "type": "integer",
       "enum": [
-        "First",
-        "Second"
+        0,
+        1
       ]
     },
     "BitReadStream": {
@@ -12993,12 +12993,12 @@
       }
     },
     "UpdateType": {
-      "type": "string",
+      "type": "integer",
       "enum": [
-        "Preserve",
-        "Leave",
-        "Enter",
-        "Delete"
+        0,
+        1,
+        2,
+        3
       ]
     },
     "UserCmd": {

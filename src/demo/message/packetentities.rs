@@ -75,7 +75,7 @@ impl PartialOrd<u32> for EntityId {
     }
 }
 
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema_repr))]
 #[derive(
     BitRead, BitWrite, Clone, Copy, Debug, PartialEq, Eq, Serialize_repr, Deserialize_repr,
 )]
@@ -88,7 +88,7 @@ pub enum UpdateType {
     Delete = 0b11,
 }
 
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema_repr))]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Serialize_repr, Deserialize_repr, Default)]
 #[repr(u8)]
 pub enum BaselineIndex {

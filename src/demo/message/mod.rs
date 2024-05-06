@@ -26,7 +26,7 @@ pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
 
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
+#[cfg_attr(feature = "schema", derive(schemars::JsonSchema_repr))]
 #[derive(
     BitRead, BitWrite, Debug, Clone, Copy, PartialEq, Eq, Serialize_repr, Deserialize_repr,
 )]
