@@ -24,7 +24,7 @@
   in (eachDefaultSystem (system: let
       overlays = [
         (import rust-overlay)
-        (import ./overlay.nix)
+        (import ./nix/overlay.nix)
       ];
       pkgs = (import nixpkgs) {
         inherit system overlays;
@@ -156,7 +156,7 @@
       };
     })
     // {
-      overlays.default = import ./overlay.nix;
+      overlays.default = import ./nix/overlay.nix;
       hydraJobs = eachSystem ["x86_64-linux" "aarch64-linux"] (system: {
         parser = self.packages.${system}.demostf-parser;
       });
