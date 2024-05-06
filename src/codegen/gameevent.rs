@@ -282,6 +282,7 @@ pub fn generate_game_events(demo: Demo) -> TokenStream {
 
                 #[allow(unused_variables)]
                 fn get_field(&self, field: &str) -> Result<GameEventValue> {
+                    #[allow(clippy::clone_on_copy, clippy::match_single_binding)]
                     match field {
                         #(#field_getters,)*
                         _ => Err(ParseError::MissingGameEventValue {

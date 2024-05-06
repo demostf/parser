@@ -57,13 +57,13 @@ impl Encode for GameEventMessage {
             .event_definitions
             .iter()
             .find(|def| def.event_type == self.event_type)
-            .ok_or_else(|| {
-                ParseError::MalformedGameEvent(GameEventError::UnknownType(self.event_type_id))
-            })?;
-        Ok(stream.reserve_length(11, |stream| {
+            .ok_or(ParseError::MalformedGameEvent(GameEventError::UnknownType(
+                self.event_type_id,
+            )))?;
+        stream.reserve_length(11, |stream| {
             self.event_type_id.write(stream)?;
             self.event.write(stream, definition)
-        })?)
+        })
     }
 }
 
