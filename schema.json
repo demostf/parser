@@ -205,6 +205,13 @@
     }
   ],
   "definitions": {
+    "BaselineIndex": {
+      "type": "string",
+      "enum": [
+        "First",
+        "Second"
+      ]
+    },
     "BitReadStream": {
       "type": "object",
       "required": [
@@ -12410,9 +12417,7 @@
           ],
           "properties": {
             "base_line": {
-              "type": "integer",
-              "format": "uint8",
-              "minimum": 0.0
+              "$ref": "#/definitions/BaselineIndex"
             },
             "delta": {
               "anyOf": [
@@ -12641,9 +12646,7 @@
       ],
       "properties": {
         "baseline_index": {
-          "type": "integer",
-          "format": "uint",
-          "minimum": 0.0
+          "$ref": "#/definitions/BaselineIndex"
         },
         "delay": {
           "type": [
