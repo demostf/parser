@@ -152,6 +152,8 @@
         };
       };
 
+      formatter = pkgs.alejandra;
+
       devShells.default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [rust-bin.stable.latest.default bacon cargo-edit cargo-outdated rustfmt clippy cargo-audit hyperfine valgrind cargo-insta cargo-semver-checks];
       };

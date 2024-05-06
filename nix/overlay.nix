@@ -10,5 +10,4 @@ final: prev: {
     ${final.rustfmt}/bin/rustfmt $out
   '';
   demostf-parser-schema = final.callPackage ./schema.nix {};
-
 }
