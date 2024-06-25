@@ -6,7 +6,7 @@ authors = ["Robin Appelman <robin@icewind.nl>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/demostf/parser"
-exclude = [ "tests/fuzz", "test_data" ]
+exclude = ["tests/fuzz", "test_data"]
 default-run = "parse_demo"
 rust-version = "1.70.0"
 
@@ -35,6 +35,10 @@ required-features = ["schema"]
 name = "codegen"
 path = "src/bin/codegen.rs"
 required-features = ["codegen"]
+
+[[bin]]
+name = "strings"
+path = "src/bin/strings.rs"
 
 [dependencies]
 bitbuffer = { version = "0.11.0", features = ["serde"] }
