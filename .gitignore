@@ -11,3 +11,5 @@ heaptrack.*
 dhat.out.*
 result
 .direnv
+strings.txt
+models.txt

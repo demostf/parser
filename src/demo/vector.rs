@@ -2,7 +2,7 @@ use crate::demo::sendprop::SendPropValue;
 use bitbuffer::{BitRead, BitWrite};
 use parse_display::Display;
 use serde::{Deserialize, Serialize};
-use std::ops::{Add, Sub};
+use std::ops::{Add, Mul, Sub};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, Clone, Copy, Default, Serialize, Deserialize, Display)]
@@ -78,6 +78,18 @@ impl Sub for Vector {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
+        }
+    }
+}
+
+impl Mul<f32> for Vector {
+    type Output = Vector;
+
+    fn mul(self, rhs: f32) -> Self::Output {
+        Vector {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
         }
     }
 }

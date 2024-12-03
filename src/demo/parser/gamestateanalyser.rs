@@ -4,7 +4,7 @@ use crate::demo::gamevent::GameEvent;
 use crate::demo::message::gameevent::GameEventMessage;
 use crate::demo::message::packetentities::{EntityId, PacketEntity, UpdateType};
 use crate::demo::message::Message;
-use crate::demo::packet::datatable::{ParseSendTable, ServerClass, ServerClassName};
+use crate::demo::packet::datatable::{ClassId, ParseSendTable, ServerClass, ServerClassName};
 use crate::demo::packet::message::MessagePacketMeta;
 use crate::demo::packet::stringtable::StringTableEntry;
 use crate::demo::parser::analyser::UserInfo;
@@ -41,6 +41,27 @@ impl PlayerState {
     }
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct Box {
+    pub min: Vector,
+    pub max: Vector,
+}
+
+impl Box {
+    pub fn new(min: Vector, max: Vector) -> Box {
+        Box { min, max }
+    }
+
+    pub fn contains(&self, point: Vector) -> bool {
+        point.x >= self.min.x
+            && point.x <= self.max.x
+            && point.y >= self.min.y
+            && point.y <= self.max.y
+            && point.z >= self.min.z
+            && point.z <= self.max.z
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 pub struct Player {
     entity: EntityId,
@@ -57,6 +78,42 @@ pub struct Player {
     pub simtime: u16,
     pub ping: u16,
     pub in_pvs: bool,
+    pub bounds: Box,
+}
+
+pub const PLAYER_BOX_DEFAULT: Box = Box {
+    min: Vector {
+        x: -24.0,
+        y: -24.0,
+        z: 0.0,
+    },
+    max: Vector {
+        x: 24.0,
+        y: 24.0,
+        z: 82.0,
+    },
+};
+
+impl Player {
+    pub fn new(entity: EntityId) -> Player {
+        Player {
+            entity,
+            bounds: PLAYER_BOX_DEFAULT,
+            ..Player::default()
+        }
+    }
+
+    pub fn collides(&self, projectile: &Projectile, time_per_tick: f32) -> bool {
+        let current_position = projectile.position;
+        let next_position = projectile.position + (projectile.speed * time_per_tick);
+        match projectile.bounds {
+            Some(_) => todo!(),
+            None => {
+                self.bounds.contains(current_position - self.position)
+                    || self.bounds.contains(next_position - self.position)
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
@@ -226,6 +283,36 @@ pub enum BuildingClass {
     Teleporter,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Projectile {
+    pub id: EntityId,
+    pub team: Team,
+    pub class: ClassId,
+    pub position: Vector,
+    pub speed: Vector,
+    pub bounds: Option<Box>,
+}
+
+impl Projectile {
+    pub fn new(id: EntityId, class: ClassId) -> Self {
+        Projectile {
+            id,
+            team: Team::default(),
+            class,
+            position: Vector::default(),
+            speed: Vector::default(),
+            bounds: None,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct Collision {
+    pub tick: DemoTick,
+    pub target: EntityId,
+    pub projectile: Projectile,
+}
+
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct World {
     pub boundary_min: Vector,
@@ -257,12 +344,20 @@ impl Kill {
 pub struct GameState {
     pub players: Vec<Player>,
     pub buildings: BTreeMap<EntityId, Building>,
+    pub projectiles: BTreeMap<EntityId, Projectile>,
+    pub collisions: Vec<Collision>,
     pub world: Option<World>,
     pub kills: Vec<Kill>,
     pub tick: DemoTick,
+    pub server_classes: Vec<ServerClass>,
+    pub interval_per_tick: f32,
 }
 
 impl GameState {
+    pub fn get_player(&self, id: EntityId) -> Option<&Player> {
+        self.players.iter().find(|player| player.entity == id)
+    }
+
     pub fn get_or_create_player(&mut self, entity_id: EntityId) -> &mut Player {
         let index = match self
             .players
@@ -274,10 +369,7 @@ impl GameState {
             Some(index) => index,
             None => {
                 let index = self.players.len();
-                self.players.push(Player {
-                    entity: entity_id,
-                    ..Player::default()
-                });
+                self.players.push(Player::new(entity_id));
                 index
             }
         };
@@ -293,6 +385,32 @@ impl GameState {
         self.buildings
             .entry(entity_id)
             .or_insert_with(|| Building::new(entity_id, class))
+    }
+
+    pub fn get_or_create_projectile(&mut self, id: EntityId, class: ClassId) -> &mut Projectile {
+        self.projectiles
+            .entry(id)
+            .or_insert_with(|| Projectile::new(id, class))
+    }
+
+    pub fn check_collision(&self, projectile: &Projectile) -> Option<&Player> {
+        self.players
+            .iter()
+            .filter(|player| player.state == PlayerState::Alive)
+            .filter(|player| player.team != projectile.team)
+            .find(|player| player.collides(projectile, self.interval_per_tick))
+    }
+
+    pub fn projectile_destroy(&mut self, id: EntityId) {
+        if let Some(projectile) = self.projectiles.remove(&id) {
+            if let Some(target) = self.check_collision(&projectile) {
+                self.collisions.push(Collision {
+                    tick: self.tick,
+                    target: target.entity,
+                    projectile,
+                })
+            }
+        }
     }
 
     pub fn remove_building(&mut self, entity_id: EntityId) {
@@ -313,7 +431,7 @@ impl MessageHandler for GameStateAnalyser {
     fn does_handle(message_type: MessageType) -> bool {
         matches!(
             message_type,
-            MessageType::PacketEntities | MessageType::GameEvent
+            MessageType::PacketEntities | MessageType::GameEvent | MessageType::ServerInfo
         )
     }
 
@@ -323,6 +441,9 @@ impl MessageHandler for GameStateAnalyser {
                 for entity in &message.entities {
                     self.handle_entity(entity, parser_state);
                 }
+            }
+            Message::ServerInfo(message) => {
+                self.state.interval_per_tick = message.interval_per_tick
             }
             Message::GameEvent(GameEventMessage { event, .. }) => match event {
                 GameEvent::PlayerDeath(death) => {
@@ -382,7 +503,8 @@ impl MessageHandler for GameStateAnalyser {
         self.tick = tick;
     }
 
-    fn into_output(self, _state: &ParserState) -> Self::Output {
+    fn into_output(mut self, state: &ParserState) -> Self::Output {
+        self.state.server_classes = state.server_classes.clone();
         self.state
     }
 }
@@ -411,6 +533,9 @@ impl GameStateAnalyser {
             "CObjectSentrygun" => self.handle_sentry_entity(entity, parser_state),
             "CObjectDispenser" => self.handle_dispenser_entity(entity, parser_state),
             "CObjectTeleporter" => self.handle_teleporter_entity(entity, parser_state),
+            _ if class_name.starts_with("CTFProjectile_") => {
+                self.handle_projectile_entity(entity, parser_state)
+            }
             _ => {}
         }
     }
@@ -482,6 +607,8 @@ impl GameStateAnalyser {
 
         const SIMTIME_PROP: SendPropIdentifier =
             SendPropIdentifier::new("DT_BaseEntity", "m_flSimulationTime");
+        const PROP_BB_MAX: SendPropIdentifier =
+            SendPropIdentifier::new("DT_CollisionProperty", "m_vecMaxsPreScaled");
 
         player.in_pvs = entity.in_pvs;
 
@@ -512,6 +639,10 @@ impl GameStateAnalyser {
                 }
                 SIMTIME_PROP => {
                     player.simtime = i64::try_from(&prop.value).unwrap_or_default() as u16
+                }
+                PROP_BB_MAX => {
+                    let max = Vector::try_from(&prop.value).unwrap_or_default();
+                    player.bounds.max = max;
                 }
                 _ => {}
             }
@@ -763,6 +894,46 @@ impl GameStateAnalyser {
                     }
                 }
             }
+        }
+    }
+
+    pub fn handle_projectile_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
+        const ROCKET_ORIGIN: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFBaseRocket", "m_vecOrigin"); // rockets, arrows, more?
+        const GRENADE_ORIGIN: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFWeaponBaseGrenadeProj", "m_vecOrigin");
+        // todo: flares?
+        const TEAM: SendPropIdentifier = SendPropIdentifier::new("DT_BaseEntity", "m_iTeamNum");
+        const INITIAL_SPEED: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFBaseRocket", "m_vInitialVelocity");
+
+        if entity.in_pvs {
+            let projectile = self
+                .state
+                .get_or_create_projectile(entity.entity_index, entity.server_class);
+
+            // todo: bounds for grenades
+            // todo: track owner
+
+            for prop in entity.props(parser_state) {
+                match prop.identifier {
+                    ROCKET_ORIGIN | GRENADE_ORIGIN => {
+                        let pos = Vector::try_from(&prop.value).unwrap_or_default();
+                        projectile.position = pos
+                    }
+                    TEAM => {
+                        let team = Team::new(i64::try_from(&prop.value).unwrap_or_default());
+                        projectile.team = team;
+                    }
+                    INITIAL_SPEED => {
+                        let speed = Vector::try_from(&prop.value).unwrap_or_default();
+                        projectile.speed = speed;
+                    }
+                    _ => {}
+                }
+            }
+        } else {
+            self.state.projectile_destroy(entity.entity_index);
         }
     }
 

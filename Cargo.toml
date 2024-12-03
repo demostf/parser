@@ -40,6 +40,10 @@ required-features = ["codegen"]
 name = "strings"
 path = "src/bin/strings.rs"
 
+[[bin]]
+name = "direct_hits"
+path = "src/bin/direct_hits.rs"
+
 [dependencies]
 bitbuffer = { version = "0.11.0", features = ["serde"] }
 num_enum = "0.7.2"
