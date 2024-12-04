@@ -1,3 +1,4 @@
+pub mod game_state;
 pub mod userinfo;
 
 use bitbuffer::{BitRead, BitReadStream, BitWrite, BitWriteStream, Endianness};
