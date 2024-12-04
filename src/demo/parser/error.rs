@@ -9,6 +9,7 @@ use std::str::Utf8Error;
 use std::string::FromUtf8Error;
 
 /// Errors that can occur during parsing
+#[non_exhaustive]
 #[derive(Debug, Error)]
 pub enum ParseError {
     #[error(display = "Error while reading bits from stream: {}", _0)]
@@ -89,6 +90,7 @@ pub enum ParseError {
     UnknownDefinition(SendPropIdentifier),
 }
 
+#[non_exhaustive]
 #[derive(Debug, Error)]
 pub enum MalformedSendPropDefinitionError {
     #[error(display = "Float property without defined size")]
@@ -110,6 +112,7 @@ pub enum MalformedSendPropDefinitionError {
     },
 }
 
+#[non_exhaustive]
 #[derive(Debug, Error)]
 pub enum GameEventError {
     #[error(display = "Incorrect number of values")]
