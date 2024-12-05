@@ -1,6 +1,7 @@
 pub use crate::demo::data::game_state::{
     Building, BuildingClass, Dispenser, GameState, Kill, PlayerState, Sentry, Teleporter, World,
 };
+use crate::demo::data::game_state::{Handle, PipeType, Projectile, ProjectileType};
 use crate::demo::data::DemoTick;
 use crate::demo::gameevent_gen::ObjectDestroyedEvent;
 use crate::demo::gamevent::GameEvent;
@@ -43,6 +44,10 @@ impl MessageHandler for GameStateAnalyser {
             Message::PacketEntities(message) => {
                 for entity in &message.entities {
                     self.handle_entity(entity, parser_state);
+                }
+                for id in &message.removed_entities {
+                    self.state.projectile_destroy(*id);
+                    self.state.remove_building(*id);
                 }
             }
             Message::ServerInfo(message) => {
@@ -124,19 +129,32 @@ impl GameStateAnalyser {
     }
 
     pub fn handle_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
-        let class_name: &str = self
-            .class_names
-            .get(usize::from(entity.server_class))
-            .map(|class_name| class_name.as_str())
-            .unwrap_or("");
-        match class_name {
+        const OUTER: SendPropIdentifier =
+            SendPropIdentifier::new("DT_AttributeContainer", "m_hOuter");
+
+        let Some(class_name) = self.class_names.get(usize::from(entity.server_class)) else {
+            return;
+        };
+
+        for prop in &entity.props {
+            if prop.identifier == OUTER {
+                let outer = i64::try_from(&prop.value).unwrap_or_default();
+                self.state
+                    .outer_map
+                    .insert(Handle(outer), entity.entity_index);
+            }
+        }
+
+        match class_name.as_str() {
             "CTFPlayer" => self.handle_player_entity(entity, parser_state),
             "CTFPlayerResource" => self.handle_player_resource(entity, parser_state),
             "CWorld" => self.handle_world_entity(entity, parser_state),
             "CObjectSentrygun" => self.handle_sentry_entity(entity, parser_state),
             "CObjectDispenser" => self.handle_dispenser_entity(entity, parser_state),
             "CObjectTeleporter" => self.handle_teleporter_entity(entity, parser_state),
-            _ if class_name.starts_with("CTFProjectile_") => {
+            _ if class_name.starts_with("CTFProjectile_")
+                || class_name.as_str() == "CTFGrenadePipebombProjectile" =>
+            {
                 self.handle_projectile_entity(entity, parser_state)
             }
             _ => {}
@@ -213,6 +231,10 @@ impl GameStateAnalyser {
         const PROP_BB_MAX: SendPropIdentifier =
             SendPropIdentifier::new("DT_CollisionProperty", "m_vecMaxsPreScaled");
 
+        const WEAPON_0: SendPropIdentifier = SendPropIdentifier::new("m_hMyWeapons", "000");
+        const WEAPON_1: SendPropIdentifier = SendPropIdentifier::new("m_hMyWeapons", "001");
+        const WEAPON_2: SendPropIdentifier = SendPropIdentifier::new("m_hMyWeapons", "002");
+
         player.in_pvs = entity.in_pvs;
 
         for prop in entity.props(parser_state) {
@@ -246,6 +268,18 @@ impl GameStateAnalyser {
                 PROP_BB_MAX => {
                     let max = Vector::try_from(&prop.value).unwrap_or_default();
                     player.bounds.max = max;
+                }
+                WEAPON_0 => {
+                    let handle = Handle(i64::try_from(&prop.value).unwrap_or_default());
+                    player.weapons[0] = handle;
+                }
+                WEAPON_1 => {
+                    let handle = Handle(i64::try_from(&prop.value).unwrap_or_default());
+                    player.weapons[1] = handle;
+                }
+                WEAPON_2 => {
+                    let handle = Handle(i64::try_from(&prop.value).unwrap_or_default());
+                    player.weapons[2] = handle;
                 }
                 _ => {}
             }
@@ -501,6 +535,10 @@ impl GameStateAnalyser {
     }
 
     pub fn handle_projectile_entity(&mut self, entity: &PacketEntity, parser_state: &ParserState) {
+        let Some(class_name) = self.class_names.get(usize::from(entity.server_class)) else {
+            return;
+        };
+
         const ROCKET_ORIGIN: SendPropIdentifier =
             SendPropIdentifier::new("DT_TFBaseRocket", "m_vecOrigin"); // rockets, arrows, more?
         const GRENADE_ORIGIN: SendPropIdentifier =
@@ -509,34 +547,62 @@ impl GameStateAnalyser {
         const TEAM: SendPropIdentifier = SendPropIdentifier::new("DT_BaseEntity", "m_iTeamNum");
         const INITIAL_SPEED: SendPropIdentifier =
             SendPropIdentifier::new("DT_TFBaseRocket", "m_vInitialVelocity");
+        const LAUNCHER: SendPropIdentifier =
+            SendPropIdentifier::new("DT_BaseProjectile", "m_hOriginalLauncher");
+        const PIPE_TYPE: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFProjectile_Pipebomb", "m_iType");
+        const ROCKET_ROTATION: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFBaseRocket", "m_angRotation");
+        const GRENADE_ROTATION: SendPropIdentifier =
+            SendPropIdentifier::new("DT_TFWeaponBaseGrenadeProj", "m_angRotation");
 
-        if entity.in_pvs {
-            let projectile = self
-                .state
-                .get_or_create_projectile(entity.entity_index, entity.server_class);
-
-            // todo: bounds for grenades
-            // todo: track owner
-
-            for prop in entity.props(parser_state) {
-                match prop.identifier {
-                    ROCKET_ORIGIN | GRENADE_ORIGIN => {
-                        let pos = Vector::try_from(&prop.value).unwrap_or_default();
-                        projectile.position = pos
-                    }
-                    TEAM => {
-                        let team = Team::new(i64::try_from(&prop.value).unwrap_or_default());
-                        projectile.team = team;
-                    }
-                    INITIAL_SPEED => {
-                        let speed = Vector::try_from(&prop.value).unwrap_or_default();
-                        projectile.speed = speed;
-                    }
-                    _ => {}
-                }
-            }
-        } else {
+        if entity.update_type == UpdateType::Delete {
             self.state.projectile_destroy(entity.entity_index);
+            return;
+        }
+
+        let projectile = self
+            .state
+            .projectiles
+            .entry(entity.entity_index)
+            .or_insert_with(|| {
+                Projectile::new(entity.entity_index, entity.server_class, class_name)
+            });
+
+        // todo: bounds for grenades
+
+        for prop in entity.props(parser_state) {
+            match prop.identifier {
+                ROCKET_ORIGIN | GRENADE_ORIGIN => {
+                    let pos = Vector::try_from(&prop.value).unwrap_or_default();
+                    projectile.position = pos
+                }
+                TEAM => {
+                    let team = Team::new(i64::try_from(&prop.value).unwrap_or_default());
+                    projectile.team = team;
+                }
+                INITIAL_SPEED => {
+                    let speed = Vector::try_from(&prop.value).unwrap_or_default();
+                    projectile.initial_speed = speed;
+                }
+                LAUNCHER => {
+                    let launcher = Handle(i64::try_from(&prop.value).unwrap_or_default());
+                    projectile.launcher = launcher;
+                }
+                PIPE_TYPE => {
+                    let pipe_type = PipeType::new(i64::try_from(&prop.value).unwrap_or_default());
+                    if let Some(class_name) = self.class_names.get(usize::from(entity.server_class))
+                    {
+                        let ty = ProjectileType::new(class_name, Some(pipe_type));
+                        projectile.ty = ty;
+                    }
+                }
+                ROCKET_ROTATION | GRENADE_ROTATION => {
+                    let rotation = Vector::try_from(&prop.value).unwrap_or_default();
+                    projectile.rotation = rotation;
+                }
+                _ => {}
+            }
         }
     }
 

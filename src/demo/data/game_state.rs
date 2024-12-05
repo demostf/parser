@@ -1,11 +1,15 @@
 use crate::demo::data::DemoTick;
 use crate::demo::gameevent_gen::PlayerDeathEvent;
 use crate::demo::message::packetentities::EntityId;
-use crate::demo::packet::datatable::{ClassId, ServerClass};
+use crate::demo::packet::datatable::{ClassId, ServerClass, ServerClassName};
 use crate::demo::parser::analyser::{Class, Team, UserId, UserInfo};
 use crate::demo::vector::Vector;
+use parse_display::Display;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
+
+#[derive(Default, Serialize, Deserialize, Debug, Copy, Clone, Eq, PartialEq, Hash, Display)]
+pub struct Handle(pub i64);
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Default)]
 pub enum PlayerState {
@@ -65,6 +69,7 @@ pub struct Player {
     pub ping: u16,
     pub in_pvs: bool,
     pub bounds: Box,
+    pub weapons: [Handle; 3],
 }
 
 pub const PLAYER_BOX_DEFAULT: Box = Box {
@@ -91,7 +96,7 @@ impl Player {
 
     pub fn collides(&self, projectile: &Projectile, time_per_tick: f32) -> bool {
         let current_position = projectile.position;
-        let next_position = projectile.position + (projectile.speed * time_per_tick);
+        let next_position = projectile.position + (projectile.initial_speed * time_per_tick);
         match projectile.bounds {
             Some(_) => todo!(),
             None => {
@@ -275,19 +280,96 @@ pub struct Projectile {
     pub team: Team,
     pub class: ClassId,
     pub position: Vector,
-    pub speed: Vector,
+    pub rotation: Vector,
+    pub initial_speed: Vector,
     pub bounds: Option<Box>,
+    pub launcher: Handle,
+    pub ty: ProjectileType,
 }
 
 impl Projectile {
-    pub fn new(id: EntityId, class: ClassId) -> Self {
+    pub fn new(id: EntityId, class: ClassId, class_name: &ServerClassName) -> Self {
         Projectile {
             id,
             team: Team::default(),
             class,
             position: Vector::default(),
-            speed: Vector::default(),
+            rotation: Vector::default(),
+            initial_speed: Vector::default(),
             bounds: None,
+            launcher: Handle::default(),
+            ty: ProjectileType::new(class_name, None),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub enum PipeType {
+    Regular = 0,
+    Sticky = 1,
+    StickyJumper = 2,
+    LooseCannon = 3,
+}
+
+impl PipeType {
+    pub fn new(number: i64) -> Self {
+        match number {
+            1 => PipeType::Sticky,
+            2 => PipeType::StickyJumper,
+            3 => PipeType::LooseCannon,
+            _ => PipeType::Regular,
+        }
+    }
+
+    pub fn is_sticky(&self) -> bool {
+        match self {
+            PipeType::Regular | PipeType::LooseCannon => false,
+            PipeType::Sticky | PipeType::StickyJumper => true,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
+#[repr(u8)]
+pub enum ProjectileType {
+    Rocket = 0,
+    HealingArrow = 1,
+    Sticky = 2,
+    Pipe = 3,
+    Flare = 4,
+    LooseCannon = 5,
+    #[default]
+    Unknown = 7,
+}
+
+impl ProjectileType {
+    pub fn new(class: &ServerClassName, pipe_type: Option<PipeType>) -> Self {
+        match (class.as_str(), pipe_type) {
+            ("CTFGrenadePipebombProjectile", Some(PipeType::Sticky | PipeType::StickyJumper)) => {
+                ProjectileType::Sticky
+            }
+            ("CTFGrenadePipebombProjectile", Some(PipeType::LooseCannon)) => {
+                ProjectileType::LooseCannon
+            }
+            ("CTFGrenadePipebombProjectile", _) => ProjectileType::Pipe,
+            ("CTFProjectile_SentryRocket" | "CTFProjectile_Rocket", _) => ProjectileType::Rocket,
+            ("CTFProjectile_Flare", _) => ProjectileType::Flare,
+            ("CTFProjectile_HealingBolt", _) => ProjectileType::HealingArrow,
+            _ => ProjectileType::Unknown,
+        }
+    }
+}
+
+impl From<u8> for ProjectileType {
+    fn from(value: u8) -> Self {
+        match value {
+            0 => ProjectileType::Rocket,
+            1 => ProjectileType::HealingArrow,
+            2 => ProjectileType::Sticky,
+            3 => ProjectileType::Pipe,
+            4 => ProjectileType::Flare,
+            5 => ProjectileType::LooseCannon,
+            _ => ProjectileType::Unknown,
         }
     }
 }
@@ -337,6 +419,7 @@ pub struct GameState {
     pub tick: DemoTick,
     pub server_classes: Vec<ServerClass>,
     pub interval_per_tick: f32,
+    pub outer_map: HashMap<Handle, EntityId>,
 }
 
 impl GameState {
@@ -371,12 +454,6 @@ impl GameState {
         self.buildings
             .entry(entity_id)
             .or_insert_with(|| Building::new(entity_id, class))
-    }
-
-    pub fn get_or_create_projectile(&mut self, id: EntityId, class: ClassId) -> &mut Projectile {
-        self.projectiles
-            .entry(id)
-            .or_insert_with(|| Projectile::new(id, class))
     }
 
     pub fn check_collision(&self, projectile: &Projectile) -> Option<&Player> {

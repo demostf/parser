@@ -49,10 +49,29 @@ fn main() -> Result<(), MainError> {
                 .get(usize::from(collision.projectile.class))
                 .map(|class| class.name.as_str())
                 .unwrap_or("unknown weapon");
-            println!(
-                "{}: {} hit by {}",
-                collision.tick, player.name, weapon_class
-            );
+
+            let shooter = state
+                .players
+                .iter()
+                .find(|player| {
+                    player
+                        .weapons
+                        .iter()
+                        .any(|weapon| collision.projectile.launcher == *weapon)
+                })
+                .and_then(|player| player.info.as_ref());
+
+            if let Some(shooter) = shooter {
+                println!(
+                    "{}: {} hit by {} from {}",
+                    collision.tick, player.name, weapon_class, shooter.name
+                );
+            } else {
+                println!(
+                    "{}: {} hit by {} from unknown player {}",
+                    collision.tick, player.name, weapon_class, collision.projectile.launcher
+                );
+            }
         }
     }
 
