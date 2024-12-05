@@ -4,27 +4,24 @@ use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{ClassId, SendTableName};
 use crate::demo::sendprop::{SendPropIdentifier, SendPropValue};
 use bitbuffer::BitError;
-use err_derive::Error;
 use std::str::Utf8Error;
 use std::string::FromUtf8Error;
+use thiserror::Error;
 
 /// Errors that can occur during parsing
 #[non_exhaustive]
 #[derive(Debug, Error)]
 pub enum ParseError {
-    #[error(display = "Error while reading bits from stream: {}", _0)]
-    ReadError(#[error(source, no_from)] BitError),
-    #[error(display = "Malformed utf8 while reading string")]
-    MalformedUTF8(#[error(source)] Utf8Error),
-    #[error(display = "Unexpected type of compressed data: {}", _0)]
+    #[error("Error while reading bits from stream: {0}")]
+    ReadError(#[source] BitError),
+    #[error("Malformed utf8 while reading string")]
+    MalformedUTF8(#[from] Utf8Error),
+    #[error("Unexpected type of compressed data: {0}")]
     UnexpectedCompressionType(String),
+    #[error("Error while decompressing SNAP compressed string table: {0}")]
+    SnapError(#[from] snap::Error),
     #[error(
-        display = "Error while decompressing SNAP compressed string table: {}",
-        _0
-    )]
-    SnapError(#[error(source)] snap::Error),
-    #[error(
-        display = "Unexpected size after decompressing SNAP data, got {} bytes, expected {} bytes",
+        "Unexpected size after decompressing SNAP data, got {} bytes, expected {} bytes",
         size,
         expected
     )]
@@ -34,78 +31,64 @@ pub enum ParseError {
         /// Actual decompressed size
         size: u32,
     },
-    #[error(display = "Malformed demo file: {}", _0)]
+    #[error("Malformed demo file: {0}")]
     InvalidDemo(&'static str),
-    #[error(display = "Packet identifier is invalid: {}", _0)]
+    #[error("Packet identifier is invalid: {0}")]
     InvalidPacketType(u8),
-    #[error(display = "Message identifier is invalid: {}", _0)]
+    #[error("Message identifier is invalid: {0}")]
     InvalidMessageType(u8),
-    #[error(display = "Invalid SendProp type: {}", _0)]
+    #[error("Invalid SendProp type: {0}")]
     InvalidSendPropType(u8),
-    #[error(display = "Invalid SendProp: {}", _0)]
-    InvalidSendProp(#[error(source)] MalformedSendPropDefinitionError),
-    #[error(
-        display = "Unexpected amount of data left after parsing an object, {} bits remaining",
-        _0
-    )]
+    #[error("Invalid SendProp: {0}")]
+    InvalidSendProp(#[from] MalformedSendPropDefinitionError),
+    #[error("Unexpected amount of data left after parsing an object, {0} bits remaining")]
     DataRemaining(usize),
-    #[error(display = "String table with index {} not found", _0)]
+    #[error("String table with index {0} not found")]
     StringTableNotFound(u8),
-    #[error(display = "A malformed game event was read: {}", _0)]
-    MalformedGameEvent(#[error(source)] GameEventError),
+    #[error("A malformed game event was read: {0}")]
+    MalformedGameEvent(#[from] GameEventError),
     #[error(
-        display = "A read game event doesn't contain the expected values, expected type {} for {} event, got type {}",
-        expected_type,
-        name,
-        found_type
+        "A read game event doesn't contain the expected values, expected type {expected_type} for {name} event, got type {found_type}"
     )]
     InvalidGameEvent {
         expected_type: GameEventValueType,
         name: &'static str,
         found_type: GameEventValueType,
     },
-    #[error(
-        display = "Game event of type {} does not contain a {} value",
-        ty,
-        field
-    )]
+    #[error("Game event of type {ty} does not contain a {field} value")]
     MissingGameEventValue { ty: &'static str, field: String },
-    #[error(display = "An entity with an unknown server class({}) was read", _0)]
+    #[error("An entity with an unknown server class({0}) was read")]
     UnknownServerClass(ClassId),
-    #[error(display = "Unknown send table: {}", _0)]
+    #[error("Unknown send table: {}", _0)]
     UnknownSendTable(SendTableName),
-    #[error(
-        display = "Property index out of bounds, got {} but only {} props exist",
-        _0,
-        _1
-    )]
+    #[error("Property index out of bounds, got {index} but only {prop_count} props exist")]
     PropIndexOutOfBounds {
         index: i32,
         prop_count: usize,
         table: String,
     },
-    #[error(display = "An attempt was made to update an unknown entity: {}", _0)]
+    #[error("An attempt was made to update an unknown entity: {0}")]
     UnknownEntity(EntityId),
-    #[error(display = "No sendprop definition found for property")]
+    #[error("No sendprop definition found for property")]
     UnknownDefinition(SendPropIdentifier),
 }
 
 #[non_exhaustive]
 #[derive(Debug, Error)]
 pub enum MalformedSendPropDefinitionError {
-    #[error(display = "Float property without defined size")]
+    #[error("Float property without defined size")]
     UnsizedFloat,
-    #[error(display = "Array property without defined size")]
+    #[error("Array property without defined size")]
     UnsizedArray,
-    #[error(display = "Array property without defined inner type")]
+    #[error("Array property without defined inner type")]
     UntypedArray,
-    #[error(display = "Property used that can't be read")]
+    #[error("Property used that can't be read")]
     InvalidPropType,
-    #[error(display = "Array contents can't have the 'ChangesOften' flag")]
+    #[error("Array contents can't have the 'ChangesOften' flag")]
     ArrayChangesOften,
-    #[error(display = "SendProp value out of range")]
+    #[error("SendProp value out of range")]
     OutOfRange,
-    #[error(display = "Wrong prop value type for definition")]
+    #[error("Wrong prop value type for definition")]
     WrongPropType {
         expected: &'static str,
         value: SendPropValue,
@@ -115,11 +98,11 @@ pub enum MalformedSendPropDefinitionError {
 #[non_exhaustive]
 #[derive(Debug, Error)]
 pub enum GameEventError {
-    #[error(display = "Incorrect number of values")]
+    #[error("Incorrect number of values")]
     IncorrectValueCount,
-    #[error(display = "Event with 'none' value")]
+    #[error("Event with 'none' value")]
     NoneValue,
-    #[error(display = "Unknown type: {}", _0)]
+    #[error("Unknown type: {0}")]
     UnknownType(GameEventTypeId),
 }
 
