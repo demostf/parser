@@ -45,7 +45,8 @@ impl MessageHandler for PropAnalyzer {
                 );
                 let name = prop_def.name.as_str();
                 if name.len() == 3 && table.name.as_str().len() > 3 {
-                    if let Ok(_) = name.parse::<u8>() {
+                    #[allow(clippy::collapsible_if)]
+                    if name.parse::<u8>().is_ok() {
                         let size = match table.name.as_str() {
                             "m_nNextMapVoteOptions" => 3,
                             "m_nStreaks"
@@ -132,6 +133,7 @@ impl MessageHandler for PropAnalyzer {
 }
 
 pub fn generate_prop_names(demo: Demo) -> TokenStream {
+    #[allow(clippy::unwrap_used)]
     let (_, props) = DemoParser::new_with_analyser(demo.get_stream(), PropAnalyzer::default())
         .parse()
         .unwrap();
