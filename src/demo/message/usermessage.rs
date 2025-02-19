@@ -157,7 +157,7 @@ impl<'a> BitRead<'a, LittleEndian> for UserMessage<'a> {
     }
 }
 
-impl<'a> BitWrite<LittleEndian> for UserMessage<'a> {
+impl BitWrite<LittleEndian> for UserMessage<'_> {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
         self.message_type().write(stream)?;
         stream.reserve_length(11, |stream| match self {

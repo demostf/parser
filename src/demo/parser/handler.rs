@@ -73,13 +73,13 @@ pub struct DemoHandler<'a, T: MessageHandler> {
     pub state_handler: ParserState,
 }
 
-impl<'a> DemoHandler<'a, NullHandler> {
+impl DemoHandler<'_, NullHandler> {
     pub fn new() -> Self {
         Self::parse_all_with_analyser(NullHandler)
     }
 }
 
-impl<'a> Default for DemoHandler<'a, NullHandler> {
+impl Default for DemoHandler<'_, NullHandler> {
     fn default() -> Self {
         DemoHandler::new()
     }

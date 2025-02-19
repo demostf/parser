@@ -22,7 +22,7 @@ which will place the binary at `target/release/parse_demo`
 Basic usage is as simple as `parse_demo demofile.dem` which will output a "summary" of the demo file in JSON format.
 
 Passing the `detailed_summary` argument to the end of `parse_demo` will output a table with scoreboard information for all players who were ever on the server while the demo
-was being recorded.  The player who created the demo will be highlighted in the output.
+was being recorded. The player who created the demo will be highlighted in the output.
 
 ## Advanced usage
 

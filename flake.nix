@@ -29,6 +29,6 @@
         demostf-parser-schema = pkgs: pkgs.demostf-parser-schema;
       };
 
-      tools = pkgs: with pkgs; [cargo-insta];
+      tools = pkgs: with pkgs; [bacon cargo-insta];
     };
 }

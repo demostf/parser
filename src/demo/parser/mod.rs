@@ -63,24 +63,24 @@ pub struct DemoParser<'a, A: MessageHandler> {
 }
 
 impl<'a> DemoParser<'a, Analyser> {
-    pub fn new(stream: Stream<'a>) -> DemoParser<Analyser> {
+    pub fn new(stream: Stream<'a>) -> Self {
         DemoParser::new_with_analyser(stream, Analyser::new())
     }
 
-    pub fn new_all(stream: Stream<'a>) -> DemoParser<Analyser> {
+    pub fn new_all(stream: Stream<'a>) -> Self {
         DemoParser::new_all_with_analyser(stream, Analyser::new())
     }
 }
 
 impl<'a, A: MessageHandler> DemoParser<'a, A> {
-    pub fn new_with_analyser(stream: Stream<'a>, analyser: A) -> DemoParser<A> {
+    pub fn new_with_analyser(stream: Stream<'a>, analyser: A) -> Self {
         DemoParser {
             handler: DemoHandler::with_analyser(analyser),
             stream,
         }
     }
 
-    pub fn new_all_with_analyser(stream: Stream<'a>, analyser: A) -> DemoParser<A> {
+    pub fn new_all_with_analyser(stream: Stream<'a>, analyser: A) -> Self {
         DemoParser {
             handler: DemoHandler::parse_all_with_analyser(analyser),
             stream,
@@ -158,7 +158,7 @@ pub struct DemoTicker<'a, A: MessageHandler> {
     packets: RawPacketStream<'a>,
 }
 
-impl<'a, A: MessageHandler> DemoTicker<'a, A> {
+impl<A: MessageHandler> DemoTicker<'_, A> {
     /// Process the next packet
     ///
     /// returns whether or not there are still packets left in the demo
@@ -179,7 +179,7 @@ impl<'a, A: MessageHandler> DemoTicker<'a, A> {
     }
 }
 
-impl<'a, A: MessageHandler + BorrowMessageHandler> DemoTicker<'a, A> {
+impl<A: MessageHandler + BorrowMessageHandler> DemoTicker<'_, A> {
     pub fn state(&self) -> &A::Output {
         self.handler.borrow_output()
     }

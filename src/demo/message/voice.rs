@@ -104,7 +104,7 @@ impl<'a> BitRead<'a, LittleEndian> for ParseSoundsMessage<'a> {
     }
 }
 
-impl<'a> BitWrite<LittleEndian> for ParseSoundsMessage<'a> {
+impl BitWrite<LittleEndian> for ParseSoundsMessage<'_> {
     fn write(&self, stream: &mut BitWriteStream<LittleEndian>) -> ReadResult<()> {
         self.reliable.write(stream)?;
         if !self.reliable {

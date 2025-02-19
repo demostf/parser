@@ -71,7 +71,7 @@ impl StaticBaseline {
     }
 }
 
-impl<'a> ParserState {
+impl ParserState {
     pub fn new(
         protocol_version: u32,
         analyser_handles: fn(message_type: MessageType) -> bool,
@@ -294,12 +294,7 @@ impl<'a> ParserState {
         }
     }
 
-    pub fn handle_string_entry(
-        &mut self,
-        table: &str,
-        _index: usize,
-        entry: &StringTableEntry<'a>,
-    ) {
+    pub fn handle_string_entry(&mut self, table: &str, _index: usize, entry: &StringTableEntry) {
         if table == "instancebaseline" {
             if let (Some(extra), Ok(class_id)) = (&entry.extra_data, entry.text().parse()) {
                 let baseline = StaticBaseline::new(class_id, extra.data.to_owned());
