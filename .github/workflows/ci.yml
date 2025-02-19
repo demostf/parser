@@ -40,7 +40,10 @@ jobs:
           name: ci
           instance: https://cache.icewind.me
           authToken: "${{ secrets.ATTIC_TOKEN }}"
-      - run: nix run .#demostf-parser-schema > schema.json
+      - name: Generate schema
+        run: |
+          nix run .#demostf-parser-schema > schema.json
+          nix fmt
       - run: |
           git diff
           git diff-index --quiet HEAD --
