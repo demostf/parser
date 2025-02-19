@@ -53,21 +53,26 @@ impl MessageHandler for GameStateAnalyser {
             Message::ServerInfo(message) => {
                 self.state.interval_per_tick = message.interval_per_tick
             }
-            Message::GameEvent(GameEventMessage { event, .. }) => match event {
-                GameEvent::PlayerDeath(death) => {
-                    self.state.kills.push(Kill::new(self.tick, death.as_ref()))
+            Message::GameEvent(GameEventMessage { event, .. }) => {
+                self.state.events.push((self.tick, event.clone()));
+                match event {
+                    GameEvent::PlayerDeath(death) => {
+                        self.state.kills.push(Kill::new(self.tick, death.as_ref()))
+                    }
+                    GameEvent::RoundStart(_) => {
+                        self.state.buildings.clear();
+                        self.state.projectiles.clear();
+                    }
+                    GameEvent::TeamPlayRoundStart(_) => {
+                        self.state.buildings.clear();
+                        self.state.projectiles.clear();
+                    }
+                    GameEvent::ObjectDestroyed(ObjectDestroyedEvent { index, .. }) => {
+                        self.state.remove_building((*index as u32).into());
+                    }
+                    _ => {}
                 }
-                GameEvent::RoundStart(_) => {
-                    self.state.buildings.clear();
-                }
-                GameEvent::TeamPlayRoundStart(_) => {
-                    self.state.buildings.clear();
-                }
-                GameEvent::ObjectDestroyed(ObjectDestroyedEvent { index, .. }) => {
-                    self.state.remove_building((*index as u32).into());
-                }
-                _ => {}
-            },
+            }
             _ => {}
         }
     }

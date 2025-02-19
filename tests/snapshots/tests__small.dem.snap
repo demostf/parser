@@ -28,10 +28,29 @@ expression: state
       "charge": 0,
       "simtime": 78,
       "ping": 5,
-      "in_pvs": true
+      "in_pvs": true,
+      "bounds": {
+        "min": {
+          "x": -24.0,
+          "y": -24.0,
+          "z": 0.0
+        },
+        "max": {
+          "x": 24.0,
+          "y": 24.0,
+          "z": 82.0
+        }
+      },
+      "weapons": [
+        1606276,
+        1587845,
+        1211014
+      ]
     }
   ],
   "buildings": {},
+  "projectiles": {},
+  "collisions": [],
   "world": {
     "boundary_min": {
       "x": -3882.0,
@@ -45,5 +64,1693 @@ expression: state
     }
   },
   "kills": [],
-  "tick": 115
+  "tick": 115,
+  "server_classes": [
+    {
+      "id": 0,
+      "name": "CAI_BaseNPC",
+      "data_table": "DT_AI_BaseNPC"
+    },
+    {
+      "id": 1,
+      "name": "CBaseAnimating",
+      "data_table": "DT_BaseAnimating"
+    },
+    {
+      "id": 2,
+      "name": "CBaseAnimatingOverlay",
+      "data_table": "DT_BaseAnimatingOverlay"
+    },
+    {
+      "id": 3,
+      "name": "CBaseAttributableItem",
+      "data_table": "DT_BaseAttributableItem"
+    },
+    {
+      "id": 4,
+      "name": "CBaseCombatCharacter",
+      "data_table": "DT_BaseCombatCharacter"
+    },
+    {
+      "id": 5,
+      "name": "CBaseCombatWeapon",
+      "data_table": "DT_BaseCombatWeapon"
+    },
+    {
+      "id": 6,
+      "name": "CBaseDoor",
+      "data_table": "DT_BaseDoor"
+    },
+    {
+      "id": 7,
+      "name": "CBaseEntity",
+      "data_table": "DT_BaseEntity"
+    },
+    {
+      "id": 8,
+      "name": "CBaseFlex",
+      "data_table": "DT_BaseFlex"
+    },
+    {
+      "id": 9,
+      "name": "CBaseGrenade",
+      "data_table": "DT_BaseGrenade"
+    },
+    {
+      "id": 10,
+      "name": "CBaseObject",
+      "data_table": "DT_BaseObject"
+    },
+    {
+      "id": 11,
+      "name": "CBaseObjectUpgrade",
+      "data_table": "DT_BaseObjectUpgrade"
+    },
+    {
+      "id": 12,
+      "name": "CBaseParticleEntity",
+      "data_table": "DT_BaseParticleEntity"
+    },
+    {
+      "id": 13,
+      "name": "CBasePlayer",
+      "data_table": "DT_BasePlayer"
+    },
+    {
+      "id": 14,
+      "name": "CBaseProjectile",
+      "data_table": "DT_BaseProjectile"
+    },
+    {
+      "id": 15,
+      "name": "CBasePropDoor",
+      "data_table": "DT_BasePropDoor"
+    },
+    {
+      "id": 16,
+      "name": "CBaseTeamObjectiveResource",
+      "data_table": "DT_BaseTeamObjectiveResource"
+    },
+    {
+      "id": 17,
+      "name": "CBaseTempEntity",
+      "data_table": "DT_BaseTempEntity"
+    },
+    {
+      "id": 18,
+      "name": "CBaseViewModel",
+      "data_table": "DT_BaseViewModel"
+    },
+    {
+      "id": 19,
+      "name": "CBeam",
+      "data_table": "DT_Beam"
+    },
+    {
+      "id": 20,
+      "name": "CBoneFollower",
+      "data_table": "DT_BoneFollower"
+    },
+    {
+      "id": 21,
+      "name": "CBonusDuckPickup",
+      "data_table": "DT_CBonusDuckPickup"
+    },
+    {
+      "id": 22,
+      "name": "CBonusPack",
+      "data_table": "DT_CBonusPack"
+    },
+    {
+      "id": 23,
+      "name": "CBonusRoundLogic",
+      "data_table": "DT_BonusRoundLogic"
+    },
+    {
+      "id": 24,
+      "name": "CBreakableProp",
+      "data_table": "DT_BreakableProp"
+    },
+    {
+      "id": 25,
+      "name": "CBreakableSurface",
+      "data_table": "DT_BreakableSurface"
+    },
+    {
+      "id": 26,
+      "name": "CCaptureFlag",
+      "data_table": "DT_CaptureFlag"
+    },
+    {
+      "id": 27,
+      "name": "CCaptureFlagReturnIcon",
+      "data_table": "DT_CaptureFlagReturnIcon"
+    },
+    {
+      "id": 28,
+      "name": "CCaptureZone",
+      "data_table": "DT_CaptureZone"
+    },
+    {
+      "id": 29,
+      "name": "CColorCorrection",
+      "data_table": "DT_ColorCorrection"
+    },
+    {
+      "id": 30,
+      "name": "CColorCorrectionVolume",
+      "data_table": "DT_ColorCorrectionVolume"
+    },
+    {
+      "id": 31,
+      "name": "CCurrencyPack",
+      "data_table": "DT_CurrencyPack"
+    },
+    {
+      "id": 32,
+      "name": "CDynamicLight",
+      "data_table": "DT_DynamicLight"
+    },
+    {
+      "id": 33,
+      "name": "CDynamicProp",
+      "data_table": "DT_DynamicProp"
+    },
+    {
+      "id": 34,
+      "name": "CEconEntity",
+      "data_table": "DT_EconEntity"
+    },
+    {
+      "id": 35,
+      "name": "CEconWearable",
+      "data_table": "DT_WearableItem"
+    },
+    {
+      "id": 36,
+      "name": "CEmbers",
+      "data_table": "DT_Embers"
+    },
+    {
+      "id": 37,
+      "name": "CEntityDissolve",
+      "data_table": "DT_EntityDissolve"
+    },
+    {
+      "id": 38,
+      "name": "CEntityFlame",
+      "data_table": "DT_EntityFlame"
+    },
+    {
+      "id": 39,
+      "name": "CEntityParticleTrail",
+      "data_table": "DT_EntityParticleTrail"
+    },
+    {
+      "id": 40,
+      "name": "CEnvDetailController",
+      "data_table": "DT_DetailController"
+    },
+    {
+      "id": 41,
+      "name": "CEnvParticleScript",
+      "data_table": "DT_EnvParticleScript"
+    },
+    {
+      "id": 42,
+      "name": "CEnvProjectedTexture",
+      "data_table": "DT_EnvProjectedTexture"
+    },
+    {
+      "id": 43,
+      "name": "CEnvQuadraticBeam",
+      "data_table": "DT_QuadraticBeam"
+    },
+    {
+      "id": 44,
+      "name": "CEnvScreenEffect",
+      "data_table": "DT_EnvScreenEffect"
+    },
+    {
+      "id": 45,
+      "name": "CEnvScreenOverlay",
+      "data_table": "DT_EnvScreenOverlay"
+    },
+    {
+      "id": 46,
+      "name": "CEnvTonemapController",
+      "data_table": "DT_EnvTonemapController"
+    },
+    {
+      "id": 47,
+      "name": "CEnvWind",
+      "data_table": "DT_EnvWind"
+    },
+    {
+      "id": 48,
+      "name": "CEyeballBoss",
+      "data_table": "DT_EyeballBoss"
+    },
+    {
+      "id": 49,
+      "name": "CFireSmoke",
+      "data_table": "DT_FireSmoke"
+    },
+    {
+      "id": 50,
+      "name": "CFireTrail",
+      "data_table": "DT_FireTrail"
+    },
+    {
+      "id": 51,
+      "name": "CFish",
+      "data_table": "DT_CFish"
+    },
+    {
+      "id": 52,
+      "name": "CFogController",
+      "data_table": "DT_FogController"
+    },
+    {
+      "id": 53,
+      "name": "CFunc_Dust",
+      "data_table": "DT_Func_Dust"
+    },
+    {
+      "id": 54,
+      "name": "CFunc_LOD",
+      "data_table": "DT_Func_LOD"
+    },
+    {
+      "id": 55,
+      "name": "CFuncAreaPortalWindow",
+      "data_table": "DT_FuncAreaPortalWindow"
+    },
+    {
+      "id": 56,
+      "name": "CFuncConveyor",
+      "data_table": "DT_FuncConveyor"
+    },
+    {
+      "id": 57,
+      "name": "CFuncForceField",
+      "data_table": "DT_FuncForceField"
+    },
+    {
+      "id": 58,
+      "name": "CFuncLadder",
+      "data_table": "DT_FuncLadder"
+    },
+    {
+      "id": 59,
+      "name": "CFuncMonitor",
+      "data_table": "DT_FuncMonitor"
+    },
+    {
+      "id": 60,
+      "name": "CFuncOccluder",
+      "data_table": "DT_FuncOccluder"
+    },
+    {
+      "id": 61,
+      "name": "CFuncReflectiveGlass",
+      "data_table": "DT_FuncReflectiveGlass"
+    },
+    {
+      "id": 62,
+      "name": "CFuncRespawnRoom",
+      "data_table": "DT_FuncRespawnRoom"
+    },
+    {
+      "id": 63,
+      "name": "CFuncRespawnRoomVisualizer",
+      "data_table": "DT_FuncRespawnRoomVisualizer"
+    },
+    {
+      "id": 64,
+      "name": "CFuncRotating",
+      "data_table": "DT_FuncRotating"
+    },
+    {
+      "id": 65,
+      "name": "CFuncSmokeVolume",
+      "data_table": "DT_FuncSmokeVolume"
+    },
+    {
+      "id": 66,
+      "name": "CFuncTrackTrain",
+      "data_table": "DT_FuncTrackTrain"
+    },
+    {
+      "id": 67,
+      "name": "CGameRulesProxy",
+      "data_table": "DT_GameRulesProxy"
+    },
+    {
+      "id": 68,
+      "name": "CHalloweenPickup",
+      "data_table": "DT_CHalloweenPickup"
+    },
+    {
+      "id": 69,
+      "name": "CHalloweenSoulPack",
+      "data_table": "DT_HalloweenSoulPack"
+    },
+    {
+      "id": 70,
+      "name": "CHandleTest",
+      "data_table": "DT_HandleTest"
+    },
+    {
+      "id": 71,
+      "name": "CHeadlessHatman",
+      "data_table": "DT_HeadlessHatman"
+    },
+    {
+      "id": 72,
+      "name": "CHightower_TeleportVortex",
+      "data_table": "DT_Hightower_TeleportVortex"
+    },
+    {
+      "id": 73,
+      "name": "CInfoLadderDismount",
+      "data_table": "DT_InfoLadderDismount"
+    },
+    {
+      "id": 74,
+      "name": "CInfoLightingRelative",
+      "data_table": "DT_InfoLightingRelative"
+    },
+    {
+      "id": 75,
+      "name": "CInfoOverlayAccessor",
+      "data_table": "DT_InfoOverlayAccessor"
+    },
+    {
+      "id": 76,
+      "name": "CLaserDot",
+      "data_table": "DT_LaserDot"
+    },
+    {
+      "id": 77,
+      "name": "CLightGlow",
+      "data_table": "DT_LightGlow"
+    },
+    {
+      "id": 78,
+      "name": "CMannVsMachineStats",
+      "data_table": "DT_MannVsMachineStats"
+    },
+    {
+      "id": 79,
+      "name": "CMaterialModifyControl",
+      "data_table": "DT_MaterialModifyControl"
+    },
+    {
+      "id": 80,
+      "name": "CMerasmus",
+      "data_table": "DT_Merasmus"
+    },
+    {
+      "id": 81,
+      "name": "CMerasmusDancer",
+      "data_table": "DT_MerasmusDancer"
+    },
+    {
+      "id": 82,
+      "name": "CMonsterResource",
+      "data_table": "DT_MonsterResource"
+    },
+    {
+      "id": 83,
+      "name": "CObjectCartDispenser",
+      "data_table": "DT_ObjectCartDispenser"
+    },
+    {
+      "id": 84,
+      "name": "CObjectDispenser",
+      "data_table": "DT_ObjectDispenser"
+    },
+    {
+      "id": 85,
+      "name": "CObjectSapper",
+      "data_table": "DT_ObjectSapper"
+    },
+    {
+      "id": 86,
+      "name": "CObjectSentrygun",
+      "data_table": "DT_ObjectSentrygun"
+    },
+    {
+      "id": 87,
+      "name": "CObjectTeleporter",
+      "data_table": "DT_ObjectTeleporter"
+    },
+    {
+      "id": 88,
+      "name": "CParticleFire",
+      "data_table": "DT_ParticleFire"
+    },
+    {
+      "id": 89,
+      "name": "CParticlePerformanceMonitor",
+      "data_table": "DT_ParticlePerformanceMonitor"
+    },
+    {
+      "id": 90,
+      "name": "CParticleSystem",
+      "data_table": "DT_ParticleSystem"
+    },
+    {
+      "id": 91,
+      "name": "CPhysBox",
+      "data_table": "DT_PhysBox"
+    },
+    {
+      "id": 92,
+      "name": "CPhysBoxMultiplayer",
+      "data_table": "DT_PhysBoxMultiplayer"
+    },
+    {
+      "id": 93,
+      "name": "CPhysicsProp",
+      "data_table": "DT_PhysicsProp"
+    },
+    {
+      "id": 94,
+      "name": "CPhysicsPropMultiplayer",
+      "data_table": "DT_PhysicsPropMultiplayer"
+    },
+    {
+      "id": 95,
+      "name": "CPhysMagnet",
+      "data_table": "DT_PhysMagnet"
+    },
+    {
+      "id": 96,
+      "name": "CPlasma",
+      "data_table": "DT_Plasma"
+    },
+    {
+      "id": 97,
+      "name": "CPlayerResource",
+      "data_table": "DT_PlayerResource"
+    },
+    {
+      "id": 98,
+      "name": "CPointCamera",
+      "data_table": "DT_PointCamera"
+    },
+    {
+      "id": 99,
+      "name": "CPointCommentaryNode",
+      "data_table": "DT_PointCommentaryNode"
+    },
+    {
+      "id": 100,
+      "name": "CPoseController",
+      "data_table": "DT_PoseController"
+    },
+    {
+      "id": 101,
+      "name": "CPrecipitation",
+      "data_table": "DT_Precipitation"
+    },
+    {
+      "id": 102,
+      "name": "CPropVehicleDriveable",
+      "data_table": "DT_PropVehicleDriveable"
+    },
+    {
+      "id": 103,
+      "name": "CRagdollManager",
+      "data_table": "DT_RagdollManager"
+    },
+    {
+      "id": 104,
+      "name": "CRagdollProp",
+      "data_table": "DT_Ragdoll"
+    },
+    {
+      "id": 105,
+      "name": "CRagdollPropAttached",
+      "data_table": "DT_Ragdoll_Attached"
+    },
+    {
+      "id": 106,
+      "name": "CRobotDispenser",
+      "data_table": "DT_RobotDispenser"
+    },
+    {
+      "id": 107,
+      "name": "CRopeKeyframe",
+      "data_table": "DT_RopeKeyframe"
+    },
+    {
+      "id": 108,
+      "name": "CSceneEntity",
+      "data_table": "DT_SceneEntity"
+    },
+    {
+      "id": 109,
+      "name": "CShadowControl",
+      "data_table": "DT_ShadowControl"
+    },
+    {
+      "id": 110,
+      "name": "CSlideshowDisplay",
+      "data_table": "DT_SlideshowDisplay"
+    },
+    {
+      "id": 111,
+      "name": "CSmokeStack",
+      "data_table": "DT_SmokeStack"
+    },
+    {
+      "id": 112,
+      "name": "CSniperDot",
+      "data_table": "DT_SniperDot"
+    },
+    {
+      "id": 113,
+      "name": "CSpotlightEnd",
+      "data_table": "DT_SpotlightEnd"
+    },
+    {
+      "id": 114,
+      "name": "CSprite",
+      "data_table": "DT_Sprite"
+    },
+    {
+      "id": 115,
+      "name": "CSpriteOriented",
+      "data_table": "DT_SpriteOriented"
+    },
+    {
+      "id": 116,
+      "name": "CSpriteTrail",
+      "data_table": "DT_SpriteTrail"
+    },
+    {
+      "id": 117,
+      "name": "CSteamJet",
+      "data_table": "DT_SteamJet"
+    },
+    {
+      "id": 118,
+      "name": "CSun",
+      "data_table": "DT_Sun"
+    },
+    {
+      "id": 119,
+      "name": "CTeam",
+      "data_table": "DT_Team"
+    },
+    {
+      "id": 120,
+      "name": "CTeamplayRoundBasedRulesProxy",
+      "data_table": "DT_TeamplayRoundBasedRulesProxy"
+    },
+    {
+      "id": 121,
+      "name": "CTeamRoundTimer",
+      "data_table": "DT_TeamRoundTimer"
+    },
+    {
+      "id": 122,
+      "name": "CTeamTrainWatcher",
+      "data_table": "DT_TeamTrainWatcher"
+    },
+    {
+      "id": 123,
+      "name": "CTEArmorRicochet",
+      "data_table": "DT_TEArmorRicochet"
+    },
+    {
+      "id": 124,
+      "name": "CTEBaseBeam",
+      "data_table": "DT_BaseBeam"
+    },
+    {
+      "id": 125,
+      "name": "CTEBeamEntPoint",
+      "data_table": "DT_TEBeamEntPoint"
+    },
+    {
+      "id": 126,
+      "name": "CTEBeamEnts",
+      "data_table": "DT_TEBeamEnts"
+    },
+    {
+      "id": 127,
+      "name": "CTEBeamFollow",
+      "data_table": "DT_TEBeamFollow"
+    },
+    {
+      "id": 128,
+      "name": "CTEBeamLaser",
+      "data_table": "DT_TEBeamLaser"
+    },
+    {
+      "id": 129,
+      "name": "CTEBeamPoints",
+      "data_table": "DT_TEBeamPoints"
+    },
+    {
+      "id": 130,
+      "name": "CTEBeamRing",
+      "data_table": "DT_TEBeamRing"
+    },
+    {
+      "id": 131,
+      "name": "CTEBeamRingPoint",
+      "data_table": "DT_TEBeamRingPoint"
+    },
+    {
+      "id": 132,
+      "name": "CTEBeamSpline",
+      "data_table": "DT_TEBeamSpline"
+    },
+    {
+      "id": 133,
+      "name": "CTEBloodSprite",
+      "data_table": "DT_TEBloodSprite"
+    },
+    {
+      "id": 134,
+      "name": "CTEBloodStream",
+      "data_table": "DT_TEBloodStream"
+    },
+    {
+      "id": 135,
+      "name": "CTEBreakModel",
+      "data_table": "DT_TEBreakModel"
+    },
+    {
+      "id": 136,
+      "name": "CTEBSPDecal",
+      "data_table": "DT_TEBSPDecal"
+    },
+    {
+      "id": 137,
+      "name": "CTEBubbles",
+      "data_table": "DT_TEBubbles"
+    },
+    {
+      "id": 138,
+      "name": "CTEBubbleTrail",
+      "data_table": "DT_TEBubbleTrail"
+    },
+    {
+      "id": 139,
+      "name": "CTEClientProjectile",
+      "data_table": "DT_TEClientProjectile"
+    },
+    {
+      "id": 140,
+      "name": "CTEDecal",
+      "data_table": "DT_TEDecal"
+    },
+    {
+      "id": 141,
+      "name": "CTEDust",
+      "data_table": "DT_TEDust"
+    },
+    {
+      "id": 142,
+      "name": "CTEDynamicLight",
+      "data_table": "DT_TEDynamicLight"
+    },
+    {
+      "id": 143,
+      "name": "CTEEffectDispatch",
+      "data_table": "DT_TEEffectDispatch"
+    },
+    {
+      "id": 144,
+      "name": "CTEEnergySplash",
+      "data_table": "DT_TEEnergySplash"
+    },
+    {
+      "id": 145,
+      "name": "CTEExplosion",
+      "data_table": "DT_TEExplosion"
+    },
+    {
+      "id": 146,
+      "name": "CTEFireBullets",
+      "data_table": "DT_TEFireBullets"
+    },
+    {
+      "id": 147,
+      "name": "CTEFizz",
+      "data_table": "DT_TEFizz"
+    },
+    {
+      "id": 148,
+      "name": "CTEFootprintDecal",
+      "data_table": "DT_TEFootprintDecal"
+    },
+    {
+      "id": 149,
+      "name": "CTEGaussExplosion",
+      "data_table": "DT_TEGaussExplosion"
+    },
+    {
+      "id": 150,
+      "name": "CTEGlowSprite",
+      "data_table": "DT_TEGlowSprite"
+    },
+    {
+      "id": 151,
+      "name": "CTEImpact",
+      "data_table": "DT_TEImpact"
+    },
+    {
+      "id": 152,
+      "name": "CTEKillPlayerAttachments",
+      "data_table": "DT_TEKillPlayerAttachments"
+    },
+    {
+      "id": 153,
+      "name": "CTELargeFunnel",
+      "data_table": "DT_TELargeFunnel"
+    },
+    {
+      "id": 154,
+      "name": "CTeleportVortex",
+      "data_table": "DT_TeleportVortex"
+    },
+    {
+      "id": 155,
+      "name": "CTEMetalSparks",
+      "data_table": "DT_TEMetalSparks"
+    },
+    {
+      "id": 156,
+      "name": "CTEMuzzleFlash",
+      "data_table": "DT_TEMuzzleFlash"
+    },
+    {
+      "id": 157,
+      "name": "CTEParticleSystem",
+      "data_table": "DT_TEParticleSystem"
+    },
+    {
+      "id": 158,
+      "name": "CTEPhysicsProp",
+      "data_table": "DT_TEPhysicsProp"
+    },
+    {
+      "id": 159,
+      "name": "CTEPlayerAnimEvent",
+      "data_table": "DT_TEPlayerAnimEvent"
+    },
+    {
+      "id": 160,
+      "name": "CTEPlayerDecal",
+      "data_table": "DT_TEPlayerDecal"
+    },
+    {
+      "id": 161,
+      "name": "CTEProjectedDecal",
+      "data_table": "DT_TEProjectedDecal"
+    },
+    {
+      "id": 162,
+      "name": "CTEShatterSurface",
+      "data_table": "DT_TEShatterSurface"
+    },
+    {
+      "id": 163,
+      "name": "CTEShowLine",
+      "data_table": "DT_TEShowLine"
+    },
+    {
+      "id": 164,
+      "name": "CTesla",
+      "data_table": "DT_Tesla"
+    },
+    {
+      "id": 165,
+      "name": "CTESmoke",
+      "data_table": "DT_TESmoke"
+    },
+    {
+      "id": 166,
+      "name": "CTESparks",
+      "data_table": "DT_TESparks"
+    },
+    {
+      "id": 167,
+      "name": "CTESprite",
+      "data_table": "DT_TESprite"
+    },
+    {
+      "id": 168,
+      "name": "CTESpriteSpray",
+      "data_table": "DT_TESpriteSpray"
+    },
+    {
+      "id": 169,
+      "name": "CTest_ProxyToggle_Networkable",
+      "data_table": "DT_ProxyToggle"
+    },
+    {
+      "id": 170,
+      "name": "CTestTraceline",
+      "data_table": "DT_TestTraceline"
+    },
+    {
+      "id": 171,
+      "name": "CTETFBlood",
+      "data_table": "DT_TETFBlood"
+    },
+    {
+      "id": 172,
+      "name": "CTETFExplosion",
+      "data_table": "DT_TETFExplosion"
+    },
+    {
+      "id": 173,
+      "name": "CTETFParticleEffect",
+      "data_table": "DT_TETFParticleEffect"
+    },
+    {
+      "id": 174,
+      "name": "CTEWorldDecal",
+      "data_table": "DT_TEWorldDecal"
+    },
+    {
+      "id": 175,
+      "name": "CTFAmmoPack",
+      "data_table": "DT_AmmoPack"
+    },
+    {
+      "id": 176,
+      "name": "CTFBall_Ornament",
+      "data_table": "DT_TFProjectileBall_Ornament"
+    },
+    {
+      "id": 177,
+      "name": "CTFBaseBoss",
+      "data_table": "DT_TFBaseBoss"
+    },
+    {
+      "id": 178,
+      "name": "CTFBaseProjectile",
+      "data_table": "DT_TFBaseProjectile"
+    },
+    {
+      "id": 179,
+      "name": "CTFBaseRocket",
+      "data_table": "DT_TFBaseRocket"
+    },
+    {
+      "id": 180,
+      "name": "CTFBat",
+      "data_table": "DT_TFWeaponBat"
+    },
+    {
+      "id": 181,
+      "name": "CTFBat_Fish",
+      "data_table": "DT_TFWeaponBat_Fish"
+    },
+    {
+      "id": 182,
+      "name": "CTFBat_Giftwrap",
+      "data_table": "DT_TFWeaponBat_Giftwrap"
+    },
+    {
+      "id": 183,
+      "name": "CTFBat_Wood",
+      "data_table": "DT_TFWeaponBat_Wood"
+    },
+    {
+      "id": 184,
+      "name": "CTFBonesaw",
+      "data_table": "DT_TFWeaponBonesaw"
+    },
+    {
+      "id": 185,
+      "name": "CTFBotHintEngineerNest",
+      "data_table": "DT_TFBotHintEngineerNest"
+    },
+    {
+      "id": 186,
+      "name": "CTFBottle",
+      "data_table": "DT_TFWeaponBottle"
+    },
+    {
+      "id": 187,
+      "name": "CTFBuffItem",
+      "data_table": "DT_TFWeaponBuffItem"
+    },
+    {
+      "id": 188,
+      "name": "CTFCannon",
+      "data_table": "DT_TFCannon"
+    },
+    {
+      "id": 189,
+      "name": "CTFCleaver",
+      "data_table": "DT_TFWeaponCleaver"
+    },
+    {
+      "id": 190,
+      "name": "CTFClub",
+      "data_table": "DT_TFWeaponClub"
+    },
+    {
+      "id": 191,
+      "name": "CTFCompoundBow",
+      "data_table": "DT_WeaponCompoundBow"
+    },
+    {
+      "id": 192,
+      "name": "CTFCrossbow",
+      "data_table": "DT_Crossbow"
+    },
+    {
+      "id": 193,
+      "name": "CTFDRGPomson",
+      "data_table": "DT_WeaponDRGPomson"
+    },
+    {
+      "id": 194,
+      "name": "CTFFireAxe",
+      "data_table": "DT_TFWeaponFireAxe"
+    },
+    {
+      "id": 195,
+      "name": "CTFFists",
+      "data_table": "DT_TFWeaponFists"
+    },
+    {
+      "id": 196,
+      "name": "CTFFlameRocket",
+      "data_table": "DT_TFFlameRocket"
+    },
+    {
+      "id": 197,
+      "name": "CTFFlameThrower",
+      "data_table": "DT_WeaponFlameThrower"
+    },
+    {
+      "id": 198,
+      "name": "CTFFlareGun",
+      "data_table": "DT_WeaponFlareGun"
+    },
+    {
+      "id": 199,
+      "name": "CTFFlareGun_Revenge",
+      "data_table": "DT_WeaponFlareGun_Revenge"
+    },
+    {
+      "id": 200,
+      "name": "CTFGameRulesProxy",
+      "data_table": "DT_TFGameRulesProxy"
+    },
+    {
+      "id": 201,
+      "name": "CTFGrapplingHook",
+      "data_table": "DT_GrapplingHook"
+    },
+    {
+      "id": 202,
+      "name": "CTFGrenadeLauncher",
+      "data_table": "DT_WeaponGrenadeLauncher"
+    },
+    {
+      "id": 203,
+      "name": "CTFGrenadePipebombProjectile",
+      "data_table": "DT_TFProjectile_Pipebomb"
+    },
+    {
+      "id": 204,
+      "name": "CTFHalloweenMinigame",
+      "data_table": "DT_TFHalloweenMinigame"
+    },
+    {
+      "id": 205,
+      "name": "CTFHalloweenMinigame_FallingPlatforms",
+      "data_table": "DT_TFHalloweenMinigame_FallingPlatforms"
+    },
+    {
+      "id": 206,
+      "name": "CTFHellZap",
+      "data_table": "DT_TFHellZap"
+    },
+    {
+      "id": 207,
+      "name": "CTFItem",
+      "data_table": "DT_TFItem"
+    },
+    {
+      "id": 208,
+      "name": "CTFJar",
+      "data_table": "DT_TFWeaponJar"
+    },
+    {
+      "id": 209,
+      "name": "CTFJarMilk",
+      "data_table": "DT_TFWeaponJarMilk"
+    },
+    {
+      "id": 210,
+      "name": "CTFKatana",
+      "data_table": "DT_TFWeaponKatana"
+    },
+    {
+      "id": 211,
+      "name": "CTFKnife",
+      "data_table": "DT_TFWeaponKnife"
+    },
+    {
+      "id": 212,
+      "name": "CTFLaserPointer",
+      "data_table": "DT_TFLaserPointer"
+    },
+    {
+      "id": 213,
+      "name": "CTFLunchBox",
+      "data_table": "DT_WeaponLunchBox"
+    },
+    {
+      "id": 214,
+      "name": "CTFLunchBox_Drink",
+      "data_table": "DT_TFLunchBox_Drink"
+    },
+    {
+      "id": 215,
+      "name": "CTFMechanicalArm",
+      "data_table": "DT_TFMechanicalArm"
+    },
+    {
+      "id": 216,
+      "name": "CTFMedigunShield",
+      "data_table": "DT_TFMedigunShield"
+    },
+    {
+      "id": 217,
+      "name": "CTFMiniGame",
+      "data_table": "DT_TFMinigame"
+    },
+    {
+      "id": 218,
+      "name": "CTFMinigameLogic",
+      "data_table": "DT_TFMinigameLogic"
+    },
+    {
+      "id": 219,
+      "name": "CTFMinigun",
+      "data_table": "DT_WeaponMinigun"
+    },
+    {
+      "id": 220,
+      "name": "CTFObjectiveResource",
+      "data_table": "DT_TFObjectiveResource"
+    },
+    {
+      "id": 221,
+      "name": "CTFParachute",
+      "data_table": "DT_TFParachute"
+    },
+    {
+      "id": 222,
+      "name": "CTFParachute_Primary",
+      "data_table": "DT_TFParachute_Primary"
+    },
+    {
+      "id": 223,
+      "name": "CTFParachute_Secondary",
+      "data_table": "DT_TFParachute_Secondary"
+    },
+    {
+      "id": 224,
+      "name": "CTFParticleCannon",
+      "data_table": "DT_ParticleCannon"
+    },
+    {
+      "id": 225,
+      "name": "CTFPEPBrawlerBlaster",
+      "data_table": "DT_TFPEPBrawlerBlaster"
+    },
+    {
+      "id": 226,
+      "name": "CTFPipebombLauncher",
+      "data_table": "DT_WeaponPipebombLauncher"
+    },
+    {
+      "id": 227,
+      "name": "CTFPistol",
+      "data_table": "DT_WeaponPistol"
+    },
+    {
+      "id": 228,
+      "name": "CTFPistol_Scout",
+      "data_table": "DT_WeaponPistol_Scout"
+    },
+    {
+      "id": 229,
+      "name": "CTFPistol_ScoutPrimary",
+      "data_table": "DT_WeaponPistol_ScoutPrimary"
+    },
+    {
+      "id": 230,
+      "name": "CTFPistol_ScoutSecondary",
+      "data_table": "DT_WeaponPistol_ScoutSecondary"
+    },
+    {
+      "id": 231,
+      "name": "CTFPlayer",
+      "data_table": "DT_TFPlayer"
+    },
+    {
+      "id": 232,
+      "name": "CTFPlayerResource",
+      "data_table": "DT_TFPlayerResource"
+    },
+    {
+      "id": 233,
+      "name": "CTFPowerupBottle",
+      "data_table": "DT_TFPowerupBottle"
+    },
+    {
+      "id": 234,
+      "name": "CTFProjectile_Arrow",
+      "data_table": "DT_TFProjectile_Arrow"
+    },
+    {
+      "id": 235,
+      "name": "CTFProjectile_Cleaver",
+      "data_table": "DT_TFProjectile_Cleaver"
+    },
+    {
+      "id": 236,
+      "name": "CTFProjectile_EnergyBall",
+      "data_table": "DT_TFProjectile_EnergyBall"
+    },
+    {
+      "id": 237,
+      "name": "CTFProjectile_Flare",
+      "data_table": "DT_TFProjectile_Flare"
+    },
+    {
+      "id": 238,
+      "name": "CTFProjectile_GrapplingHook",
+      "data_table": "DT_TFProjectile_GrapplingHook"
+    },
+    {
+      "id": 239,
+      "name": "CTFProjectile_HealingBolt",
+      "data_table": "DT_TFProjectile_HealingBolt"
+    },
+    {
+      "id": 240,
+      "name": "CTFProjectile_Jar",
+      "data_table": "DT_TFProjectile_Jar"
+    },
+    {
+      "id": 241,
+      "name": "CTFProjectile_JarMilk",
+      "data_table": "DT_TFProjectile_JarMilk"
+    },
+    {
+      "id": 242,
+      "name": "CTFProjectile_Rocket",
+      "data_table": "DT_TFProjectile_Rocket"
+    },
+    {
+      "id": 243,
+      "name": "CTFProjectile_SentryRocket",
+      "data_table": "DT_TFProjectile_SentryRocket"
+    },
+    {
+      "id": 244,
+      "name": "CTFProjectile_SpellBats",
+      "data_table": "DT_TFProjectile_SpellBats"
+    },
+    {
+      "id": 245,
+      "name": "CTFProjectile_SpellFireball",
+      "data_table": "DT_TFProjectile_SpellFireball"
+    },
+    {
+      "id": 246,
+      "name": "CTFProjectile_SpellKartBats",
+      "data_table": "DT_TFProjectile_SpellKartBats"
+    },
+    {
+      "id": 247,
+      "name": "CTFProjectile_SpellKartOrb",
+      "data_table": "DT_TFProjectile_SpellKartOrb"
+    },
+    {
+      "id": 248,
+      "name": "CTFProjectile_SpellLightningOrb",
+      "data_table": "DT_TFProjectile_SpellLightningOrb"
+    },
+    {
+      "id": 249,
+      "name": "CTFProjectile_SpellMeteorShower",
+      "data_table": "DT_TFProjectile_SpellMeteorShower"
+    },
+    {
+      "id": 250,
+      "name": "CTFProjectile_SpellMirv",
+      "data_table": "DT_TFProjectile_SpellMirv"
+    },
+    {
+      "id": 251,
+      "name": "CTFProjectile_SpellPumpkin",
+      "data_table": "DT_TFProjectile_SpellPumpkin"
+    },
+    {
+      "id": 252,
+      "name": "CTFProjectile_SpellSpawnBoss",
+      "data_table": "DT_TFProjectile_SpellSpawnBoss"
+    },
+    {
+      "id": 253,
+      "name": "CTFProjectile_SpellSpawnHorde",
+      "data_table": "DT_TFProjectile_SpellSpawnHorde"
+    },
+    {
+      "id": 254,
+      "name": "CTFProjectile_SpellSpawnZombie",
+      "data_table": "DT_TFProjectile_SpellSpawnZombie"
+    },
+    {
+      "id": 255,
+      "name": "CTFProjectile_SpellTransposeTeleport",
+      "data_table": "SpellTransposeTeleport"
+    },
+    {
+      "id": 256,
+      "name": "CTFProjectile_Throwable",
+      "data_table": "DT_TFProjectile_Throwable"
+    },
+    {
+      "id": 257,
+      "name": "CTFProjectile_ThrowableBreadMonster",
+      "data_table": "DT_TFProjectile_ThrowableBreadMonster"
+    },
+    {
+      "id": 258,
+      "name": "CTFProjectile_ThrowableBrick",
+      "data_table": "DT_TFProjectile_ThrowableBrick"
+    },
+    {
+      "id": 259,
+      "name": "CTFProjectile_ThrowableRepel",
+      "data_table": "DT_TFProjectile_ThrowableRepel"
+    },
+    {
+      "id": 260,
+      "name": "CTFPumpkinBomb",
+      "data_table": "DT_TFPumpkinBomb"
+    },
+    {
+      "id": 261,
+      "name": "CTFRagdoll",
+      "data_table": "DT_TFRagdoll"
+    },
+    {
+      "id": 262,
+      "name": "CTFRaygun",
+      "data_table": "DT_WeaponRaygun"
+    },
+    {
+      "id": 263,
+      "name": "CTFReviveMarker",
+      "data_table": "DT_TFReviveMarker"
+    },
+    {
+      "id": 264,
+      "name": "CTFRevolver",
+      "data_table": "DT_WeaponRevolver"
+    },
+    {
+      "id": 265,
+      "name": "CTFRobotArm",
+      "data_table": "DT_TFWeaponRobotArm"
+    },
+    {
+      "id": 266,
+      "name": "CTFRobotDestruction_Robot",
+      "data_table": "DT_TFRobotDestruction_Robot"
+    },
+    {
+      "id": 267,
+      "name": "CTFRobotDestruction_RobotGroup",
+      "data_table": "DT_TFRobotDestruction_RobotGroup"
+    },
+    {
+      "id": 268,
+      "name": "CTFRobotDestruction_RobotSpawn",
+      "data_table": "DT_TFRobotDestructionRobotSpawn"
+    },
+    {
+      "id": 269,
+      "name": "CTFRobotDestructionLogic",
+      "data_table": "DT_TFRobotDestructionLogic"
+    },
+    {
+      "id": 270,
+      "name": "CTFRocketLauncher",
+      "data_table": "DT_WeaponRocketLauncher"
+    },
+    {
+      "id": 271,
+      "name": "CTFRocketLauncher_AirStrike",
+      "data_table": "DT_WeaponRocketLauncher_AirStrike"
+    },
+    {
+      "id": 272,
+      "name": "CTFRocketLauncher_DirectHit",
+      "data_table": "DT_WeaponRocketLauncher_DirectHit"
+    },
+    {
+      "id": 273,
+      "name": "CTFRocketLauncher_Mortar",
+      "data_table": "DT_WeaponRocketLauncher_Mortar"
+    },
+    {
+      "id": 274,
+      "name": "CTFScatterGun",
+      "data_table": "DT_TFScatterGun"
+    },
+    {
+      "id": 275,
+      "name": "CTFShotgun",
+      "data_table": "DT_TFShotgun"
+    },
+    {
+      "id": 276,
+      "name": "CTFShotgun_HWG",
+      "data_table": "DT_TFShotgun_HWG"
+    },
+    {
+      "id": 277,
+      "name": "CTFShotgun_Pyro",
+      "data_table": "DT_TFShotgun_Pyro"
+    },
+    {
+      "id": 278,
+      "name": "CTFShotgun_Revenge",
+      "data_table": "DT_TFShotgun_Revenge"
+    },
+    {
+      "id": 279,
+      "name": "CTFShotgun_Soldier",
+      "data_table": "DT_TFShotgun_Soldier"
+    },
+    {
+      "id": 280,
+      "name": "CTFShotgunBuildingRescue",
+      "data_table": "DT_TFShotgunBuildingRescue"
+    },
+    {
+      "id": 281,
+      "name": "CTFShovel",
+      "data_table": "DT_TFWeaponShovel"
+    },
+    {
+      "id": 282,
+      "name": "CTFSMG",
+      "data_table": "DT_TFSMG"
+    },
+    {
+      "id": 283,
+      "name": "CTFSniperRifle",
+      "data_table": "DT_TFSniperRifle"
+    },
+    {
+      "id": 284,
+      "name": "CTFSniperRifleClassic",
+      "data_table": "DT_TFSniperRifleClassic"
+    },
+    {
+      "id": 285,
+      "name": "CTFSniperRifleDecap",
+      "data_table": "DT_TFSniperRifleDecap"
+    },
+    {
+      "id": 286,
+      "name": "CTFSodaPopper",
+      "data_table": "DT_TFSodaPopper"
+    },
+    {
+      "id": 287,
+      "name": "CTFSpellBook",
+      "data_table": "DT_TFWeaponSpellBook"
+    },
+    {
+      "id": 288,
+      "name": "CTFStickBomb",
+      "data_table": "DT_TFWeaponStickBomb"
+    },
+    {
+      "id": 289,
+      "name": "CTFStunBall",
+      "data_table": "DT_TFProjectile_StunBall"
+    },
+    {
+      "id": 290,
+      "name": "CTFSword",
+      "data_table": "DT_TFWeaponSword"
+    },
+    {
+      "id": 291,
+      "name": "CTFSyringeGun",
+      "data_table": "DT_WeaponSyringeGun"
+    },
+    {
+      "id": 292,
+      "name": "CTFTankBoss",
+      "data_table": "DT_TFTankBoss"
+    },
+    {
+      "id": 293,
+      "name": "CTFTauntProp",
+      "data_table": "DT_TFTauntProp"
+    },
+    {
+      "id": 294,
+      "name": "CTFTeam",
+      "data_table": "DT_TFTeam"
+    },
+    {
+      "id": 295,
+      "name": "CTFThrowable",
+      "data_table": "DT_TFWeaponThrowable"
+    },
+    {
+      "id": 296,
+      "name": "CTFViewModel",
+      "data_table": "DT_TFViewModel"
+    },
+    {
+      "id": 297,
+      "name": "CTFWeaponBase",
+      "data_table": "DT_TFWeaponBase"
+    },
+    {
+      "id": 298,
+      "name": "CTFWeaponBaseGrenadeProj",
+      "data_table": "DT_TFWeaponBaseGrenadeProj"
+    },
+    {
+      "id": 299,
+      "name": "CTFWeaponBaseGun",
+      "data_table": "DT_TFWeaponBaseGun"
+    },
+    {
+      "id": 300,
+      "name": "CTFWeaponBaseMelee",
+      "data_table": "DT_TFWeaponBaseMelee"
+    },
+    {
+      "id": 301,
+      "name": "CTFWeaponBaseMerasmusGrenade",
+      "data_table": "DT_TFWeaponBaseMerasmusGrenade"
+    },
+    {
+      "id": 302,
+      "name": "CTFWeaponBuilder",
+      "data_table": "DT_TFWeaponBuilder"
+    },
+    {
+      "id": 303,
+      "name": "CTFWeaponInvis",
+      "data_table": "DT_TFWeaponInvis"
+    },
+    {
+      "id": 304,
+      "name": "CTFWeaponPDA",
+      "data_table": "DT_TFWeaponPDA"
+    },
+    {
+      "id": 305,
+      "name": "CTFWeaponPDA_Engineer_Build",
+      "data_table": "DT_TFWeaponPDA_Engineer_Build"
+    },
+    {
+      "id": 306,
+      "name": "CTFWeaponPDA_Engineer_Destroy",
+      "data_table": "DT_TFWeaponPDA_Engineer_Destroy"
+    },
+    {
+      "id": 307,
+      "name": "CTFWeaponPDA_Spy",
+      "data_table": "DT_TFWeaponPDA_Spy"
+    },
+    {
+      "id": 308,
+      "name": "CTFWeaponPDAExpansion_Dispenser",
+      "data_table": "DT_TFWeaponPDAExpansion_Dispenser"
+    },
+    {
+      "id": 309,
+      "name": "CTFWeaponPDAExpansion_Teleporter",
+      "data_table": "DT_TFWeaponPDAExpansion_Teleporter"
+    },
+    {
+      "id": 310,
+      "name": "CTFWeaponSapper",
+      "data_table": "DT_TFWeaponSapper"
+    },
+    {
+      "id": 311,
+      "name": "CTFWearable",
+      "data_table": "DT_TFWearable"
+    },
+    {
+      "id": 312,
+      "name": "CTFWearableDemoShield",
+      "data_table": "DT_TFWearableDemoShield"
+    },
+    {
+      "id": 313,
+      "name": "CTFWearableItem",
+      "data_table": "DT_TFWearableItem"
+    },
+    {
+      "id": 314,
+      "name": "CTFWearableLevelableItem",
+      "data_table": "DT_TFWearableLevelableItem"
+    },
+    {
+      "id": 315,
+      "name": "CTFWearableRobotArm",
+      "data_table": "DT_TFWearableRobotArm"
+    },
+    {
+      "id": 316,
+      "name": "CTFWearableVM",
+      "data_table": "DT_TFWearableVM"
+    },
+    {
+      "id": 317,
+      "name": "CTFWrench",
+      "data_table": "DT_TFWeaponWrench"
+    },
+    {
+      "id": 318,
+      "name": "CVGuiScreen",
+      "data_table": "DT_VGuiScreen"
+    },
+    {
+      "id": 319,
+      "name": "CVoteController",
+      "data_table": "DT_VoteController"
+    },
+    {
+      "id": 320,
+      "name": "CWaterBullet",
+      "data_table": "DT_WaterBullet"
+    },
+    {
+      "id": 321,
+      "name": "CWaterLODControl",
+      "data_table": "DT_WaterLODControl"
+    },
+    {
+      "id": 322,
+      "name": "CWeaponIFMBase",
+      "data_table": "DT_WeaponIFMBase"
+    },
+    {
+      "id": 323,
+      "name": "CWeaponIFMBaseCamera",
+      "data_table": "DT_WeaponIFMBaseCamera"
+    },
+    {
+      "id": 324,
+      "name": "CWeaponIFMSteadyCam",
+      "data_table": "DT_WeaponIFMSteadyCam"
+    },
+    {
+      "id": 325,
+      "name": "CWeaponMedigun",
+      "data_table": "DT_WeaponMedigun"
+    },
+    {
+      "id": 326,
+      "name": "CWorld",
+      "data_table": "DT_WORLD"
+    },
+    {
+      "id": 327,
+      "name": "CZombie",
+      "data_table": "DT_Zombie"
+    },
+    {
+      "id": 328,
+      "name": "DustTrail",
+      "data_table": "DT_DustTrail"
+    },
+    {
+      "id": 329,
+      "name": "MovieExplosion",
+      "data_table": "DT_MovieExplosion"
+    },
+    {
+      "id": 330,
+      "name": "NextBotCombatCharacter",
+      "data_table": "DT_NextBot"
+    },
+    {
+      "id": 331,
+      "name": "ParticleSmokeGrenade",
+      "data_table": "DT_ParticleSmokeGrenade"
+    },
+    {
+      "id": 332,
+      "name": "RocketTrail",
+      "data_table": "DT_RocketTrail"
+    },
+    {
+      "id": 333,
+      "name": "SmokeTrail",
+      "data_table": "DT_SmokeTrail"
+    },
+    {
+      "id": 334,
+      "name": "SporeExplosion",
+      "data_table": "DT_SporeExplosion"
+    },
+    {
+      "id": 335,
+      "name": "SporeTrail",
+      "data_table": "DT_SporeTrail"
+    }
+  ],
+  "interval_per_tick": 0.015,
+  "outer_map": {
+    "1645192": 648,
+    "1688201": 649
+  },
+  "events": []
 }

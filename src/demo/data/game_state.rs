@@ -1,5 +1,6 @@
 use crate::demo::data::DemoTick;
 use crate::demo::gameevent_gen::PlayerDeathEvent;
+use crate::demo::gamevent::GameEvent;
 use crate::demo::message::packetentities::EntityId;
 use crate::demo::packet::datatable::{ClassId, ServerClass, ServerClassName};
 use crate::demo::parser::analyser::{Class, Team, UserId, UserInfo};
@@ -420,6 +421,7 @@ pub struct GameState {
     pub server_classes: Vec<ServerClass>,
     pub interval_per_tick: f32,
     pub outer_map: HashMap<Handle, EntityId>,
+    pub events: Vec<(DemoTick, GameEvent)>,
 }
 
 impl GameState {
