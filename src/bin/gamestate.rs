@@ -10,7 +10,7 @@ pub use tf_demo_parser::{Demo, DemoParser, Parse, ParseError, ParserState, Strea
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 fn main() -> Result<(), MainError> {
-    #[cfg(feature = "better_panic")]
+    #[cfg(feature = "better-panic")]
     better_panic::install();
 
     #[cfg(feature = "trace")]

@@ -3,17 +3,17 @@ use std::env;
 use std::fs;
 
 use main_error::MainError;
-pub use tf_demo_parser::{Demo, DemoParser, Parse, ParserState};
-use tf_demo_parser::demo::packet::stringtable::{StringTableEntry};
+use tf_demo_parser::demo::packet::stringtable::StringTableEntry;
 use tf_demo_parser::demo::parser::MessageHandler;
 use tf_demo_parser::MessageType;
+pub use tf_demo_parser::{Demo, DemoParser, Parse, ParserState};
 
 #[cfg(feature = "jemallocator")]
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 fn main() -> Result<(), MainError> {
-    #[cfg(feature = "better_panic")]
+    #[cfg(feature = "better-panic")]
     better_panic::install();
 
     #[cfg(feature = "trace")]
@@ -60,10 +60,19 @@ impl MessageHandler for StringTableHandler {
     type Output = HashMap<String, Vec<String>>;
 
     fn does_handle(message_type: MessageType) -> bool {
-        matches!(message_type, MessageType::CreateStringTable | MessageType::UpdateStringTable)
+        matches!(
+            message_type,
+            MessageType::CreateStringTable | MessageType::UpdateStringTable
+        )
     }
 
-    fn handle_string_entry(&mut self, table: &str, index: usize, entries: &StringTableEntry, _parser_state: &ParserState) {
+    fn handle_string_entry(
+        &mut self,
+        table: &str,
+        index: usize,
+        entries: &StringTableEntry,
+        _parser_state: &ParserState,
+    ) {
         let table = self.tables.entry(table.into()).or_default();
         if index < table.len() {
             table[index] = entries.text().into();
@@ -71,7 +80,6 @@ impl MessageHandler for StringTableHandler {
             table.insert(index, entries.text().into());
         }
     }
-
 
     fn into_output(self, _state: &ParserState) -> Self::Output {
         self.tables

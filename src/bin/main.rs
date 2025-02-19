@@ -21,7 +21,7 @@ struct JsonDemo {
 }
 
 fn main() -> Result<(), MainError> {
-    #[cfg(feature = "better_panic")]
+    #[cfg(feature = "better-panic")]
     better_panic::install();
 
     #[cfg(feature = "trace")]

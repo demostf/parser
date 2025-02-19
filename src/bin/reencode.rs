@@ -17,7 +17,7 @@ fn main() -> Result<(), MainError> {
     #[cfg(feature = "trace")]
     tracing_subscriber::fmt::init();
 
-    #[cfg(feature = "better_panic")]
+    #[cfg(feature = "better-panic")]
     better_panic::install();
 
     let args: Vec<_> = env::args().collect();
