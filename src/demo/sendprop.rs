@@ -1113,6 +1113,12 @@ impl SendPropIdentifier {
         SendPropIdentifier(hasher.finish())
     }
 
+    /// Construct a SendPropIdentifier from a u64; like std::convert::From<u64> but marked as
+    /// const.
+    pub const fn from_const(raw: u64) -> Self {
+        SendPropIdentifier(raw)
+    }
+
     /// This returns an option because only props known at compile time will return a name here
     ///
     /// If you need to know the name of every property you need to keep a map yourself
