@@ -89,6 +89,7 @@ impl<'a, A: MessageHandler> DemoParser<'a, A> {
 
     pub fn parse(self) -> Result<(Header, A::Output)> {
         let (header, mut ticker) = self.ticker()?;
+        dbg!(&header);
         while ticker.tick()? {
             // noop
         }

@@ -9,6 +9,7 @@ use crate::demo::message::stringtable::*;
 use crate::demo::message::tempentities::*;
 use crate::demo::message::usermessage::*;
 use crate::demo::message::voice::*;
+use crate::demo::message::prefetch::*;
 use crate::demo::parser::{Encode, ParseBitSkip};
 use crate::{Parse, ParserState, Result, Stream};
 use bitbuffer::{BitRead, BitWrite, BitWriteStream, LittleEndian};
@@ -25,6 +26,7 @@ pub mod stringtable;
 pub mod tempentities;
 pub mod usermessage;
 pub mod voice;
+pub mod prefetch;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema_repr))]
 #[derive(

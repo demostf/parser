@@ -114,13 +114,6 @@ pub struct EntityMessage<'a> {
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
-pub struct PreFetchMessage {
-    #[size = 14]
-    pub index: u16,
-}
-
-#[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
-#[derive(BitRead, BitWrite, Debug, PartialEq, Serialize, Deserialize, Clone)]
 #[endianness = "LittleEndian"]
 #[serde(bound(deserialize = "'a: 'static"))]
 pub struct MenuMessage<'a> {
