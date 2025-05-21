@@ -1,3 +1,5 @@
+# Moved to https://codeberg.org/demostf/parser
+
 # TF Demo Parser
 
 ![Build Status](https://github.com/demostf/parser/workflows/CI/badge.svg)
